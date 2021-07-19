@@ -1,10 +1,10 @@
 import smartpy as sp
 
 class TransferTokens(sp.Contract):
-    def transferFA12(self, sender, reciever, amount, tokenAddress): 
+    def transferFA12(self, sender, receiver, amount, tokenAddress): 
         TransferParam = sp.record(
             from_ = sender, 
-            to_ = reciever, 
+            to_ = receiver, 
             value = amount
         )
 
@@ -17,15 +17,15 @@ class TransferTokens(sp.Contract):
         sp.transfer(TransferParam, sp.mutez(0), transferHandle)
 
 
-    def transferFA2(self, sender, reciever, amount, tokenAddress, id):
-        tx_type = sp.TRecord(to_ = sp.TAddress, token_id = sp.TNat, amount = sp.TNat)
+    def transferFA2(self, sender, receiver, amount, tokenAddress, id):
+        tx_type = sp.TRecord(to_ = sp.TAddress, token_id = sp.TNat, amount = sp.TNat).layout(("to_", ("token_id", "amount")))
 
         arg = [
             sp.record(
                 from_ = sender,
                 txs = [
                     sp.record(
-                        to_ = reciever,
+                        to_ = receiver,
                         token_id = id, 
                         amount = amount 
                     )

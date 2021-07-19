@@ -1,7 +1,7 @@
 import smartpy as sp
 
 IRM = sp.io.import_script_from_url("file:contracts/InterestRateModel.py")
-RV = sp.io.import_script_from_url("file:contracts/tests/ResultViewer.py")
+RV = sp.io.import_script_from_url("file:contracts/tests//utils/ResultViewer.py")
 
 @sp.add_test(name = "InterestRateModel_Tests")
 def test():
@@ -19,7 +19,7 @@ def test():
     c1 = IRM.InterestRateModel(multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
     scenario += c1
 
-    view_result = RV.Viewer(sp.TNat)
+    view_result = RV.ViewerNat()
     scenario += view_result
 
     

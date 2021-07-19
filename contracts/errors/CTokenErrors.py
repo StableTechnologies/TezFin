@@ -1,0 +1,28 @@
+class ErrorCodes:
+    CT_INSUFFICIENT_SUPPLY = "CT_INSUFFICIENT_SUPPLY" # Insufficient supply
+    CT_INSUFFICIENT_BALANCE = "CT_INSUFFICIENT_BALANCE" # Insufficient balance
+    CT_INVALID_LIQUIDATOR = "CT_INVALID_LIQUIDATOR" # Liquidator must be different from borrower
+    CT_ZERO_REPAY = "CT_ZERO_REPAY" # Repay amount is zero
+    CT_TRANSFER_NOT_APPROVED = "CT_TRANSFER_NOT_APPROVED" # Transfer is not approved
+    CT_UNSAFE_ALLOWANCE_CHANGE = "CT_UNSAFE_ALLOWANCE_CHANGE" # Couldn't approve the second time
+    CT_SENDER_NOT_IRM = "CT_SENDER_NOT_IRM" # Sender should be interest rate model
+    CT_SEIZE_SENDER = "CT_SEIZE_SENDER" # Seize is allowed only to comptroller
+    CT_INVALID_REPAY = "CT_INVALID_REPAY" # Repay amount is too high for liquidation
+    CT_INVALID_RESERVE_FACTOR = "CT_INVALID_RESERVE_FACTOR" # New reserve factor is too high
+    CT_INVALID_BORROW_RATE = "CT_INVALID_BORROW_RATE" # New borrow rate is too high
+    CT_REDUCE_AMOUNT = "CT_REDUCE_AMOUNT" # Reduce amount is bigger than total reserve
+    CT_INSUFFICIENT_CASH = "CT_INSUFFICIENT_CASH" # Protocol has insufficient cash
+    CT_BLOCK_LEVEL = "CT_BLOCK_LEVEL" # Market's block number should be equal to current block number
+    CT_SWEEP_XTZ = "CT_SWEEP_XTZ" # Mutez sweep is not allowed for CXTZ
+    CT_SWEEP_UNDERLYING = "CT_SWEEP_UNDERLYING" # Sweep is not allowed for the underlying token
+    CT_INVALID_CASH_SENDER = "CT_INVALID_CASH_SENDER" # Only underlying token can set cash
+    CT_INVALID_CASH_DATA = "CT_INVALID_CASH_DATA" # Received cash data is invalid
+    CT_INVALID_MUTEZ = "CT_INVALID_MUTEZ" # The amount of transferred mutez is invalid
+    CT_INTERNAL_CALL = "CT_INTERNAL_CALL" # The function should not be used as an internal callback
+    CT_INTERNAL_FUNCTION = "CT_INTERNAL_FUNCTION" # Internal function
+    CT_NOT_ADMIN = "CT_NOT_ADMIN" # Sender must be administrator
+    CT_NOT_PENDING_ADMIN = "CT_NOT_PENDING_ADMIN" # Sender must be pending admin
+    CT_NOT_SET_PENDING_ADMIN = "CT_NOT_SET_PENDING_ADMIN" # Pending administrator hasn't been set
+    CT_INTEREST_INVALID	= "CT_INTEREST_INVALID" # Accrued interest is already invalid
+    CT_INTEREST_OLD = "CT_INTEREST_OLD" # Accrued interest is too old
+

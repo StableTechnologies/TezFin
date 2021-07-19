@@ -3,6 +3,9 @@
 
 import smartpy as sp
 
+MathErrors = sp.io.import_script_from_url("file:contracts/errors/MathErrors.py")
+EC = MathErrors.ErrorCodes
+
 """
     Stores decimals with a fixed precision of 18 decimal places
     Thus, if we wanted to store the 5.1, mantissa would store 5.1e18. That is:
@@ -172,7 +175,7 @@ class Exponential(sp.Contract):
     def sub_nat_nat(self, a, b):
         sp.set_type(a, sp.TNat)
         sp.set_type(b, sp.TNat)
-        return sp.as_nat(a - b, message = "subtraction underflow")
+        return sp.as_nat(a - b, message = EC.SUBTRACTION_UNDERFLOW)
 
     """    
         params: 
@@ -216,7 +219,7 @@ class Exponential(sp.Contract):
     def div_exp_exp(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
-        sp.verify(b.mantissa > 0, "Division by zero")
+        sp.verify(b.mantissa > 0, EC.DIVISION_BY_ZERO)
         return self.makeExp(a.mantissa * self.data.expScale // b.mantissa)
 
     """    
@@ -228,7 +231,7 @@ class Exponential(sp.Contract):
     def div_exp_nat(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, sp.TNat)
-        sp.verify(b > 0, "Division by zero")
+        sp.verify(b > 0, EC.DIVISION_BY_ZERO)
         return self.makeExp(a.mantissa // b)
 
     """    
@@ -240,5 +243,5 @@ class Exponential(sp.Contract):
     def div_nat_exp(self, a, b):
         sp.set_type(a, sp.TNat)
         sp.set_type(b, TExp)
-        sp.verify(b.mantissa > 0, "Division by zero")
+        sp.verify(b.mantissa > 0, EC.DIVISION_BY_ZERO)
         return a * self.data.expScale // b.mantissa

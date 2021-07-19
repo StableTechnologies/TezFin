@@ -1,0 +1,15 @@
+{
+  "name": "TezFinDeploy",
+  "version": "1.0.0",
+  "main": "deploy.js",
+  "dependencies": {
+    "conseiljs": "^5.0.8-3",
+    "conseiljs-softsigner": "^5.0.4-1",
+    "loglevel": "^1.7.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

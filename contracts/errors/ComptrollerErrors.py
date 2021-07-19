@@ -1,0 +1,23 @@
+class ErrorCodes:
+    CMPT_MARKET_JOINED = "CMPT_MARKET_JOINED" # Already joined to the market
+    CMPT_BORROW_IN_MARKET = "CMPT_BORROW_IN_MARKET" # The sender has a borrow balance
+    CMPT_MINT_PAUSED = "CMPT_MINT_PAUSED" # Mint is paused 
+    CMPT_BORROW_PAUSED = "CMPT_BORROW_PAUSED" # Borrow is paused
+    CMPT_TRANSFER_PAUSED = "CMPT_TRANSFER_PAUSED" # Transfer is paused
+    CMPT_SEIZE_PAUSED = "CMPT_SEIZE_PAUSED" # Seize is paused
+    CMPT_REDEEMER_SHORTFALL = "CMPT_REDEEMER_SHORTFALL" # The redeemer shouldn't have shortfall
+    CMPT_INVALID_BORROW_SENDER = "CMPT_INVALID_BORROW_SENDER" # Sender must be cToken
+    CMPT_INVALID_PRICE = "CMPT_INVALID_PRICE" # CToken's price is invalid
+    CMPT_NO_SHORTFALL = "CMPT_NO_SHORTFALL" # The borrower must have a shortfall in order to be liquidatable
+    CMPT_INVALID_SEIZE_SENDER = "CMPT_INVALID_SEIZE_SENDER" # Seize should be initiated by CToken
+    CMPT_UPDATE_PRICE = "CMPT_UPDATE_PRICE" # Asset price was not updated
+    CMPT_MARKET_NOT_EXISTS = "CMPT_MARKET_NOT_EXISTS" # Market not exists
+    CMPT_MARKET_NOT_LISTED = "CMPT_MARKET_NOT_LISTED" # Market not listed
+    CMPT_MARKET_ALREADY_LISTED = "CMPT_MARKET_ALREADY_LISTED" # Market already listed
+    CMPT_INTERNAL_FUNCTION = "CMPT_INTERNAL_FUNCTION" # Internal function
+    CMPT_NOT_ADMIN = "CMPT_NOT_ADMIN" # Sender must be administrator
+    CMPT_NOT_PENDING_ADMIN = "CMPT_NOT_PENDING_ADMIN" # Sender must be pending admin
+    CMPT_NOT_SET_PENDING_ADMIN = "CMPT_NOT_SET_PENDING_ADMIN" # Pending administrator hasn't been set
+    CMPT_LIQUIDITY_ABSENT = "CMPT_LIQUIDITY_ABSENT" # Liquidity for the given account is not found
+    CMPT_LIQUIDITY_INVALID = "CMPT_LIQUIDITY_INVALID" # Liquidity is already invalid
+    CMPT_LIQUIDITY_OLD = "CMPT_LIQUIDITY_OLD" # Liquidity is too old

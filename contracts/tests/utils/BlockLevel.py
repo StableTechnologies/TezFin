@@ -11,3 +11,6 @@ class BlockLevel():
     def add(self, val):
         self.level += val
         return self.current()
+
+    def addWithoutModify(self, val):
+        return self.current() + val

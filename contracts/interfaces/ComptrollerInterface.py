@@ -8,42 +8,40 @@ TMintAllowedParams = sp.TRecord(cToken=sp.TAddress, minter=sp.TAddress, mintAmou
 TBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, borrower=sp.TAddress, borrowAmount=sp.TNat).layout(("cToken", ("borrower", "borrowAmount")))
 TRedeemAllowedParams = sp.TRecord(cToken=sp.TAddress, redeemer=sp.TAddress, redeemAmount=sp.TNat).layout(("cToken", ("redeemer", "redeemAmount")))
 TRepayBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, payer=sp.TAddress, borrower=sp.TAddress, repayAmount=sp.TNat).layout(("cToken", ("payer", ("borrower", "repayAmount"))))
-TSeizeAllowedParams = sp.TRecord(cTokenCollateral=sp.TAddress,
-                                 cTokenBorrowed=sp.TAddress, 
-                                 liquidator=sp.TAddress, 
-                                 borrower=sp.TAddress, 
-                                 seizeTokens=sp.TNat
-                                ).layout(("cTokenCollateral", (("cTokenBorrowed", "liquidator"), ("borrower", "seizeTokens"))))
-TLiquidateBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress,
-                                 cTokenCollateral=sp.TAddress, 
-                                 liquidator=sp.TAddress, 
-                                 borrower=sp.TAddress, 
-                                 repayAmount=sp.TNat
-                                ).layout(("cToken", (("cTokenCollateral", "liquidator"), ("borrower", "repayAmount"))))
 TTransferAllowedParams = sp.TRecord(cToken=sp.TAddress, src=sp.TAddress, dst=sp.TAddress, transferTokens=sp.TNat).layout((("cToken", "src"), ("dst", "transferTokens")))
+TAccountLiquidityParams = sp.TRecord(cTokenModify=sp.TAddress,
+                             account=sp.TAddress,
+                             redeemTokens=sp.TNat,
+                             borrowAmount=sp.TNat
+                            ).layout(("account", ("cTokenModify", ("redeemTokens", "borrowAmount"))))
+TGetAccountLiquidityParams = sp.TRecord(data=TAccountLiquidityParams, callback=sp.TContract(sp.TInt))
 
 class ComptrollerInterface(sp.Contract):
 
     """    
         Add assets to be included in account liquidity calculation
 
-        params: TList(TAddress) - The list of addresses of the cToken markets to be enabled
+        cTokens: TList(TAddress) - The list of addresses of the cToken markets to be enabled
     """
     @sp.entry_point
-    def enterMarkets(self, params):
+    def enterMarkets(self, cTokens):
         pass
 
 
     """    
         Removes asset from sender's account liquidity calculation
 
+        requirements:
+            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+
         dev: Sender must not have an outstanding borrow balance in the asset,
              or be providing necessary collateral for an outstanding borrow
 
-        params: TAddress - The address of the asset to be removed
+        cToken: TAddress - The address of the asset to be removed
     """
     @sp.entry_point
-    def exitMarket(self, params):
+    def exitMarket(self, cToken):
         pass
 
 
@@ -63,10 +61,14 @@ class ComptrollerInterface(sp.Contract):
     """    
         Checks if the account should be allowed to redeem tokens in the given market
 
+        requirements:
+            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+
         params: TRecord
             cToken: TAddress - The market to verify the redeem against
             redeemer: TAddress - The account which would redeem the tokens
-            redeemTokens: TNat - The number of cTokens to exchange for the underlying asset in the market
+            redeemAmount: TNat - The number of cTokens to exchange for the underlying asset in the market
     """
     @sp.entry_point
     def redeemAllowed(self, params):
@@ -75,6 +77,10 @@ class ComptrollerInterface(sp.Contract):
 
     """    
         Checks if the account should be allowed to borrow the underlying asset of the given market
+
+        requirements:
+            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within 5 blocks prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the borrow against
@@ -101,37 +107,11 @@ class ComptrollerInterface(sp.Contract):
 
 
     """    
-        Checks if the liquidation should be allowed to occur
-
-        params: TRecord
-            cTokenBorrowed: TAddress - Asset which was borrowed by the borrower
-            cTokenCollateral: TAddress - Asset which was used as collateral and will be seized
-            liquidator: TAddress - The address repaying the borrow and seizing the collateral
-            borrower: TAddress - The address of the borrower
-            repayAmount: TNat - The amount of underlying being repaid
-    """
-    @sp.entry_point
-    def liquidateBorrowAllowed(self, params):
-        pass
-
-
-    """    
-        Checks if the seizing of assets should be allowed to occur
-
-        params: TRecord
-            cTokenCollateral: TAddress - Asset which was used as collateral and will be seized
-            cTokenBorrowed: TAddress - Asset which was borrowed by the borrower
-            liquidator: TAddress - The address repaying the borrow and seizing the collateral
-            borrower: TAddress - The address of the borrower
-            seizeTokens: TNat - The number of collateral tokens to seize
-    """
-    @sp.entry_point
-    def seizeAllowed(self, params):
-        pass
-
-
-    """    
         Checks if the account should be allowed to transfer tokens in the given market
+
+        requirements:
+            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within 5 blocks prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the transfer against
@@ -144,50 +124,97 @@ class ComptrollerInterface(sp.Contract):
         pass
 
 
-    """    
-        Calculate number of tokens of collateral asset to seize given an underlying amount
+    """
+        Update price of the given asset
 
-        dev: Used in liquidation
-             Checks id sieze is allowed and performs seize for cTokenCollateral
-
-        params: TRecord
-            cTokenBorrowed: TAddress - The address of the borrowed cToken
-            cTokenCollateral: TAddress - The address of the collateral cToken
-            actualRepayAmount: TNat - The amount of cTokenBorrowed underlying to convert into cTokenCollateral tokens
+        asset: TAddress - CToken market address
     """
     @sp.entry_point
-    def liquidateSeizeTokens(self, params):
+    def updateAssetPrice(self, asset):
+        pass
+
+
+    """
+        Updates stored liquidity for the given account
+
+        requirements:
+            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the account
+            accrueInterest() should be executed within 5 blocks prior to this call, for all markets entered by the account
+
+        dev: should be called before entry points that works with account liquidity
+
+        account: TAddress - The account to calculate liquidity for
+    """
+    @sp.entry_point
+    def updateAccountLiquidity(self, account):
         pass
 
 
     """    
         Determine what the account liquidity would be if the given amounts were redeemed/borrowed
 
+        requirements:
+            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+
         dev: With redeemTokens = 0 and borrowAmount = 0 shows current account liquidity
 
         params: TRecord
-            cTokenModify: TAddress - The market to hypothetically redeem/borrow in
-            account: TAddress - The account to determine liquidity for
-            redeemTokens: TNat - The number of tokens to hypothetically redeem
-            borrowAmount: TNat - The amount of underlying to hypothetically borrow
+            data: TAccountLiquidityParams
+                cTokenModify: TAddress - The market to hypothetically redeem/borrow in
+                account: TAddress - The account to determine liquidity for
+                redeemTokens: TNat - The number of tokens to hypothetically redeem
+                borrowAmount: TNat - The amount of underlying to hypothetically borrow
+            callback: TContract(TInt) - callback to send result to
+
+        return: TInt - the account liquidity. Shows shortfall when return value < 0
     """
     @sp.entry_point
-    def getHypotheticalAccountLiquidity(self, params):
+    def getHypoAccountLiquidity(self, params):
         pass
 
 
 
     # Admin functions
+    """    
+        # Set the number of blocks since the last update until the price is considered valid
+
+        blockNumber: TNat
+    """
+    @sp.entry_point
+    def setPricePeriodRelevance(self, blockNumber):
+        pass
+
 
     """    
-        Sets a new governance for the comptroller
+        # Set the number of blocks since the last update until the liquidity is considered valid
+
+        blockNumber: TNat
+    """
+    @sp.entry_point
+    def setLiquidityPeriodRelevance(self, blockNumber):
+        pass
+
+
+    """    
+        Sets a new pending governance for the market
 
         dev: Governance function to set a new governance
 
-        params: TAddress - The address of the new Governance contract
+        params: TAddress - The address of the new pending governance contract
     """
     @sp.entry_point
-    def setGovernance(self, params):
+    def setPendingGovernance(self, pendingAdminAddress):
+        pass
+    
+    """    
+        Accept a new governance for the market
+
+        dev: Governance function to set a new governance
+
+        params: TUnit
+    """
+    @sp.entry_point
+    def acceptGovernance(self, unusedArg):
         pass
 
     """    
@@ -245,7 +272,9 @@ class ComptrollerInterface(sp.Contract):
 
         dev: Governance function to set isListed and add support for the market
 
-        params: TAddress - The address of the market (token) to list
+        params: TRecord
+            cToken: TAddress - The address of the market (token) to list
+            name: TString - The market name in price oracle
     """
     @sp.entry_point
     def supportMarket(self, params):
@@ -311,21 +340,8 @@ class ComptrollerInterface(sp.Contract):
 
         dev: Governance function to pause or activate the transfer of CTokens
 
-        params: TBool - state, where True - pause, False - activate
+        state: TBool, where True - pause, False - activate
     """
     @sp.entry_point
-    def setTransferPaused(self, params):
+    def setTransferPaused(self, state):
         pass
-
-
-    """    
-        Pause or activate the seize of CTokens
-
-        dev: Governance function to pause or activate the seize of CTokens
-
-        params: TBool - state, where True - pause, False - activate
-    """
-    @sp.entry_point
-    def setSeizePaused(self, params):
-        pass
-

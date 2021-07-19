@@ -1,0 +1,15 @@
+{
+  "OriginatorAddress": "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5",
+  "Governance": "KT1ExC3Z7LcHV8MRfeBgmL1Rq8Yjfq18esnD",
+  "PriceOracle": "KT1D5dymEcr3k7iiKQ9ohaQvQHJcBB5DrU1Z",
+  "Comptroller": "KT1N7XtSjxq8qUgZpHNEff18gXG31pt3KQiz",
+  "CFA12_IRM": "KT1BWmrxCHa1B8ABfQh7vHieTbyrsEp5oYaV",
+  "CToken_IRM": "KT1RcLfeKnPnkhupeFfsUVU9ZGvZuZLyfTHw",
+  "CXTZ_IRM": "KT1TjwNxUaN3qr9Rr19pzq2jmY8BpoxuaJMu",
+  "CFA2_IRM": "KT1DZi6Y6h6g2omgg17xDe8FkHW5VCRRGAdp",
+  "FA2": "KT1G8Kvtt2PAhp9xaiTujytigiz7Zx4HRZ5a",
+  "CFA2": "KT1HsK8tQ2scPqXvyTEbYz4faKNHbkGkgSQR",
+  "FA12": "KT1FgC5KDohcL8dv62oz7tBAa2CHMRE8iVqU",
+  "CFA12": "KT1AvzCaVFtkPWACQi5QQEcQ7kkv3XV44Lcb",
+  "CXTZ": "KT1BhVvSoeEaDnigzrfTbZZe59aEXPDnJrtb"
+}

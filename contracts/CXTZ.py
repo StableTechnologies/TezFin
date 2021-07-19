@@ -1,5 +1,8 @@
 import smartpy as sp
 
+CTErrors = sp.io.import_script_from_url("file:contracts/errors/CTokenErrors.py")
+EC = CTErrors.ErrorCodes
+
 CToken = sp.io.import_script_from_url("file:contracts/CToken.py")
 
 """
@@ -7,22 +10,24 @@ CToken = sp.io.import_script_from_url("file:contracts/CToken.py")
 """
 class CXTZ(CToken.CToken):
     def __init__(self, comptroller_, interestRateModel_, administrator_):
-        decimalsUnderlying = sp.nat(int(1e6))
         initialExchangeRateMantissa = sp.nat(int(1e18))
-        CToken.CToken.__init__(self, decimalsUnderlying, comptroller_, interestRateModel_, initialExchangeRateMantissa, administrator_)
+        CToken.CToken.__init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa, administrator_)
 
     def getCashImpl(self):
         # TODO: test in regards to https://forum.tezosagora.org/t/problems-with-balance/2194/3
         return sp.utils.mutez_to_nat(sp.balance)
 
-    def doTransferOut(self, to_, amount):
-        sp.send(to_, sp.utils.nat_to_mutez(amount))
+    def doTransferOut(self, to_, amount, isContract = False):
+        sp.if isContract:
+            sp.transfer(sp.unit, sp.utils.nat_to_mutez(amount), sp.contract(sp.TUnit, to_, "receive").open_some(message = "bad contract destination"))
+        sp.else:
+            sp.send(to_, sp.utils.nat_to_mutez(amount))
 
     def doTransferIn(self, from_, amount):
-        sp.verify(sp.utils.mutez_to_nat(sp.amount) == amount)
+        sp.verify(sp.utils.mutez_to_nat(sp.amount) == amount, EC.CT_INVALID_MUTEZ)
 
     def getMintTokens(self, mintAmount):
         return self.getActualAmount(mintAmount, True, mintAmount) # add adjustment by mintAmount due to balance being updated from the start of transaction
 
     def verifySweepMutez(self):
-        sp.verify(False, "Mutez sweep is not allowed for CXTZ")
+        sp.verify(False, EC.CT_SWEEP_XTZ)

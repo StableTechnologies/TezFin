@@ -6,13 +6,19 @@ class SweepTokens(TransferTokens.TransferTokens):
     """    
         A public function to sweep accidental MUTEZ transfers to this contract. MUTEZ are sent to admin
 
-        params: TUnit
+        dev: if administrator is contract, it should have 'receive' entry point that accepts TUnit
+
+        isContract: TBool - indicates the type of admin - contract or account
     """
     @sp.entry_point
-    def sweepMutez(self, params):
-        sp.set_type(params, sp.TUnit)
+    def sweepMutez(self, isContract):
+        sp.set_type(isContract, sp.TBool)
         self.verifySweepMutez()
-        sp.send(self.data.administrator, sp.balance)
+        sp.if isContract:
+            handle = sp.contract(sp.TUnit, self.data.administrator, entry_point="receive").open_some()
+            sp.transfer(sp.unit, sp.balance, handle)
+        sp.else:
+            sp.send(self.data.administrator, sp.balance)
         
     def verifySweepMutez(self): # Override
         pass

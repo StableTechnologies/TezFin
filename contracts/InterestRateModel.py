@@ -1,5 +1,8 @@
 import smartpy as sp
 
+IRMErrors = sp.io.import_script_from_url("file:contracts/errors/InterestRateModelErrors.py")
+EC = IRMErrors.ErrorCodes
+
 IRMInterface = sp.io.import_script_from_url("file:contracts/interfaces/InterestRateModelInterface.py")
 
 
@@ -50,7 +53,7 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         ur = sp.local('ur', sp.nat(0))
         sp.if borrows > sp.nat(0):
             divisor = sp.compute(sp.as_nat(cash + borrows - reserves))
-            sp.verify(divisor > 0, "Reserves too low")
+            sp.verify(divisor > 0, EC.IRM_INSUFFICIENT_CASH)
             ur.value = borrows * self.data.scale // divisor
         return ur.value
 

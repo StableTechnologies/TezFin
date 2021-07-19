@@ -5,16 +5,47 @@ import smartpy as sp
 
 
 class GovernanceInterface(sp.Contract):
- 
     """    
-        Sets a new governance for the specified Comptroller or CToken address
+        Sets a new pending governance for the governor
+
+        dev: Governance function to set a new governance
+
+        params: TAddress - The address of the new pending governance
+    """
+    @sp.entry_point
+    def setPendingGovernance(self, pendingAdminAddress):
+        pass
+
+
+    """    
+        Accept a new governance for the Governor
+
+        params: TUnit
+    """
+    @sp.entry_point
+    def acceptGovernance(self, unusedArg):
+        pass
+
+
+    """    
+        Sets a new pending governance for the specified Comptroller or CToken address
 
         params: TRecord
             contractAddress: TAddress - The address of Comptroller or CToken contract
             governance: TAddress - The address of the new Governance contract
     """
     @sp.entry_point
-    def setGovernance(self, params):
+    def setContractGovernance(self, params):
+        pass
+
+
+    """    
+        Accept a new governance for the specified Comptroller or CToken address
+
+        contractAddress: TAddress - The address of Comptroller or CToken contract
+    """
+    @sp.entry_point
+    def acceptContractGovernance(self, contractAddress):
         pass
 
 
@@ -53,18 +84,6 @@ class GovernanceInterface(sp.Contract):
     """
     @sp.entry_point
     def setReserveFactor(self, params):
-        pass
-    
-
-    """    
-        Accrues interest and adds reserves by transferring from admin
-
-        params: TRecord
-            cToken: TAddress - The address of CToken contract
-            amount: TNat - Amount of reserves to add
-    """
-    @sp.entry_point
-    def addReserves(self, params):
         pass
     
 
@@ -111,8 +130,9 @@ class GovernanceInterface(sp.Contract):
 
         params: TRecord
             comptroller: TAddress - The address of Comptroller contract
-            cToken: TAddress - The market to set the factor on
-            newCollateralFactor: TNat - The new collateral factor, scaled by 1e18
+            collateralFactor: TRecord 
+                cToken: TAddress - The market to set the factor on
+                newCollateralFactor: TNat - The new collateral factor, scaled by 1e18
     """
     @sp.entry_point
     def setCollateralFactor(self, params):
@@ -136,7 +156,9 @@ class GovernanceInterface(sp.Contract):
 
         params: TRecord
             comptroller: TAddress - The address of Comptroller contract
-            cToken: TAddress - The address of the market (token) to list
+            market: TRecord
+                cToken: TAddress - The address of the market (token) to list
+                name: TString - The market name in price oracle
     """
     @sp.entry_point
     def supportMarket(self, params):
@@ -160,8 +182,9 @@ class GovernanceInterface(sp.Contract):
 
         params: TRecord
             comptroller: TAddress - The address of Comptroller contract
-            cToken: TAddress - The address of the market (token) to change the borrow caps for
-            newBorrowCap: TNat - The new borrow cap value in underlying to be set. A value of 0 corresponds to unlimited borrowing.
+            borrowCap: TRecord
+                cToken: TAddress - The address of the market (token) to change the borrow caps for
+                newBorrowCap: TNat - The new borrow cap value in underlying to be set. A value of 0 corresponds to unlimited borrowing.
     """
     @sp.entry_point
     def setMarketBorrowCap(self, params):
@@ -173,8 +196,9 @@ class GovernanceInterface(sp.Contract):
 
         params: TRecord
             comptroller: TAddress - The address of Comptroller contract
-            cToken: TAddress - The address of the market to change the mint pause state
-            state: TBool - state, where True - pause, False - activate
+            tokenState: TRecord
+                cToken: TAddress - The address of the market to change the mint pause state
+                state: TBool - state, where True - pause, False - activate
     """
     @sp.entry_point
     def setMintPaused(self, params):
@@ -186,8 +210,9 @@ class GovernanceInterface(sp.Contract):
 
         params: TRecord
             comptroller: TAddress - The address of Comptroller contract
-            cToken: TAddress - The address of the market to change the borrow pause state
-            state: TBool - state, where True - pause, False - activate
+            tokenState: TRecord
+                cToken: TAddress - The address of the market to change the borrow pause state
+                state: TBool - state, where True - pause, False - activate
     """
     @sp.entry_point
     def setBorrowPaused(self, params):
@@ -206,13 +231,37 @@ class GovernanceInterface(sp.Contract):
         pass
 
 
-    """    
-        Pause or activate the seize of CTokens
+        """    
+        # Set the number of blocks since the last accrue interest update is valid
 
         params: TRecord
-            comptroller: TAddress - The address of Comptroller contract
-            state: TBool - state, where True - pause, False - activate
+            cToken: TAddress - The address of CToken contract
+            blockNumber: TNat
     """
     @sp.entry_point
-    def setSeizePaused(self, params):
+    def setAccrualIntPeriodRelevance(self, params):
+        pass
+
+
+    """    
+        # Set the number of blocks since the last update until the price is considered valid
+
+        params: TRecord
+            comptroller: TAddress - The address of comptroller contract
+            blockNumber: TNat
+    """
+    @sp.entry_point
+    def setPricePeriodRelevance(self, params):
+        pass
+
+
+    """    
+        # Set the number of blocks since the last update until the liquidity is considered valid
+
+        params: TRecord
+            comptroller: TAddress - The address of comptroller contract
+            blockNumber: TNat
+    """
+    @sp.entry_point
+    def setLiquidityPeriodRelevance(self, params):
         pass

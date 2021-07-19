@@ -13,11 +13,14 @@ TBorrowSnapshot = sp.TRecord(principal=sp.TNat, interestIndex=sp.TNat)
 
 """
 TAccountSnapshot: Container for account balance information
+    account: account address
     cTokenBalance: Token balance of the account
     borrowBalance: Borrow balance of the account
     exchangeRateMantissa: Exchange rate mantissa
 """
-TAccountSnapshot = sp.TRecord(cTokenBalance=sp.TNat, borrowBalance=sp.TNat, exchangeRateMantissa=sp.TNat)
+TAccountSnapshot = sp.TRecord(account=sp.TAddress, cTokenBalance=sp.TNat, borrowBalance=sp.TNat, exchangeRateMantissa=sp.TNat)
+
+TValidateRepayParams = sp.TRecord(repayAmount=sp.TNat, closeFactorMantissa=sp.TNat, account=sp.TAddress).layout(("repayAmount", ("closeFactorMantissa", "account")))
 
 class CTokenInterface(sp.Contract):
 
@@ -27,6 +30,9 @@ class CTokenInterface(sp.Contract):
         dev: Accrues interest if the operation succeeds, unless reverted
 
         params: TNat - The amount of the underlying asset to supply
+
+        requirements: 
+            accrueInterest() should be executed within 5 blocks prior to this call
     """
     @sp.entry_point
     def mint(self, params):
@@ -39,6 +45,13 @@ class CTokenInterface(sp.Contract):
         dev: Accrues interest if the operation succeeds, unless reverted
 
         params: TNat - The number of cTokens to redeem into underlying
+
+        requirements:
+            CToken:
+                accrueInterest() should be executed within 5 blocks prior to this call
+            comptroller:
+                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within 5 blocks prior to this call
     """
     @sp.entry_point
     def redeem(self, params):
@@ -51,6 +64,13 @@ class CTokenInterface(sp.Contract):
         dev: Accrues interest if the operation succeeds, unless reverted
 
         params: TNat - The amount of underlying to redeem
+
+        requirements:
+            CToken:
+                accrueInterest() should be executed within 5 blocks prior to this call
+            comptroller:
+                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within 5 blocks prior to this call
     """
     @sp.entry_point
     def redeemUnderlying(self, params):
@@ -61,6 +81,13 @@ class CTokenInterface(sp.Contract):
         Sender borrows assets from the protocol to their own address
 
         params: TNat - The amount of the underlying asset to borrow
+
+        requirements:
+            cToken: 
+                accrueInterest() should be executed within 5 blocks prior to this call
+            comptroller:
+                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within 5 blocks prior to this call
     """
     @sp.entry_point
     def borrow(self, params):
@@ -71,6 +98,9 @@ class CTokenInterface(sp.Contract):
         Sender repays their own borrow
 
         params: TNat - The amount to repay
+
+        requirements: 
+            accrueInterest() should be executed within 5 blocks prior to this call
     """
     @sp.entry_point
     def repayBorrow(self, params):
@@ -82,24 +112,13 @@ class CTokenInterface(sp.Contract):
 
         params: TRecord
             borrower: TAddress - The account with the debt being payed off
-            repayAmount: TNat - The amount to repa
+            repayAmount: TNat - The amount to repay
+        
+        requirements:
+            accrueInterest() should be executed within 5 blocks prior to this call
     """
     @sp.entry_point
     def repayBorrowBehalf(self, params):
-        pass
-    
-
-    """    
-        The sender liquidates the borrowers collateral.
-        The collateral seized is transferred to the liquidator.
-
-        params: TRecord
-            borrower: TAddress - The borrower of this cToken to be liquidated
-            cTokenCollateral: TAddress - Contract address of the market in which to seize collateral from the borrower
-            repayAmount: TNat - The amount of the underlying borrowed asset to repay
-    """
-    @sp.entry_point
-    def liquidateBorrow(self, params):
         pass
 
 
@@ -110,6 +129,11 @@ class CTokenInterface(sp.Contract):
             from_: TAddress - The address of the source account
             to_: TAddress - The address of the destination account
             value: TNat - The number of tokens to transfer
+        
+        requirements:
+            comptroller:
+                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within 5 blocks prior to this call
     """
     @sp.entry_point
     def transfer(self, params):
@@ -267,23 +291,18 @@ class CTokenInterface(sp.Contract):
         pass
 
 
+        
+    # Admin Functions
     """    
-        Transfers collateral tokens (this market) to the liquidator.
+        # Set the number of blocks since the last accrue interest update is valid
 
-        dev: Will fail unless called by Comptroller during the process of liquidation.
-
-        params: TRecord
-            liquidator: TAddress - The account receiving seized collateral
-            borrower: TAddress - The account having collateral seized
-            seizeTokens: TNat - The number of cTokens to seize
+        blockNumber: TNat
     """
     @sp.entry_point
-    def seize(self, params):
+    def setAccrualIntPeriodRelevance(self, blockNumber):
         pass
 
 
-        
-    # Admin Functions
     """    
         Sets a new pending governance for the market
 
