@@ -352,13 +352,17 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.utils.view(CTI.TAccountSnapshot)
     def getAccountSnapshot(self, params):
-        self.verifyAccruedInterestRelevance()
-        accSnapshot = sp.record(
-            account = params,
-            cTokenBalance = self.data.balances[params].balance, 
-            borrowBalance = self.getBorrowBalance(params),
-            exchangeRateMantissa = self.exchangeRateStoredImpl()
-        )
+        accSnapshot = sp.compute(sp.record(
+                account = params,
+                cTokenBalance = sp.nat(0), 
+                borrowBalance = sp.nat(0),
+                exchangeRateMantissa = sp.nat(0)
+            ))
+        sp.if self.data.balances.contains(params):
+            self.verifyAccruedInterestRelevance()
+            accSnapshot.cTokenBalance = self.data.balances[params].balance
+            accSnapshot.borrowBalance = self.getBorrowBalance(params)
+            accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
         sp.result(accSnapshot)
 
 

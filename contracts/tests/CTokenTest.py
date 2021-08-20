@@ -77,6 +77,12 @@ def test():
     scenario.h2("Try borrow when there is no cash")
     scenario += c1.borrow(100).run(sender=alice, level=bLevel.next(), valid=False)
 
+    scenario.h2("Test getAccountSnapshot for nonexistent account")
+    scenario += c1.updateAccountSnapshot(bob.address).run(sender = bob, level = bLevel.current())
+    scenario.verify(c1.data.accCTokenBalance == sp.nat(0))
+    scenario.verify(c1.data.accBorrowBalance == sp.nat(0))
+    scenario.verify(c1.data.accExchangeRateMantissa == sp.nat(0))    
+
     scenario.h2("Test mint")
     scenario.h3("Mint allowed")
     DataRelevance.validateAccrueInterestRelevance(scenario, "mint", bLevel, alice, c1, c1.mint, 100)
