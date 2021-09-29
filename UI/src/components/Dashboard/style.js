@@ -1,0 +1,23 @@
+import { makeStyles } from '@mui/styles';
+
+export const useStyles = makeStyles({
+  dashboard: {
+    background: '#fff',
+    // padding: '8px 64px 100px',
+    padding: '0px 6.25rem 4rem',
+  },
+   '@media(min-width: 1024px)': {
+      paddingLeft: {
+        paddingLeft: '1.875rem'
+      },
+      paddingRight: {
+        paddingRight: '1.875rem'
+      },
+    },
+    tableTitle: {
+      padding: ' 1.5rem 0 .5rem',
+      fontSize: '1.25rem',
+      fontWeight: '500',
+      lineHeight: '30px',
+    }
+})
