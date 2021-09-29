@@ -1,0 +1,39 @@
+import React from 'react';
+
+import { Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+
+import BasicTable from '../../components/Table';
+import { useStyles } from './style';
+
+function Dashboard() {
+  const classes = useStyles();
+
+  return (
+    <Grid container className={classes.dashboard}>
+        {/* <Grid md={12}>
+        </Grid> */}
+      <Grid item xs={12} md={6} className={classes.paddingRight}>
+        <Typography className={classes.tableTitle}> Supply Markets </Typography>
+        <BasicTable
+          heading1 = "Token"
+          heading2 = "APY"
+          heading3 = "Wallet"
+          heading4 = "Collateral"
+          toggle
+        />
+      </Grid>
+      <Grid item xs={12} md={6} className={classes.paddingLeft}>
+        <Typography className={classes.tableTitle}> Borrow Markets </Typography>
+        <BasicTable
+          heading1 = "Token"
+          heading2 = "APY"
+          heading3 = "Wallet"
+          heading4 = "Liquidity"
+        />
+      </Grid>
+    </Grid>
+  )
+}
+
+export default Dashboard;
