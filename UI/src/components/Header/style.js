@@ -27,6 +27,15 @@ export const useStyles = makeStyles({
   tezHeader: {
     paddingLeft: '2.6875rem',
     paddingTop: '1.625rem',
+    '@media(max-width: 1024px)': {
+      width: '18.75rem',
+    },
+    '@media(max-width: 768px)': {
+      width: '12.5rem',
+    },
+    '@media(max-width: 320px)': {
+      width: '10rem',
+    },
   },
   linkCon: {
     paddingTop: '2.25rem',
@@ -43,9 +52,18 @@ export const useStyles = makeStyles({
   },
   padding100: {
     paddingLeft: '6.25rem',
+    '@media(max-width: 501px)': {
+    paddingLeft: '1.875rem',
+    },
   },
   padding30: {
     paddingLeft: '1.875rem',
+    '@media(max-width: 768px)': {
+      paddingLeft: '6.255rem',
+      },
+    '@media(max-width: 501px)': {
+      paddingLeft: '1.875rem',
+      },
   },
   borderRight: {
     borderRight: '1px solid #BDBDBD',
@@ -65,7 +83,14 @@ export const useStyles = makeStyles({
     paddingTop: '7px',
     '@media(max-width: 1024px)': {
       width: '100%',
+    },
+    '@media(max-width: 768px)': {
+      width: '75%',
     }
+  },
+  box: {
+    paddingTop: '55px',
+    paddingBottom: '25px',
   }
 });
 
