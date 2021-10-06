@@ -20,18 +20,18 @@ const Header = () => {
   return (
     <HeaderCon className={classes1.root}>
       <Grid container justify="center" alignItems="center" md={12}>
-        <Grid item md={3}>
+        <Grid item sm={4} lg={3}>
           {/* <Title className={classes1.content}> Tezfin </Title> */}
           <img src={tezHeader} alt={tezHeader} className={classes.tezHeader}/>
         </Grid>
-        <Grid container item md={6} textAlign="center" className={classes.linkCon}>
-          <Grid item md={3}>
+        <Grid container item sm={6} md={5} lg={6} textAlign="center" className={classes.linkCon}>
+          <Grid item md={4} lg={4}>
             <Link to="dashboard" className={classes.link}> Dashboard </Link>
           </Grid>
-          <Grid item md={3}>
+          <Grid item md={4} lg={4}>
             <Link to="market" className={classes.link}> Market </Link>
           </Grid>
-          <Grid item md={3}>
+          <Grid item md={4} lg={4}>
             <Link to="about" className={classes.link}> About </Link>
           </Grid>
         </Grid>
@@ -52,9 +52,9 @@ const Header = () => {
           <Box className={classes.progressBar}>
             <CustomizedProgressBars />
           </Box>
-          <Box sx={{ paddingTop: '55px' }}>
+          <Box sx={{ paddingTop: '55px' }} className={classes.box}>
             <Grid container xs={12}>
-              <Grid container item md={5} lg={3} className={classes.borderRight}>
+              <Grid container item xs={12} sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
                     <img src={carbonGrowth} alt={"growth"} />
                 </Grid>
@@ -65,8 +65,8 @@ const Header = () => {
                   </Box>
                 </Grid>
               </Grid>
-              <Grid md={1}></Grid>
-              <Grid container item md={6} lg={4}>
+              <Grid sm={1}></Grid>
+              <Grid container item xs={12} sm={6} lg={4}>
                 <Grid item>
                     <img src={checkmarkLock} alt={"checkmarkLock"} />
                 </Grid>
@@ -87,7 +87,7 @@ const Header = () => {
           </Box>
           <Box sx={{ paddingTop: '55px' }}>
             <Grid container xs={12}>
-              <Grid container item md={5} lg={3} className={classes.borderRight}>
+              <Grid container item sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
                     <img src={borrowing} alt={"borrowing icon"} />
                 </Grid>
@@ -98,8 +98,8 @@ const Header = () => {
                   </Box>
                 </Grid>
               </Grid>
-              <Grid md={1}></Grid>
-              <Grid container item md={6} lg={4}>
+              <Grid sm={1}></Grid>
+              <Grid container item sm={6} lg={4}>
                 <Grid item>
                     <img src={roundSpeed} alt={"roundSpeed"} />
                 </Grid>
