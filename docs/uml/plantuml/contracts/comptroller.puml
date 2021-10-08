@@ -1,0 +1,127 @@
+@startuml comptroller
+package Comptroller {
+  class Comptroller {
+    -- storage --
+    map(address => set(address)) account_assets
+    bool borrowAllowed()
+    address administrator
+    address pendingAdministrator
+    map(address -> TMarket) markets
+    map(string -> address) marketNameToAddress
+    bool transferPaused
+    map(address -> set(address)) account_assets
+    big_map(address -> TLiquidity) account_liquidity = sp.big_map(l={}, tkey = sp.TAddress, tvalue = TLiquidity), # Per-account mapping of current liquidity
+    oracleAddress = oracleAddress_,
+    activeOperations = sp.set(t=sp.TNat), # Set of currently active operations to protect execution flow
+    TCalculation calculation
+    nat closeFactorMantissa
+    nat liquidationIncentiveMantissa
+    nat pricePeriodRelevance
+    nat liquidityPeriodRelevance
+    -- entry points --
+    +enterMarkets(cTokens: list(address))
+    -addToMarketInternal(ctoken: address, borrower: address)
+    +exitMarket(ctoken: address)
+    +setAccountSnapAndExitMarket(accountSnapshot: CToken.TAccountSnapshot)
+    +mintAllowed(ctoken: address, minter: address, mintAmount: nat)
+    +redeemAllowed(ctoken: address, redeemer: address, redeemAmount: nat)
+    -redeemAllowedInternal(ctoken: address, redeemer: address, redeemAmount: nat)
+    -checkInsufficientLquidityInternal(ctoken: address, account: address, amount: nat)
+    +borrowAllowed(ctoken: address, borrower: address, borrowAmount: nat)
+    -checkPriceErrors(ctoken: address)
+    +repayBorrowAllowed(ctoken: address, payer: address, borrower: address, repayAmount: nat)
+    +transferAllowed(ctoken: address, src: address, dst: address, transferTokens: nat)
+    +updateAssetPrice(asset: address)
+    +setAssetPrice((assetName, pricePair): (string, Oracle.TSetPricePriceParams))
+    -getAssetPrice(asset: address)
+    +updateAccountLiduiqity(account: address)
+    +setAccountLiquidity()
+    +getHypoAccountLiquidity(data: TAccountLiquidityParams, callback: contract(int))
+    +int returnHypoAccountLiquidity()
+    -calcluateCurrentAccountLiquidity(account: address)
+    -calcluateAccountLiquidity(account: address)
+    -initCalculation(cTokenModify: address, account: address, redeemTokens: , borrowAmount: )
+    -resetCalculation()
+    -getAccountLiquidityForAsset(asset: address, account: address)
+    +calculateAccountAssetLiquidity(params: TAccountSnapshot)
+    +setPricePeriodRelevance(blockNumber: nat)
+    +setLiquidityPeriodRelevance(blockNumber: nat)
+    +setPendingGovernance(pendingAdministrator: address)
+    +acceptGovernance()
+    +setMintPaused(cToken: address, state: bool)
+    +setBorrowPaused(cToken: address, state: bool)
+    +setTransferPaused(state: bool)
+    +setPriceOracle(priceOracle: address)
+    +setCloseFactor(closeFactorMantissa: nat)
+    +setCollateralFactor(cToken: address, newCollateralFactor: nat)
+    +setLiquidationIncentive(liquidationIncentiveMantissa: nat)
+    +supportMarket(cToken: address, name: string)
+    +disableMarket(cToken: address)
+    +setMarketBorrowCap(cToken: address, newBorrowCap: nat)
+    -- helpers --
+    -verifyMarketExists(token: address)
+    -verifyMarketExists(token: address)
+    -verifyMarketNotListed(token: address)
+    -verifyAdministrator()
+    -verifyInternal()
+    -verifyLiquidityCorrect(account: address)
+    -invalidateLiquidity(account: address)
+  }
+
+  class TMarket {
+    Exponential.TExp collateralFactor
+    big_map(address -> bool) accountMembership
+    bool mintPaused
+    bool borrowPaused
+    string name
+    Exponential.TExp price
+    nat updateLevel
+    nat borrowCap
+  }
+
+  class TLiquidity {
+    int liquidity
+    nat updateLevel
+    bool valid
+  }
+
+  class TCalculation {
+    nat sumBorrowPlusEffects
+    nat sumCollateral
+    some(address) cTokenModify
+    some(address) account
+    nat redeemToken
+    nat borrowAmount
+  }
+
+  class TAccountLiquidityParams {
+    address cTokenModify
+    address account
+    nat redeemTokens
+    nat borrowAmount
+  }
+
+}
+
+package Oracle {
+  class Oracle.SetPriceParam {
+    TTimestamp timestamp
+    nat price
+  }
+}
+
+package Exponential {
+  class Exponential.TExp {
+    nat mantissa
+  }
+}
+
+package CToken {
+  class CToken.TAccountSnapshot {
+    address account
+    nat cTokenBalance
+    nat borrowBalance
+    nat exchangeRateMantissa
+  }
+}
+@enduml

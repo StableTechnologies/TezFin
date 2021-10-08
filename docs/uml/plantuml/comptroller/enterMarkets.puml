@@ -1,0 +1,9 @@
+@startuml
+actor User
+participant Comptroller
+
+User -> Comptroller : enterMarkets(cTokens)
+loop for token in cTokens
+    Comptroller -> Comptroller : addToMarketInternal(cToken = token, borrower = sp.sender)
+end
+@enduml

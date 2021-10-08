@@ -1,0 +1,21 @@
+@startuml borrow
+actor User
+participant CToken
+participant Comptroller
+
+User -> CToken : borrow(params)
+CToken -> CToken : verifyNotInternal()
+CToken -> CToken : verifyBorrowAllowed(borrower_ = sp.sender, borrowAmount_ = params)
+CToken -> CToken : addAddressIfNecessary(address = sp.sender)
+CToken -> Comptroller : borrowAllowed(cToken = sp.self_address, borrower = sp.sender, borrowAmount = params)
+Comptroller -> Comptroller : verifyMarketListed(cToken)
+Comptroller -> Comptroller : addToMarketInternal(cToken = sp.sender, borrower = borrower)
+Comptroller -> Comptroller : checkInsufficientLiquidityInternal(cToken = cToken, account = borrower, amount = borrowAmount)
+Comptroller -> Comptroller : invalidateLiquidity(borrower)
+CToken -> CToken : borrowInternal(borrower = sp.sender, borrowAmount = params)
+CToken -> CToken : checkCash(borrowAmount)
+CToken -> CToken : verifyAccrueInterestRelevance()
+CToken -> CToken : doTransferOut(to_: borrower, amount: borrowAmount)
+CToken -> CToken : invalidateAccrueInterest()
+
+@enduml

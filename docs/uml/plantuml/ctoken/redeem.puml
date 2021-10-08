@@ -1,0 +1,23 @@
+@startuml redeem
+Actor User
+participant CToken
+participant Comptroller
+
+User -> CToken : redeem(params)
+CToken -> CToken : verifyNotInternal()
+CToken -> CToken : verifyRedeemAllowed(redeemer_ = sp.sender, redeemAmount_ = params)
+CToken -> Comptroller : redeemAllowed(cToken = sp.self_address, redeemer = redeemer_, redeemAmount = redeemAmount_)
+Comptroller -> Comptroller : redeemAllowedInternal(cToken = sp.self_address, redeemer = redeemer, redeemAmount = redeemAmount)
+Comptroller -> Comptroller : verifyMarketListed(cToken)
+alt if market.accountMembership.contains(redeemer) & market.accountMembership[redeemer]
+    Comptroller -> Comptroller : checkInsuffLiquidityInternal(cToken = cToken, account = redeemer, amount = redeemAmount)
+end
+Comptroller -> Comptroller : invalidateLiquidity(redeemer)
+CToken -> CToken : redeemInternal(redeemer = sp.sender, redeemAmount = params, isUnderlying = true)
+CToken -> CToken : getRedeemAmount(amount = redeemAmount, isUnderlying = isUnderlying)
+CToken -> CToken : getRedeemTokens(amount = redeemAmount, isUnderlying = isUnderlying)
+CToken -> CToken : checkCash(amount = redeemAmount)
+CToken -> CToken : verifyAccruedInterestRelevance()
+CToken -> CToken : doTransferOut(to_ = redeemer, amount = redeemAmount)
+CToken -> CToken : invalidateAccruedInterest()
+@enduml

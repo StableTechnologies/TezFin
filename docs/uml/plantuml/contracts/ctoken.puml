@@ -1,0 +1,111 @@
+@startuml
+package CToken {
+    class CToken {
+        --storage--
+        big_map(address -> TBalance) balances
+        nat totalSupply
+        nat borrowRateMaxMantissa
+        nat reserveFactorMaxMantissa
+        address comptroller
+        address interestRateModel
+        nat initialExchangeRateMantissa
+        nat reserveFactorMantissa
+        nat accrualBlockNumber
+        bool isAccrualInterestValid
+        nat borrowIndex
+        nat totalBorrows
+        nat totalReserves
+        nat borrowRatePerBlock
+        nat supplyRatePerBlock
+        address administrator
+        some(address) pendingAdministrator
+        set(nat) activeOperations
+        nat accrualIntPeriodRelevance
+        --entry points--
+        +mint(params: nat)
+        -mintInternal(minter: address, mintAmount: nat)
+        +verifyMintAllowed(minter_: address, mintAmount_: nat)
+        +getMintTokens(mintAmount: nat)
+        +doTransferIn(from_: address, amount: nat)
+        +redeem(params: nat)
+        +redeemUnderlying(params: nat)
+        -redeemInternal(redeemer: address, redeemAmount: nat, isUnderlying: bool)
+        +verifyRedeemAllowed(redeemer_: address, redeemAmount_: nat)
+        +doTransferOut(to_: address, amount: nat, isContract: bool)
+        +borrow(params: nat)
+        -borrowInternal(borrower: address, borrowAmount: nat)
+        +verifyBorrowAllowed(borrower_: address, borrowAmount_: nat)
+        +repayBorrow(params: nat)
+        +repayBorrowBehalf(borrower: address, repayAmount: nat)
+        -repayBorrowInternal(payer: address, borrower: address, repayAmount: nat)
+        +verifyRepayBorrowAllowed(payer_: address, borrower_: address, repayAmount_: nat)
+        +transfer(from_: address, to_: address, value: nat)
+        -transferInternal(from_: address, to_: address, value: nat, sender: address)
+        +verifyTransferAllowed(src_: address, dst_: address, transferTokens_: nat)
+        +addAddressIfNecessary(address: address)
+        +approve(spender: address, value: nat)
+        +nat getBalance(params: address)
+        +nat getBalanceOfUnderlying(params: address)
+        +nat getTotalSupply()
+        +nat getAllowance(owner: address, spender: address)
+        +TAccountSnapshot getAccountSnapshot(params: address)
+        +updateBorrowRatePerBlock()
+        -updateBorrowRateInternal()
+        +setBorrowRatePerBlock(value: nat)
+        +updateSupplyRatePerBlock()
+        -updateSupplyRateInternal()
+        +setSupplyRatePerBlock(value: nat)
+        +nat borrowBalanceStored(params: address)
+        -getBorrowBalance(account: address)
+        +nat exchangeRateStored()
+        -nat exchangeRateStoredImpl()
+        -exchangeRateAdjusted(adjustment)
+        +nat getCash()
+        -getCashImpl()
+        -updateCash()
+        +accrueInterest()
+        -accrueInterestInternal()
+        -invalidateAccruedInterest()
+        +doAccrueInterest(borrowRateMantissa: nat)
+        +setAccrualIntPeriodRelevance(blockNumber: nat)
+        +setPendingGovernance(pendingAdminAddress: address)
+        +acceptGovernance()
+        +removePendingGovernance()
+        +setComptroller(comptrollerAddress: address)
+        +setInterestRateModel(interestRateModelAddress: address)
+        +setInterestRateModelInternal(interestRateModelAddress: address)
+        +setReserveFactor(newReserveFactor: nat)
+        +setReserveFactorInternal(newReserveFactor: nat)
+        +addReserves(amount: nat)
+        +addReservesInternal(originalSender: address, addAmount: nat)
+        +reduceReserves(amount: nat)
+        +reduceReservesInternal(amount)
+        --helpers--
+        -verifyAdministrator()
+        -checkCash(amount: nat)
+        -verifyAccruedInterestRelevance()
+        -verifyInternal()
+        -verifyNotInternal()
+        -verifyIRM()
+        -getActualAmount(amount: nat, isUnderlying: bool, adjustment: nat)
+        -getRedeemAmount(amount: nat, isUnderlying: bool)
+    }
+
+    class TBalance {
+        map(address -> nat) approvals
+        Comptroller.TBorrowSnapshot accountBorrows
+        nat balance
+
+    }
+    class TAccountSnapshot {
+        address account
+        nat cTokenBalance
+        nat borrowBalance
+        nat exchangeRateMantissa
+    }
+    class TBorrowSnapshot {
+        nat principal
+        nat interestIndex
+    }
+}
+@enduml

@@ -1,0 +1,17 @@
+@startuml mint
+Actor User
+participant CToken
+participant Comptroller
+
+User -> CToken : mint(params)
+CToken -> CToken : verifyNotInternal()
+CToken -> CToken : verifyMintAllowed(minter_: sp.sender, mintAmount_: params)
+CToken -> Comptroller : mintAllowed(cToken = sp.self_address, minter = minter_, mintAmount = mintAmount_)
+Comptroller -> Comptroller : verifyMarketListed(cToken)
+Comptroller -> Comptroller : invalidateLiquidity(minter)
+CToken -> CToken : mintInternal(minter = sp.sender, mintAmount = params)
+CToken -> CToken : verifyAccruedInterestRelevance(borrower)
+CToken -> CToken : doTransferIn(from_ = minter, amount = mintAmount)
+CToken -> CToken : getMintTokens(mintAmount)
+CToken -> CToken : invalidateAccruedInterest()
+@enduml

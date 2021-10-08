@@ -1,0 +1,14 @@
+@startuml
+actor User
+participant Comptroller
+participant CToken
+
+User -> Comptroller : exitMarket(cToken)
+Comptroller -> CToken : getAccountSnapshot(sp.sender)
+CToken -> CToken : verifyAccrueItnerestRelevance()
+CToken -> CToken : getBorrowBalance(params)
+CToken -> CToken : exchangeRateStoredImpl()
+CToken -> Comptroller : setAccountSnapAndExitMarket(account = params, cTokenBalance = self.data.balances[params].balance, borrowBalance = self.getBorrowBalance(params), exchangeRateMantissa = self.exchangeRateStoredImpl())
+Comptroller -> Comptroller : redeemAllowedInternal(cToken = sp.sender, redeemer = accSnapshot.account, redeemAmount = accSnapshot.cTokenBalance)
+Comptroller -> Comptroller : invalidateLiquidity(accountSnapshot.account)
+@enduml

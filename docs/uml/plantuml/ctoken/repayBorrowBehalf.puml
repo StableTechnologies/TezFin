@@ -1,0 +1,18 @@
+@startuml repayBorrowBehalf
+actor User
+participant CToken
+participant Comptroller
+
+User -> CToken : repayBorrowBehalf(borrower, repayAmount)
+CToken -> CToken : verifyNotInternal()
+CToken -> CToken : verifyRepayBorrowAllowed(payer = sp.sender, borrower = borrower, repayAmount = repayAmount)
+CToken -> Comptroller : repayBorrowAllowed(cToken = sp.self_address, payer = sp.sender, borrower = borrower, repayAmount = repayAmount)
+Comptroller -> Comptroller : verifyMarketListed(cToken)
+Comptroller -> Comptroller : invalidateLiquidity(payer)
+Comptroller -> Comptroller : invalidateLiquidity(borrower)
+CToken -> CToken : repayBorrowInternal(payer = sp.sender, borrower = borrower, repayAmount = repayAmount)
+CToken -> CToken : verifyAccruedInterestRelevance()
+CToken -> CToken : getBorrowBalance(borrower)
+CToken -> CToken : doTransferIn(from_ = payer, amount = repayAmount)
+CToken -> CToken : invalidateAccruedInterest()
+@enduml
