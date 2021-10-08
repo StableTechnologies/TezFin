@@ -1,0 +1,1 @@
+(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), sp.record(accountMembership = {}, borrowCap = 0, borrowPaused = True, collateralFactor = sp.record(mantissa = 1000000000000000000), isListed = True, mintPaused = True, name = 'm4', price = sp.record(mantissa = 0), updateLevel = 0))

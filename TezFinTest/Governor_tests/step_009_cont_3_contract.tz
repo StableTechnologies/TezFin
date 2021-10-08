@@ -1,0 +1,348 @@
+parameter (or (or (pair %approve (address %spender) (nat %value)) (pair %getBalance address (contract nat))) (or (pair %mint (address %address) (nat %value)) (pair %transfer (address %from) (pair (address %to) (nat %value)))));
+storage   (big_map address (pair (map %approvals address nat) (nat %balance)));
+code
+  {
+    CAST (pair (or (or (pair address nat) (pair address (contract nat))) (or (pair address nat) (pair address (pair address nat)))) (big_map address (pair (map address nat) nat))); # pair (or (or (pair address nat) (pair address (contract nat))) (or (pair address nat) (pair address (pair address nat)))) (big_map address (pair (map address nat) nat))
+    UNPAIR;     # or (or (pair address nat) (pair address (contract nat))) (or (pair address nat) (pair address (pair address nat))) : big_map address (pair (map address nat) nat)
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            SWAP;       # big_map address (pair (map address nat) nat) : pair address nat
+            # == approve ==
+            # self.data.balances[sp.sender].approvals[params.spender] = params.value # big_map address (pair (map address nat) nat) : pair address nat
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            SENDER;     # @sender : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            DUP;        # @sender : @sender : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            DUG 2;      # @sender : big_map address (pair (map address nat) nat) : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            GET;        # option (pair (map address nat) nat) : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            IF_NONE
+              {
+                PUSH int 26; # int : @sender : big_map address (pair (map address nat) nat) : pair address nat
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            DUP;        # @some : @some : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            CAR;        # map address nat : @some : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            DUP 5;      # pair address nat : map address nat : @some : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            CDR;        # nat : map address nat : @some : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            SOME;       # option nat : map address nat : @some : @sender : big_map address (pair (map address nat) nat) : pair address nat
+            DIG 5;      # pair address nat : option nat : map address nat : @some : @sender : big_map address (pair (map address nat) nat)
+            CAR;        # address : option nat : map address nat : @some : @sender : big_map address (pair (map address nat) nat)
+            UPDATE;     # map address nat : @some : @sender : big_map address (pair (map address nat) nat)
+            UPDATE 1;   # @some : @sender : big_map address (pair (map address nat) nat)
+            SOME;       # option (pair (map address nat) nat) : @sender : big_map address (pair (map address nat) nat)
+            SWAP;       # @sender : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            UPDATE;     # big_map address (pair (map address nat) nat)
+            NIL operation; # list operation : big_map address (pair (map address nat) nat)
+          }
+          {
+            SWAP;       # big_map address (pair (map address nat) nat) : pair address (contract nat)
+            # == getBalance ==
+            # sp.result(self.data.balances[sp.fst(params)].balance) # big_map address (pair (map address nat) nat) : pair address (contract nat)
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (contract nat)
+            DUG 2;      # big_map address (pair (map address nat) nat) : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            SWAP;       # pair address (contract nat) : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            DUP;        # pair address (contract nat) : pair address (contract nat) : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            DUG 2;      # pair address (contract nat) : big_map address (pair (map address nat) nat) : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            CAR;        # address : big_map address (pair (map address nat) nat) : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            GET;        # option (pair (map address nat) nat) : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            IF_NONE
+              {
+                PUSH int 40; # int : pair address (contract nat) : big_map address (pair (map address nat) nat)
+                FAILWITH;   # FAILED
+              }
+              {
+                # of_some: Get-item:40 # @some : pair address (contract nat) : big_map address (pair (map address nat) nat)
+              }; # @some : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            CDR;        # nat : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            # sp.transfer(__s10.value, sp.tez(0), sp.snd(params)) # nat : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            NIL operation; # list operation : nat : pair address (contract nat) : big_map address (pair (map address nat) nat)
+            DIG 2;      # pair address (contract nat) : list operation : nat : big_map address (pair (map address nat) nat)
+            CDR;        # contract nat : list operation : nat : big_map address (pair (map address nat) nat)
+            PUSH mutez 0; # mutez : contract nat : list operation : nat : big_map address (pair (map address nat) nat)
+            DIG 3;      # nat : mutez : contract nat : list operation : big_map address (pair (map address nat) nat)
+            TRANSFER_TOKENS; # operation : list operation : big_map address (pair (map address nat) nat)
+            CONS;       # list operation : big_map address (pair (map address nat) nat)
+          }; # list operation : big_map address (pair (map address nat) nat)
+      }
+      {
+        IF_LEFT
+          {
+            SWAP;       # big_map address (pair (map address nat) nat) : pair address nat
+            # == mint ==
+            # if ~ (self.data.balances.contains(params.address)): # big_map address (pair (map address nat) nat) : pair address nat
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            DUG 2;      # big_map address (pair (map address nat) nat) : pair address nat : big_map address (pair (map address nat) nat)
+            SWAP;       # pair address nat : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            DUP;        # pair address nat : pair address nat : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            DUG 2;      # pair address nat : big_map address (pair (map address nat) nat) : pair address nat : big_map address (pair (map address nat) nat)
+            CAR;        # address : big_map address (pair (map address nat) nat) : pair address nat : big_map address (pair (map address nat) nat)
+            MEM;        # bool : pair address nat : big_map address (pair (map address nat) nat)
+            IF
+              {}
+              {
+                SWAP;       # big_map address (pair (map address nat) nat) : pair address nat
+                # self.data.balances[params.address] = sp.record(approvals = {}, balance = 0) # big_map address (pair (map address nat) nat) : pair address nat
+                PUSH (option (pair (map address nat) nat)) (Some (Pair {} 0)); # option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+                DUP 3;      # pair address nat : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+                CAR;        # address : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+                UPDATE;     # big_map address (pair (map address nat) nat) : pair address nat
+                SWAP;       # pair address nat : big_map address (pair (map address nat) nat)
+              }; # pair address nat : big_map address (pair (map address nat) nat)
+            SWAP;       # big_map address (pair (map address nat) nat) : pair address nat
+            # self.data.balances[params.address].balance += params.value # big_map address (pair (map address nat) nat) : pair address nat
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            DUP 3;      # pair address nat : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            CAR;        # address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            DUP;        # address : address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address nat
+            DUG 2;      # address : big_map address (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address nat
+            GET;        # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address nat
+            IF_NONE
+              {
+                PUSH int 36; # int : address : big_map address (pair (map address nat) nat) : pair address nat
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : address : big_map address (pair (map address nat) nat) : pair address nat
+            DUP;        # @some : @some : address : big_map address (pair (map address nat) nat) : pair address nat
+            CDR;        # nat : @some : address : big_map address (pair (map address nat) nat) : pair address nat
+            DIG 4;      # pair address nat : nat : @some : address : big_map address (pair (map address nat) nat)
+            CDR;        # nat : nat : @some : address : big_map address (pair (map address nat) nat)
+            ADD;        # nat : @some : address : big_map address (pair (map address nat) nat)
+            UPDATE 2;   # @some : address : big_map address (pair (map address nat) nat)
+            SOME;       # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat)
+            SWAP;       # address : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            UPDATE;     # big_map address (pair (map address nat) nat)
+          }
+          {
+            # == transfer ==
+            # sp.verify((params.from_ == sp.sender) | (self.data.balances[params.from_].approvals[sp.sender] >= params.value)) # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP;        # pair address (pair address nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            CAR;        # address : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            SENDER;     # @sender : address : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            COMPARE;    # int : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            EQ;         # bool : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            IF
+              {
+                PUSH bool True; # bool : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+              }
+              {
+                DUP;        # pair address (pair address nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                GET 4;      # nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUP 3;      # big_map address (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUP 3;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                CAR;        # address : big_map address (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                GET;        # option (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                IF_NONE
+                  {
+                    PUSH int 12; # int : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                    FAILWITH;   # FAILED
+                  }
+                  {
+                    # of_some: Get-item:12 # @some : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                  }; # @some : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                CAR;        # map address nat : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                SENDER;     # @sender : map address nat : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                GET;        # option nat : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                IF_NONE
+                  {
+                    PUSH int 12; # int : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                    FAILWITH;   # FAILED
+                  }
+                  {
+                    # of_some: Get-item:12 # @some : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                  }; # @some : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                COMPARE;    # int : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                GE;         # bool : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+              }; # bool : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            IF
+              {}
+              {
+                PUSH string "WrongCondition: (params.from_ == sp.sender) | (self.data.balances[params.from_].approvals[sp.sender] >= params.value)"; # string : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                FAILWITH;   # FAILED
+              }; # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            SWAP;       # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            # if ~ (self.data.balances.contains(params.to_)): # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUG 2;      # big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            SWAP;       # pair address (pair address nat) : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            DUP;        # pair address (pair address nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+            DUG 2;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            GET 3;      # address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            MEM;        # bool : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            IF
+              {}
+              {
+                SWAP;       # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                # self.data.balances[params.to_] = sp.record(approvals = {}, balance = 0) # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                PUSH (option (pair (map address nat) nat)) (Some (Pair {} 0)); # option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                DUP 3;      # pair address (pair address nat) : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                GET 3;      # address : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                UPDATE;     # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                SWAP;       # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+              }; # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            # sp.verify(self.data.balances[params.from_].balance >= params.value) # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP;        # pair address (pair address nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            GET 4;      # nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP 3;      # big_map address (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP 3;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            CAR;        # address : big_map address (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            GET;        # option (pair (map address nat) nat) : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            IF_NONE
+              {
+                PUSH int 14; # int : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                FAILWITH;   # FAILED
+              }
+              {
+                # of_some: Get-item:14 # @some : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+              }; # @some : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            CDR;        # nat : nat : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            COMPARE;    # int : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            GE;         # bool : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            IF
+              {}
+              {
+                PUSH string "WrongCondition: self.data.balances[params.from_].balance >= params.value"; # string : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                FAILWITH;   # FAILED
+              }; # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            SWAP;       # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            # self.data.balances[params.from_].balance = sp.as_nat(self.data.balances[params.from_].balance - params.value) # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUG 2;      # big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP 3;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            CAR;        # address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP;        # address : address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUG 2;      # address : big_map address (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            GET;        # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            IF_NONE
+              {
+                PUSH int 15; # int : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP 4;      # pair address (pair address nat) : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            GET 4;      # nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DIG 5;      # big_map address (pair (map address nat) nat) : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP 6;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            CAR;        # address : big_map address (pair (map address nat) nat) : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            GET;        # option (pair (map address nat) nat) : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            IF_NONE
+              {
+                PUSH int 16; # int : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                FAILWITH;   # FAILED
+              }
+              {
+                # of_some: Get-item:16 # @some : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+              }; # @some : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            CDR;        # nat : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            SUB;        # int : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            ISNAT;      # option nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            IF_NONE
+              {
+                PUSH int 15; # int : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            UPDATE 2;   # @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            SOME;       # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            SWAP;       # address : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            UPDATE;     # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            # self.data.balances[params.to_].balance += params.value # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP 3;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            GET 3;      # address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP;        # address : address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUG 2;      # address : big_map address (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            GET;        # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            IF_NONE
+              {
+                PUSH int 17; # int : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP;        # @some : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            CDR;        # nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            DUP 5;      # pair address (pair address nat) : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            GET 4;      # nat : nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            ADD;        # nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            UPDATE 2;   # @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            SOME;       # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            SWAP;       # address : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            UPDATE;     # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+            SWAP;       # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            # if params.from_ != sp.sender: # pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            DUP;        # pair address (pair address nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            CAR;        # address : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            SENDER;     # @sender : address : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            COMPARE;    # int : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            NEQ;        # bool : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+            IF
+              {
+                SWAP;       # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                # self.data.balances[params.from_].approvals[sp.sender] = sp.as_nat(self.data.balances[params.from_].approvals[sp.sender] - params.value) # big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                DUG 2;      # big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUP;        # big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUP 3;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                CAR;        # address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUP;        # address : address : big_map address (pair (map address nat) nat) : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUG 2;      # address : big_map address (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                GET;        # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                IF_NONE
+                  {
+                    PUSH int 19; # int : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                    FAILWITH;   # FAILED
+                  }
+                  {}; # @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUP;        # @some : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                CAR;        # map address nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DUP 5;      # pair address (pair address nat) : map address nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                GET 4;      # nat : map address nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat) : big_map address (pair (map address nat) nat)
+                DIG 6;      # big_map address (pair (map address nat) nat) : nat : map address nat : @some : address : big_map address (pair (map address nat) nat) : pair address (pair address nat)
+                DIG 6;      # pair address (pair address nat) : big_map address (pair (map address nat) nat) : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                CAR;        # address : big_map address (pair (map address nat) nat) : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                GET;        # option (pair (map address nat) nat) : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                IF_NONE
+                  {
+                    PUSH int 20; # int : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                    FAILWITH;   # FAILED
+                  }
+                  {
+                    # of_some: Get-item:20 # @some : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                  }; # @some : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                CAR;        # map address nat : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                SENDER;     # @sender : map address nat : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                GET;        # option nat : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                IF_NONE
+                  {
+                    PUSH int 20; # int : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                    FAILWITH;   # FAILED
+                  }
+                  {
+                    # of_some: Get-item:20 # @some : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                  }; # @some : nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                SUB;        # int : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                ISNAT;      # option nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                IF_NONE
+                  {
+                    PUSH int 19; # int : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                    FAILWITH;   # FAILED
+                  }
+                  {}; # @some : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                SOME;       # option nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                SENDER;     # @sender : option nat : map address nat : @some : address : big_map address (pair (map address nat) nat)
+                UPDATE;     # map address nat : @some : address : big_map address (pair (map address nat) nat)
+                UPDATE 1;   # @some : address : big_map address (pair (map address nat) nat)
+                SOME;       # option (pair (map address nat) nat) : address : big_map address (pair (map address nat) nat)
+                SWAP;       # address : option (pair (map address nat) nat) : big_map address (pair (map address nat) nat)
+                UPDATE;     # big_map address (pair (map address nat) nat)
+              }
+              {
+                DROP;       # big_map address (pair (map address nat) nat)
+              }; # big_map address (pair (map address nat) nat)
+          }; # big_map address (pair (map address nat) nat)
+        NIL operation; # list operation : big_map address (pair (map address nat) nat)
+      }; # list operation : big_map address (pair (map address nat) nat)
+    PAIR;       # pair (list operation) (big_map address (pair (map address nat) nat))
+  };

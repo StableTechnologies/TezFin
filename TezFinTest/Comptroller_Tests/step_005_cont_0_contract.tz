@@ -1,0 +1,20 @@
+parameter (or (int %target) (int %targetInt));
+storage   (option int);
+code
+  {
+    CAST (pair (or int int) (option int)); # pair (or int int) (option int)
+    CAR;        # or int int
+    IF_LEFT
+      {
+        # == target ==
+        # self.data.last = sp.some(params) # int
+        SOME;       # option int
+      }
+      {
+        # == targetInt ==
+        # self.data.last = sp.some(params) # int
+        SOME;       # option int
+      }; # option int
+    NIL operation; # list operation : option int
+    PAIR;       # pair (list operation) (option int)
+  };

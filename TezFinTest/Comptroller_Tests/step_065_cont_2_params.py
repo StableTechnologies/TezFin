@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT11'), minter = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), mintAmount = 100)

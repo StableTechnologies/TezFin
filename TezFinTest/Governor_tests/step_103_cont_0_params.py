@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))

@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT10'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrowAmount = 100)

@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('tz1fZHA8wGmkouTiDs5jMkMXsuDDh5m6awAb'), newCollateralFactor = 2)

@@ -1,0 +1,1 @@
+sp.record(account = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrowBalance = 100, cTokenBalance = 0, exchangeRateMantissa = 1000000000000000000)

@@ -1,0 +1,1 @@
+sp.list([sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), sp.address('KT10')])

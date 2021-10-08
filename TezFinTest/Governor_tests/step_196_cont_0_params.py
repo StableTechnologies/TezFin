@@ -1,0 +1,1 @@
+sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), state = False)

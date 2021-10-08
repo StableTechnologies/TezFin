@@ -1,0 +1,47 @@
+parameter (or (or (unit %accrueInterest) (pair %getAccountSnapshot address (contract (pair (pair (address %account) (nat %borrowBalance)) (pair (nat %cTokenBalance) (nat %exchangeRateMantissa)))))) (or (pair %setAccountSnapshot (pair (address %account) (nat %borrowBalance)) (pair (nat %cTokenBalance) (nat %exchangeRateMantissa))) (address %setComptroller)));
+storage   (pair (address %comptroller) (pair %test_account_snapshot (pair (address %account) (nat %borrowBalance)) (pair (nat %cTokenBalance) (nat %exchangeRateMantissa))));
+code
+  {
+    CAST (pair (or (or unit (pair address (contract (pair (pair address nat) (pair nat nat))))) (or (pair (pair address nat) (pair nat nat)) address)) (pair address (pair (pair address nat) (pair nat nat)))); # pair (or (or unit (pair address (contract (pair (pair address nat) (pair nat nat))))) (or (pair (pair address nat) (pair nat nat)) address)) (pair address (pair (pair address nat) (pair nat nat)))
+    UNPAIR;     # or (or unit (pair address (contract (pair (pair address nat) (pair nat nat))))) (or (pair (pair address nat) (pair nat nat)) address) : pair address (pair (pair address nat) (pair nat nat))
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            DROP;       # pair address (pair (pair address nat) (pair nat nat))
+            # == accrueInterest == # pair address (pair (pair address nat) (pair nat nat))
+            NIL operation; # list operation : pair address (pair (pair address nat) (pair nat nat))
+          }
+          {
+            SWAP;       # pair address (pair (pair address nat) (pair nat nat)) : pair address (contract (pair (pair address nat) (pair nat nat)))
+            # == getAccountSnapshot ==
+            # sp.result(self.data.test_account_snapshot) # pair address (pair (pair address nat) (pair nat nat)) : pair address (contract (pair (pair address nat) (pair nat nat)))
+            DUP;        # pair address (pair (pair address nat) (pair nat nat)) : pair address (pair (pair address nat) (pair nat nat)) : pair address (contract (pair (pair address nat) (pair nat nat)))
+            DUG 2;      # pair address (pair (pair address nat) (pair nat nat)) : pair address (contract (pair (pair address nat) (pair nat nat))) : pair address (pair (pair address nat) (pair nat nat))
+            CDR;        # pair (pair address nat) (pair nat nat) : pair address (contract (pair (pair address nat) (pair nat nat))) : pair address (pair (pair address nat) (pair nat nat))
+            # sp.transfer(__s2.value, sp.tez(0), sp.snd(params)) # pair (pair address nat) (pair nat nat) : pair address (contract (pair (pair address nat) (pair nat nat))) : pair address (pair (pair address nat) (pair nat nat))
+            NIL operation; # list operation : pair (pair address nat) (pair nat nat) : pair address (contract (pair (pair address nat) (pair nat nat))) : pair address (pair (pair address nat) (pair nat nat))
+            DIG 2;      # pair address (contract (pair (pair address nat) (pair nat nat))) : list operation : pair (pair address nat) (pair nat nat) : pair address (pair (pair address nat) (pair nat nat))
+            CDR;        # contract (pair (pair address nat) (pair nat nat)) : list operation : pair (pair address nat) (pair nat nat) : pair address (pair (pair address nat) (pair nat nat))
+            PUSH mutez 0; # mutez : contract (pair (pair address nat) (pair nat nat)) : list operation : pair (pair address nat) (pair nat nat) : pair address (pair (pair address nat) (pair nat nat))
+            DIG 3;      # pair (pair address nat) (pair nat nat) : mutez : contract (pair (pair address nat) (pair nat nat)) : list operation : pair address (pair (pair address nat) (pair nat nat))
+            TRANSFER_TOKENS; # operation : list operation : pair address (pair (pair address nat) (pair nat nat))
+            CONS;       # list operation : pair address (pair (pair address nat) (pair nat nat))
+          }; # list operation : pair address (pair (pair address nat) (pair nat nat))
+      }
+      {
+        IF_LEFT
+          {
+            # == setAccountSnapshot ==
+            # self.data.test_account_snapshot = params # pair (pair address nat) (pair nat nat) : pair address (pair (pair address nat) (pair nat nat))
+            UPDATE 2;   # pair address (pair (pair address nat) (pair nat nat))
+          }
+          {
+            # == setComptroller ==
+            # self.data.comptroller = params # address : pair address (pair (pair address nat) (pair nat nat))
+            UPDATE 1;   # pair address (pair (pair address nat) (pair nat nat))
+          }; # pair address (pair (pair address nat) (pair nat nat))
+        NIL operation; # list operation : pair address (pair (pair address nat) (pair nat nat))
+      }; # list operation : pair address (pair (pair address nat) (pair nat nat))
+    PAIR;       # pair (list operation) (pair address (pair (pair address nat) (pair nat nat)))
+  };

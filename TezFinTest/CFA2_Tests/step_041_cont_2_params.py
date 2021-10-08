@@ -1,0 +1,1 @@
+sp.record(requests = sp.list([sp.record(owner = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), token_id = 0)]), callback = sp.contract(sp.TList(sp.TRecord(balance = sp.TNat, request = sp.TRecord(owner = sp.TAddress, token_id = sp.TNat).layout(("owner", "token_id"))).layout(("request", "balance"))), sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setCash')).open_some())

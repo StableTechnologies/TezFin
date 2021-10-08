@@ -1,0 +1,163 @@
+Table Of Contents
+
+ SweepTokens tests
+# Test sweep to account
+## sweepFA12
+## sweepFA12 insufficient
+## sweepMutez
+# Test sweep to contract
+## sweepFA12
+## sweepMutez
+Comment...
+ h1: SweepTokens tests
+Creating contract
+ -> {}
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_storage.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_storage.json 1
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_sizes.csv 2
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_storage.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_types.py 7
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_contract.tz 348
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_contract.json 384
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_contract.py 36
+ => ../TezFinTest/SweepTokens_Tests/step_002_cont_0_contract.py.html 2118
+Creating contract
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_storage.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_storage.json 1
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_sizes.csv 2
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_storage.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_types.py 7
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_contract.tz 131
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_contract.json 210
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_contract.py 28
+ => ../TezFinTest/SweepTokens_Tests/step_003_cont_1_contract.py.html 2108
+Comment...
+ h2: Test sweep to account
+Comment...
+ h3: sweepFA12
+ => ../TezFinTest/SweepTokens_Tests/step_006_cont_0_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_006_cont_0_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_006_cont_0_params.json 1
+Executing mint(sp.record(address = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), value = 1000))...
+ -> {Elt "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair {} 1000)}
+ => ../TezFinTest/SweepTokens_Tests/step_007_cont_1_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_007_cont_1_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_007_cont_1_params.json 1
+Executing sweepFA12(sp.record(amount = 600, tokenAddress = sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1')))...
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+  + Transfer
+     params: sp.record(from_ = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), to_ = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), value = 600)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%transfer')).open_some()
+Executing (queue) transfer(sp.record(from_ = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), to_ = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), value = 600))...
+ -> {Elt "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair {} 400); Elt "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {} 600)}
+Verifying sp.contract_data(0).balances[sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')].balance == 400...
+ OK
+Verifying sp.contract_data(0).balances[sp.to_constant(sp.test_account("admin").address)].balance == 600...
+ OK
+Comment...
+ h3: sweepFA12 insufficient
+ => ../TezFinTest/SweepTokens_Tests/step_011_cont_1_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_011_cont_1_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_011_cont_1_params.json 1
+Executing sweepFA12(sp.record(amount = 600, tokenAddress = sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1')))...
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+  + Transfer
+     params: sp.record(from_ = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), to_ = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), value = 600)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%transfer')).open_some()
+Executing (queue) transfer(sp.record(from_ = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), to_ = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), value = 600))...
+ -> --- Expected failure in transaction --- Wrong condition: (self.data.balances[params.from_].balance >= params.value : sp.TBool) (contracts/tests/mock/FA12Mock.py, line 14)
+ (contracts/tests/mock/FA12Mock.py, line 14)
+Comment...
+ h3: sweepMutez
+ => ../TezFinTest/SweepTokens_Tests/step_013_cont_1_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_013_cont_1_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_013_cont_1_params.json 1
+Executing verifyMutezBalance(100)...
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+ => ../TezFinTest/SweepTokens_Tests/step_014_cont_1_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_014_cont_1_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_014_cont_1_params.json 1
+Executing sweepMutez(False)...
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+  + Transfer
+     params: sp.unit
+     amount: sp.mutez(100)
+     to:     sp.contract(sp.TUnit, sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5')).open_some()
+ => ../TezFinTest/SweepTokens_Tests/step_015_cont_1_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_015_cont_1_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_015_cont_1_params.json 1
+Executing verifyMutezBalance(0)...
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+Comment...
+ h2: Test sweep to contract
+Creating contract
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_storage.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_storage.json 1
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_sizes.csv 2
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_storage.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_types.py 7
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_contract.tz 18
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_contract.json 16
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_contract.py 14
+ => ../TezFinTest/SweepTokens_Tests/step_017_cont_2_contract.py.html 2096
+Creating contract
+ -> "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H"
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_storage.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_storage.json 1
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_sizes.csv 2
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_storage.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_types.py 7
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_contract.tz 131
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_contract.json 210
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_contract.py 28
+ => ../TezFinTest/SweepTokens_Tests/step_018_cont_3_contract.py.html 2108
+Comment...
+ h3: sweepFA12
+ => ../TezFinTest/SweepTokens_Tests/step_020_cont_0_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_020_cont_0_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_020_cont_0_params.json 1
+Executing mint(sp.record(address = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), value = 500))...
+ -> {Elt "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair {} 400); Elt "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair {} 500); Elt "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {} 600)}
+ => ../TezFinTest/SweepTokens_Tests/step_021_cont_3_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_021_cont_3_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_021_cont_3_params.json 1
+Executing sweepFA12(sp.record(amount = 200, tokenAddress = sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1')))...
+ -> "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H"
+  + Transfer
+     params: sp.record(from_ = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), to_ = sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'), value = 200)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%transfer')).open_some()
+Executing (queue) transfer(sp.record(from_ = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), to_ = sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'), value = 200))...
+ -> {Elt "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair {} 400); Elt "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair {} 200); Elt "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair {} 300); Elt "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {} 600)}
+Verifying sp.contract_data(0).balances[sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC')].balance == 300...
+ OK
+Verifying sp.contract_data(0).balances[sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')].balance == 200...
+ OK
+Comment...
+ h3: sweepMutez
+ => ../TezFinTest/SweepTokens_Tests/step_025_cont_3_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_025_cont_3_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_025_cont_3_params.json 1
+Executing verifyMutezBalance(100)...
+ -> "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H"
+ => ../TezFinTest/SweepTokens_Tests/step_026_cont_3_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_026_cont_3_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_026_cont_3_params.json 1
+Executing sweepMutez(True)...
+ -> "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H"
+  + Transfer
+     params: sp.unit
+     amount: sp.mutez(100)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%receive')).open_some()
+Executing (queue) receive(sp.unit)...
+ -> "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"
+ => ../TezFinTest/SweepTokens_Tests/step_027_cont_3_params.py 1
+ => ../TezFinTest/SweepTokens_Tests/step_027_cont_3_params.tz 1
+ => ../TezFinTest/SweepTokens_Tests/step_027_cont_3_params.json 1
+Executing verifyMutezBalance(0)...
+ -> "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H"
+ => ../TezFinTest/SweepTokens_Tests/log.html 2274

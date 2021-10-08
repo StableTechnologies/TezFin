@@ -1,0 +1,1 @@
+sp.record(address = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), value = 500)

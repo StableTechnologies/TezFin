@@ -13,7 +13,7 @@
     },
     "Governance": {
         "dependencies": [
-            "OriginatorAddress"            
+            "OriginatorAddress"
         ]
     },
     "Comptroller": {

@@ -1,0 +1,1 @@
+sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), market = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), name = 'm1'))

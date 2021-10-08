@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), newReserveFactor = 2)

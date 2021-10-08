@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('tz1RQ7KeyTVkT7rzdibP6T6GfFoHynbQgA1U'), newBorrowCap = 2)

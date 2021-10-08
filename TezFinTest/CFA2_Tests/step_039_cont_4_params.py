@@ -1,0 +1,1 @@
+sp.list([sp.record(request = sp.record(owner = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), token_id = 0), balance = 123)])

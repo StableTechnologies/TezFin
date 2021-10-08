@@ -1,0 +1,203 @@
+[
+ {
+  "shortname": "SweepTokens_Tests",
+  "longname": "SweepTokens_Tests",
+  "scenario": [
+   {
+    "action": "flag",
+    "flag": [
+     "protocol",
+     "florence"
+    ],
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 32)"
+   },
+   {
+    "action": "html",
+    "inner": "[[TABLEOFCONTENTS]]",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 34)",
+    "tag": "p"
+   },
+   {
+    "action": "html",
+    "inner": "SweepTokens tests",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 35)",
+    "tag": "h1"
+   },
+   {
+    "action": "newContract",
+    "accept_unknown_types": false,
+    "export": "(template_id (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \nstorage (record (\"contracts/tests/mock/FA12Mock.py\" 5) (balances (type_annotation (big_map (\"contracts/tests/mock/FA12Mock.py\" 5) ) (bigmap (unknown 1) (record ((approvals (map \"address\" \"nat\")) (balance \"nat\")) None)) (\"contracts/tests/mock/FA12Mock.py\" 5))))\nstorage_type (())\nmessages ((approve True None None True (\"contracts/tests/mock/FA12Mock.py\" 23) ((set_type (params (\"contracts/tests/mock/FA12Mock.py\" 23)) (record ((spender \"address\") (value \"nat\")) (Some ((\"spender\") (\"value\")))) (\"contracts/tests/mock/FA12Mock.py\" 24)) (set (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 26)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 23)) \"spender\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 23)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (\"contracts/tests/mock/FA12Mock.py\" 26)))) (getBalance True None None True (\"contracts/tests/mock/FA12Mock.py\" 39) ((bind \"__s1\" ((result (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (first (params (\"contracts/tests/mock/FA12Mock.py\" 39)) (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/mock/FA12Mock.py\" 40)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 40)) (\"contracts/tests/mock/FA12Mock.py\" 40)))) (set_type (second (params (\"contracts/tests/mock/FA12Mock.py\" 39)) (\"contracts/tests/SweepTokensTest.py\" 40)) (contract \"nat\") (\"contracts/tests/SweepTokensTest.py\" 40)) (set (operations (\"contracts/tests/SweepTokensTest.py\" 40)) (cons (transfer (getLocal \"__s1\" (\"contracts/tests/SweepTokensTest.py\" 40)) (literal (mutez 0) (\"contracts/tests/SweepTokensTest.py\" 40)) (second (params (\"contracts/tests/mock/FA12Mock.py\" 39)) (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/mock/FA12Mock.py\" 39)) (operations (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/SweepTokensTest.py\" 40)))) (mint True None None True (\"contracts/tests/mock/FA12Mock.py\" 33) ((set_type (params (\"contracts/tests/mock/FA12Mock.py\" 33)) (record ((address \"address\") (value \"nat\")) None) (\"contracts/tests/mock/FA12Mock.py\" 34)) (ifBlock (not (contains (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 29)) (\"contracts/tests/mock/FA12Mock.py\" 29)) ((set (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 30)) (record (\"contracts/tests/mock/FA12Mock.py\" 30) (approvals (map (\"contracts/tests/mock/FA12Mock.py\" 30) )) (balance (literal (intOrNat 0) (\"contracts/tests/mock/FA12Mock.py\" 30)))) (\"contracts/tests/mock/FA12Mock.py\" 30))) (\"contracts/tests/mock/FA12Mock.py\" 29)) (set (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 36)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 36)) (add (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 36)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 36)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 36)) (\"contracts/tests/mock/FA12Mock.py\" 36)) (\"contracts/tests/mock/FA12Mock.py\" 36)))) (transfer True None None True (\"contracts/tests/mock/FA12Mock.py\" 8) ((set_type (params (\"contracts/tests/mock/FA12Mock.py\" 8)) (record ((from_ \"address\") (to_ \"address\") (value \"nat\")) (Some ((\"from_ as from\") ((\"to_ as to\") (\"value\"))))) (\"contracts/tests/mock/FA12Mock.py\" 9)) (verify (or (eq (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 11)) (ge (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 12)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 12)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 11)) (ifBlock (not (contains (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 29)) (\"contracts/tests/mock/FA12Mock.py\" 29)) ((set (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 30)) (record (\"contracts/tests/mock/FA12Mock.py\" 30) (approvals (map (\"contracts/tests/mock/FA12Mock.py\" 30) )) (balance (literal (intOrNat 0) (\"contracts/tests/mock/FA12Mock.py\" 30)))) (\"contracts/tests/mock/FA12Mock.py\" 30))) (\"contracts/tests/mock/FA12Mock.py\" 29)) (verify (ge (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 14)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 14)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 14)) (\"contracts/tests/mock/FA12Mock.py\" 14)) (set (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 15)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 15)) (openVariant (isNat (sub (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 16)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 16)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 16)) (\"contracts/tests/mock/FA12Mock.py\" 15)) \"Some\" \"None\" (\"contracts/tests/mock/FA12Mock.py\" 15)) (\"contracts/tests/mock/FA12Mock.py\" 15)) (set (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 17)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 17)) (add (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 17)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 17)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 17)) (\"contracts/tests/mock/FA12Mock.py\" 17)) (ifBlock (neq (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 18)) ((set (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 19)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 19)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 19)) (openVariant (isNat (sub (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 20)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 20)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 20)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 20)) (\"contracts/tests/mock/FA12Mock.py\" 19)) \"Some\" \"None\" (\"contracts/tests/mock/FA12Mock.py\" 19)) (\"contracts/tests/mock/FA12Mock.py\" 19))) (\"contracts/tests/mock/FA12Mock.py\" 18)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
+    "id": "(static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 40)",
+    "show": true
+   },
+   {
+    "action": "newContract",
+    "accept_unknown_types": false,
+    "export": "(template_id (static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8)) \nstorage (record (\"contracts/tests/SweepTokensTest.py\" 8) (administrator (to_constant (attr (account_of_seed \"admin\" (\"contracts/tests/SweepTokensTest.py\" 29)) \"address\" (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 29))))\nstorage_type (())\nmessages ((sweepFA12 True None None True (\"contracts/utils/SweepTokens.py\" 33) ((set_type (params (\"contracts/utils/SweepTokens.py\" 33)) (record ((amount \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 34)) (set (operations (\"contracts/utils/TransferTokens.py\" 17)) (cons (transfer (record (\"contracts/utils/TransferTokens.py\" 5) (from_ (self_address)) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (value (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"amount\" (\"contracts/utils/SweepTokens.py\" 36)))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 17)) (openVariant (contract \"transfer\" (record ((from_ \"address\") (to_ \"address\") (value \"nat\")) (Some ((\"from_ as from\") ((\"to_ as to\") (\"value\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 35)) (\"contracts/utils/TransferTokens.py\" 11)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 11)) (\"contracts/utils/TransferTokens.py\" 17)) (operations (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)))) (sweepFA2 True None None True (\"contracts/utils/SweepTokens.py\" 48) ((set_type (params (\"contracts/utils/SweepTokens.py\" 48)) (record ((amount \"nat\") (id \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 49)) (set (operations (\"contracts/utils/TransferTokens.py\" 42)) (cons (transfer (list (\"contracts/utils/TransferTokens.py\" 42) (record (\"contracts/utils/TransferTokens.py\" 24) (from_ (self_address)) (txs (list (\"contracts/utils/TransferTokens.py\" 24) (record (\"contracts/utils/TransferTokens.py\" 27) (amount (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"amount\" (\"contracts/utils/SweepTokens.py\" 51))) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (token_id (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"id\" (\"contracts/utils/SweepTokens.py\" 50)))))))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 42)) (openVariant (contract \"transfer\" (list (record ((from_ \"address\") (txs (list (record ((amount \"nat\") (to_ \"address\") (token_id \"nat\")) (Some ((\"to_\") ((\"token_id\") (\"amount\")))))))) (Some ((\"from_\") (\"txs\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 50)) (\"contracts/utils/TransferTokens.py\" 36)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 36)) (\"contracts/utils/TransferTokens.py\" 42)) (operations (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)))) (sweepMutez True None None True (\"contracts/utils/SweepTokens.py\" 14) ((set_type (params (\"contracts/utils/SweepTokens.py\" 14)) \"bool\" (\"contracts/utils/SweepTokens.py\" 15)) (ifBlock (params (\"contracts/utils/SweepTokens.py\" 14)) ((set (operations (\"contracts/utils/SweepTokens.py\" 19)) (cons (transfer (unit) (balance) (openVariant (contract \"receive\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 18)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 18)) (\"contracts/utils/SweepTokens.py\" 19)) (operations (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19))) (\"contracts/utils/SweepTokens.py\" 17)) (elseBlock ((set (operations (\"contracts/utils/SweepTokens.py\" 21)) (cons (transfer (unit) (balance) (openVariant (contract \"\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 21)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (operations (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)))))) (verifyMutezBalance True None None True (\"contracts/tests/SweepTokensTest.py\" 11) ((verify (eq (first (openVariant (ediv (balance) (literal (mutez 1) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) \"Some\" (unit) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) (params (\"contracts/tests/SweepTokensTest.py\" 11)) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
+    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 41)",
+    "show": true
+   },
+   {
+    "action": "html",
+    "inner": "Test sweep to account",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 44)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "sweepFA12",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 45)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 46)",
+    "message": "mint",
+    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 46) (address (contract_address (static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8))) (value (literal (intOrNat 1000) (\"contracts/tests/SweepTokensTest.py\" 46))))"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 47)",
+    "message": "sweepFA12",
+    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 47) (amount (literal (intOrNat 600) (\"contracts/tests/SweepTokensTest.py\" 47))) (tokenAddress (contract_address (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \"\" (\"contracts/tests/mock/FA12Mock.py\" 5))))"
+   },
+   {
+    "action": "verify",
+    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 46)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 48)) (contract_address (static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8)) (\"contracts/tests/SweepTokensTest.py\" 48)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 48)) (literal (intOrNat 400) (\"contracts/tests/SweepTokensTest.py\" 48)) (\"contracts/tests/SweepTokensTest.py\" 48))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 48)"
+   },
+   {
+    "action": "verify",
+    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 46)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 48)) (to_constant (attr (account_of_seed \"admin\" (\"contracts/tests/SweepTokensTest.py\" 29)) \"address\" (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 49)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 49)) (literal (intOrNat 600) (\"contracts/tests/SweepTokensTest.py\" 49)) (\"contracts/tests/SweepTokensTest.py\" 49))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 49)"
+   },
+   {
+    "action": "html",
+    "inner": "sweepFA12 insufficient",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 51)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 52)",
+    "message": "sweepFA12",
+    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 52) (amount (literal (intOrNat 600) (\"contracts/tests/SweepTokensTest.py\" 52))) (tokenAddress (contract_address (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \"\" (\"contracts/tests/mock/FA12Mock.py\" 5))))",
+    "valid": "(literal (bool False) (\"contracts/tests/SweepTokensTest.py\" 52))"
+   },
+   {
+    "action": "html",
+    "inner": "sweepMutez",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 54)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 55)",
+    "message": "verifyMutezBalance",
+    "params": "(literal (intOrNat 100) (\"contracts/tests/SweepTokensTest.py\" 55))",
+    "amount": "(literal (mutez 100) (\"contracts/tests/SweepTokensTest.py\" 55))"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 56)",
+    "message": "sweepMutez",
+    "params": "(literal (bool False) (\"contracts/tests/SweepTokensTest.py\" 56))"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 57)",
+    "message": "verifyMutezBalance",
+    "params": "(literal (intOrNat 0) (\"contracts/tests/SweepTokensTest.py\" 57))"
+   },
+   {
+    "action": "html",
+    "inner": "Test sweep to contract",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 60)",
+    "tag": "h2"
+   },
+   {
+    "action": "newContract",
+    "accept_unknown_types": false,
+    "export": "(template_id (static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16)) \nstorage (record (\"contracts/tests/SweepTokensTest.py\" 16) (administrator (to_constant (attr (account_of_seed \"admin\" (\"contracts/tests/SweepTokensTest.py\" 29)) \"address\" (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 29))))\nstorage_type (())\nmessages ((receive True None None True (\"contracts/tests/SweepTokensTest.py\" 23) ((set_type (params (\"contracts/tests/SweepTokensTest.py\" 23)) \"unit\" (\"contracts/tests/SweepTokensTest.py\" 24)))) (stubFn True None None True (\"contracts/tests/SweepTokensTest.py\" 19) ((set_type (params (\"contracts/tests/SweepTokensTest.py\" 19)) \"unit\" (\"contracts/tests/SweepTokensTest.py\" 20)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
+    "id": "(static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 63)",
+    "show": true
+   },
+   {
+    "action": "newContract",
+    "accept_unknown_types": false,
+    "export": "(template_id (static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8)) \nstorage (record (\"contracts/tests/SweepTokensTest.py\" 8) (administrator (contract_address (static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16)) \"\" (\"contracts/tests/SweepTokensTest.py\" 16))))\nstorage_type (())\nmessages ((sweepFA12 True None None True (\"contracts/utils/SweepTokens.py\" 33) ((set_type (params (\"contracts/utils/SweepTokens.py\" 33)) (record ((amount \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 34)) (set (operations (\"contracts/utils/TransferTokens.py\" 17)) (cons (transfer (record (\"contracts/utils/TransferTokens.py\" 5) (from_ (self_address)) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (value (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"amount\" (\"contracts/utils/SweepTokens.py\" 36)))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 17)) (openVariant (contract \"transfer\" (record ((from_ \"address\") (to_ \"address\") (value \"nat\")) (Some ((\"from_ as from\") ((\"to_ as to\") (\"value\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 35)) (\"contracts/utils/TransferTokens.py\" 11)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 11)) (\"contracts/utils/TransferTokens.py\" 17)) (operations (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)))) (sweepFA2 True None None True (\"contracts/utils/SweepTokens.py\" 48) ((set_type (params (\"contracts/utils/SweepTokens.py\" 48)) (record ((amount \"nat\") (id \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 49)) (set (operations (\"contracts/utils/TransferTokens.py\" 42)) (cons (transfer (list (\"contracts/utils/TransferTokens.py\" 42) (record (\"contracts/utils/TransferTokens.py\" 24) (from_ (self_address)) (txs (list (\"contracts/utils/TransferTokens.py\" 24) (record (\"contracts/utils/TransferTokens.py\" 27) (amount (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"amount\" (\"contracts/utils/SweepTokens.py\" 51))) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (token_id (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"id\" (\"contracts/utils/SweepTokens.py\" 50)))))))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 42)) (openVariant (contract \"transfer\" (list (record ((from_ \"address\") (txs (list (record ((amount \"nat\") (to_ \"address\") (token_id \"nat\")) (Some ((\"to_\") ((\"token_id\") (\"amount\")))))))) (Some ((\"from_\") (\"txs\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 50)) (\"contracts/utils/TransferTokens.py\" 36)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 36)) (\"contracts/utils/TransferTokens.py\" 42)) (operations (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)))) (sweepMutez True None None True (\"contracts/utils/SweepTokens.py\" 14) ((set_type (params (\"contracts/utils/SweepTokens.py\" 14)) \"bool\" (\"contracts/utils/SweepTokens.py\" 15)) (ifBlock (params (\"contracts/utils/SweepTokens.py\" 14)) ((set (operations (\"contracts/utils/SweepTokens.py\" 19)) (cons (transfer (unit) (balance) (openVariant (contract \"receive\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 18)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 18)) (\"contracts/utils/SweepTokens.py\" 19)) (operations (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19))) (\"contracts/utils/SweepTokens.py\" 17)) (elseBlock ((set (operations (\"contracts/utils/SweepTokens.py\" 21)) (cons (transfer (unit) (balance) (openVariant (contract \"\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 21)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (operations (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)))))) (verifyMutezBalance True None None True (\"contracts/tests/SweepTokensTest.py\" 11) ((verify (eq (first (openVariant (ediv (balance) (literal (mutez 1) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) \"Some\" (unit) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) (params (\"contracts/tests/SweepTokensTest.py\" 11)) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
+    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 64)",
+    "show": true
+   },
+   {
+    "action": "html",
+    "inner": "sweepFA12",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 66)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 67)",
+    "message": "mint",
+    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 67) (address (contract_address (static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8))) (value (literal (intOrNat 500) (\"contracts/tests/SweepTokensTest.py\" 67))))"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 68)",
+    "message": "sweepFA12",
+    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 68) (amount (literal (intOrNat 200) (\"contracts/tests/SweepTokensTest.py\" 68))) (tokenAddress (contract_address (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \"\" (\"contracts/tests/mock/FA12Mock.py\" 5))))"
+   },
+   {
+    "action": "verify",
+    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 67)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 69)) (contract_address (static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8)) (\"contracts/tests/SweepTokensTest.py\" 69)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 69)) (literal (intOrNat 300) (\"contracts/tests/SweepTokensTest.py\" 69)) (\"contracts/tests/SweepTokensTest.py\" 69))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 69)"
+   },
+   {
+    "action": "verify",
+    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 67)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 69)) (contract_address (static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16)) \"\" (\"contracts/tests/SweepTokensTest.py\" 16)) (\"contracts/tests/SweepTokensTest.py\" 70)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 70)) (literal (intOrNat 200) (\"contracts/tests/SweepTokensTest.py\" 70)) (\"contracts/tests/SweepTokensTest.py\" 70))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 70)"
+   },
+   {
+    "action": "html",
+    "inner": "sweepMutez",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 72)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 73)",
+    "message": "verifyMutezBalance",
+    "params": "(literal (intOrNat 100) (\"contracts/tests/SweepTokensTest.py\" 73))",
+    "amount": "(literal (mutez 100) (\"contracts/tests/SweepTokensTest.py\" 73))"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 74)",
+    "message": "sweepMutez",
+    "params": "(literal (bool True) (\"contracts/tests/SweepTokensTest.py\" 74))"
+   },
+   {
+    "action": "message",
+    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
+    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 75)",
+    "message": "verifyMutezBalance",
+    "params": "(literal (intOrNat 0) (\"contracts/tests/SweepTokensTest.py\" 75))"
+   }
+  ],
+  "kind": "test"
+ }
+]

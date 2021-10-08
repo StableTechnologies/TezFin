@@ -1,0 +1,1 @@
+sp.record(amount = 10, id = 0, tokenAddress = sp.address('KT10'))

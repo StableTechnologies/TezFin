@@ -1,0 +1,20 @@
+parameter (or (nat %target) (nat %targetNat));
+storage   (option nat);
+code
+  {
+    CAST (pair (or nat nat) (option nat)); # pair (or nat nat) (option nat)
+    CAR;        # or nat nat
+    IF_LEFT
+      {
+        # == target ==
+        # self.data.last = sp.some(params) # nat
+        SOME;       # option nat
+      }
+      {
+        # == targetNat ==
+        # self.data.last = sp.some(params) # nat
+        SOME;       # option nat
+      }; # option nat
+    NIL operation; # list operation : option nat
+    PAIR;       # pair (list operation) (option nat)
+  };

@@ -1,0 +1,379 @@
+parameter (or (or (or (or (pair %testAddExp (nat %a) (nat %b)) (pair %testAddExpNat (nat %a) (nat %b))) (or (pair %testDivExpExp (nat %a) (nat %b)) (pair %testDivExpNat (nat %a) (nat %b)))) (or (or (pair %testDivNatExp (nat %a) (nat %b)) (pair %testLessThanExp (nat %a) (nat %b))) (or (pair %testLessThanOrEqualExp (nat %a) (nat %b)) (pair %testMulExpExp (nat %a) (nat %b))))) (or (or (or (pair %testMulExpNat (nat %a) (nat %b)) (pair %testMulExpRounded (nat %a) (nat %b))) (or (pair %testMulNatExp (nat %a) (nat %b)) (pair %testMulScalarTruncate (nat %a) (nat %scalar)))) (or (or (pair %testMulScalarTruncateAdd (nat %a) (pair (nat %addend) (nat %scalar))) (pair %testSubExpExp (nat %a) (nat %b))) (or (pair %testSubNatNat (nat %a) (nat %b)) (nat %testTruncate)))));
+storage   (pair (nat %expScale) (pair (nat %halfExpScale) (nat %result)));
+code
+  {
+    CAST (pair (or (or (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat))) (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat)))) (or (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat))) (or (or (pair nat (pair nat nat)) (pair nat nat)) (or (pair nat nat) nat)))) (pair nat (pair nat nat))); # pair (or (or (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat))) (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat)))) (or (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat))) (or (or (pair nat (pair nat nat)) (pair nat nat)) (or (pair nat nat) nat)))) (pair nat (pair nat nat))
+    UNPAIR;     # or (or (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat))) (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat)))) (or (or (or (pair nat nat) (pair nat nat)) (or (pair nat nat) (pair nat nat))) (or (or (pair nat (pair nat nat)) (pair nat nat)) (or (pair nat nat) nat))) : pair nat (pair nat nat)
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    # == testAddExp ==
+                    # self.data.result = params.a.mantissa + params.b.mantissa # pair nat nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : pair nat (pair nat nat)
+                    ADD;        # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }
+                  {
+                    SWAP;       # pair nat (pair nat nat) : pair nat nat
+                    # == testAddExpNat ==
+                    # self.data.result = params.a.mantissa + (params.b * self.data.expScale) # pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    CAR;        # nat : pair nat (pair nat nat) : pair nat nat
+                    DUP 3;      # pair nat nat : nat : pair nat (pair nat nat) : pair nat nat
+                    CDR;        # nat : nat : pair nat (pair nat nat) : pair nat nat
+                    MUL;        # nat : pair nat (pair nat nat) : pair nat nat
+                    DIG 2;      # pair nat nat : nat : pair nat (pair nat nat)
+                    CAR;        # nat : nat : pair nat (pair nat nat)
+                    ADD;        # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }
+              {
+                IF_LEFT
+                  {
+                    # == testDivExpExp ==
+                    # sp.verify(params.b.mantissa > 0, 'DIVISION_BY_ZERO') # pair nat nat : pair nat (pair nat nat)
+                    DUP;        # pair nat nat : pair nat nat : pair nat (pair nat nat)
+                    CDR;        # nat : pair nat nat : pair nat (pair nat nat)
+                    PUSH nat 0; # nat : nat : pair nat nat : pair nat (pair nat nat)
+                    COMPARE;    # int : pair nat nat : pair nat (pair nat nat)
+                    LT;         # bool : pair nat nat : pair nat (pair nat nat)
+                    IF
+                      {}
+                      {
+                        PUSH string "DIVISION_BY_ZERO"; # string : pair nat nat : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }; # pair nat nat : pair nat (pair nat nat)
+                    SWAP;       # pair nat (pair nat nat) : pair nat nat
+                    # self.data.result = (params.a.mantissa * self.data.expScale) // params.b.mantissa # pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    DUG 2;      # pair nat (pair nat nat) : pair nat nat : pair nat (pair nat nat)
+                    SWAP;       # pair nat nat : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUP;        # pair nat nat : pair nat nat : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUG 2;      # pair nat nat : pair nat (pair nat nat) : pair nat nat : pair nat (pair nat nat)
+                    CDR;        # nat : pair nat (pair nat nat) : pair nat nat : pair nat (pair nat nat)
+                    DIG 3;      # pair nat (pair nat nat) : nat : pair nat (pair nat nat) : pair nat nat
+                    CAR;        # nat : nat : pair nat (pair nat nat) : pair nat nat
+                    DIG 3;      # pair nat nat : nat : nat : pair nat (pair nat nat)
+                    CAR;        # nat : nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 223; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }
+                  {
+                    # == testDivExpNat ==
+                    # sp.verify(params.b > 0, 'DIVISION_BY_ZERO') # pair nat nat : pair nat (pair nat nat)
+                    DUP;        # pair nat nat : pair nat nat : pair nat (pair nat nat)
+                    CDR;        # nat : pair nat nat : pair nat (pair nat nat)
+                    PUSH nat 0; # nat : nat : pair nat nat : pair nat (pair nat nat)
+                    COMPARE;    # int : pair nat nat : pair nat (pair nat nat)
+                    LT;         # bool : pair nat nat : pair nat (pair nat nat)
+                    IF
+                      {}
+                      {
+                        PUSH string "DIVISION_BY_ZERO"; # string : pair nat nat : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }; # pair nat nat : pair nat (pair nat nat)
+                    # self.data.result = params.a.mantissa // params.b # pair nat nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 235; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }; # pair nat (pair nat nat)
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    # == testDivNatExp ==
+                    # sp.verify(params.b.mantissa > 0, 'DIVISION_BY_ZERO') # pair nat nat : pair nat (pair nat nat)
+                    DUP;        # pair nat nat : pair nat nat : pair nat (pair nat nat)
+                    CDR;        # nat : pair nat nat : pair nat (pair nat nat)
+                    PUSH nat 0; # nat : nat : pair nat nat : pair nat (pair nat nat)
+                    COMPARE;    # int : pair nat nat : pair nat (pair nat nat)
+                    LT;         # bool : pair nat nat : pair nat (pair nat nat)
+                    IF
+                      {}
+                      {
+                        PUSH string "DIVISION_BY_ZERO"; # string : pair nat nat : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }; # pair nat nat : pair nat (pair nat nat)
+                    SWAP;       # pair nat (pair nat nat) : pair nat nat
+                    # self.data.result = (params.a * self.data.expScale) // params.b.mantissa # pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    DUG 2;      # pair nat (pair nat nat) : pair nat nat : pair nat (pair nat nat)
+                    SWAP;       # pair nat nat : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUP;        # pair nat nat : pair nat nat : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUG 2;      # pair nat nat : pair nat (pair nat nat) : pair nat nat : pair nat (pair nat nat)
+                    CDR;        # nat : pair nat (pair nat nat) : pair nat nat : pair nat (pair nat nat)
+                    DIG 3;      # pair nat (pair nat nat) : nat : pair nat (pair nat nat) : pair nat nat
+                    CAR;        # nat : nat : pair nat (pair nat nat) : pair nat nat
+                    DIG 3;      # pair nat nat : nat : nat : pair nat (pair nat nat)
+                    CAR;        # nat : nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 247; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }
+                  {
+                    # == testLessThanExp ==
+                    # if params.a.mantissa < params.b.mantissa: # pair nat nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : pair nat (pair nat nat)
+                    COMPARE;    # int : pair nat (pair nat nat)
+                    LT;         # bool : pair nat (pair nat nat)
+                    IF
+                      {
+                        # self.data.result = 1 # pair nat (pair nat nat)
+                        PUSH nat 1; # nat : pair nat (pair nat nat)
+                        UPDATE 4;   # pair nat (pair nat nat)
+                      }
+                      {
+                        # self.data.result = 0 # pair nat (pair nat nat)
+                        PUSH nat 0; # nat : pair nat (pair nat nat)
+                        UPDATE 4;   # pair nat (pair nat nat)
+                      }; # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }
+              {
+                IF_LEFT
+                  {
+                    # == testLessThanOrEqualExp ==
+                    # if params.a.mantissa <= params.b.mantissa: # pair nat nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : pair nat (pair nat nat)
+                    COMPARE;    # int : pair nat (pair nat nat)
+                    LE;         # bool : pair nat (pair nat nat)
+                    IF
+                      {
+                        # self.data.result = 1 # pair nat (pair nat nat)
+                        PUSH nat 1; # nat : pair nat (pair nat nat)
+                        UPDATE 4;   # pair nat (pair nat nat)
+                      }
+                      {
+                        # self.data.result = 0 # pair nat (pair nat nat)
+                        PUSH nat 0; # nat : pair nat (pair nat nat)
+                        UPDATE 4;   # pair nat (pair nat nat)
+                      }; # pair nat (pair nat nat)
+                  }
+                  {
+                    SWAP;       # pair nat (pair nat nat) : pair nat nat
+                    # == testMulExpExp ==
+                    # self.data.result = (params.a.mantissa * params.b.mantissa) // self.data.expScale # pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    CAR;        # nat : pair nat (pair nat nat) : pair nat nat
+                    DIG 2;      # pair nat nat : nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 189; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }; # pair nat (pair nat nat)
+          }; # pair nat (pair nat nat)
+      }
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    # == testMulExpNat ==
+                    # self.data.result = params.a.mantissa * params.b # pair nat nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }
+                  {
+                    SWAP;       # pair nat (pair nat nat) : pair nat nat
+                    # == testMulExpRounded ==
+                    # self.data.result = ((params.a.mantissa * params.b.mantissa) + self.data.halfExpScale) // self.data.expScale # pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    CAR;        # nat : pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    SWAP;       # pair nat (pair nat nat) : nat : pair nat (pair nat nat) : pair nat nat
+                    GET 3;      # nat : nat : pair nat (pair nat nat) : pair nat nat
+                    DIG 3;      # pair nat nat : nat : nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : nat : nat : pair nat (pair nat nat)
+                    ADD;        # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 102; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }
+              {
+                IF_LEFT
+                  {
+                    SWAP;       # pair nat (pair nat nat) : pair nat nat
+                    # == testMulNatExp ==
+                    # self.data.result = (params.a * params.b.mantissa) // self.data.expScale # pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    CAR;        # nat : pair nat (pair nat nat) : pair nat nat
+                    DIG 2;      # pair nat nat : nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 211; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }
+                  {
+                    SWAP;       # pair nat (pair nat nat) : pair nat nat
+                    # == testMulScalarTruncate ==
+                    # self.data.result = (params.a.mantissa * params.scalar) // self.data.expScale # pair nat (pair nat nat) : pair nat nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat nat
+                    CAR;        # nat : pair nat (pair nat nat) : pair nat nat
+                    DIG 2;      # pair nat nat : nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 58; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }; # pair nat (pair nat nat)
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    SWAP;       # pair nat (pair nat nat) : pair nat (pair nat nat)
+                    # == testMulScalarTruncateAdd ==
+                    # self.data.result = ((params.a.mantissa * params.scalar) // self.data.expScale) + params.addend # pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUG 2;      # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    SWAP;       # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DUG 2;      # pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    GET 3;      # nat : pair nat (pair nat nat) : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DIG 3;      # pair nat (pair nat nat) : nat : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    CAR;        # nat : nat : pair nat (pair nat nat) : pair nat (pair nat nat)
+                    DIG 3;      # pair nat (pair nat nat) : nat : nat : pair nat (pair nat nat)
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : nat : nat : pair nat (pair nat nat)
+                    GET 4;      # nat : pair nat (pair nat nat) : nat : nat : pair nat (pair nat nat)
+                    SWAP;       # pair nat (pair nat nat) : nat : nat : nat : pair nat (pair nat nat)
+                    CAR;        # nat : nat : nat : nat : pair nat (pair nat nat)
+                    MUL;        # nat : nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : nat : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 58; # int : nat : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : nat : pair nat (pair nat nat)
+                      }; # nat : nat : pair nat (pair nat nat)
+                    ADD;        # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }
+                  {
+                    # == testSubExpExp ==
+                    # self.data.result = sp.as_nat(params.a.mantissa - params.b.mantissa, message = 'SUBTRACTION_UNDERFLOW') # pair nat nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : pair nat (pair nat nat)
+                    SUB;        # int : pair nat (pair nat nat)
+                    ISNAT;      # option nat : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH string "SUBTRACTION_UNDERFLOW"; # string : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {}; # @some : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }
+              {
+                IF_LEFT
+                  {
+                    # == testSubNatNat ==
+                    # self.data.result = sp.as_nat(params.a - params.b, message = 'SUBTRACTION_UNDERFLOW') # pair nat nat : pair nat (pair nat nat)
+                    UNPAIR;     # nat : nat : pair nat (pair nat nat)
+                    SUB;        # int : pair nat (pair nat nat)
+                    ISNAT;      # option nat : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH string "SUBTRACTION_UNDERFLOW"; # string : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {}; # @some : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }
+                  {
+                    SWAP;       # pair nat (pair nat nat) : nat
+                    # == testTruncate ==
+                    # self.data.result = params.a.mantissa // self.data.expScale # pair nat (pair nat nat) : nat
+                    DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : nat
+                    CAR;        # nat : pair nat (pair nat nat) : nat
+                    DIG 2;      # nat : nat : pair nat (pair nat nat)
+                    EDIV;       # option (pair nat nat) : pair nat (pair nat nat)
+                    IF_NONE
+                      {
+                        PUSH int 58; # int : pair nat (pair nat nat)
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : pair nat (pair nat nat)
+                      }; # nat : pair nat (pair nat nat)
+                    UPDATE 4;   # pair nat (pair nat nat)
+                  }; # pair nat (pair nat nat)
+              }; # pair nat (pair nat nat)
+          }; # pair nat (pair nat nat)
+      }; # pair nat (pair nat nat)
+    NIL operation; # list operation : pair nat (pair nat nat)
+    PAIR;       # pair (list operation) (pair nat (pair nat nat))
+  };

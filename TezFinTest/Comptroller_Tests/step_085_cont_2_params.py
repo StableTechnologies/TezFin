@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT11'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 10)

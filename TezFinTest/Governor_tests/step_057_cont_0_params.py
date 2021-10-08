@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), interestRateModel = sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))

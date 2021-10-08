@@ -1,0 +1,116 @@
+[
+  { "prim": "storage", "args": [ { "prim": "pair", "args": [ { "prim": "nat", "annots": [ "%borrowRate" ] }, { "prim": "nat", "annots": [ "%supplyRate" ] } ] } ] },
+  {
+    "prim": "parameter",
+    "args": [
+      {
+        "prim": "or",
+        "args": [
+          {
+            "prim": "or",
+            "args": [
+              {
+                "prim": "pair",
+                "args": [
+                  { "prim": "pair", "args": [ { "prim": "nat", "annots": [ "%borrows" ] }, { "prim": "nat", "annots": [ "%cash" ] } ] },
+                  { "prim": "pair", "args": [ { "prim": "contract", "args": [ { "prim": "nat" } ], "annots": [ "%cb" ] }, { "prim": "nat", "annots": [ "%reserves" ] } ] }
+                ],
+                "annots": [ "%getBorrowRate" ]
+              },
+              {
+                "prim": "pair",
+                "args": [
+                  { "prim": "pair", "args": [ { "prim": "nat", "annots": [ "%borrows" ] }, { "prim": "nat", "annots": [ "%cash" ] } ] },
+                  { "prim": "pair", "args": [ { "prim": "contract", "args": [ { "prim": "nat" } ], "annots": [ "%cb" ] }, { "prim": "nat", "annots": [ "%reserves" ] } ] }
+                ],
+                "annots": [ "%getSupplyRate" ]
+              }
+            ]
+          },
+          { "prim": "or", "args": [ { "prim": "nat", "annots": [ "%setBorrowRate" ] }, { "prim": "nat", "annots": [ "%setSupplyRate" ] } ] }
+        ]
+      }
+    ]
+  },
+  {
+    "prim": "code",
+    "args": [
+      [
+        {
+          "prim": "CAST",
+          "args": [
+            {
+              "prim": "pair",
+              "args": [
+                {
+                  "prim": "or",
+                  "args": [
+                    {
+                      "prim": "or",
+                      "args": [
+                        {
+                          "prim": "pair",
+                          "args": [
+                            { "prim": "pair", "args": [ { "prim": "nat" }, { "prim": "nat" } ] },
+                            { "prim": "pair", "args": [ { "prim": "contract", "args": [ { "prim": "nat" } ] }, { "prim": "nat" } ] }
+                          ]
+                        },
+                        {
+                          "prim": "pair",
+                          "args": [
+                            { "prim": "pair", "args": [ { "prim": "nat" }, { "prim": "nat" } ] },
+                            { "prim": "pair", "args": [ { "prim": "contract", "args": [ { "prim": "nat" } ] }, { "prim": "nat" } ] }
+                          ]
+                        }
+                      ]
+                    },
+                    { "prim": "or", "args": [ { "prim": "nat" }, { "prim": "nat" } ] }
+                  ]
+                },
+                { "prim": "pair", "args": [ { "prim": "nat" }, { "prim": "nat" } ] }
+              ]
+            }
+          ]
+        },
+        { "prim": "UNPAIR" },
+        {
+          "prim": "IF_LEFT",
+          "args": [
+            [
+              {
+                "prim": "IF_LEFT",
+                "args": [
+                  [
+                    { "prim": "GET", "args": [ { "int": "3" } ] },
+                    { "prim": "NIL", "args": [ { "prim": "operation" } ] },
+                    { "prim": "SWAP" },
+                    { "prim": "PUSH", "args": [ { "prim": "mutez" }, { "int": "0" } ] },
+                    { "prim": "DUP", "args": [ { "int": "4" } ] },
+                    { "prim": "CAR" },
+                    { "prim": "TRANSFER_TOKENS" },
+                    { "prim": "CONS" }
+                  ],
+                  [
+                    { "prim": "GET", "args": [ { "int": "3" } ] },
+                    { "prim": "NIL", "args": [ { "prim": "operation" } ] },
+                    { "prim": "SWAP" },
+                    { "prim": "PUSH", "args": [ { "prim": "mutez" }, { "int": "0" } ] },
+                    { "prim": "DUP", "args": [ { "int": "4" } ] },
+                    { "prim": "CDR" },
+                    { "prim": "TRANSFER_TOKENS" },
+                    { "prim": "CONS" }
+                  ]
+                ]
+              }
+            ],
+            [
+              { "prim": "IF_LEFT", "args": [ [ { "prim": "UPDATE", "args": [ { "int": "1" } ] } ], [ { "prim": "UPDATE", "args": [ { "int": "2" } ] } ] ] },
+              { "prim": "NIL", "args": [ { "prim": "operation" } ] }
+            ]
+          ]
+        },
+        { "prim": "PAIR" }
+      ]
+    ]
+  }
+]

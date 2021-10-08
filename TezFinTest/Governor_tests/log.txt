@@ -1,0 +1,1162 @@
+Table Of Contents
+
+ Governor tests
+# Accounts
+# Contracts
+# Governor governance
+## Pending governance
+### Common user attempts to set pending governance
+### Admin attempts to set pending governance
+## Accept governance
+### Not pending admin attempts to accept governance
+### Pending admin attempts to accept governance
+# CXTZ
+## Set cToken governance
+### Common user attempts to set contract governance
+### Admin attempts to set contract governance
+## Accept cToken governance
+### Common user attempts to accept contract governance
+### Admin attempts to accept contract governance
+## Set comptroller
+### Common user attempts to set comptroller
+### Admin attempts to set comptroller
+## Set interest rate model
+### Common user attempts to set interest rate model
+### Admin attempts to set interest rate model
+## Set reserve factor
+### Common user attempts to set reserve factor
+### Admin attempts to set reserve factor
+## Add reserves to reduce
+## Reduce reserves
+### Common user attempts to reduce reserves
+### Admin attempts to reduce reserves
+# CFA12
+## Set cToken governance
+### Common user attempts to set contract governance
+### Admin attempts to set contract governance
+## Accept cToken governance
+### Common user attempts to accept contract governance
+### Admin attempts to accept contract governance
+## Set comptroller
+### Common user attempts to set comptroller
+### Admin attempts to set comptroller
+## Set interest rate model
+### Common user attempts to set interest rate model
+### Admin attempts to set interest rate model
+## Set reserve factor
+### Common user attempts to set reserve factor
+### Admin attempts to set reserve factor
+## Add reserves to reduce
+## Reduce reserves
+### Common user attempts to reduce reserves
+### Admin attempts to reduce reserves
+# Comptroller
+## Set comptroller governance
+### Common user attempts to set contract governance
+### Admin attempts to set contract governance
+## Accept comptroller governance
+### Common user attempts to accept contract governance
+### Admin attempts to accept contract governance
+## Set price oracle
+### Common user attempts to set price oracle
+### Admin attempts to set price oracle
+## Set close factor
+### Common user attempts to set close factor
+### Admin attempts to set close factor
+## Set liquidation incentive
+### Common user attempts to set liquidation incentive
+### Admin attempts to set liquidation incentive
+## Support market
+### Common user attempts to support market
+### Admin attempts to support market
+## Set market borrow cap
+### Common user attempts to set market borrow cap
+### Admin attempts to set market borrow cap
+## Set collateral factor
+### Common user attempts to set collateral factor
+### Admin attempts to set collateral factor
+## Set mint paused
+### Common user attempts to set mint paused
+### Admin attempts to set mint paused
+## Set borrow paused
+### Common user attempts to set borrow paused
+### Admin attempts to set borrow paused
+## Set transfer paused
+### Common user attempts to set transfer paused
+### Admin attempts to set transfer paused
+## Disable market
+### Common user attempts to disable market
+### Admin attempts to disable market
+Comment...
+ h1: Governor tests
+Comment...
+ h2: Accounts
+Computing sp.list([sp.test_account("Alice"), sp.test_account("admin")])...
+ => sp.list([sp.record(seed = 'Alice', address = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), public_key = sp.key('edpkuvNy6TuQ2z8o9wnoaTtTXkzQk7nhegCHfxBc4ecsd4qG71KYNG'), public_key_hash = sp.key_hash('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), secret_key = sp.secret_key('edskRijgcXx8gzqkq7SCBbrb6aDZQMmP6dznCQWgU1Jr4qPfJT1yFq5A39ja9G4wahS8uWtBurZy14Hy7GZkQh7WnopJTKtCQG')), sp.record(seed = 'admin', address = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), public_key = sp.key('edpkthtmpNV7DzPgvsU5ktVkfYbARpb2nzDbncU8mdbMeXGRhGTjN7'), public_key_hash = sp.key_hash('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), secret_key = sp.secret_key('edskRjPeZkNsmeJ8aAzs5vyXVhP7DVRvG6nM1ReNfjzkR3h6ykbf71mPxQyE5HU9FHrV3EdrY4GVCSBWhU44v6bnhQGrKM9Cs8'))])
+Comment...
+ h2: Contracts
+Creating contract
+ -> (Pair (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 5) (Pair {} {})) (Pair (Pair "KT10" None) (Pair 5 True)))) {Elt 0 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; DUP; GET 5; CDR; IF_NONE { PUSH string "CMPT_NOT_SET_PENDING_ADMIN"; FAILWITH } {}; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_PENDING_ADMIN"; FAILWITH }; DUP; UNPAIR; UNPAIR; UNPAIR; SWAP; CAR; DIG 4; GET 5; CDR; IF_NONE { PUSH int 437; FAILWITH } {}; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; CAR; NONE address; SWAP; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 1 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } {} } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 193; FAILWITH } {}; CAR; GET 3; IF { PUSH string "CMPT_BORROW_PAUSED"; FAILWITH } {}; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 196; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 196; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; GET 3; GET; IF_NONE { PUSH int 197; FAILWITH } {} } { PUSH bool False }; IF {} { DUP; CAR; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_INVALID_BORROW_SENDER"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 79; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 79; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; GET 3; GET; IF_NONE { PUSH int 80; FAILWITH } {} } { PUSH bool False }; IF { PUSH string "CMPT_MARKET_JOINED"; FAILWITH } {}; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; SENDER; DUP; DUG 2; GET; IF_NONE { PUSH int 81; FAILWITH } {}; UNPAIR; UNPAIR; UNPAIR; PUSH (option bool) (Some True); DUP 12; GET 3; UPDATE; PAIR; PAIR; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; DUP; DUG 2; CAR; CAR; CAR; CAR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; DUP; DUP 7; GET 3; DUP; DUG 2; GET; IF_NONE { PUSH int 83; FAILWITH } {}; PUSH bool True; SENDER; UPDATE; SOME; SWAP; UPDATE; PAIR; PAIR; PAIR; PAIR; SWAP } { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; EMPTY_SET address; PUSH bool True; SENDER; UPDATE; SOME; DUP 7; GET 3; UPDATE; PAIR; PAIR; PAIR; PAIR; SWAP } }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; MEM; IF {} { PUSH string "CMPT_LIQUIDITY_ABSENT"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; GET; IF_NONE { PUSH int 624; FAILWITH } {}; GET 4; IF {} { PUSH string "CMPT_LIQUIDITY_INVALID"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; GET; IF_NONE { PUSH int 625; FAILWITH } {}; GET 3; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 3; CAR; CDR; COMPARE; GT; IF {} { PUSH string "CMPT_LIQUIDITY_OLD"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 270; FAILWITH } {}; GET 8; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_UPDATE_PRICE"; FAILWITH }; PUSH nat 0; DUP 3; GET 3; GET 4; DUP 3; CAR; GET; IF_NONE { PUSH int 272; FAILWITH } {}; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_INVALID_PRICE"; FAILWITH }; SWAP; DUP; DUG 2; CAR; GET 5; SWAP; DUP; DUG 2; GET 4; DUP 4; GET 3; GET 4; DUP 4; CAR; GET; IF_NONE { PUSH int 174; FAILWITH } {}; GET 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; INT; DUP 3; CAR; CAR; CAR; CDR; DUP 3; GET 3; GET; IF_NONE { PUSH int 174; FAILWITH } {}; CAR; SUB; PUSH int 0; SWAP; COMPARE; GE; IF {} { PUSH string "CMPT_REDEEMER_SHORTFALL"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DIG 6; GET 3; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR } { DROP }; NIL operation; PAIR }; Elt 2 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 3; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; DUP; GET 4; DUP 3; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 270; FAILWITH } {}; GET 8; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 4; GET 7; SWAP; DUP; DUG 2; COMPARE; LT; IF {} { PUSH string "CMPT_UPDATE_PRICE"; FAILWITH }; PUSH nat 0; DUP 5; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 272; FAILWITH } {}; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_INVALID_PRICE"; FAILWITH }; DUP 4; CAR; GET 5; DUP 3; DUP 6; CAR; GET 5; DUP 7; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 378; FAILWITH } {}; CAR; GET 4; DUP 8; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 378; FAILWITH } {}; GET 7; MUL; EDIV; IF_NONE { PUSH int 189; FAILWITH } { CAR }; MUL; EDIV; IF_NONE { PUSH int 189; FAILWITH } { CAR }; DUP 5; UNPAIR; UNPAIR; SWAP; UNPAIR; UNPAIR; DUP; GET 6; DIG 10; CAR; GET 5; DUP 11; GET 3; DUP 9; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; UPDATE 6; PAIR; PAIR; SWAP; PAIR; PAIR; DUP; DUG 5; UNPAIR; UNPAIR; SWAP; UNPAIR; UNPAIR; DUP; GET 5; DUP 11; CAR; GET 5; DUP 11; CAR; CDR; DIG 12; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 381; FAILWITH } {}; GET 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; UPDATE 5; PAIR; PAIR; SWAP; PAIR; PAIR; DUP; DUG 5; CAR; GET 3; CAR; CAR; GET 4; SENDER; SOME; COMPARE; EQ; IF { SWAP; DROP; SWAP; DROP; SWAP; DROP; DUP 2; UNPAIR; UNPAIR; SWAP; UNPAIR; UNPAIR; DUP; GET 6; DUP 8; CAR; GET 5; DIG 8; CAR; GET 3; CAR; GET 3; DIG 8; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; UPDATE 6; PAIR; PAIR; SWAP; PAIR; PAIR; DUP; UNPAIR; UNPAIR; SWAP; UNPAIR; UNPAIR; DUP; GET 5; DUP 7; CAR; GET 5; DUP 8; CAR; GET 3; CAR; CAR; GET 3; DIG 8; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 384; FAILWITH } {}; GET 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; UPDATE 5; PAIR; PAIR; SWAP; PAIR; PAIR } { DROP 4 }; NIL operation; PAIR }; Elt 3 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DIG 6; DUP; DUG 2; GET; IF_NONE { PUSH int 586; FAILWITH } {}; UNPAIR; SWAP; UNPAIR; CDR; PUSH bool False; PAIR; PAIR; SWAP; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 4 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; DUP; ITER { DUP 3; GET 3; GET 4; SWAP; DUP; DUG 2; MEM; IF { DUP 3; GET 3; GET 4; SWAP; DUP; DUG 2; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; DUP 3; GET 3; GET 4; SWAP; DUP; DUG 2; GET; IF_NONE { PUSH int 79; FAILWITH } {}; CAR; CAR; CAR; SENDER; MEM; IF { DUP 3; GET 3; GET 4; SWAP; DUP; DUG 2; GET; IF_NONE { PUSH int 79; FAILWITH } {}; CAR; CAR; CAR; SENDER; GET; IF_NONE { PUSH int 80; FAILWITH } {} } { PUSH bool False }; IF { PUSH string "CMPT_MARKET_JOINED"; FAILWITH } {}; DIG 2; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DUP 7; DUP; DUG 2; GET; IF_NONE { PUSH int 81; FAILWITH } {}; UNPAIR; UNPAIR; UNPAIR; PUSH (option bool) (Some True); SENDER; UPDATE; PAIR; PAIR; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; DUP; DUG 3; CAR; CAR; CAR; CAR; SENDER; MEM; IF { DIG 2; UNPAIR; UNPAIR; UNPAIR; UNPAIR; DUP; SENDER; DUP; DUG 2; GET; IF_NONE { PUSH int 83; FAILWITH } {}; PUSH bool True; DIG 8; UPDATE; SOME; SWAP; UPDATE; PAIR; PAIR; PAIR; PAIR; SWAP } { DIG 2; UNPAIR; UNPAIR; UNPAIR; UNPAIR; EMPTY_SET address; PUSH bool True; DIG 7; UPDATE; SOME; SENDER; UPDATE; PAIR; PAIR; PAIR; PAIR; SWAP } }; DROP; DUP; CAR; CAR; CAR; CDR; SENDER; MEM; IF { UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; SENDER; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR } {}; NIL operation; PAIR }; Elt 5 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH }; DUP; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; UNPAIR; UNPAIR; UNPAIR; SWAP; CDR; EMPTY_SET nat; PAIR; SWAP; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 6 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 141; FAILWITH } {}; GET 3; CDR; IF { PUSH string "CMPT_MINT_PAUSED"; FAILWITH } {}; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DIG 6; GET 3; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR } { DROP }; NIL operation; PAIR }; Elt 7 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 165; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 165; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; GET 3; GET; IF_NONE { PUSH int 167; FAILWITH } {} } { PUSH bool False }; IF { SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; MEM; IF {} { PUSH string "CMPT_LIQUIDITY_ABSENT"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; GET; IF_NONE { PUSH int 624; FAILWITH } {}; GET 4; IF {} { PUSH string "CMPT_LIQUIDITY_INVALID"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; GET; IF_NONE { PUSH int 625; FAILWITH } {}; GET 3; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 3; CAR; CDR; COMPARE; GT; IF {} { PUSH string "CMPT_LIQUIDITY_OLD"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 270; FAILWITH } {}; GET 8; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_UPDATE_PRICE"; FAILWITH }; PUSH nat 0; DUP 3; GET 3; GET 4; DUP 3; CAR; GET; IF_NONE { PUSH int 272; FAILWITH } {}; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_INVALID_PRICE"; FAILWITH }; SWAP; DUP; DUG 2; CAR; GET 5; SWAP; DUP; DUG 2; GET 4; DUP 4; GET 3; GET 4; DUP 4; CAR; GET; IF_NONE { PUSH int 174; FAILWITH } {}; GET 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; INT; DUP 3; CAR; CAR; CAR; CDR; DUP 3; GET 3; GET; IF_NONE { PUSH int 174; FAILWITH } {}; CAR; SUB; PUSH int 0; SWAP; COMPARE; GE; IF {} { PUSH string "CMPT_REDEEMER_SHORTFALL"; FAILWITH } } {}; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DIG 6; GET 3; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR } { DROP }; NIL operation; PAIR }; Elt 8 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 5; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DUP 7; GET 5; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR; SWAP } {}; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; GET 3; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DIG 6; GET 3; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR } { DROP }; NIL operation; PAIR }; Elt 9 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } } } } { PUSH int -1; FAILWITH }; DUP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; PUSH bool True; LEVEL; DUP 8; CAR; GET 3; CAR; GET 5; DUP 9; CAR; GET 3; CAR; GET 6; SUB; PAIR 3; SOME; DIG 6; CAR; GET 3; CAR; CAR; CAR; IF_NONE { PUSH int 295; FAILWITH } {}; UPDATE; SWAP; PAIR; PAIR; SWAP; UNPAIR; CDR; PUSH (pair (pair (option address) (pair nat (option address))) (pair nat (pair nat nat))) (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))); PAIR; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 10 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } } } { PUSH int -1; FAILWITH }; DUP; CAR; CDR; PUSH nat 0; COMPARE; EQ; IF {} { PUSH string "CMPT_BORROW_IN_MARKET"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 165; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; CAR; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 165; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 167; FAILWITH } {} } { PUSH bool False }; IF { SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CAR; MEM; IF {} { PUSH string "CMPT_LIQUIDITY_ABSENT"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 624; FAILWITH } {}; GET 4; IF {} { PUSH string "CMPT_LIQUIDITY_INVALID"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 625; FAILWITH } {}; GET 3; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 3; CAR; CDR; COMPARE; GT; IF {} { PUSH string "CMPT_LIQUIDITY_OLD"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 270; FAILWITH } {}; GET 8; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_UPDATE_PRICE"; FAILWITH }; PUSH nat 0; DUP 3; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 272; FAILWITH } {}; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_INVALID_PRICE"; FAILWITH }; SWAP; DUP; DUG 2; CAR; GET 5; SWAP; DUP; DUG 2; GET 3; DUP 4; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 174; FAILWITH } {}; GET 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; INT; DUP 3; CAR; CAR; CAR; CDR; DUP 3; CAR; CAR; GET; IF_NONE { PUSH int 174; FAILWITH } {}; CAR; SUB; PUSH int 0; SWAP; COMPARE; GE; IF {} { PUSH string "CMPT_REDEEMER_SHORTFALL"; FAILWITH } } {}; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CAR; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DUP 7; CAR; CAR; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR; SWAP } {}; SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 120; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; CAR; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SENDER; GET; IF_NONE { PUSH int 120; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 122; FAILWITH } {} } { PUSH bool False }; IF { SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; SENDER; DUP; DUG 2; GET; IF_NONE { PUSH int 124; FAILWITH } {}; UNPAIR; UNPAIR; UNPAIR; NONE bool; DUP 12; CAR; CAR; UPDATE; PAIR; PAIR; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; UNPAIR; UNPAIR; DUP; DUP 7; CAR; CAR; DUP; DUG 2; GET; IF_NONE { PUSH int 126; FAILWITH } {}; PUSH bool False; SENDER; UPDATE; SOME; SWAP; UPDATE; PAIR; PAIR; PAIR; PAIR; SWAP } {}; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CAR; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DIG 6; CAR; CAR; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR } { DROP }; NIL operation; PAIR }; Elt 11 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { IF_LEFT {} { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 2; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 2; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; SWAP; UNPAIR; SWAP; DUP 3; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DUP 9; GET 3; GET 3; DUP 9; GET; IF_NONE { PUSH int 265; FAILWITH } {}; DUP; DUG 2; GET; IF_NONE { PUSH int 266; FAILWITH } {}; DIG 9; CAR; GET 5; DIG 8; CDR; MUL; UPDATE 7; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; DUP; DUG 2; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DIG 7; GET 3; GET 3; DIG 7; GET; IF_NONE { PUSH int 265; FAILWITH } {}; DUP; DUG 2; GET; IF_NONE { PUSH int 267; FAILWITH } {}; LEVEL; UPDATE 8; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 12 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DUP 7; CAR; DUP; DUG 2; GET; IF_NONE { PUSH int 472; FAILWITH } {}; UNPAIR; UNPAIR; SWAP; CDR; DIG 9; CDR; PAIR; SWAP; PAIR; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 13 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; CAR; DIG 4; SWAP; PAIR; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 14 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DUP 7; CAR; DUP; DUG 2; GET; IF_NONE { PUSH int 531; FAILWITH } {}; UNPAIR; UNPAIR; SWAP; CAR; DIG 9; CDR; SWAP; PAIR; SWAP; PAIR; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 15 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; CDR; DIG 4; PAIR; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 16 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF {} { PUSH string "CMPT_MARKET_NOT_EXISTS"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DUP 7; CAR; DUP; DUG 2; GET; IF_NONE { PUSH int 603; FAILWITH } {}; UNPAIR; UNPAIR; CAR; DIG 9; CDR; SWAP; PAIR; PAIR; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 17 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT {} { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; DUP; DUP 7; CAR; DUP; DUG 2; GET; IF_NONE { PUSH int 455; FAILWITH } {}; UNPAIR; SWAP; UNPAIR; CAR; DIG 9; CDR; SWAP; PAIR; PAIR; SWAP; PAIR; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 18 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; CAR; DIG 4; SOME; SWAP; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 19 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; CDR; DIG 4; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 20 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; UPDATE 8; NIL operation; PAIR }; Elt 21 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } } }; SWAP; DUP; DUG 2; CAR; CAR; GET 4; SENDER; COMPARE; EQ; IF {} { PUSH string "CMPT_NOT_ADMIN"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; GET; IF_NONE { PUSH int 614; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF { PUSH string "CMPT_MARKET_ALREADY_LISTED"; FAILWITH } {}; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; PUSH (pair nat nat) (Pair 0 0); DUP 7; CDR; PAIR; PUSH (pair bool bool) (Pair True True); PAIR; PUSH (pair bool nat) (Pair True 900000000000000000); PUSH nat 0; EMPTY_BIG_MAP address bool; PAIR; PAIR; PAIR; SOME; DUP 7; CAR; UPDATE; SWAP; DUP 6; CAR; SOME; DIG 6; CDR; UPDATE; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 22 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } } }; SWAP; DUP; DUG 2; GET 8; IF { PUSH string "CMPT_TRANSFER_PAUSED"; FAILWITH } {}; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; CAR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 611; FAILWITH } {}; GET 3; CAR } { PUSH bool False }; IF {} { PUSH string "CMPT_MARKET_NOT_LISTED"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 165; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; CAR; CDR; MEM; IF { SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 165; FAILWITH } {}; CAR; CAR; CAR; SWAP; DUP; DUG 2; CAR; CDR; GET; IF_NONE { PUSH int 167; FAILWITH } {} } { PUSH bool False }; IF { SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CDR; MEM; IF {} { PUSH string "CMPT_LIQUIDITY_ABSENT"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CDR; GET; IF_NONE { PUSH int 624; FAILWITH } {}; GET 4; IF {} { PUSH string "CMPT_LIQUIDITY_INVALID"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CDR; GET; IF_NONE { PUSH int 625; FAILWITH } {}; GET 3; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 3; CAR; CDR; COMPARE; GT; IF {} { PUSH string "CMPT_LIQUIDITY_OLD"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 4; SWAP; DUP; DUG 2; CAR; CAR; GET; IF_NONE { PUSH int 270; FAILWITH } {}; GET 8; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_UPDATE_PRICE"; FAILWITH }; PUSH nat 0; DUP 3; GET 3; GET 4; DUP 3; CAR; CAR; GET; IF_NONE { PUSH int 272; FAILWITH } {}; GET 7; COMPARE; GT; IF {} { PUSH string "CMPT_INVALID_PRICE"; FAILWITH }; SWAP; DUP; DUG 2; CAR; GET 5; SWAP; DUP; DUG 2; GET 4; DUP 4; GET 3; GET 4; DUP 4; CAR; CAR; GET; IF_NONE { PUSH int 174; FAILWITH } {}; GET 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; INT; DUP 3; CAR; CAR; CAR; CDR; DUP 3; CAR; CDR; GET; IF_NONE { PUSH int 174; FAILWITH } {}; CAR; SUB; PUSH int 0; SWAP; COMPARE; GE; IF {} { PUSH string "CMPT_REDEEMER_SHORTFALL"; FAILWITH } } {}; SWAP; DUP; DUG 2; CAR; CAR; CAR; CDR; SWAP; DUP; DUG 2; CAR; CDR; MEM; IF { SWAP; UNPAIR; UNPAIR; UNPAIR; UNPAIR; SWAP; DUP; DIG 6; CAR; CDR; DUP; DUG 2; GET; IF_NONE { PUSH int 630; FAILWITH } {}; PUSH bool False; UPDATE 4; SOME; SWAP; UPDATE; SWAP; PAIR; PAIR; PAIR; PAIR } { DROP }; NIL operation; PAIR }})
+ => ../TezFinTest/Governor_tests/step_005_cont_1_storage.tz 1
+ => ../TezFinTest/Governor_tests/step_005_cont_1_storage.json 3706
+ => ../TezFinTest/Governor_tests/step_005_cont_1_sizes.csv 2
+ => ../TezFinTest/Governor_tests/step_005_cont_1_storage.py 1
+ => ../TezFinTest/Governor_tests/step_005_cont_1_types.py 7
+ => ../TezFinTest/Governor_tests/step_005_cont_1_contract.tz 753
+ => ../TezFinTest/Governor_tests/step_005_cont_1_contract.json 2356
+ => ../TezFinTest/Governor_tests/step_005_cont_1_contract.py 396
+ => ../TezFinTest/Governor_tests/step_005_cont_1_contract.py.html 2466
+Creating contract
+ -> (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None) {Elt 0 { UNPAIR; IF_LEFT { DROP } { PUSH int -1; FAILWITH }; DUP; CDR; IF_NONE { PUSH string "GOV_NOT_SET_PENDING_ADMIN"; FAILWITH } {}; SENDER; COMPARE; EQ; IF {} { PUSH string "GOV_NOT_PENDING_ADMIN"; FAILWITH }; DUP; CDR; IF_NONE { PUSH int 41; FAILWITH } {}; UPDATE 1; NONE address; UPDATE 2; NIL operation; PAIR }; Elt 1 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { DROP } { PUSH int -1; FAILWITH } }; NIL operation; PAIR }; Elt 2 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} }; SWAP; DUP; DUG 2; CAR; SENDER; COMPARE; EQ; IF {} { PUSH string "GOV_NOT_ADMIN"; FAILWITH }; SOME; UPDATE 2; NIL operation; PAIR }})
+ => ../TezFinTest/Governor_tests/step_006_cont_0_storage.tz 1
+ => ../TezFinTest/Governor_tests/step_006_cont_0_storage.json 79
+ => ../TezFinTest/Governor_tests/step_006_cont_0_sizes.csv 2
+ => ../TezFinTest/Governor_tests/step_006_cont_0_storage.py 1
+ => ../TezFinTest/Governor_tests/step_006_cont_0_types.py 7
+ => ../TezFinTest/Governor_tests/step_006_cont_0_contract.tz 855
+ => ../TezFinTest/Governor_tests/step_006_cont_0_contract.json 1262
+ => ../TezFinTest/Governor_tests/step_006_cont_0_contract.py 156
+ => ../TezFinTest/Governor_tests/step_006_cont_0_contract.py.html 2215
+Creating contract
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+ => ../TezFinTest/Governor_tests/step_007_cont_2_storage.tz 1
+ => ../TezFinTest/Governor_tests/step_007_cont_2_storage.json 1
+ => ../TezFinTest/Governor_tests/step_007_cont_2_sizes.csv 2
+ => ../TezFinTest/Governor_tests/step_007_cont_2_storage.py 1
+ => ../TezFinTest/Governor_tests/step_007_cont_2_types.py 7
+ => ../TezFinTest/Governor_tests/step_007_cont_2_contract.tz 241
+ => ../TezFinTest/Governor_tests/step_007_cont_2_contract.json 247
+ => ../TezFinTest/Governor_tests/step_007_cont_2_contract.py 30
+ => ../TezFinTest/Governor_tests/step_007_cont_2_contract.py.html 2112
+Creating contract
+ -> (Pair (Pair (Pair (Pair (Pair 0 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0))))) {Elt 0 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; DUP; GET 3; GET 6; IF_NONE { PUSH string "CT_NOT_SET_PENDING_ADMIN"; FAILWITH } {}; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_PENDING_ADMIN"; FAILWITH }; DUP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CDR; DIG 5; GET 3; GET 6; IF_NONE { PUSH int 593; FAILWITH } {}; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; NONE address; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 1 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SELF_ADDRESS; SENDER; COMPARE; NEQ; IF {} { PUSH string "CT_INTERNAL_CALL"; FAILWITH }; PUSH nat 0; DUP 3; CAR; CAR; GET 6; SENDER; GET; IF_NONE { PUSH int 281; FAILWITH } {}; GET 3; DUP 3; CAR; GET; IF_NONE { PUSH nat 0 } {}; COMPARE; EQ; IF { PUSH bool True } { DUP; CDR; PUSH nat 0; COMPARE; EQ }; IF {} { PUSH string "CT_UNSAFE_ALLOWANCE_CHANGE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; DUP; SENDER; DUP; DUG 2; GET; IF_NONE { PUSH int 283; FAILWITH } {}; DUP; GET 3; DUP 10; CDR; SOME; DIG 10; CAR; UPDATE; UPDATE 3; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 2 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 8; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 8; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; DUP; DUG 2; CAR; GET 3; CDR; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_INVALID_BORROW_RATE"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CAR; LEVEL; SUB; ISNAT; IF_NONE { PUSH int 543; FAILWITH } {}; MUL; SWAP; DUP; DUG 2; CAR; GET 8; DUP 3; GET 7; DUP 3; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; DIG 2; DUP; GET 7; DUP 3; ADD; UPDATE 7; DUP; DUP; GET 9; SWAP; DUP; DUG 5; CAR; GET 8; DIG 3; DIG 5; GET 5; CAR; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; UPDATE 9; DUP; DUG 2; UNPAIR; UNPAIR; SWAP; UNPAIR; CDR; DUP 6; CAR; GET 3; CAR; DUP 7; CAR; GET 8; DIG 7; CAR; GET 3; CAR; DIG 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; PAIR; PAIR; SWAP; UNPAIR; CDR; LEVEL; PAIR; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 3 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH }; DUP; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; UNPAIR; UNPAIR; UNPAIR; SWAP; CDR; EMPTY_SET nat; PAIR; SWAP; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 4 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } } { PUSH int -1; FAILWITH }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 12; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 12; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; SWAP; DUP; PUSH mutez 1; BALANCE; EDIV; IF_NONE { UNIT; FAILWITH } {}; CAR; COMPARE; GE; IF {} { PUSH string "CT_INSUFFICIENT_CASH"; FAILWITH }; SWAP; DUP; DUG 2; GET 9; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_REDUCE_AMOUNT"; FAILWITH }; SWAP; DUP; DUG 2; SWAP; DUP; DUG 2; DIG 3; GET 9; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; UPDATE 9; SWAP; NIL operation; DUP 3; CAR; CAR; GET 5; CONTRACT %receive unit; IF_NONE { PUSH string "bad contract destination"; FAILWITH } {}; PUSH mutez 1; DIG 3; MUL; UNIT; TRANSFER_TOKENS; CONS; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CDR; PUSH bool False; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR }; Elt 5 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { DROP } } } } { PUSH int -1; FAILWITH }; DUP; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; NONE address; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 6 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT {} { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 6; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 6; UPDATE; PAIR; SWAP; PAIR; SWAP; UNPAIR; SWAP; CDR; DIG 4; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 7 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; CDR; DIG 5; PAIR; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 8 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 9; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 9; UPDATE; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; UNPAIR; SWAP; CDR; DIG 4; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 9 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } }; SWAP; DUP; DUG 2; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; DIG 5; SOME; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 10 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 10; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 10; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; DUP; DUG 2; CAR; CAR; CAR; CAR; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; CAR; CAR; CAR; CDR; COMPARE; GT; IF {} { PUSH string "CT_INTEREST_OLD"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 5; IF {} { PUSH string "CT_INTEREST_INVALID"; FAILWITH }; SWAP; DUP; DUG 2; GET 5; GET 3; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_INVALID_RESERVE_FACTOR"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; CDR; DIG 4; PAIR; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; CDR; PUSH bool False; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 11 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 7; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 7; UPDATE; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; CAR; DIG 5; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR; NIL operation; PAIR }})
+ => ../TezFinTest/Governor_tests/step_008_cont_5_storage.tz 1
+ => ../TezFinTest/Governor_tests/step_008_cont_5_storage.json 1073
+ => ../TezFinTest/Governor_tests/step_008_cont_5_sizes.csv 2
+ => ../TezFinTest/Governor_tests/step_008_cont_5_storage.py 1
+ => ../TezFinTest/Governor_tests/step_008_cont_5_types.py 7
+ => ../TezFinTest/Governor_tests/step_008_cont_5_contract.tz 3932
+ => ../TezFinTest/Governor_tests/step_008_cont_5_contract.json 4547
+ => ../TezFinTest/Governor_tests/step_008_cont_5_contract.py 680
+ => ../TezFinTest/Governor_tests/step_008_cont_5_contract.py.html 2726
+Creating contract
+ -> {}
+ => ../TezFinTest/Governor_tests/step_009_cont_3_storage.tz 1
+ => ../TezFinTest/Governor_tests/step_009_cont_3_storage.json 1
+ => ../TezFinTest/Governor_tests/step_009_cont_3_sizes.csv 2
+ => ../TezFinTest/Governor_tests/step_009_cont_3_storage.py 1
+ => ../TezFinTest/Governor_tests/step_009_cont_3_types.py 7
+ => ../TezFinTest/Governor_tests/step_009_cont_3_contract.tz 348
+ => ../TezFinTest/Governor_tests/step_009_cont_3_contract.json 384
+ => ../TezFinTest/Governor_tests/step_009_cont_3_contract.py 36
+ => ../TezFinTest/Governor_tests/step_009_cont_3_contract.py.html 2118
+Creating contract
+ -> (Pair (Pair (Pair (Pair (Pair 0 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0))))) {Elt 0 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; DUP; GET 3; GET 6; IF_NONE { PUSH string "CT_NOT_SET_PENDING_ADMIN"; FAILWITH } {}; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_PENDING_ADMIN"; FAILWITH }; DUP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CDR; DIG 5; GET 3; GET 6; IF_NONE { PUSH int 593; FAILWITH } {}; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; NONE address; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 1 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SELF_ADDRESS; SENDER; COMPARE; NEQ; IF {} { PUSH string "CT_INTERNAL_CALL"; FAILWITH }; PUSH nat 0; DUP 3; CAR; CAR; GET 6; SENDER; GET; IF_NONE { PUSH int 281; FAILWITH } {}; GET 3; DUP 3; CAR; GET; IF_NONE { PUSH nat 0 } {}; COMPARE; EQ; IF { PUSH bool True } { DUP; CDR; PUSH nat 0; COMPARE; EQ }; IF {} { PUSH string "CT_UNSAFE_ALLOWANCE_CHANGE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; DUP; SENDER; DUP; DUG 2; GET; IF_NONE { PUSH int 283; FAILWITH } {}; DUP; GET 3; DUP 10; CDR; SOME; DIG 10; CAR; UPDATE; UPDATE 3; SOME; SWAP; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 2 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 8; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 8; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; DUP; DUG 2; CAR; GET 3; GET 3; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_INVALID_BORROW_RATE"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; CAR; CAR; LEVEL; SUB; ISNAT; IF_NONE { PUSH int 543; FAILWITH } {}; MUL; SWAP; DUP; DUG 2; CAR; GET 8; DUP 3; GET 7; DUP 3; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; DIG 2; DUP; GET 7; DUP 3; ADD; UPDATE 7; DUP; DUP; GET 9; SWAP; DUP; DUG 5; CAR; GET 8; DIG 3; DIG 5; GET 5; CAR; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; UPDATE 9; DUP; DUG 2; UNPAIR; UNPAIR; SWAP; UNPAIR; CDR; DUP 6; CAR; GET 3; CAR; DUP 7; CAR; GET 8; DIG 7; CAR; GET 3; CAR; DIG 7; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; PAIR; PAIR; SWAP; UNPAIR; CDR; LEVEL; PAIR; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 3 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH }; DUP; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; UNPAIR; UNPAIR; UNPAIR; SWAP; CDR; EMPTY_SET nat; PAIR; SWAP; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 4 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } } { PUSH int -1; FAILWITH }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 12; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 12; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; SWAP; DUP; DUP 3; CAR; GET 7; COMPARE; GE; IF {} { PUSH string "CT_INSUFFICIENT_CASH"; FAILWITH }; SWAP; DUP; DUG 2; GET 9; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_REDUCE_AMOUNT"; FAILWITH }; SWAP; DUP; DUG 2; SWAP; DUP; DUG 2; DIG 3; GET 9; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; UPDATE 9; SWAP; NIL operation; DUP 3; GET 3; CAR; CAR; CONTRACT %transfer (pair address (pair address nat)); IF_NONE { PUSH int 11; FAILWITH } {}; PUSH mutez 0; DIG 3; DUP 5; CAR; CAR; GET 5; SELF_ADDRESS; PAIR 3; TRANSFER_TOKENS; CONS; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CDR; PUSH bool False; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR }; Elt 5 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { DROP } } } } { PUSH int -1; FAILWITH }; DUP; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; NONE address; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 6 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT {} { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 6; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 6; UPDATE; PAIR; SWAP; PAIR; SWAP; UNPAIR; UNPAIR; SWAP; CAR; DIG 5; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 7 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 13; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 13; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; DUP; DUG 2; GET 3; CAR; CAR; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INVALID_CASH_SENDER"; FAILWITH }; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; CDR; DIG 5; PAIR; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 8 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CDR; DIG 4; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 9 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT {} { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 9; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 9; UPDATE; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; UNPAIR; SWAP; CDR; DIG 4; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 10 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } {} } { PUSH int -1; FAILWITH } } }; SWAP; DUP; DUG 2; CAR; CAR; GET 5; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; DIG 5; SOME; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 11 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 10; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 10; UPDATE; PAIR; SWAP; PAIR; PAIR; PAIR; DUP; DUG 2; CAR; CAR; CAR; CAR; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; CAR; CAR; CAR; CDR; COMPARE; GT; IF {} { PUSH string "CT_INTEREST_OLD"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 5; IF {} { PUSH string "CT_INTEREST_INVALID"; FAILWITH }; SWAP; DUP; DUG 2; GET 5; GET 3; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_INVALID_RESERVE_FACTOR"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; CDR; DIG 4; PAIR; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; CDR; PUSH bool False; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 12 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; PUSH nat 7; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; PUSH bool False; PUSH nat 7; UPDATE; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; CAR; DIG 5; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR; NIL operation; PAIR }})
+ => ../TezFinTest/Governor_tests/step_010_cont_4_storage.tz 1
+ => ../TezFinTest/Governor_tests/step_010_cont_4_storage.json 1173
+ => ../TezFinTest/Governor_tests/step_010_cont_4_sizes.csv 2
+ => ../TezFinTest/Governor_tests/step_010_cont_4_storage.py 1
+ => ../TezFinTest/Governor_tests/step_010_cont_4_types.py 7
+ => ../TezFinTest/Governor_tests/step_010_cont_4_contract.tz 4103
+ => ../TezFinTest/Governor_tests/step_010_cont_4_contract.json 4863
+ => ../TezFinTest/Governor_tests/step_010_cont_4_contract.py 690
+ => ../TezFinTest/Governor_tests/step_010_cont_4_contract.py.html 2735
+Creating contract
+ -> 0
+ => ../TezFinTest/Governor_tests/step_011_cont_6_storage.tz 1
+ => ../TezFinTest/Governor_tests/step_011_cont_6_storage.json 1
+ => ../TezFinTest/Governor_tests/step_011_cont_6_sizes.csv 2
+ => ../TezFinTest/Governor_tests/step_011_cont_6_storage.py 1
+ => ../TezFinTest/Governor_tests/step_011_cont_6_types.py 7
+ => ../TezFinTest/Governor_tests/step_011_cont_6_contract.tz 36
+ => ../TezFinTest/Governor_tests/step_011_cont_6_contract.json 80
+ => ../TezFinTest/Governor_tests/step_011_cont_6_contract.py 18
+ => ../TezFinTest/Governor_tests/step_011_cont_6_contract.py.html 2100
+Comment...
+ h2: Governor governance
+Comment...
+ h3: Pending governance
+Comment...
+ h4: Common user attempts to set pending governance
+ => ../TezFinTest/Governor_tests/step_015_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_015_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_015_cont_0_params.json 1
+Executing setPendingGovernance(sp.to_constant(sp.test_account("[governance] pending governance").address))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set pending governance
+ => ../TezFinTest/Governor_tests/step_017_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_017_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_017_cont_0_params.json 1
+Executing setPendingGovernance(sp.to_constant(sp.test_account("[governance] pending governance").address))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Some "tz1ZNmVENjqq916Tq18fZcvdGffReTAu1cTk"))
+Verifying sp.contract_data(0).pendingAdministrator.open_some() == sp.to_constant(sp.test_account("[governance] pending governance").address)...
+ OK
+Comment...
+ h3: Accept governance
+Comment...
+ h4: Not pending admin attempts to accept governance
+ => ../TezFinTest/Governor_tests/step_021_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_021_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_021_cont_0_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.pendingAdministrator.open_some(message = 'GOV_NOT_SET_PENDING_ADMIN') : sp.TBool) (contracts/Governance.py, line 40)
+Message: 'GOV_NOT_PENDING_ADMIN'
+ (contracts/Governance.py, line 40)
+Comment...
+ h4: Pending admin attempts to accept governance
+ => ../TezFinTest/Governor_tests/step_023_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_023_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_023_cont_0_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> (Pair "tz1ZNmVENjqq916Tq18fZcvdGffReTAu1cTk" None)
+Verifying sp.contract_data(0).administrator == sp.to_constant(sp.test_account("[governance] pending governance").address)...
+ OK
+Verifying ~ sp.contract_data(0).pendingAdministrator.is_some()...
+ OK
+ => ../TezFinTest/Governor_tests/step_026_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_026_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_026_cont_0_params.json 1
+Executing setPendingGovernance(sp.to_constant(sp.test_account("admin").address))...
+ -> (Pair "tz1ZNmVENjqq916Tq18fZcvdGffReTAu1cTk" (Some "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5"))
+ => ../TezFinTest/Governor_tests/step_027_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_027_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_027_cont_0_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+ => ../TezFinTest/Governor_tests/step_028_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_028_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_028_cont_0_params.json 1
+Executing setAccrualIntPeriodRelevance(sp.record(blockNumber = 4, cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 4
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setAccrualIntPeriodRelevance')).open_some()
+Executing (queue) setAccrualIntPeriodRelevance(4)...
+ -> (Pair (Pair (Pair (Pair 0 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(4).accrualIntPeriodRelevance == 4...
+ OK
+ => ../TezFinTest/Governor_tests/step_030_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_030_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_030_cont_0_params.json 1
+Executing setLiquidityPeriodRelevance(sp.record(blockNumber = 4, comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 4
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setLiquidityPeriodRelevance')).open_some()
+Executing (queue) setLiquidityPeriodRelevance(4)...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT10" None) (Pair 5 True))))
+Verifying sp.contract_data(1).liquidityPeriodRelevance == 4...
+ OK
+ => ../TezFinTest/Governor_tests/step_032_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_032_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_032_cont_0_params.json 1
+Executing setPricePeriodRelevance(sp.record(blockNumber = 4, comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 4
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setPricePeriodRelevance')).open_some()
+Executing (queue) setPricePeriodRelevance(4)...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT10" None) (Pair 4 True))))
+Verifying sp.contract_data(1).pricePeriodRelevance == 4...
+ OK
+Comment...
+ h2: CXTZ
+Comment...
+ h3: Set cToken governance
+Comment...
+ h4: Common user attempts to set contract governance
+ => ../TezFinTest/Governor_tests/step_037_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_037_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_037_cont_0_params.json 1
+Executing setContractGovernance(sp.record(contractAddress = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), governance = sp.to_constant(sp.test_account("Alice").address)))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set contract governance
+ => ../TezFinTest/Governor_tests/step_039_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_039_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_039_cont_0_params.json 1
+Executing setContractGovernance(sp.record(contractAddress = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), governance = sp.to_constant(sp.test_account("Alice").address)))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%setPendingGovernance')).open_some()
+Executing (queue) setPendingGovernance(sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'))...
+ -> (Pair (Pair (Pair (Pair 0 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False (Some "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi")))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(5).pendingAdministrator.open_some() == sp.to_constant(sp.test_account("Alice").address)...
+ OK
+Comment...
+ h3: Accept cToken governance
+ => ../TezFinTest/Governor_tests/step_042_cont_5_params.py 1
+ => ../TezFinTest/Governor_tests/step_042_cont_5_params.tz 1
+ => ../TezFinTest/Governor_tests/step_042_cont_5_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 5) (Pair {} (Pair "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+ => ../TezFinTest/Governor_tests/step_043_cont_5_params.py 1
+ => ../TezFinTest/Governor_tests/step_043_cont_5_params.tz 1
+ => ../TezFinTest/Governor_tests/step_043_cont_5_params.json 1
+Executing setPendingGovernance(sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1'))...
+ -> (Pair (Pair (Pair (Pair 0 5) (Pair {} (Pair "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False (Some "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Comment...
+ h4: Common user attempts to accept contract governance
+ => ../TezFinTest/Governor_tests/step_045_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_045_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_045_cont_0_params.json 1
+Executing acceptContractGovernance(sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to accept contract governance
+ => ../TezFinTest/Governor_tests/step_047_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_047_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_047_cont_0_params.json 1
+Executing acceptContractGovernance(sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%acceptGovernance')).open_some()
+Executing (queue) acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(5).administrator == sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1')...
+ OK
+Comment...
+ h3: Set comptroller
+Comment...
+ h4: Common user attempts to set comptroller
+ => ../TezFinTest/Governor_tests/step_051_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_051_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_051_cont_0_params.json 1
+Executing setComptroller(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set comptroller
+ => ../TezFinTest/Governor_tests/step_053_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_053_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_053_cont_0_params.json 1
+Executing setComptroller(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%setComptroller')).open_some()
+Executing (queue) setComptroller(sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))...
+ -> (Pair (Pair (Pair (Pair 0 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(5).comptroller == sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')...
+ OK
+Comment...
+ h3: Set interest rate model
+Comment...
+ h4: Common user attempts to set interest rate model
+ => ../TezFinTest/Governor_tests/step_057_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_057_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_057_cont_0_params.json 1
+Executing setInterestRateModel(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), interestRateModel = sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set interest rate model
+ => ../TezFinTest/Governor_tests/step_059_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_059_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_059_cont_0_params.json 1
+Executing setInterestRateModel(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), interestRateModel = sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%setInterestRateModel')).open_some()
+Executing (queue) setInterestRateModel(sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))...
+ -> (Pair (Pair (Pair (Pair 0 5) (Pair {9} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%accrueInterest')).open_some()
+  + Transfer
+     params: sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%setInterestRateModelInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 19 5) (Pair {9} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Executing (queue) setInterestRateModelInternal(sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))...
+ -> (Pair (Pair (Pair (Pair 19 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(5).interestRateModel == sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')...
+ OK
+Comment...
+ h3: Set reserve factor
+Comment...
+ h4: Common user attempts to set reserve factor
+ => ../TezFinTest/Governor_tests/step_063_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_063_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_063_cont_0_params.json 1
+Executing setReserveFactor(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newReserveFactor = 2))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set reserve factor
+ => ../TezFinTest/Governor_tests/step_065_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_065_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_065_cont_0_params.json 1
+Executing setReserveFactor(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newReserveFactor = 2))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 2
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%setReserveFactor')).open_some()
+Executing (queue) setReserveFactor(2)...
+ -> (Pair (Pair (Pair (Pair 19 5) (Pair {10} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%accrueInterest')).open_some()
+  + Transfer
+     params: 2
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%setReserveFactorInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 19 5) (Pair {8; 10} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 21 5) (Pair {10} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Executing (queue) setReserveFactorInternal(2)...
+ -> (Pair (Pair (Pair (Pair 21 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(5).reserveFactorMantissa == 2...
+ OK
+Comment...
+ h3: Add reserves to reduce
+ => ../TezFinTest/Governor_tests/step_070_cont_5_params.py 1
+ => ../TezFinTest/Governor_tests/step_070_cont_5_params.tz 1
+ => ../TezFinTest/Governor_tests/step_070_cont_5_params.json 1
+Executing addReserves(5)...
+ -> (Pair (Pair (Pair (Pair 21 5) (Pair {11} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%accrueInterest')).open_some()
+  + Transfer
+     params: sp.record(addAmount = 5, originalSender = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'))
+     amount: sp.mutez(5)
+     to:     sp.contract(sp.TRecord(addAmount = sp.TNat, originalSender = sp.TAddress).layout(("addAmount", "originalSender")), sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%addReservesInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 21 5) (Pair {8; 11} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 22 5) (Pair {11} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Executing (queue) addReservesInternal(sp.record(addAmount = 5, originalSender = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')))...
+ -> (Pair (Pair (Pair (Pair 22 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 5 0)))))
+Verifying sp.contract_data(5).totalReserves > sp.scenario_var(1)...
+ OK
+Verifying sp.contract_balance(5) > sp.scenario_var(0)...
+ OK
+Comment...
+ h3: Reduce reserves
+Comment...
+ h4: Common user attempts to reduce reserves
+ => ../TezFinTest/Governor_tests/step_078_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_078_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_078_cont_0_params.json 1
+Executing reduceReserves(sp.record(amount = 1, cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to reduce reserves
+ => ../TezFinTest/Governor_tests/step_080_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_080_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_080_cont_0_params.json 1
+Executing reduceReserves(sp.record(amount = 1, cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 1
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%reduceReserves')).open_some()
+Executing (queue) reduceReserves(1)...
+ -> (Pair (Pair (Pair (Pair 22 5) (Pair {12} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 5 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%accrueInterest')).open_some()
+  + Transfer
+     params: 1
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%reduceReservesInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 22 5) (Pair {8; 12} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 5 0)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 5, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some(), reserves = 5)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 5, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some(), reserves = 5))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 24 5) (Pair {12} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000004200005644802 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 5 0)))))
+Executing (queue) reduceReservesInternal(1)...
+ -> (Pair (Pair (Pair (Pair 24 5) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000004200005644802 5000000000000) (Pair 0 (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" 1000000000000000000)))) (Pair (Pair (Pair 500000000000000000 1000000000000000000) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 4 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.mutez(1)
+     to:     sp.contract(sp.TUnit, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%receive')).open_some()
+Executing (queue) receive(sp.unit)...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+Verifying sp.contract_data(5).totalReserves < sp.scenario_var(3)...
+ OK
+Verifying sp.contract_balance(5) < sp.scenario_var(2)...
+ OK
+Verifying sp.contract_balance(0) > sp.scenario_var(4)...
+ OK
+Comment...
+ h2: CFA12
+Comment...
+ h3: Set cToken governance
+Comment...
+ h4: Common user attempts to set contract governance
+ => ../TezFinTest/Governor_tests/step_087_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_087_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_087_cont_0_params.json 1
+Executing setContractGovernance(sp.record(contractAddress = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), governance = sp.to_constant(sp.test_account("Alice").address)))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set contract governance
+ => ../TezFinTest/Governor_tests/step_089_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_089_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_089_cont_0_params.json 1
+Executing setContractGovernance(sp.record(contractAddress = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), governance = sp.to_constant(sp.test_account("Alice").address)))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setPendingGovernance')).open_some()
+Executing (queue) setPendingGovernance(sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'))...
+ -> (Pair (Pair (Pair (Pair 0 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False (Some "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi")))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(4).pendingAdministrator.open_some() == sp.to_constant(sp.test_account("Alice").address)...
+ OK
+Comment...
+ h3: Accept cToken governance
+ => ../TezFinTest/Governor_tests/step_092_cont_4_params.py 1
+ => ../TezFinTest/Governor_tests/step_092_cont_4_params.tz 1
+ => ../TezFinTest/Governor_tests/step_092_cont_4_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 4) (Pair {} (Pair "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+ => ../TezFinTest/Governor_tests/step_093_cont_4_params.py 1
+ => ../TezFinTest/Governor_tests/step_093_cont_4_params.tz 1
+ => ../TezFinTest/Governor_tests/step_093_cont_4_params.json 1
+Executing setPendingGovernance(sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1'))...
+ -> (Pair (Pair (Pair (Pair 0 4) (Pair {} (Pair "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False (Some "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Comment...
+ h4: Common user attempts to accept contract governance
+ => ../TezFinTest/Governor_tests/step_095_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_095_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_095_cont_0_params.json 1
+Executing acceptContractGovernance(sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to accept contract governance
+ => ../TezFinTest/Governor_tests/step_097_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_097_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_097_cont_0_params.json 1
+Executing acceptContractGovernance(sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%acceptGovernance')).open_some()
+Executing (queue) acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(4).administrator == sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1')...
+ OK
+Comment...
+ h3: Set comptroller
+Comment...
+ h4: Common user attempts to set comptroller
+ => ../TezFinTest/Governor_tests/step_101_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_101_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_101_cont_0_params.json 1
+Executing setComptroller(sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set comptroller
+ => ../TezFinTest/Governor_tests/step_103_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_103_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_103_cont_0_params.json 1
+Executing setComptroller(sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setComptroller')).open_some()
+Executing (queue) setComptroller(sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))...
+ -> (Pair (Pair (Pair (Pair 0 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(4).comptroller == sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')...
+ OK
+Comment...
+ h3: Set interest rate model
+Comment...
+ h4: Common user attempts to set interest rate model
+ => ../TezFinTest/Governor_tests/step_107_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_107_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_107_cont_0_params.json 1
+Executing setInterestRateModel(sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), interestRateModel = sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set interest rate model
+ => ../TezFinTest/Governor_tests/step_109_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_109_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_109_cont_0_params.json 1
+Executing setInterestRateModel(sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), interestRateModel = sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setInterestRateModel')).open_some()
+Executing (queue) setInterestRateModel(sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))...
+ -> (Pair (Pair (Pair (Pair 0 4) (Pair {9} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%accrueInterest')).open_some()
+  + Transfer
+     params: sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setInterestRateModelInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 34 4) (Pair {9} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Executing (queue) setInterestRateModelInternal(sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))...
+ -> (Pair (Pair (Pair (Pair 34 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(4).interestRateModel == sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')...
+ OK
+Comment...
+ h3: Set reserve factor
+Comment...
+ h4: Common user attempts to set reserve factor
+ => ../TezFinTest/Governor_tests/step_113_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_113_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_113_cont_0_params.json 1
+Executing setReserveFactor(sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), newReserveFactor = 2))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set reserve factor
+ => ../TezFinTest/Governor_tests/step_115_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_115_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_115_cont_0_params.json 1
+Executing setReserveFactor(sp.record(cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), newReserveFactor = 2))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 2
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setReserveFactor')).open_some()
+Executing (queue) setReserveFactor(2)...
+ -> (Pair (Pair (Pair (Pair 34 4) (Pair {10} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%accrueInterest')).open_some()
+  + Transfer
+     params: 2
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setReserveFactorInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 34 4) (Pair {8; 10} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000000000000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 36 4) (Pair {10} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Executing (queue) setReserveFactorInternal(2)...
+ -> (Pair (Pair (Pair (Pair 36 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Verifying sp.contract_data(4).reserveFactorMantissa == 2...
+ OK
+Comment...
+ h3: Add reserves to reduce
+ => ../TezFinTest/Governor_tests/step_118_cont_3_params.py 1
+ => ../TezFinTest/Governor_tests/step_118_cont_3_params.tz 1
+ => ../TezFinTest/Governor_tests/step_118_cont_3_params.json 1
+Executing mint(sp.record(address = sp.to_constant(sp.test_account("Alice").address), value = 500))...
+ -> {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair {} 500)}
+ => ../TezFinTest/Governor_tests/step_119_cont_3_params.py 1
+ => ../TezFinTest/Governor_tests/step_119_cont_3_params.tz 1
+ => ../TezFinTest/Governor_tests/step_119_cont_3_params.json 1
+Executing approve(sp.record(spender = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), value = 500))...
+ -> {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair {Elt "KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3" 500} 500)}
+ => ../TezFinTest/Governor_tests/step_120_cont_4_params.py 1
+ => ../TezFinTest/Governor_tests/step_120_cont_4_params.tz 1
+ => ../TezFinTest/Governor_tests/step_120_cont_4_params.json 1
+Executing addReserves(500)...
+ -> (Pair (Pair (Pair (Pair 36 4) (Pair {11} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%accrueInterest')).open_some()
+  + Transfer
+     params: sp.record(addAmount = 500, originalSender = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'))
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(addAmount = sp.TNat, originalSender = sp.TAddress).layout(("addAmount", "originalSender")), sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%addReservesInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 36 4) (Pair {8; 11} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000001680000000000 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 37 4) (Pair {11} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+Executing (queue) addReservesInternal(sp.record(addAmount = 500, originalSender = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')))...
+ -> (Pair (Pair (Pair (Pair 37 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 500 0)))))
+  + Transfer
+     params: sp.record(from_ = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), to_ = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), value = 500)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%transfer')).open_some()
+Executing (queue) transfer(sp.record(from_ = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), to_ = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), value = 500))...
+ -> {Elt "KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3" (Pair {} 500); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair {Elt "KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3" 0} 0)}
+Comment...
+ h3: Reduce reserves
+Comment...
+ h4: Common user attempts to reduce reserves
+ => ../TezFinTest/Governor_tests/step_125_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_125_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_125_cont_0_params.json 1
+Executing reduceReserves(sp.record(amount = 500, cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to reduce reserves
+ => ../TezFinTest/Governor_tests/step_127_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_127_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_127_cont_0_params.json 1
+Executing reduceReserves(sp.record(amount = 500, cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 500
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%reduceReserves')).open_some()
+Executing (queue) reduceReserves(500)...
+ -> (Pair (Pair (Pair (Pair 37 4) (Pair {12} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 500 0)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%accrueInterest')).open_some()
+  + Transfer
+     params: 500
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%reduceReservesInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 37 4) (Pair {8; 12; 13} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 0 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 500 0)))))
+  + Transfer
+     params: (sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setCash')).open_some())
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TPair(sp.TAddress, sp.TContract(sp.TNat)), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%getBalance')).open_some()
+  + Transfer
+     params: sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some(), reserves = 500)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBalance((sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setCash')).open_some()))...
+ -> {Elt "KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3" (Pair {} 500); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair {Elt "KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3" 0} 0)}
+  + Transfer
+     params: 500
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%setCash')).open_some()
+Executing (queue) setCash(500)...
+ -> (Pair (Pair (Pair (Pair 37 4) (Pair {8; 12} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000002520001411200 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 500 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 500 0)))))
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some(), reserves = 500))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 39 4) (Pair {12} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000004200005644802 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 500 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 500 0)))))
+Executing (queue) reduceReservesInternal(500)...
+ -> (Pair (Pair (Pair (Pair 39 4) (Pair {} (Pair "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" {}))) (Pair (Pair 1000004200005644802 (Pair 5000000000000 0)) (Pair "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF" (Pair 500 1000000000000000000)))) (Pair (Pair (Pair "KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC" (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 2 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+  + Transfer
+     params: sp.record(from_ = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), to_ = sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1'), value = 500)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%transfer')).open_some()
+Executing (queue) transfer(sp.record(from_ = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), to_ = sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1'), value = 500))...
+ -> {Elt "KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3" (Pair {} 0); Elt "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1" (Pair {} 500); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair {Elt "KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3" 0} 0)}
+Verifying sp.contract_data(3).balances[sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3')].balance < sp.scenario_var(5)...
+ OK
+Verifying sp.contract_data(3).balances[sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1')].balance == 500...
+ OK
+Verifying sp.contract_data(4).totalReserves < sp.scenario_var(6)...
+ OK
+Comment...
+ h2: Comptroller
+Comment...
+ h3: Set comptroller governance
+Comment...
+ h4: Common user attempts to set contract governance
+ => ../TezFinTest/Governor_tests/step_134_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_134_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_134_cont_0_params.json 1
+Executing setContractGovernance(sp.record(contractAddress = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), governance = sp.to_constant(sp.test_account("Alice").address)))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set contract governance
+ => ../TezFinTest/Governor_tests/step_136_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_136_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_136_cont_0_params.json 1
+Executing setContractGovernance(sp.record(contractAddress = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), governance = sp.to_constant(sp.test_account("Alice").address)))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setPendingGovernance')).open_some()
+Executing (queue) setPendingGovernance(sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT10" (Some "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi")) (Pair 4 True))))
+Verifying sp.contract_data(1).pendingAdministrator.open_some() == sp.to_constant(sp.test_account("Alice").address)...
+ OK
+Comment...
+ h3: Accept comptroller governance
+ => ../TezFinTest/Governor_tests/step_139_cont_1_params.py 1
+ => ../TezFinTest/Governor_tests/step_139_cont_1_params.tz 1
+ => ../TezFinTest/Governor_tests/step_139_cont_1_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT10" None) (Pair 4 True))))
+ => ../TezFinTest/Governor_tests/step_140_cont_1_params.py 1
+ => ../TezFinTest/Governor_tests/step_140_cont_1_params.tz 1
+ => ../TezFinTest/Governor_tests/step_140_cont_1_params.json 1
+Executing setPendingGovernance(sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1'))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT10" (Some "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair 4 True))))
+Comment...
+ h4: Common user attempts to accept contract governance
+ => ../TezFinTest/Governor_tests/step_142_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_142_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_142_cont_0_params.json 1
+Executing acceptContractGovernance(sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to accept contract governance
+ => ../TezFinTest/Governor_tests/step_144_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_144_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_144_cont_0_params.json 1
+Executing acceptContractGovernance(sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%acceptGovernance')).open_some()
+Executing (queue) acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT10" None) (Pair 4 True))))
+Verifying sp.contract_data(1).administrator == sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1')...
+ OK
+Comment...
+ h3: Set price oracle
+Comment...
+ h4: Common user attempts to set price oracle
+ => ../TezFinTest/Governor_tests/step_148_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_148_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_148_cont_0_params.json 1
+Executing setPriceOracle(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), priceOracle = sp.address('KT1Tezooo6zzSmartPyzzSTATiCzzztY1196')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set price oracle
+ => ../TezFinTest/Governor_tests/step_150_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_150_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_150_cont_0_params.json 1
+Executing setPriceOracle(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), priceOracle = sp.address('KT1Tezooo6zzSmartPyzzSTATiCzzztY1196')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('KT1Tezooo6zzSmartPyzzSTATiCzzztY1196')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setPriceOracle')).open_some()
+Executing (queue) setPriceOracle(sp.address('KT1Tezooo6zzSmartPyzzSTATiCzzztY1196'))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 0) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying sp.contract_data(1).oracleAddress == sp.address('KT1Tezooo6zzSmartPyzzSTATiCzzztY1196')...
+ OK
+Comment...
+ h3: Set close factor
+Comment...
+ h4: Common user attempts to set close factor
+ => ../TezFinTest/Governor_tests/step_154_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_154_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_154_cont_0_params.json 1
+Executing setCloseFactor(sp.record(closeFactor = 2, comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set close factor
+ => ../TezFinTest/Governor_tests/step_156_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_156_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_156_cont_0_params.json 1
+Executing setCloseFactor(sp.record(closeFactor = 2, comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 2
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setCloseFactor')).open_some()
+Executing (queue) setCloseFactor(2)...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 0 4) (Pair {} {})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying sp.contract_data(1).closeFactorMantissa == 2...
+ OK
+Comment...
+ h3: Set liquidation incentive
+Comment...
+ h4: Common user attempts to set liquidation incentive
+ => ../TezFinTest/Governor_tests/step_160_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_160_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_160_cont_0_params.json 1
+Executing setLiquidationIncentive(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), liquidationIncentive = 2))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set liquidation incentive
+ => ../TezFinTest/Governor_tests/step_162_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_162_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_162_cont_0_params.json 1
+Executing setLiquidationIncentive(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), liquidationIncentive = 2))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: 2
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setLiquidationIncentive')).open_some()
+Executing (queue) setLiquidationIncentive(2)...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {} {})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying sp.contract_data(1).liquidationIncentiveMantissa == 2...
+ OK
+Comment...
+ h3: Support market
+Comment...
+ h4: Common user attempts to support market
+ => ../TezFinTest/Governor_tests/step_166_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_166_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_166_cont_0_params.json 4
+Executing supportMarket(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), market = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), name = 'm1')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to support market
+ => ../TezFinTest/Governor_tests/step_168_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_168_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_168_cont_0_params.json 4
+Executing supportMarket(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), market = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), name = 'm1')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), name = 'm1')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, name = sp.TString).layout(("cToken", "name")), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%supportMarket')).open_some()
+Executing (queue) supportMarket(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), name = 'm1'))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {Elt "m1" "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p"} {Elt "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p" (Pair (Pair (Pair {} 0) (Pair True 900000000000000000)) (Pair (Pair True True) (Pair "m1" (Pair 0 0))))})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying (sp.contract_data(1).markets.contains(sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'))) & sp.contract_data(1).markets[sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')].isListed...
+ OK
+Comment...
+ h3: Set market borrow cap
+Comment...
+ h4: Common user attempts to set market borrow cap
+ => ../TezFinTest/Governor_tests/step_172_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_172_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_172_cont_0_params.json 4
+Executing setMarketBorrowCap(sp.record(borrowCap = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newBorrowCap = 2), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set market borrow cap
+ => ../TezFinTest/Governor_tests/step_174_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_174_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_174_cont_0_params.json 4
+Executing setMarketBorrowCap(sp.record(borrowCap = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newBorrowCap = 2), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newBorrowCap = 2)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, newBorrowCap = sp.TNat).layout(("cToken", "newBorrowCap")), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setMarketBorrowCap')).open_some()
+Executing (queue) setMarketBorrowCap(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newBorrowCap = 2))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {Elt "m1" "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p"} {Elt "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p" (Pair (Pair (Pair {} 2) (Pair True 900000000000000000)) (Pair (Pair True True) (Pair "m1" (Pair 0 0))))})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying sp.contract_data(1).markets[sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')].borrowCap == 2...
+ OK
+Comment...
+ h3: Set collateral factor
+Comment...
+ h4: Common user attempts to set collateral factor
+ => ../TezFinTest/Governor_tests/step_178_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_178_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_178_cont_0_params.json 4
+Executing setCollateralFactor(sp.record(collateralFactor = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newCollateralFactor = 2), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set collateral factor
+ => ../TezFinTest/Governor_tests/step_180_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_180_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_180_cont_0_params.json 4
+Executing setCollateralFactor(sp.record(collateralFactor = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newCollateralFactor = 2), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newCollateralFactor = 2)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, newCollateralFactor = sp.TNat).layout(("cToken", "newCollateralFactor")), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setCollateralFactor')).open_some()
+Executing (queue) setCollateralFactor(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newCollateralFactor = 2))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {Elt "m1" "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p"} {Elt "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p" (Pair (Pair (Pair {} 2) (Pair True 2)) (Pair (Pair True True) (Pair "m1" (Pair 0 0))))})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying sp.contract_data(1).markets[sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')].collateralFactor.mantissa == 2...
+ OK
+Comment...
+ h3: Set mint paused
+Comment...
+ h4: Common user attempts to set mint paused
+ => ../TezFinTest/Governor_tests/step_184_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_184_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_184_cont_0_params.json 4
+Executing setMintPaused(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), tokenState = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False)))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set mint paused
+ => ../TezFinTest/Governor_tests/step_186_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_186_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_186_cont_0_params.json 4
+Executing setMintPaused(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), tokenState = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False)))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, state = sp.TBool).layout(("cToken", "state")), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setMintPaused')).open_some()
+Executing (queue) setMintPaused(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {Elt "m1" "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p"} {Elt "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p" (Pair (Pair (Pair {} 2) (Pair True 2)) (Pair (Pair True False) (Pair "m1" (Pair 0 0))))})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying sp.contract_data(1).markets[sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')].mintPaused == False...
+ OK
+Comment...
+ h3: Set borrow paused
+Comment...
+ h4: Common user attempts to set borrow paused
+ => ../TezFinTest/Governor_tests/step_190_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_190_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_190_cont_0_params.json 4
+Executing setBorrowPaused(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), tokenState = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False)))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set borrow paused
+ => ../TezFinTest/Governor_tests/step_192_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_192_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_192_cont_0_params.json 4
+Executing setBorrowPaused(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), tokenState = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False)))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, state = sp.TBool).layout(("cToken", "state")), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setBorrowPaused')).open_some()
+Executing (queue) setBorrowPaused(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), state = False))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {Elt "m1" "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p"} {Elt "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p" (Pair (Pair (Pair {} 2) (Pair False 2)) (Pair (Pair True False) (Pair "m1" (Pair 0 0))))})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 True))))
+Verifying sp.contract_data(1).markets[sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')].borrowPaused == False...
+ OK
+Comment...
+ h3: Set transfer paused
+Comment...
+ h4: Common user attempts to set transfer paused
+ => ../TezFinTest/Governor_tests/step_196_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_196_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_196_cont_0_params.json 1
+Executing setTransferPaused(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), state = False))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to set transfer paused
+ => ../TezFinTest/Governor_tests/step_198_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_198_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_198_cont_0_params.json 1
+Executing setTransferPaused(sp.record(comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'), state = False))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: False
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TBool, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%setTransferPaused')).open_some()
+Executing (queue) setTransferPaused(False)...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {Elt "m1" "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p"} {Elt "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p" (Pair (Pair (Pair {} 2) (Pair False 2)) (Pair (Pair True False) (Pair "m1" (Pair 0 0))))})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 False))))
+Verifying sp.contract_data(1).transferPaused == False...
+ OK
+Comment...
+ h3: Disable market
+Comment...
+ h4: Common user attempts to disable market
+ => ../TezFinTest/Governor_tests/step_202_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_202_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_202_cont_0_params.json 1
+Executing disableMarket(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/Governance.py, line 347)
+Message: 'GOV_NOT_ADMIN'
+ (contracts/Governance.py, line 347)
+Comment...
+ h4: Admin attempts to disable market
+ => ../TezFinTest/Governor_tests/step_204_cont_0_params.py 1
+ => ../TezFinTest/Governor_tests/step_204_cont_0_params.tz 1
+ => ../TezFinTest/Governor_tests/step_204_cont_0_params.json 1
+Executing disableMarket(sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')))...
+ -> (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" None)
+  + Transfer
+     params: sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%disableMarket')).open_some()
+Executing (queue) disableMarket(sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'))...
+ -> (Pair (Pair (Pair (Pair {} {}) (Pair {} "KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1")) (Pair (Pair (Pair (Pair None (Pair 0 None)) (Pair 0 (Pair 0 0))) 2) (Pair 1000000000000000000 500000000000000000))) (Pair (Pair (Pair 2 4) (Pair {Elt "m1" "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p"} {Elt "KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p" (Pair (Pair (Pair {} 2) (Pair False 2)) (Pair (Pair False False) (Pair "m1" (Pair 0 0))))})) (Pair (Pair "KT1Tezooo6zzSmartPyzzSTATiCzzztY1196" None) (Pair 4 False))))
+Verifying (sp.contract_data(1).markets.contains(sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'))) & (~ sp.contract_data(1).markets[sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p')].isListed)...
+ OK
+ => ../TezFinTest/Governor_tests/log.html 6178

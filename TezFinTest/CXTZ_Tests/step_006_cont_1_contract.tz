@@ -1,0 +1,50 @@
+parameter (or (or (pair %getBorrowRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (nat %reserves))) (pair %getSupplyRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (nat %reserves)))) (or (nat %setBorrowRate) (nat %setSupplyRate)));
+storage   (pair (nat %borrowRate) (nat %supplyRate));
+code
+  {
+    CAST (pair (or (or (pair (pair nat nat) (pair (contract nat) nat)) (pair (pair nat nat) (pair (contract nat) nat))) (or nat nat)) (pair nat nat)); # pair (or (or (pair (pair nat nat) (pair (contract nat) nat)) (pair (pair nat nat) (pair (contract nat) nat))) (or nat nat)) (pair nat nat)
+    UNPAIR;     # or (or (pair (pair nat nat) (pair (contract nat) nat)) (pair (pair nat nat) (pair (contract nat) nat))) (or nat nat) : pair nat nat
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            # == getBorrowRate ==
+            # sp.transfer(self.data.borrowRate, sp.tez(0), params.cb) # pair (pair nat nat) (pair (contract nat) nat) : pair nat nat
+            GET 3;      # contract nat : pair nat nat
+            NIL operation; # list operation : contract nat : pair nat nat
+            SWAP;       # contract nat : list operation : pair nat nat
+            PUSH mutez 0; # mutez : contract nat : list operation : pair nat nat
+            DUP 4;      # pair nat nat : mutez : contract nat : list operation : pair nat nat
+            CAR;        # nat : mutez : contract nat : list operation : pair nat nat
+            TRANSFER_TOKENS; # operation : list operation : pair nat nat
+            CONS;       # list operation : pair nat nat
+          }
+          {
+            # == getSupplyRate ==
+            # sp.transfer(self.data.supplyRate, sp.tez(0), params.cb) # pair (pair nat nat) (pair (contract nat) nat) : pair nat nat
+            GET 3;      # contract nat : pair nat nat
+            NIL operation; # list operation : contract nat : pair nat nat
+            SWAP;       # contract nat : list operation : pair nat nat
+            PUSH mutez 0; # mutez : contract nat : list operation : pair nat nat
+            DUP 4;      # pair nat nat : mutez : contract nat : list operation : pair nat nat
+            CDR;        # nat : mutez : contract nat : list operation : pair nat nat
+            TRANSFER_TOKENS; # operation : list operation : pair nat nat
+            CONS;       # list operation : pair nat nat
+          }; # list operation : pair nat nat
+      }
+      {
+        IF_LEFT
+          {
+            # == setBorrowRate ==
+            # self.data.borrowRate = params # nat : pair nat nat
+            UPDATE 1;   # pair nat nat
+          }
+          {
+            # == setSupplyRate ==
+            # self.data.supplyRate = params # nat : pair nat nat
+            UPDATE 2;   # pair nat nat
+          }; # pair nat nat
+        NIL operation; # list operation : pair nat nat
+      }; # list operation : pair nat nat
+    PAIR;       # pair (list operation) (pair nat nat)
+  };

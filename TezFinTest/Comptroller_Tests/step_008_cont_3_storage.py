@@ -1,0 +1,1 @@
+sp.record(comptroller = sp.address('KT10'), test_account_snapshot = sp.record(account = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrowBalance = 0, cTokenBalance = 10, exchangeRateMantissa = 1000000000000000000))

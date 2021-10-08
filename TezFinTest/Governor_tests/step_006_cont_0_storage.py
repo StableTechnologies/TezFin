@@ -1,0 +1,1 @@
+sp.record(administrator = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), pendingAdministrator = sp.none)

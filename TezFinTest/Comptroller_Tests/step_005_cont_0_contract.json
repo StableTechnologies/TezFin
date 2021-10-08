@@ -1,0 +1,19 @@
+[
+  { "prim": "storage", "args": [ { "prim": "option", "args": [ { "prim": "int" } ] } ] },
+  { "prim": "parameter", "args": [ { "prim": "or", "args": [ { "prim": "int", "annots": [ "%target" ] }, { "prim": "int", "annots": [ "%targetInt" ] } ] } ] },
+  {
+    "prim": "code",
+    "args": [
+      [
+        {
+          "prim": "CAST",
+          "args": [ { "prim": "pair", "args": [ { "prim": "or", "args": [ { "prim": "int" }, { "prim": "int" } ] }, { "prim": "option", "args": [ { "prim": "int" } ] } ] } ]
+        },
+        { "prim": "CAR" },
+        { "prim": "IF_LEFT", "args": [ [ { "prim": "SOME" } ], [ { "prim": "SOME" } ] ] },
+        { "prim": "NIL", "args": [ { "prim": "operation" } ] },
+        { "prim": "PAIR" }
+      ]
+    ]
+  }
+]

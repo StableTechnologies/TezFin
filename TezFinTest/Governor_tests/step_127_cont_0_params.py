@@ -1,0 +1,1 @@
+sp.record(amount = 500, cToken = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'))

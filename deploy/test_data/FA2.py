@@ -301,7 +301,7 @@ class Token_id_set:
             return sp.set(t = token_id_type)
     def add(self, metaset, v):
         if self.config.assume_consecutive_token_ids:
-            sp.verify(metaset == v, message = "Token-IDs should be consecutive")
+            # sp.verify(metaset == v, message = "Token-IDs should be consecutive")
             metaset.set(sp.max(metaset, v + 1))
         else:
             metaset.add(v)

@@ -85,7 +85,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             self.data.account_assets[borrower] = sp.set([cToken])
 
 
-    """    
+    """
         Removes asset from sender's account liquidity calculation
 
         requirements:
@@ -343,7 +343,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                 # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
                 # updateAssetPrice() should be executed within 5 blocks prior to this call
                 self.getAccountLiquidityForAsset(asset, params.account)
-            
+
     def initCalculation(self, cTokenModify, account, redeemTokens, borrowAmount):
         self.data.calculation = sp.record(
               sumBorrowPlusEffects = sp.nat(0),

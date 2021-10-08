@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT11'), state = False)

@@ -1,0 +1,171 @@
+[
+  {
+    "prim": "storage",
+    "args": [
+      {
+        "prim": "pair",
+        "args": [
+          { "prim": "address", "annots": [ "%comptroller" ] },
+          {
+            "prim": "pair",
+            "args": [
+              { "prim": "pair", "args": [ { "prim": "address", "annots": [ "%account" ] }, { "prim": "nat", "annots": [ "%borrowBalance" ] } ] },
+              { "prim": "pair", "args": [ { "prim": "nat", "annots": [ "%cTokenBalance" ] }, { "prim": "nat", "annots": [ "%exchangeRateMantissa" ] } ] }
+            ],
+            "annots": [ "%test_account_snapshot" ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "prim": "parameter",
+    "args": [
+      {
+        "prim": "or",
+        "args": [
+          {
+            "prim": "or",
+            "args": [
+              { "prim": "unit", "annots": [ "%accrueInterest" ] },
+              {
+                "prim": "pair",
+                "args": [
+                  { "prim": "address" },
+                  {
+                    "prim": "contract",
+                    "args": [
+                      {
+                        "prim": "pair",
+                        "args": [
+                          { "prim": "pair", "args": [ { "prim": "address", "annots": [ "%account" ] }, { "prim": "nat", "annots": [ "%borrowBalance" ] } ] },
+                          { "prim": "pair", "args": [ { "prim": "nat", "annots": [ "%cTokenBalance" ] }, { "prim": "nat", "annots": [ "%exchangeRateMantissa" ] } ] }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "annots": [ "%getAccountSnapshot" ]
+              }
+            ]
+          },
+          {
+            "prim": "or",
+            "args": [
+              {
+                "prim": "pair",
+                "args": [
+                  { "prim": "pair", "args": [ { "prim": "address", "annots": [ "%account" ] }, { "prim": "nat", "annots": [ "%borrowBalance" ] } ] },
+                  { "prim": "pair", "args": [ { "prim": "nat", "annots": [ "%cTokenBalance" ] }, { "prim": "nat", "annots": [ "%exchangeRateMantissa" ] } ] }
+                ],
+                "annots": [ "%setAccountSnapshot" ]
+              },
+              { "prim": "address", "annots": [ "%setComptroller" ] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "prim": "code",
+    "args": [
+      [
+        {
+          "prim": "CAST",
+          "args": [
+            {
+              "prim": "pair",
+              "args": [
+                {
+                  "prim": "or",
+                  "args": [
+                    {
+                      "prim": "or",
+                      "args": [
+                        { "prim": "unit" },
+                        {
+                          "prim": "pair",
+                          "args": [
+                            { "prim": "address" },
+                            {
+                              "prim": "contract",
+                              "args": [
+                                {
+                                  "prim": "pair",
+                                  "args": [
+                                    { "prim": "pair", "args": [ { "prim": "address" }, { "prim": "nat" } ] },
+                                    { "prim": "pair", "args": [ { "prim": "nat" }, { "prim": "nat" } ] }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "prim": "or",
+                      "args": [
+                        {
+                          "prim": "pair",
+                          "args": [
+                            { "prim": "pair", "args": [ { "prim": "address" }, { "prim": "nat" } ] },
+                            { "prim": "pair", "args": [ { "prim": "nat" }, { "prim": "nat" } ] }
+                          ]
+                        },
+                        { "prim": "address" }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "prim": "pair",
+                  "args": [
+                    { "prim": "address" },
+                    {
+                      "prim": "pair",
+                      "args": [ { "prim": "pair", "args": [ { "prim": "address" }, { "prim": "nat" } ] }, { "prim": "pair", "args": [ { "prim": "nat" }, { "prim": "nat" } ] } ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        { "prim": "UNPAIR" },
+        {
+          "prim": "IF_LEFT",
+          "args": [
+            [
+              {
+                "prim": "IF_LEFT",
+                "args": [
+                  [ { "prim": "DROP" }, { "prim": "NIL", "args": [ { "prim": "operation" } ] } ],
+                  [
+                    { "prim": "SWAP" },
+                    { "prim": "DUP" },
+                    { "prim": "DUG", "args": [ { "int": "2" } ] },
+                    { "prim": "CDR" },
+                    { "prim": "NIL", "args": [ { "prim": "operation" } ] },
+                    { "prim": "DIG", "args": [ { "int": "2" } ] },
+                    { "prim": "CDR" },
+                    { "prim": "PUSH", "args": [ { "prim": "mutez" }, { "int": "0" } ] },
+                    { "prim": "DIG", "args": [ { "int": "3" } ] },
+                    { "prim": "TRANSFER_TOKENS" },
+                    { "prim": "CONS" }
+                  ]
+                ]
+              }
+            ],
+            [
+              { "prim": "IF_LEFT", "args": [ [ { "prim": "UPDATE", "args": [ { "int": "2" } ] } ], [ { "prim": "UPDATE", "args": [ { "int": "1" } ] } ] ] },
+              { "prim": "NIL", "args": [ { "prim": "operation" } ] }
+            ]
+          ]
+        },
+        { "prim": "PAIR" }
+      ]
+    ]
+  }
+]

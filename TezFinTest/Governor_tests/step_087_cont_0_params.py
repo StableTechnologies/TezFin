@@ -1,0 +1,1 @@
+sp.record(contractAddress = sp.address('KT1Tezooo4zzSmartPyzzSTATiCzzzyPVdv3'), governance = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'))

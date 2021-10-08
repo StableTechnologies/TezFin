@@ -1,0 +1,1 @@
+sp.record(cToken = sp.address('KT11'), src = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), dst = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), transferTokens = 100)

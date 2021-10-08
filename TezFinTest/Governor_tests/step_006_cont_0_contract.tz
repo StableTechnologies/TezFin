@@ -1,0 +1,855 @@
+parameter (or (or (unit %acceptGovernance) (or (unit %receive) (address %setPendingGovernance))) (or (or (or (or (address %acceptContractGovernance) (pair %disableMarket (address %cToken) (address %comptroller))) (or (pair %reduceReserves (nat %amount) (address %cToken)) (or (pair %setAccrualIntPeriodRelevance (nat %blockNumber) (address %cToken)) (pair %setBorrowPaused (address %comptroller) (pair %tokenState (address %cToken) (bool %state)))))) (or (or (pair %setCloseFactor (nat %closeFactor) (address %comptroller)) (or (pair %setCollateralFactor (pair %collateralFactor (address %cToken) (nat %newCollateralFactor)) (address %comptroller)) (pair %setComptroller (address %cToken) (address %comptroller)))) (or (pair %setContractGovernance (address %contractAddress) (address %governance)) (or (pair %setInterestRateModel (address %cToken) (address %interestRateModel)) (pair %setLiquidationIncentive (address %comptroller) (nat %liquidationIncentive)))))) (or (or (or (pair %setLiquidityPeriodRelevance (nat %blockNumber) (address %comptroller)) (pair %setMarketBorrowCap (pair %borrowCap (address %cToken) (nat %newBorrowCap)) (address %comptroller))) (or (pair %setMintPaused (address %comptroller) (pair %tokenState (address %cToken) (bool %state))) (or (pair %setPriceOracle (address %comptroller) (address %priceOracle)) (pair %setPricePeriodRelevance (nat %blockNumber) (address %comptroller))))) (or (or (pair %setReserveFactor (address %cToken) (nat %newReserveFactor)) (or (pair %setTransferPaused (address %comptroller) (bool %state)) (pair %supportMarket (address %comptroller) (pair %market (address %cToken) (string %name))))) (or (pair %sweepFA12 (nat %amount) (address %tokenAddress)) (or (pair %sweepFA2 (nat %amount) (pair (nat %id) (address %tokenAddress))) (bool %sweepMutez)))))));
+storage   (pair (pair (address %administrator) (option %pendingAdministrator address)) (big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))));
+code
+  {
+    CAST (pair (or (or unit (or unit address)) (or (or (or (or address (pair address address)) (or (pair nat address) (or (pair nat address) (pair address (pair address bool))))) (or (or (pair nat address) (or (pair (pair address nat) address) (pair address address))) (or (pair address address) (or (pair address address) (pair address nat))))) (or (or (or (pair nat address) (pair (pair address nat) address)) (or (pair address (pair address bool)) (or (pair address address) (pair nat address)))) (or (or (pair address nat) (or (pair address bool) (pair address (pair address string)))) (or (pair nat address) (or (pair nat (pair nat address)) bool)))))) (pair (pair address (option address)) (big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))))); # pair (or (or unit (or unit address)) (or (or (or (or address (pair address address)) (or (pair nat address) (or (pair nat address) (pair address (pair address bool))))) (or (or (pair nat address) (or (pair (pair address nat) address) (pair address address))) (or (pair address address) (or (pair address address) (pair address nat))))) (or (or (or (pair nat address) (pair (pair address nat) address)) (or (pair address (pair address bool)) (or (pair address address) (pair nat address)))) (or (or (pair address nat) (or (pair address bool) (pair address (pair address string)))) (or (pair nat address) (or (pair nat (pair nat address)) bool)))))) (pair (pair address (option address)) (big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))))
+    UNPAIR 3;   # or (or unit (or unit address)) (or (or (or (or address (pair address address)) (or (pair nat address) (or (pair nat address) (pair address (pair address bool))))) (or (or (pair nat address) (or (pair (pair address nat) address) (pair address address))) (or (pair address address) (or (pair address address) (pair address nat))))) (or (or (or (pair nat address) (pair (pair address nat) address)) (or (pair address (pair address bool)) (or (pair address address) (pair nat address)))) (or (or (pair address nat) (or (pair address bool) (pair address (pair address string)))) (or (pair nat address) (or (pair nat (pair nat address)) bool))))) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+    IF_LEFT
+      {
+        DUP;        # or unit (or unit address) : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        IF_LEFT
+          {
+            DROP;       # or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+            PUSH nat 0; # nat : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+          }
+          {
+            IF_LEFT
+              {
+                DROP;       # or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                PUSH nat 1; # nat : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+              }
+              {
+                DROP;       # or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                PUSH nat 2; # nat : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+              }; # nat : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+          }; # nat : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        DUP 4;      # big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address)))) : nat : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        SWAP;       # nat : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address)))) : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        GET;        # option (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address)))) : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        IF_NONE
+          {
+            PUSH int -1; # int : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+            FAILWITH;   # FAILED
+          }
+          {
+            # missing entry point # @some : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+          }; # @some : or unit (or unit address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        DUG 2;      # or unit (or unit address) : pair address (option address) : @some : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        PAIR;       # pair (or unit (or unit address)) (pair address (option address)) : @some : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        EXEC;       # pair (list operation) (pair address (option address)) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+        UNPAIR;     # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+      }
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        SWAP;       # pair address (option address) : address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == acceptContractGovernance ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.send(params, sp.tez(0)) # address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %acceptGovernance unit; # option (contract unit) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 69; # int : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        UNIT;       # unit : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        SWAP;       # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == disableMarket ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.cToken, sp.tez(0), sp.contract(sp.TAddress, params.comptroller, entry_point='disableMarket').open_some()) # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %disableMarket address; # option (contract address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 272; # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair address address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        SWAP;       # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == reduceReserves ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.amount, sp.tez(0), sp.contract(sp.TNat, params.cToken, entry_point='reduceReserves').open_some()) # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair nat address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %reduceReserves nat; # option (contract nat) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 176; # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair nat address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            SWAP;       # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setAccrualIntPeriodRelevance ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.blockNumber, sp.tez(0), sp.contract(sp.TNat, params.cToken, entry_point='setAccrualIntPeriodRelevance').open_some()) # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair nat address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setAccrualIntPeriodRelevance nat; # option (contract nat) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 84; # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair nat address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }
+                          {
+                            SWAP;       # pair address (option address) : pair address (pair address bool) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setBorrowPaused ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address (pair address bool) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair address (pair address bool) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.tokenState, sp.tez(0), sp.contract(sp.TRecord(cToken = sp.TAddress, state = sp.TBool).layout(("cToken", "state")), params.comptroller, entry_point='setBorrowPaused').open_some()) # pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (pair address bool) : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setBorrowPaused (pair address bool); # option (contract (pair address bool)) : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 325; # int : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair address (pair address bool) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # pair address bool : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        SWAP;       # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == setCloseFactor ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.closeFactor, sp.tez(0), sp.contract(sp.TNat, params.comptroller, entry_point='setCloseFactor').open_some()) # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair nat address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %setCloseFactor nat; # option (contract nat) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 208; # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair nat address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            SWAP;       # pair address (option address) : pair (pair address nat) address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setCollateralFactor ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair (pair address nat) address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair (pair address nat) address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.collateralFactor, sp.tez(0), sp.contract(sp.TRecord(cToken = sp.TAddress, newCollateralFactor = sp.TNat).layout(("cToken", "newCollateralFactor")), params.comptroller, entry_point='setCollateralFactor').open_some()) # pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair (pair address nat) address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setCollateralFactor (pair address nat); # option (contract (pair address nat)) : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 225; # int : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair (pair address nat) address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # pair address nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }
+                          {
+                            SWAP;       # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setComptroller ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.comptroller, sp.tez(0), sp.contract(sp.TAddress, params.cToken, entry_point='setComptroller').open_some()) # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setComptroller address; # option (contract address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 131; # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair address address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        SWAP;       # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == setContractGovernance ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.governance, sp.tez(0), sp.contract(sp.TAddress, params.contractAddress, entry_point='setPendingGovernance').open_some()) # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %setPendingGovernance address; # option (contract address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 56; # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair address address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            SWAP;       # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setInterestRateModel ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.interestRateModel, sp.tez(0), sp.contract(sp.TAddress, params.cToken, entry_point='setInterestRateModel').open_some()) # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setInterestRateModel address; # option (contract address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 146; # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair address address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }
+                          {
+                            SWAP;       # pair address (option address) : pair address nat : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setLiquidationIncentive ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address nat : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair address nat : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.liquidationIncentive, sp.tez(0), sp.contract(sp.TNat, params.comptroller, entry_point='setLiquidationIncentive').open_some()) # pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address nat : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setLiquidationIncentive nat; # option (contract nat) : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 240; # int : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair address nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+              }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        SWAP;       # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == setLiquidityPeriodRelevance ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.blockNumber, sp.tez(0), sp.contract(sp.TNat, params.comptroller, entry_point='setLiquidityPeriodRelevance').open_some()) # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair nat address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %setLiquidityPeriodRelevance nat; # option (contract nat) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 114; # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair nat address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        SWAP;       # pair address (option address) : pair (pair address nat) address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == setMarketBorrowCap ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair (pair address nat) address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair (pair address nat) address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.borrowCap, sp.tez(0), sp.contract(sp.TRecord(cToken = sp.TAddress, newBorrowCap = sp.TNat).layout(("cToken", "newBorrowCap")), params.comptroller, entry_point='setMarketBorrowCap').open_some()) # pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair (pair address nat) address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # address : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %setMarketBorrowCap (pair address nat); # option (contract (pair address nat)) : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 290; # int : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair (pair address nat) address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair (pair address nat) address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # pair address nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        SWAP;       # pair address (option address) : pair address (pair address bool) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == setMintPaused ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address (pair address bool) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair address (pair address bool) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.tokenState, sp.tez(0), sp.contract(sp.TRecord(cToken = sp.TAddress, state = sp.TBool).layout(("cToken", "state")), params.comptroller, entry_point='setMintPaused').open_some()) # pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (pair address bool) : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %setMintPaused (pair address bool); # option (contract (pair address bool)) : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 308; # int : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair address (pair address bool) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair address (pair address bool) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # pair address bool : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            SWAP;       # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setPriceOracle ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair address address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.priceOracle, sp.tez(0), sp.contract(sp.TAddress, params.comptroller, entry_point='setPriceOracle').open_some()) # pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setPriceOracle address; # option (contract address) : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 193; # int : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair address address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair address address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }
+                          {
+                            SWAP;       # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setPricePeriodRelevance ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair nat address : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.blockNumber, sp.tez(0), sp.contract(sp.TNat, params.comptroller, entry_point='setPricePeriodRelevance').open_some()) # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair nat address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setPricePeriodRelevance nat; # option (contract nat) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 99; # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair nat address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        SWAP;       # pair address (option address) : pair address nat : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # == setReserveFactor ==
+                        # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address nat : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address (option address) : pair address (option address) : pair address nat : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUG 2;      # pair address (option address) : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SENDER;     # @sender : address : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        COMPARE;    # int : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        EQ;         # bool : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF
+                          {}
+                          {
+                            PUSH string "GOV_NOT_ADMIN"; # string : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }; # pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        # sp.transfer(params.newReserveFactor, sp.tez(0), sp.contract(sp.TNat, params.cToken, entry_point='setReserveFactor').open_some()) # pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair address nat : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %setReserveFactor nat; # option (contract nat) : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 161; # int : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair address nat : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair address nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            SWAP;       # pair address (option address) : pair address bool : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == setTransferPaused ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address bool : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair address bool : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.state, sp.tez(0), sp.contract(sp.TBool, params.comptroller, entry_point='setTransferPaused').open_some()) # pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address bool : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %setTransferPaused bool; # option (contract bool) : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 340; # int : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair address bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair address bool : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # bool : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }
+                          {
+                            SWAP;       # pair address (option address) : pair address (pair address string) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # == supportMarket ==
+                            # sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN') # pair address (option address) : pair address (pair address string) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (option address) : pair address (option address) : pair address (pair address string) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUG 2;      # pair address (option address) : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SENDER;     # @sender : address : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            COMPARE;    # int : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            EQ;         # bool : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {}
+                              {
+                                PUSH string "GOV_NOT_ADMIN"; # string : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }; # pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            # sp.transfer(params.market, sp.tez(0), sp.contract(sp.TRecord(cToken = sp.TAddress, name = sp.TString).layout(("cToken", "name")), params.comptroller, entry_point='supportMarket').open_some()) # pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair address (pair address string) : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %supportMarket (pair address string); # option (contract (pair address string)) : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 257; # int : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair address (pair address string) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 3;      # pair address (pair address string) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CDR;        # pair address string : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        # == sweepFA12 ==
+                        # sp.transfer(sp.record(from_ = sp.self_address, to_ = self.data.administrator, value = params.amount), sp.tez(0), sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), params.tokenAddress, entry_point='transfer').open_some()) # pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP;        # pair nat address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CDR;        # address : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONTRACT %transfer (pair address (pair address nat)); # option (contract (pair address (pair address nat))) : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        IF_NONE
+                          {
+                            PUSH int 11; # int : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        NIL operation; # list operation : @some : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SWAP;       # @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PUSH mutez 0; # mutez : @some : list operation : pair nat address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DIG 3;      # pair nat address : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        DUP 5;      # pair address (option address) : nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CAR;        # address : nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        SELF_ADDRESS; # @self : address : nat : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        PAIR 3;     # pair @self (pair address nat) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            # == sweepFA2 ==
+                            # sp.transfer(sp.list([sp.record(from_ = sp.self_address, txs = sp.list([sp.record(to_ = self.data.administrator, token_id = params.id, amount = params.amount)]))]), sp.tez(0), sp.contract(sp.TList(sp.TRecord(from_ = sp.TAddress, txs = sp.TList(sp.TRecord(amount = sp.TNat, to_ = sp.TAddress, token_id = sp.TNat).layout(("to_", ("token_id", "amount"))))).layout(("from_", "txs"))), params.tokenAddress, entry_point='transfer').open_some()) # pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair nat (pair nat address) : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            GET 4;      # address : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONTRACT %transfer (list (pair address (list (pair address (pair nat nat))))); # option (contract (list (pair address (list (pair address (pair nat nat)))))) : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF_NONE
+                              {
+                                PUSH int 36; # int : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                FAILWITH;   # FAILED
+                              }
+                              {}; # @some : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL operation; # list operation : @some : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # @some : list operation : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PUSH mutez 0; # mutez : @some : list operation : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL (pair address (list (pair address (pair nat nat)))); # list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            NIL (pair address (pair nat nat)); # list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair nat (pair nat address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DIG 5;      # pair nat (pair nat address) : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP;        # pair nat (pair nat address) : pair nat (pair nat address) : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # nat : pair nat (pair nat address) : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SWAP;       # pair nat (pair nat address) : nat : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            GET 3;      # nat : nat : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            DUP 8;      # pair address (option address) : nat : nat : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CAR;        # address : nat : nat : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PAIR 3;     # pair address (pair nat nat) : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            SELF_ADDRESS; # @self : list (pair address (pair nat nat)) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            PAIR;       # pair @self (list (pair address (pair nat nat))) : list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list (pair address (list (pair address (pair nat nat)))) : mutez : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }
+                          {
+                            # == sweepMutez ==
+                            # if params: # bool : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                            IF
+                              {
+                                # sp.send(self.data.administrator, sp.balance) # pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                DUP;        # pair address (option address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                CAR;        # address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                CONTRACT %receive unit; # option (contract unit) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                IF_NONE
+                                  {
+                                    PUSH int 18; # int : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                    FAILWITH;   # FAILED
+                                  }
+                                  {}; # @some : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                NIL operation; # list operation : @some : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                SWAP;       # @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                BALANCE;    # @balance : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                UNIT;       # unit : @balance : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                              }
+                              {
+                                # sp.send(self.data.administrator, sp.balance) # pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                DUP;        # pair address (option address) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                CAR;        # address : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                CONTRACT unit; # option (contract unit) : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                IF_NONE
+                                  {
+                                    PUSH int 21; # int : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                    FAILWITH;   # FAILED
+                                  }
+                                  {}; # @some : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                NIL operation; # list operation : @some : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                SWAP;       # @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                BALANCE;    # @balance : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                UNIT;       # unit : @balance : @some : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                TRANSFER_TOKENS; # operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                                CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                              }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                          }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+                  }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+              }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+          }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+    NIL operation; # list operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+    SWAP;       # list operation : list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+    ITER
+      {
+        CONS;       # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+      }; # list operation : pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))
+    DUG 2;      # pair address (option address) : big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address)))) : list operation
+    PAIR;       # pair (pair address (option address)) (big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))) : list operation
+    SWAP;       # list operation : pair (pair address (option address)) (big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address)))))
+    PAIR;       # pair (list operation) (pair (pair address (option address)) (big_map nat (lambda (pair (or unit (or unit address)) (pair address (option address))) (pair (list operation) (pair address (option address))))))
+  };

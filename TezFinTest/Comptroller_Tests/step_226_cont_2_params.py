@@ -1,0 +1,1 @@
+sp.record(callback = sp.contract(sp.TInt, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetInt')).open_some(), data = sp.record(account = sp.address('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C'), cTokenModify = sp.address('KT12'), redeemTokens = 0, borrowAmount = 0))

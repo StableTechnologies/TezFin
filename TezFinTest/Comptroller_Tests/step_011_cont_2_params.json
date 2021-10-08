@@ -1,0 +1,19 @@
+{
+  "prim": "Pair",
+  "args": [
+    { "string": "KT12" },
+    {
+      "prim": "Pair",
+      "args": [
+        { "prim": "Pair", "args": [ { "prim": "Pair", "args": [ [], { "int": "0" } ] }, { "prim": "Pair", "args": [ { "prim": "True" }, { "int": "1000000000000000000" } ] } ] },
+        {
+          "prim": "Pair",
+          "args": [
+            { "prim": "Pair", "args": [ { "prim": "True" }, { "prim": "True" } ] },
+            { "prim": "Pair", "args": [ { "string": "m3" }, { "prim": "Pair", "args": [ { "int": "0" }, { "int": "0" } ] } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

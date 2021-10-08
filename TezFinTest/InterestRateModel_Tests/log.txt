@@ -1,0 +1,314 @@
+Table Of Contents
+
+ InterestRateModel tests
+# Test getBorrowRate
+## With zero params, result baseRatePerBlock
+## With zero borrows, result baseRatePerBlock
+## Only borrows, result multiplierPerBlock + baseRatePerBlock
+## Fail if reserves > (cash + borrows)
+## Fail if reserves = (cash + borrows)
+## Calculate BorrowRate 1
+## Calculate BorrowRate 2
+## Calculate BorrowRate 3
+## Calculate BorrowRate 4
+# Test getSupplyRate
+## With zero params, result 0
+## With reserveFactorMantissa = 1e18, result 0
+## With zero borrows, result 0
+## Fail if reserves > (cash + borrows)
+## Fail if reserves = (cash + borrows)
+## Calculate SupplyRate 1
+## Calculate SupplyRate 2
+## Calculate SupplyRate 4
+## Calculate SupplyRate 4
+## Calculate SupplyRate 5
+Comment...
+ h1: InterestRateModel tests
+Creating contract
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_storage.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_storage.json 1
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_sizes.csv 2
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_storage.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_types.py 7
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_contract.tz 241
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_contract.json 247
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_contract.py 30
+ => ../TezFinTest/InterestRateModel_Tests/step_002_cont_0_contract.py.html 2112
+Creating contract
+ -> None
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_storage.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_storage.json 1
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_sizes.csv 2
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_storage.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_types.py 7
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_contract.tz 20
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_contract.json 19
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_contract.py 15
+ => ../TezFinTest/InterestRateModel_Tests/step_003_cont_1_contract.py.html 2097
+Comment...
+ h2: Test getBorrowRate
+Comment...
+ h3: With zero params, result baseRatePerBlock
+ => ../TezFinTest/InterestRateModel_Tests/step_006_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_006_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_006_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 0, cash = 0, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(840000000000)...
+ -> (Some 840000000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(840000000000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: With zero borrows, result baseRatePerBlock
+ => ../TezFinTest/InterestRateModel_Tests/step_009_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_009_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_009_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 0, cash = 20, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 10))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(840000000000)...
+ -> (Some 840000000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(840000000000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Only borrows, result multiplierPerBlock + baseRatePerBlock
+ => ../TezFinTest/InterestRateModel_Tests/step_012_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_012_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_012_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 123, cash = 0, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 1020000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(1020000000000)...
+ -> (Some 1020000000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(1020000000000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Fail if reserves > (cash + borrows)
+ => ../TezFinTest/InterestRateModel_Tests/step_015_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_015_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_015_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 10, cash = 10, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 30))...
+ -> --- Expected failure in transaction --- Not the proper variant constructor [Some] != [None]
+(sp.as_nat((params.cash + params.borrows) - params.reserves) : sp.TNat) (contracts/InterestRateModel.py, line 55)
+ (contracts/InterestRateModel.py, line 55)
+Comment...
+ h3: Fail if reserves = (cash + borrows)
+ => ../TezFinTest/InterestRateModel_Tests/step_017_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_017_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_017_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 10, cash = 10, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 20))...
+ -> --- Expected failure in transaction --- Wrong condition: (compute_InterestRateModel_55.value > 0 : sp.TBool) (contracts/InterestRateModel.py, line 56)
+Message: 'IRM_INSUFFICIENT_CASH'
+ (contracts/InterestRateModel.py, line 56)
+Comment...
+ h3: Calculate BorrowRate 1
+ => ../TezFinTest/InterestRateModel_Tests/step_019_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_019_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_019_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 5, cash = 3, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 952500000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(952500000000)...
+ -> (Some 952500000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(952500000000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Calculate BorrowRate 2
+ => ../TezFinTest/InterestRateModel_Tests/step_022_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_022_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_022_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 5000000000000000000, cash = 3000000000000000000, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 952500000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(952500000000)...
+ -> (Some 952500000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(952500000000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Calculate BorrowRate 3
+ => ../TezFinTest/InterestRateModel_Tests/step_025_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_025_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_025_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 3000000000000000000, cash = 5000000000000000000, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 907500000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(907500000000)...
+ -> (Some 907500000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(907500000000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Calculate BorrowRate 4
+ => ../TezFinTest/InterestRateModel_Tests/step_028_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_028_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_028_cont_0_params.json 7
+Executing getBorrowRate(sp.record(borrows = 5, cash = 5, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserves = 2))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 952500000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(952500000000)...
+ -> (Some 952500000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(952500000000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h2: Test getSupplyRate
+Comment...
+ h3: With zero params, result 0
+ => ../TezFinTest/InterestRateModel_Tests/step_032_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_032_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_032_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 0, cash = 0, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 0, reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 0
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(0)...
+ -> (Some 0)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(0), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: With reserveFactorMantissa = 1e18, result 0
+ => ../TezFinTest/InterestRateModel_Tests/step_035_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_035_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_035_cont_0_params.json 10
+Executing getSupplyRate(sp.record(borrows = 10, cash = 10, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 1000000000000000000, reserves = 10))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 0
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(0)...
+ -> (Some 0)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(0), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: With zero borrows, result 0
+ => ../TezFinTest/InterestRateModel_Tests/step_038_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_038_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_038_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 0, cash = 10, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 100000000000000000, reserves = 5))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 0
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(0)...
+ -> (Some 0)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(0), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Fail if reserves > (cash + borrows)
+ => ../TezFinTest/InterestRateModel_Tests/step_041_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_041_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_041_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 10, cash = 10, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 10, reserves = 30))...
+ -> --- Expected failure in transaction --- Not the proper variant constructor [Some] != [None]
+(sp.as_nat((params.cash + params.borrows) - params.reserves) : sp.TNat) (contracts/InterestRateModel.py, line 55)
+ (contracts/InterestRateModel.py, line 55)
+Comment...
+ h3: Fail if reserves = (cash + borrows)
+ => ../TezFinTest/InterestRateModel_Tests/step_043_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_043_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_043_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 10, cash = 10, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 10, reserves = 20))...
+ -> --- Expected failure in transaction --- Wrong condition: (compute_InterestRateModel_55.value > 0 : sp.TBool) (contracts/InterestRateModel.py, line 56)
+Message: 'IRM_INSUFFICIENT_CASH'
+ (contracts/InterestRateModel.py, line 56)
+Comment...
+ h3: Calculate SupplyRate 1
+ => ../TezFinTest/InterestRateModel_Tests/step_045_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_045_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_045_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 300, cash = 500, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 100000000000000000, reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 306281250000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(306281250000)...
+ -> (Some 306281250000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(306281250000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Calculate SupplyRate 2
+ => ../TezFinTest/InterestRateModel_Tests/step_048_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_048_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_048_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 3000000000000000000, cash = 5000000000000000000, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 100000000000000000, reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 306281250000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(306281250000)...
+ -> (Some 306281250000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(306281250000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Calculate SupplyRate 4
+ => ../TezFinTest/InterestRateModel_Tests/step_051_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_051_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_051_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 50, cash = 30, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 100000000000000000, reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 535781250000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(535781250000)...
+ -> (Some 535781250000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(535781250000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Calculate SupplyRate 4
+ => ../TezFinTest/InterestRateModel_Tests/step_054_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_054_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_054_cont_0_params.json 10
+Executing getSupplyRate(sp.record(borrows = 30, cash = 70, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 100000000000000000, reserves = 20))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 306281250000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(306281250000)...
+ -> (Some 306281250000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(306281250000), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Calculate SupplyRate 5
+ => ../TezFinTest/InterestRateModel_Tests/step_057_cont_0_params.py 1
+ => ../TezFinTest/InterestRateModel_Tests/step_057_cont_0_params.tz 1
+ => ../TezFinTest/InterestRateModel_Tests/step_057_cont_0_params.json 7
+Executing getSupplyRate(sp.record(borrows = 300, cash = 500, cb = sp.contract_typed(KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat), reserveFactorMantissa = 200000000000000000, reserves = 0))...
+ -> (Pair 840000000000 (Pair 180000000000 1000000000000000000))
+  + Transfer
+     params: 272250000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some()
+Executing (queue) targetNat(272250000000)...
+ -> (Some 272250000000)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(1).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(272250000000), sp.TOption(sp.TNat)))...
+ OK
+ => ../TezFinTest/InterestRateModel_Tests/log.html 2343

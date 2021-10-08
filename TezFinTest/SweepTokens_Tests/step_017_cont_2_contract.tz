@@ -1,0 +1,18 @@
+parameter (or (unit %receive) (unit %stubFn));
+storage   address;
+code
+  {
+    CAST (pair (or unit unit) address); # pair (or unit unit) address
+    UNPAIR;     # or unit unit : address
+    IF_LEFT
+      {
+        DROP;       # address
+        # == receive == # address
+      }
+      {
+        DROP;       # address
+        # == stubFn == # address
+      }; # address
+    NIL operation; # list operation : address
+    PAIR;       # pair (list operation) address
+  };

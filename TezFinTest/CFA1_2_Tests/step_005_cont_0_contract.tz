@@ -1,0 +1,253 @@
+parameter (or (or (or (or (address %acceptGovernance) (or (pair %borrowAllowed (address %cToken) (pair (address %borrower) (nat %borrowAmount))) (unit %disableMarket))) (or (or (unit %enterMarkets) (unit %exitMarket)) (or (unit %getHypoAccountLiquidity) (pair %mintAllowed (address %cToken) (pair (address %minter) (nat %mintAmount)))))) (or (or (pair %redeemAllowed (address %cToken) (pair (address %redeemer) (nat %redeemAmount))) (or (pair %repayBorrowAllowed (address %cToken) (pair (address %payer) (pair (address %borrower) (nat %repayAmount)))) (bool %setBorrowAllowed))) (or (or (unit %setBorrowPaused) (unit %setCloseFactor)) (or (unit %setCollateralFactor) (unit %setLiquidationIncentive))))) (or (or (or (nat %setLiquidityPeriodRelevance) (or (unit %setMarketBorrowCap) (bool %setMintAllowed))) (or (or (unit %setMintPaused) (address %setPendingGovernance)) (or (unit %setPriceOracle) (nat %setPricePeriodRelevance)))) (or (or (bool %setRedeemAllowed) (or (bool %setRepayBorrowAllowed) (unit %setTransferPaused))) (or (or (unit %supportMarket) (pair %transferAllowed (pair (address %cToken) (address %src)) (pair (address %dst) (nat %transferTokens)))) (or (address %updateAccountLiquidity) (address %updateAssetPrice))))));
+storage   (pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)));
+code
+  {
+    CAST (pair (or (or (or (or address (or (pair address (pair address nat)) unit)) (or (or unit unit) (or unit (pair address (pair address nat))))) (or (or (pair address (pair address nat)) (or (pair address (pair address (pair address nat))) bool)) (or (or unit unit) (or unit unit)))) (or (or (or nat (or unit bool)) (or (or unit address) (or unit nat))) (or (or bool (or bool unit)) (or (or unit (pair (pair address address) (pair address nat))) (or address address))))) (pair (pair bool bool) (pair bool bool))); # pair (or (or (or (or address (or (pair address (pair address nat)) unit)) (or (or unit unit) (or unit (pair address (pair address nat))))) (or (or (pair address (pair address nat)) (or (pair address (pair address (pair address nat))) bool)) (or (or unit unit) (or unit unit)))) (or (or (or nat (or unit bool)) (or (or unit address) (or unit nat))) (or (or bool (or bool unit)) (or (or unit (pair (pair address address) (pair address nat))) (or address address))))) (pair (pair bool bool) (pair bool bool))
+    UNPAIR;     # or (or (or (or address (or (pair address (pair address nat)) unit)) (or (or unit unit) (or unit (pair address (pair address nat))))) (or (or (pair address (pair address nat)) (or (pair address (pair address (pair address nat))) bool)) (or (or unit unit) (or unit unit)))) (or (or (or nat (or unit bool)) (or (or unit address) (or unit nat))) (or (or bool (or bool unit)) (or (or unit (pair (pair address address) (pair address nat))) (or address address)))) : pair (pair bool bool) (pair bool bool)
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    DROP;       # pair (pair bool bool) (pair bool bool)
+                    # == acceptGovernance == # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == borrowAllowed ==
+                        # sp.verify(self.data.borrow_allowed) # pair (pair bool bool) (pair bool bool)
+                        DUP;        # pair (pair bool bool) (pair bool bool) : pair (pair bool bool) (pair bool bool)
+                        CAR;        # pair bool bool : pair (pair bool bool) (pair bool bool)
+                        CAR;        # bool : pair (pair bool bool) (pair bool bool)
+                        IF
+                          {}
+                          {
+                            PUSH string "WrongCondition: self.data.borrow_allowed"; # string : pair (pair bool bool) (pair bool bool)
+                            FAILWITH;   # FAILED
+                          }; # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == disableMarket == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == enterMarkets == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == exitMarket == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == getHypoAccountLiquidity == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == mintAllowed ==
+                        # sp.verify(self.data.mint_allowed) # pair (pair bool bool) (pair bool bool)
+                        DUP;        # pair (pair bool bool) (pair bool bool) : pair (pair bool bool) (pair bool bool)
+                        CAR;        # pair bool bool : pair (pair bool bool) (pair bool bool)
+                        CDR;        # bool : pair (pair bool bool) (pair bool bool)
+                        IF
+                          {}
+                          {
+                            PUSH string "WrongCondition: self.data.mint_allowed"; # string : pair (pair bool bool) (pair bool bool)
+                            FAILWITH;   # FAILED
+                          }; # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }; # pair (pair bool bool) (pair bool bool)
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    DROP;       # pair (pair bool bool) (pair bool bool)
+                    # == redeemAllowed ==
+                    # sp.verify(self.data.redeem_allowed) # pair (pair bool bool) (pair bool bool)
+                    DUP;        # pair (pair bool bool) (pair bool bool) : pair (pair bool bool) (pair bool bool)
+                    GET 3;      # bool : pair (pair bool bool) (pair bool bool)
+                    IF
+                      {}
+                      {
+                        PUSH string "WrongCondition: self.data.redeem_allowed"; # string : pair (pair bool bool) (pair bool bool)
+                        FAILWITH;   # FAILED
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == repayBorrowAllowed ==
+                        # sp.verify(self.data.repay_borrow_allowed) # pair (pair bool bool) (pair bool bool)
+                        DUP;        # pair (pair bool bool) (pair bool bool) : pair (pair bool bool) (pair bool bool)
+                        GET 4;      # bool : pair (pair bool bool) (pair bool bool)
+                        IF
+                          {}
+                          {
+                            PUSH string "WrongCondition: self.data.repay_borrow_allowed"; # string : pair (pair bool bool) (pair bool bool)
+                            FAILWITH;   # FAILED
+                          }; # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        SWAP;       # pair (pair bool bool) (pair bool bool) : bool
+                        # == setBorrowAllowed ==
+                        # self.data.borrow_allowed = params # pair (pair bool bool) (pair bool bool) : bool
+                        UNPAIR;     # pair bool bool : pair bool bool : bool
+                        CDR;        # bool : pair bool bool : bool
+                        DIG 2;      # bool : bool : pair bool bool
+                        PAIR;       # pair bool bool : pair bool bool
+                        PAIR;       # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setBorrowPaused == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setCloseFactor == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setCollateralFactor == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setLiquidationIncentive == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }; # pair (pair bool bool) (pair bool bool)
+          }; # pair (pair bool bool) (pair bool bool)
+      }
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    DROP;       # pair (pair bool bool) (pair bool bool)
+                    # == setLiquidityPeriodRelevance == # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setMarketBorrowCap == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        SWAP;       # pair (pair bool bool) (pair bool bool) : bool
+                        # == setMintAllowed ==
+                        # self.data.mint_allowed = params # pair (pair bool bool) (pair bool bool) : bool
+                        UNPAIR;     # pair bool bool : pair bool bool : bool
+                        CAR;        # bool : pair bool bool : bool
+                        DIG 2;      # bool : bool : pair bool bool
+                        SWAP;       # bool : bool : pair bool bool
+                        PAIR;       # pair bool bool : pair bool bool
+                        PAIR;       # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setMintPaused == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setPendingGovernance == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setPriceOracle == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setPricePeriodRelevance == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }; # pair (pair bool bool) (pair bool bool)
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    # == setRedeemAllowed ==
+                    # self.data.redeem_allowed = params # bool : pair (pair bool bool) (pair bool bool)
+                    UPDATE 3;   # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        # == setRepayBorrowAllowed ==
+                        # self.data.repay_borrow_allowed = params # bool : pair (pair bool bool) (pair bool bool)
+                        UPDATE 4;   # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == setTransferPaused == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == supportMarket == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == transferAllowed == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == updateAccountLiquidity == # pair (pair bool bool) (pair bool bool)
+                      }
+                      {
+                        DROP;       # pair (pair bool bool) (pair bool bool)
+                        # == updateAssetPrice == # pair (pair bool bool) (pair bool bool)
+                      }; # pair (pair bool bool) (pair bool bool)
+                  }; # pair (pair bool bool) (pair bool bool)
+              }; # pair (pair bool bool) (pair bool bool)
+          }; # pair (pair bool bool) (pair bool bool)
+      }; # pair (pair bool bool) (pair bool bool)
+    NIL operation; # list operation : pair (pair bool bool) (pair bool bool)
+    PAIR;       # pair (list operation) (pair (pair bool bool) (pair bool bool))
+  };

@@ -1,0 +1,1 @@
+sp.record(closeFactor = 2, comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))

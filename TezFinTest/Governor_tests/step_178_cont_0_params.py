@@ -1,0 +1,1 @@
+sp.record(collateralFactor = sp.record(cToken = sp.address('KT1Tezooo5zzSmartPyzzSTATiCzzzz48Z4p'), newCollateralFactor = 2), comptroller = sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))

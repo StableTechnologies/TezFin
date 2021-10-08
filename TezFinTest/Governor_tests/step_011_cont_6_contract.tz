@@ -1,0 +1,36 @@
+parameter (or (pair %get string (contract (pair string (pair timestamp nat)))) (nat %setPrice));
+storage   nat;
+code
+  {
+    CAST (pair (or (pair string (contract (pair string (pair timestamp nat)))) nat) nat); # pair (or (pair string (contract (pair string (pair timestamp nat)))) nat) nat
+    UNPAIR;     # or (pair string (contract (pair string (pair timestamp nat)))) nat : nat
+    IF_LEFT
+      {
+        # == get ==
+        # compute_OracleMock_19 = sp.local("compute_OracleMock_19", sp.fst(params)) # pair string (contract (pair string (pair timestamp nat))) : nat
+        DUP;        # pair string (contract (pair string (pair timestamp nat))) : pair string (contract (pair string (pair timestamp nat))) : nat
+        CAR;        # string : pair string (contract (pair string (pair timestamp nat))) : nat
+        SWAP;       # pair string (contract (pair string (pair timestamp nat))) : string : nat
+        # compute_OracleMock_20 = sp.local("compute_OracleMock_20", sp.snd(params)) # pair string (contract (pair string (pair timestamp nat))) : string : nat
+        CDR;        # contract (pair string (pair timestamp nat)) : string : nat
+        # sp.transfer((compute_OracleMock_19.value, (sp.timestamp(0), self.data.price)), sp.tez(0), compute_OracleMock_20.value) # contract (pair string (pair timestamp nat)) : string : nat
+        NIL operation; # list operation : contract (pair string (pair timestamp nat)) : string : nat
+        SWAP;       # contract (pair string (pair timestamp nat)) : list operation : string : nat
+        PUSH mutez 0; # mutez : contract (pair string (pair timestamp nat)) : list operation : string : nat
+        DUP 5;      # nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : nat
+        PUSH timestamp "1970-01-01T00:00:00Z"; # timestamp : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : nat
+        PAIR;       # pair timestamp nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : nat
+        DIG 4;      # string : pair timestamp nat : mutez : contract (pair string (pair timestamp nat)) : list operation : nat
+        PAIR;       # pair string (pair timestamp nat) : mutez : contract (pair string (pair timestamp nat)) : list operation : nat
+        TRANSFER_TOKENS; # operation : list operation : nat
+        CONS;       # list operation : nat
+      }
+      {
+        SWAP;       # nat : nat
+        DROP;       # nat
+        # == setPrice ==
+        # self.data.price = params # nat
+        NIL operation; # list operation : nat
+      }; # list operation : nat
+    PAIR;       # pair (list operation) nat
+  };

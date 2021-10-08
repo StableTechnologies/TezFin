@@ -1,0 +1,1537 @@
+Table Of Contents
+
+ CToken tests
+# Accounts
+# Contracts
+# Try borrow when there is no cash
+# Test mint
+## Mint allowed
+### call mint with old accrue interest
+### call mint with relevant accrue interest
+## Mint not allowed
+## Mint allowed again
+## Try mint in callback
+# Test Borrow
+## Borrow allowed
+### call borrow with relevant account liquidity, asset price and accrue interest
+### call borrow with old account liquidity
+## Borrow not allowed
+## Borrow allowed again
+## Try borrow with insufficient cash
+## Try borrow in callback
+# Test Redeem
+## Redeem allowed
+### call redeem with relevant account liquidity, asset price and accrue interest
+### call redeem with old account liquidity
+## Redeem not allowed
+## Redeem allowed again
+## Try redeem with insufficient balance
+## Redeem underlying
+## Try redeem in callback
+## Try redeem underlying in callback
+# Test Repay borrow
+## Repay borrow allowed
+### call repayBorrow with old accrue interest
+### call repayBorrow with relevant accrue interest
+## Repay borrow not allowed
+## Repay borrow allowed again
+## Repay borrow behalf
+## Repay more than borrowed
+## Try repayBorrow in callback
+# Test transfer
+## No tokens to transfer
+## No approved tokens to transfer
+## Transfer successfully
+## Approve and transfer successfully
+# Admin functions
+## Pending governance
+### Common user attempts to set pending governance
+### Admin attempts to set pending governance
+## Accept governance
+### Not pending admin attempts to accept governance
+### Pending admin attempts to accept governance
+## Remove pending governance
+### Common user attempts to remove pending governance
+### Admin attempts to remove pending governance
+## Set comptroller
+### Common user attempts to set comptroller
+### Admin attempts to set comptroller
+## Set interest rate model
+### Common user attempts to set interest rate model
+### Admin attempts to set interest rate model
+## Set reserve factor
+### Common user attempts to Set reserve factor
+### Admin attempts to Set reserve factor
+## Add reserves
+### Try add reserves in callback
+## Reduce reserves
+### Common user attempts to reduce reserves
+### Admin attempts to reduce reserves
+### Try to reduce insufficient
+## Check hardResetOp
+### Common user attempts to hardResetOp
+### Admin attempts to hardResetOp
+# Test getBalanceOfUnderlying
+## View stored balance
+## Mint new tokens and check balance
+## Try with nonexistent account
+# Test getAccountSnapshot
+# Test updateBorrowRatePerBlock
+## Updated
+## Try internal
+## Try set directly
+# Test updateSupplyRatePerBlock
+## Updated
+## Try internal
+## Try set directly
+Comment...
+ h1: CToken tests
+Comment...
+ h2: Accounts
+Computing sp.list([sp.test_account("Alice"), sp.test_account("Bob"), sp.test_account("admin")])...
+ => sp.list([sp.record(seed = 'Alice', address = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), public_key = sp.key('edpkuvNy6TuQ2z8o9wnoaTtTXkzQk7nhegCHfxBc4ecsd4qG71KYNG'), public_key_hash = sp.key_hash('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), secret_key = sp.secret_key('edskRijgcXx8gzqkq7SCBbrb6aDZQMmP6dznCQWgU1Jr4qPfJT1yFq5A39ja9G4wahS8uWtBurZy14Hy7GZkQh7WnopJTKtCQG')), sp.record(seed = 'Bob', address = sp.address('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C'), public_key = sp.key('edpkufVmvzkm4oFQ7WcF5NJbq9BFB2mWRsm4Dyh2spMDuDxWSQWHuT'), public_key_hash = sp.key_hash('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C'), secret_key = sp.secret_key('edskRq1xuW7TCYzdFm1JQLi1Hz4MNDVP6ukQHVEEh3bVqyuzv7pXXjaGsXZuMbwtd3kQFp3LQ7GQzkLeprNEijKhQKzsxrYrUz')), sp.record(seed = 'admin', address = sp.address('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), public_key = sp.key('edpkthtmpNV7DzPgvsU5ktVkfYbARpb2nzDbncU8mdbMeXGRhGTjN7'), public_key_hash = sp.key_hash('tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5'), secret_key = sp.secret_key('edskRjPeZkNsmeJ8aAzs5vyXVhP7DVRvG6nM1ReNfjzkR3h6ykbf71mPxQyE5HU9FHrV3EdrY4GVCSBWhU44v6bnhQGrKM9Cs8'))])
+Comment...
+ h2: Contracts
+Creating contract
+ -> None
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_storage.tz 1
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_storage.json 1
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_sizes.csv 2
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_storage.py 1
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_types.py 7
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_contract.tz 20
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_contract.json 19
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_contract.py 15
+ => ../TezFinTest/CToken_Tests/step_005_cont_0_contract.py.html 2097
+Creating contract
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_storage.tz 1
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_storage.json 1
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_sizes.csv 2
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_storage.py 1
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_types.py 7
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_contract.tz 253
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_contract.json 532
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_contract.py 125
+ => ../TezFinTest/CToken_Tests/step_006_cont_1_contract.py.html 2181
+Creating contract
+ -> (Pair 840000000000 180000000000)
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_storage.tz 1
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_storage.json 1
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_sizes.csv 2
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_storage.py 1
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_types.py 7
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_contract.tz 50
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_contract.json 116
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_contract.py 27
+ => ../TezFinTest/CToken_Tests/step_007_cont_2_contract.py.html 2107
+Creating contract
+ -> (Pair (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 0 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {} 1000000000000000000)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0))))) {Elt 0 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; DUP; GET 3; GET 6; IF_NONE { PUSH string "CT_NOT_SET_PENDING_ADMIN"; FAILWITH } {}; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_PENDING_ADMIN"; FAILWITH }; DUP; UNPAIR; UNPAIR; SWAP; UNPAIR; CDR; DIG 4; GET 3; GET 6; IF_NONE { PUSH int 593; FAILWITH } {}; PAIR; PAIR; SWAP; PAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; NONE address; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 1 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SELF_ADDRESS; SENDER; COMPARE; NEQ; IF {} { PUSH string "CT_INTERNAL_CALL"; FAILWITH }; PUSH nat 0; DUP 3; CAR; GET 3; GET 3; SENDER; GET; IF_NONE { PUSH int 281; FAILWITH } {}; GET 3; DUP 3; CAR; GET; IF_NONE { PUSH nat 0 } {}; COMPARE; EQ; IF { PUSH bool True } { DUP; CDR; PUSH nat 0; COMPARE; EQ }; IF {} { PUSH string "CT_UNSAFE_ALLOWANCE_CHANGE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; DUP; SENDER; DUP; DUG 2; GET; IF_NONE { PUSH int 283; FAILWITH } {}; DUP; GET 3; DUP 10; CDR; SOME; DIG 10; CAR; UPDATE; UPDATE 3; SOME; SWAP; UPDATE; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 2 { UNPAIR; IF_LEFT { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 6; PUSH nat 8; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; PUSH bool False; PUSH nat 8; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; PAIR; DUP; DUG 2; CAR; GET 5; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_INVALID_BORROW_RATE"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 3; LEVEL; SUB; ISNAT; IF_NONE { PUSH int 543; FAILWITH } {}; MUL; SWAP; DUP; DUG 2; GET 3; CAR; CAR; DUP 3; GET 7; DUP 3; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; DIG 2; DUP; GET 7; DUP 3; ADD; UPDATE 7; DUP; DUP; GET 9; SWAP; DUP; DUG 5; GET 3; CAR; CAR; DIG 3; DIG 5; GET 5; CAR; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; UPDATE 9; DUP; DUG 2; UNPAIR; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; CAR; DUP 7; CAR; GET 3; GET 4; DUP 8; GET 3; CAR; CAR; DIG 8; CAR; GET 3; GET 4; DIG 8; MUL; EDIV; IF_NONE { PUSH int 58; FAILWITH } { CAR }; ADD; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; SWAP; CDR; LEVEL; PAIR; SWAP; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 3 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { DROP } { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH }; DUP; CAR; GET 3; CAR; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; EMPTY_SET nat; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; PAIR; NIL operation; PAIR }; Elt 4 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } } { PUSH int -1; FAILWITH }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 6; PUSH nat 12; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; PUSH bool False; PUSH nat 12; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; PAIR; SWAP; DUP; PUSH nat 1000000; DUP 4; GET 10; EDIV; IF_NONE { PUSH int 18; FAILWITH } { CAR }; COMPARE; GE; IF {} { PUSH string "CT_INSUFFICIENT_CASH"; FAILWITH }; SWAP; DUP; DUG 2; GET 9; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_REDUCE_AMOUNT"; FAILWITH }; SWAP; DUP; DUG 2; SWAP; DIG 2; GET 9; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; UPDATE 9; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CDR; PUSH bool False; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 5 { UNPAIR; IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { DROP } } } } { PUSH int -1; FAILWITH }; DUP; CAR; GET 3; CAR; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; NONE address; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 6 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT {} { PUSH int -1; FAILWITH } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 6; PUSH nat 6; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; PUSH bool False; PUSH nat 6; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; CDR; DIG 5; PAIR; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 7 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } { PUSH int -1; FAILWITH } }; SWAP; DUP; DUG 2; CAR; GET 3; CAR; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; CAR; DIG 5; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; NIL operation; PAIR }; Elt 8 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } { PUSH int -1; FAILWITH } }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 6; PUSH nat 9; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; PUSH bool False; PUSH nat 9; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; UNPAIR; SWAP; CDR; DIG 4; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 9 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } }; SWAP; DUP; DUG 2; CAR; GET 3; CAR; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_NOT_ADMIN"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; CAR; DIG 5; SOME; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 10 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT {} { PUSH int -1; FAILWITH } } } }; SELF_ADDRESS; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_INTERNAL_FUNCTION"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 6; PUSH nat 10; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; PUSH bool False; PUSH nat 10; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; PAIR; DUP; DUG 2; CAR; CAR; GET 3; LEVEL; SUB; ISNAT; IF_NONE { PUSH string "SUBTRACTION_UNDERFLOW"; FAILWITH } {}; DUP 3; CAR; CAR; GET 5; COMPARE; GT; IF {} { PUSH string "CT_INTEREST_OLD"; FAILWITH }; SWAP; DUP; DUG 2; GET 3; GET 5; IF {} { PUSH string "CT_INTEREST_INVALID"; FAILWITH }; SWAP; DUP; DUG 2; GET 5; GET 3; SWAP; DUP; DUG 2; COMPARE; LE; IF {} { PUSH string "CT_INVALID_RESERVE_FACTOR"; FAILWITH }; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; CDR; DIG 4; PAIR; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; CDR; PUSH bool False; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; NIL operation; PAIR }; Elt 11 { UNPAIR; IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } { IF_LEFT { PUSH int -1; FAILWITH } {} } } }; SWAP; DUP; DUG 2; GET 3; GET 3; SENDER; COMPARE; EQ; IF {} { PUSH string "CT_SENDER_NOT_IRM"; FAILWITH }; SWAP; DUP; DUG 2; CAR; CAR; GET 6; PUSH nat 7; MEM; IF {} { PUSH string "OP_NOT_ACTIVE"; FAILWITH }; SWAP; UNPAIR; UNPAIR; UNPAIR; SWAP; UNPAIR; SWAP; UNPAIR; SWAP; PUSH bool False; PUSH nat 7; UPDATE; SWAP; PAIR; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; UNPAIR; SWAP; UNPAIR; UNPAIR; SWAP; CAR; DIG 5; SWAP; PAIR; SWAP; PAIR; PAIR; SWAP; PAIR; SWAP; PAIR; NIL operation; PAIR }})
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_storage.tz 1
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_storage.json 1099
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_sizes.csv 2
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_storage.py 1
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_types.py 7
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_contract.tz 3914
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_contract.json 4735
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_contract.py 678
+ => ../TezFinTest/CToken_Tests/step_008_cont_3_contract.py.html 2721
+Comment...
+ h2: Try borrow when there is no cash
+ => ../TezFinTest/CToken_Tests/step_010_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_010_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_010_cont_3_params.json 1
+Executing borrow(100)...
+ -> --- Expected failure in transaction --- Wrong condition: ((self.data.totalSupply // 1000000) >= params : sp.TBool) (contracts/CToken.py, line 727)
+Message: 'CT_INSUFFICIENT_CASH'
+ (contracts/CToken.py, line 727)
+Comment...
+ h2: Test mint
+Comment...
+ h3: Mint allowed
+Comment...
+ h4: call mint with old accrue interest
+ => ../TezFinTest/CToken_Tests/step_014_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_014_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_014_cont_3_params.json 1
+Executing mint(100)...
+ -> --- Expected failure in transaction --- Wrong condition: (compute_CToken_730.value < self.data.accrualIntPeriodRelevance : sp.TBool) (contracts/CToken.py, line 731)
+Message: 'CT_INTEREST_OLD'
+ (contracts/CToken.py, line 731)
+Verifying sp.contract_data(3).isAccrualInterestValid == False...
+ OK
+Comment...
+ h4: call mint with relevant accrue interest
+ => ../TezFinTest/CToken_Tests/step_017_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_017_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_017_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 8 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {} 1000000000000000000)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 0)))))
+ => ../TezFinTest/CToken_Tests/step_018_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_018_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_018_cont_3_params.json 1
+Executing mint(100)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 8 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000000000000000000)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 100000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), mintAmount = 100)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, mintAmount = sp.TNat, minter = sp.TAddress).layout(("cToken", ("minter", "mintAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%mintAllowed')).open_some()
+Executing (queue) mintAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), mintAmount = 100))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].balance == 100000000...
+ OK
+Comment...
+ h3: Mint not allowed
+ => ../TezFinTest/CToken_Tests/step_021_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_021_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_021_cont_1_params.json 1
+Executing setMintAllowed(False)...
+ -> (Pair (Pair True False) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_022_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_022_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_022_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 8 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000000000000000000)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 100000000)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 10 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000001680000000000)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 100000000)))))
+ => ../TezFinTest/CToken_Tests/step_023_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_023_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_023_cont_3_params.json 1
+Executing mint(100)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 10 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 200000000))} 1000001680000000000)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 200000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), mintAmount = 100)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, mintAmount = sp.TNat, minter = sp.TAddress).layout(("cToken", ("minter", "mintAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%mintAllowed')).open_some()
+Executing (queue) mintAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), mintAmount = 100))...
+ -> --- Expected failure in transaction --- Wrong condition: (self.data.mint_allowed : sp.TBool) (contracts/tests/mock/ComptrollerMock.py, line 28)
+ (contracts/tests/mock/ComptrollerMock.py, line 28)
+Comment...
+ h3: Mint allowed again
+ => ../TezFinTest/CToken_Tests/step_025_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_025_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_025_cont_1_params.json 1
+Executing setMintAllowed(True)...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_026_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_026_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_026_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 10 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000001680000000000)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 100000000)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 12 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000003360002822400)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 100000000)))))
+ => ../TezFinTest/CToken_Tests/step_027_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_027_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_027_cont_3_params.json 1
+Executing mint(1000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 12 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000003360002822400)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C'), mintAmount = 1000)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, mintAmount = sp.TNat, minter = sp.TAddress).layout(("cToken", ("minter", "mintAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%mintAllowed')).open_some()
+Executing (queue) mintAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C'), mintAmount = 1000))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Bob").address)].balance == 1000000000...
+ OK
+Comment...
+ h3: Try mint in callback
+ => ../TezFinTest/CToken_Tests/step_030_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_030_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_030_cont_3_params.json 1
+Executing getCash((sp.unit, sp.contract_typed(KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%mint)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 12 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000003360002822400)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 1100000000)))))
+  + Transfer
+     params: 1100
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%mint')).open_some()
+Executing (queue) mint(1100)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender != sp.self_address : sp.TBool) (contracts/CToken.py, line 738)
+Message: 'CT_INTERNAL_CALL'
+ (contracts/CToken.py, line 738)
+Comment...
+ h2: Test Borrow
+Comment...
+ h3: Borrow allowed
+ => ../TezFinTest/CToken_Tests/step_033_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_033_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_033_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 12 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000003360002822400)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(borrows = 0, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 0, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 15 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000))} 1000005880011289607)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 0 (Pair 0 1100000000)))))
+ => ../TezFinTest/CToken_Tests/step_034_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_034_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_034_cont_1_params.json 1
+Executing updateAssetPrice(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_035_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_035_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_035_cont_1_params.json 1
+Executing updateAccountLiquidity(sp.to_constant(sp.test_account("Carl").address))...
+ -> (Pair (Pair True True) (Pair True True))
+Comment...
+ h4: call borrow with relevant account liquidity, asset price and accrue interest
+ => ../TezFinTest/CToken_Tests/step_037_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_037_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_037_cont_3_params.json 1
+Executing borrow(10)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 15 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000005880011289607)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), borrower = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), borrowAmount = 10)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrowAmount = sp.TNat, borrower = sp.TAddress, cToken = sp.TAddress).layout(("cToken", ("borrower", "borrowAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%borrowAllowed')).open_some()
+Executing (queue) borrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), borrower = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), borrowAmount = 10))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).isAccrualInterestValid == False...
+ OK
+Comment...
+ h4: call borrow with old account liquidity
+ => ../TezFinTest/CToken_Tests/step_040_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_040_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_040_cont_3_params.json 1
+Executing borrow(10)...
+ -> --- Expected failure in transaction --- Wrong condition: (compute_CToken_730.value < self.data.accrualIntPeriodRelevance : sp.TBool) (contracts/CToken.py, line 731)
+Message: 'CT_INTEREST_OLD'
+ (contracts/CToken.py, line 731)
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Carl").address)].balance == 0...
+ OK
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Carl").address)].accountBorrows.principal == 10...
+ OK
+Comment...
+ h3: Borrow not allowed
+ => ../TezFinTest/CToken_Tests/step_044_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_044_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_044_cont_1_params.json 1
+Executing setBorrowAllowed(False)...
+ -> (Pair (Pair False True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_045_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_045_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_045_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 15 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000005880011289607)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 19 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000009240031046444)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1100000000)))))
+ => ../TezFinTest/CToken_Tests/step_046_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_046_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_046_cont_3_params.json 1
+Executing borrow(10)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 19 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000009240031046444 20) (Pair {} 0))} 1000009240031046444)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 30 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), borrower = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), borrowAmount = 10)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrowAmount = sp.TNat, borrower = sp.TAddress, cToken = sp.TAddress).layout(("cToken", ("borrower", "borrowAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%borrowAllowed')).open_some()
+Executing (queue) borrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), borrower = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), borrowAmount = 10))...
+ -> --- Expected failure in transaction --- Wrong condition: (self.data.borrow_allowed : sp.TBool) (contracts/tests/mock/ComptrollerMock.py, line 46)
+ (contracts/tests/mock/ComptrollerMock.py, line 46)
+Comment...
+ h3: Borrow allowed again
+ => ../TezFinTest/CToken_Tests/step_048_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_048_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_048_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 19 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000009240031046444)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 21 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 0 0) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000010920046569696)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1100000000)))))
+ => ../TezFinTest/CToken_Tests/step_049_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_049_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_049_cont_1_params.json 1
+Executing updateAssetPrice(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'))...
+ -> (Pair (Pair False True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_050_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_050_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_050_cont_1_params.json 1
+Executing updateAccountLiquidity(sp.to_constant(sp.test_account("Carl").address))...
+ -> (Pair (Pair False True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_051_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_051_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_051_cont_1_params.json 1
+Executing setBorrowAllowed(True)...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_052_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_052_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_052_cont_3_params.json 1
+Executing borrow(10)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 21 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000010920046569696)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrowAmount = 10)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrowAmount = sp.TNat, borrower = sp.TAddress, cToken = sp.TAddress).layout(("cToken", ("borrower", "borrowAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%borrowAllowed')).open_some()
+Executing (queue) borrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrowAmount = 10))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].balance == 100000000...
+ OK
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].accountBorrows.principal == 10...
+ OK
+Comment...
+ h3: Try borrow with insufficient cash
+ => ../TezFinTest/CToken_Tests/step_056_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_056_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_056_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 21 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000010920046569696)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(borrows = 20, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 20, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 25 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000014280083261052)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1100000000)))))
+ => ../TezFinTest/CToken_Tests/step_057_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_057_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_057_cont_3_params.json 1
+Executing borrow(1100000001)...
+ -> --- Expected failure in transaction --- Wrong condition: ((self.data.totalSupply // 1000000) >= params : sp.TBool) (contracts/CToken.py, line 727)
+Message: 'CT_INSUFFICIENT_CASH'
+ (contracts/CToken.py, line 727)
+Comment...
+ h3: Try borrow in callback
+ => ../TezFinTest/CToken_Tests/step_059_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_059_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_059_cont_3_params.json 1
+Executing getCash((sp.unit, sp.contract_typed(KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%borrow)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 25 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000014280083261052)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1100000000)))))
+  + Transfer
+     params: 1100
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%borrow')).open_some()
+Executing (queue) borrow(1100)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender != sp.self_address : sp.TBool) (contracts/CToken.py, line 738)
+Message: 'CT_INTERNAL_CALL'
+ (contracts/CToken.py, line 738)
+Comment...
+ h2: Test Redeem
+Comment...
+ h3: Redeem allowed
+ => ../TezFinTest/CToken_Tests/step_062_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_062_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_062_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 25 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000014280083261052)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1100000000)))))
+  + Transfer
+     params: sp.record(borrows = 20, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 20, cash = 1100, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 28 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 100000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000016800119246861)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1100000000)))))
+ => ../TezFinTest/CToken_Tests/step_063_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_063_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_063_cont_1_params.json 1
+Executing updateAssetPrice(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_064_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_064_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_064_cont_1_params.json 1
+Executing updateAccountLiquidity(sp.to_constant(sp.test_account("Alice").address))...
+ -> (Pair (Pair True True) (Pair True True))
+Comment...
+ h4: call redeem with relevant account liquidity, asset price and accrue interest
+ => ../TezFinTest/CToken_Tests/step_066_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_066_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_066_cont_3_params.json 1
+Executing redeem(50000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 28 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 50000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000016800119246861)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1050000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 50000000)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, redeemAmount = sp.TNat, redeemer = sp.TAddress).layout(("cToken", ("redeemer", "redeemAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%redeemAllowed')).open_some()
+Executing (queue) redeemAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 50000000))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).isAccrualInterestValid == False...
+ OK
+Comment...
+ h4: call redeem with old account liquidity
+ => ../TezFinTest/CToken_Tests/step_069_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_069_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_069_cont_3_params.json 1
+Executing redeem(50000000)...
+ -> --- Expected failure in transaction --- Wrong condition: (compute_CToken_730.value < self.data.accrualIntPeriodRelevance : sp.TBool) (contracts/CToken.py, line 731)
+Message: 'CT_INTEREST_OLD'
+ (contracts/CToken.py, line 731)
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].balance == 50000000...
+ OK
+Comment...
+ h3: Redeem not allowed
+ => ../TezFinTest/CToken_Tests/step_072_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_072_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_072_cont_1_params.json 1
+Executing setRedeemAllowed(False)...
+ -> (Pair (Pair True True) (Pair False True))
+ => ../TezFinTest/CToken_Tests/step_073_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_073_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_073_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 28 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 50000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000016800119246861)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1050000000)))))
+  + Transfer
+     params: sp.record(borrows = 20, cash = 1050, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 20, cash = 1050, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 32 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 50000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000020160175695261)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1050000000)))))
+ => ../TezFinTest/CToken_Tests/step_074_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_074_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_074_cont_1_params.json 1
+Executing updateAssetPrice(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'))...
+ -> (Pair (Pair True True) (Pair False True))
+ => ../TezFinTest/CToken_Tests/step_075_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_075_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_075_cont_1_params.json 1
+Executing updateAccountLiquidity(sp.to_constant(sp.test_account("Carl").address))...
+ -> (Pair (Pair True True) (Pair False True))
+ => ../TezFinTest/CToken_Tests/step_076_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_076_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_076_cont_3_params.json 1
+Executing redeem(10000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 32 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 40000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000020160175695261)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1040000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 10000000)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, redeemAmount = sp.TNat, redeemer = sp.TAddress).layout(("cToken", ("redeemer", "redeemAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%redeemAllowed')).open_some()
+Executing (queue) redeemAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 10000000))...
+ -> --- Expected failure in transaction --- Wrong condition: (self.data.redeem_allowed : sp.TBool) (contracts/tests/mock/ComptrollerMock.py, line 37)
+ (contracts/tests/mock/ComptrollerMock.py, line 37)
+Comment...
+ h3: Redeem allowed again
+ => ../TezFinTest/CToken_Tests/step_078_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_078_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_078_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 32 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 50000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000020160175695261)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1050000000)))))
+  + Transfer
+     params: sp.record(borrows = 20, cash = 1050, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 20, cash = 1050, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 36 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 50000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000023520243433451)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1050000000)))))
+ => ../TezFinTest/CToken_Tests/step_079_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_079_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_079_cont_1_params.json 1
+Executing updateAssetPrice(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'))...
+ -> (Pair (Pair True True) (Pair False True))
+ => ../TezFinTest/CToken_Tests/step_080_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_080_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_080_cont_1_params.json 1
+Executing updateAccountLiquidity(sp.to_constant(sp.test_account("Carl").address))...
+ -> (Pair (Pair True True) (Pair False True))
+ => ../TezFinTest/CToken_Tests/step_081_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_081_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_081_cont_1_params.json 1
+Executing setRedeemAllowed(True)...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_082_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_082_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_082_cont_3_params.json 1
+Executing redeem(10000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 36 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 40000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000023520243433451)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1040000000)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 10000000)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, redeemAmount = sp.TNat, redeemer = sp.TAddress).layout(("cToken", ("redeemer", "redeemAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%redeemAllowed')).open_some()
+Executing (queue) redeemAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 10000000))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].balance == 40000000...
+ OK
+Comment...
+ h3: Try redeem with insufficient balance
+ => ../TezFinTest/CToken_Tests/step_085_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_085_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_085_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 36 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 40000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000023520243433451)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1040000000)))))
+  + Transfer
+     params: sp.record(borrows = 20, cash = 1040, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 20, cash = 1040, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 40 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 40000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000026880322461468)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1040000000)))))
+ => ../TezFinTest/CToken_Tests/step_086_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_086_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_086_cont_1_params.json 1
+Executing updateAssetPrice(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_087_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_087_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_087_cont_1_params.json 1
+Executing updateAccountLiquidity(sp.to_constant(sp.test_account("Carl").address))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_088_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_088_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_088_cont_3_params.json 1
+Executing redeem(50000000)...
+ -> --- Expected failure in transaction --- Not the proper variant constructor [Some] != [None]
+(sp.as_nat(self.data.balances[sp.sender].balance - redeem_tokens.value, message = 'Insufficient balance') : sp.TNat) (contracts/CToken.py, line 131)
+Message: 'Insufficient balance'
+ (contracts/CToken.py, line 131)
+Comment...
+ h3: Redeem underlying
+ => ../TezFinTest/CToken_Tests/step_090_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_090_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_090_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 40 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 40000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000026880322461468)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1040000000)))))
+  + Transfer
+     params: sp.record(borrows = 20, cash = 1040, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 20, cash = 1040, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 44 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 40000000)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000030240412779351)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1040000000)))))
+ => ../TezFinTest/CToken_Tests/step_091_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_091_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_091_cont_1_params.json 1
+Executing updateAssetPrice(sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_092_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_092_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_092_cont_1_params.json 1
+Executing updateAccountLiquidity(sp.to_constant(sp.test_account("Carl").address))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_093_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_093_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_093_cont_3_params.json 1
+Executing redeemUnderlying(10)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 44 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000030240412779351)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 10)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, redeemAmount = sp.TNat, redeemer = sp.TAddress).layout(("cToken", ("redeemer", "redeemAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%redeemAllowed')).open_some()
+Executing (queue) redeemAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), redeemer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), redeemAmount = 10))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].balance == 30188680...
+ OK
+Comment...
+ h3: Try redeem in callback
+ => ../TezFinTest/CToken_Tests/step_096_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_096_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_096_cont_3_params.json 1
+Executing getCash((sp.unit, sp.contract_typed(KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%redeem)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 44 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000030240412779351)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1030188680)))))
+  + Transfer
+     params: 1030
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%redeem')).open_some()
+Executing (queue) redeem(1030)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender != sp.self_address : sp.TBool) (contracts/CToken.py, line 738)
+Message: 'CT_INTERNAL_CALL'
+ (contracts/CToken.py, line 738)
+Comment...
+ h3: Try redeem underlying in callback
+ => ../TezFinTest/CToken_Tests/step_098_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_098_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_098_cont_3_params.json 1
+Executing getCash((sp.unit, sp.contract_typed(KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%redeemUnderlying)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 44 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000030240412779351)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1030188680)))))
+  + Transfer
+     params: 1030
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%redeemUnderlying')).open_some()
+Executing (queue) redeemUnderlying(1030)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender != sp.self_address : sp.TBool) (contracts/CToken.py, line 738)
+Message: 'CT_INTERNAL_CALL'
+ (contracts/CToken.py, line 738)
+Comment...
+ h2: Test Repay borrow
+Comment...
+ h3: Repay borrow allowed
+Comment...
+ h4: call repayBorrow with old accrue interest
+ => ../TezFinTest/CToken_Tests/step_102_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_102_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_102_cont_3_params.json 1
+Executing repayBorrow(1)...
+ -> --- Expected failure in transaction --- Wrong condition: (compute_CToken_730.value < self.data.accrualIntPeriodRelevance : sp.TBool) (contracts/CToken.py, line 731)
+Message: 'CT_INTEREST_OLD'
+ (contracts/CToken.py, line 731)
+Verifying sp.contract_data(3).isAccrualInterestValid == False...
+ OK
+Comment...
+ h4: call repayBorrow with relevant accrue interest
+ => ../TezFinTest/CToken_Tests/step_105_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_105_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_105_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 44 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000030240412779351)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 20, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 20, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 56 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000010920046569696 10) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000040320717602711)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 20 (Pair 0 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_106_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_106_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_106_cont_3_params.json 1
+Executing repayBorrow(1)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 56 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000040320717602711 9) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000040320717602711)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 19 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrower = sp.TAddress, cToken = sp.TAddress, payer = sp.TAddress, repayAmount = sp.TNat).layout(("cToken", ("payer", ("borrower", "repayAmount")))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%repayBorrowAllowed')).open_some()
+Executing (queue) repayBorrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].accountBorrows.principal == 9...
+ OK
+Comment...
+ h3: Repay borrow not allowed
+ => ../TezFinTest/CToken_Tests/step_109_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_109_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_109_cont_1_params.json 1
+Executing setRepayBorrowAllowed(False)...
+ -> (Pair (Pair True True) (Pair True False))
+ => ../TezFinTest/CToken_Tests/step_110_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_110_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_110_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 56 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000040320717602711 9) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000040320717602711)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 19 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 19, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 19, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 58 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000040320717602711 9) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000042000785341516)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 19 (Pair 0 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_111_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_111_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_111_cont_3_params.json 1
+Executing repayBorrow(1)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 58 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000042000785341516 8) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000042000785341516)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 18 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrower = sp.TAddress, cToken = sp.TAddress, payer = sp.TAddress, repayAmount = sp.TNat).layout(("cToken", ("payer", ("borrower", "repayAmount")))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%repayBorrowAllowed')).open_some()
+Executing (queue) repayBorrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1))...
+ -> --- Expected failure in transaction --- Wrong condition: (self.data.repay_borrow_allowed : sp.TBool) (contracts/tests/mock/ComptrollerMock.py, line 55)
+ (contracts/tests/mock/ComptrollerMock.py, line 55)
+Comment...
+ h3: Repay borrow allowed again
+ => ../TezFinTest/CToken_Tests/step_113_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_113_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_113_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 58 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000040320717602711 9) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000042000785341516)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 19 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 19, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 19, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 60 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000040320717602711 9) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000043680855902835)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 19 (Pair 0 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_114_cont_1_params.py 1
+ => ../TezFinTest/CToken_Tests/step_114_cont_1_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_114_cont_1_params.json 1
+Executing setRepayBorrowAllowed(True)...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_115_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_115_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_115_cont_3_params.json 1
+Executing repayBorrow(1)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 60 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000043680855902835 8) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000043680855902835)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 18 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrower = sp.TAddress, cToken = sp.TAddress, payer = sp.TAddress, repayAmount = sp.TNat).layout(("cToken", ("payer", ("borrower", "repayAmount")))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%repayBorrowAllowed')).open_some()
+Executing (queue) repayBorrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].accountBorrows.principal == 8...
+ OK
+Comment...
+ h3: Repay borrow behalf
+ => ../TezFinTest/CToken_Tests/step_118_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_118_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_118_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 60 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000043680855902835 8) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000043680855902835)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 18 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 18, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 18, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 62 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000043680855902835 8) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000045360929286672)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 18 (Pair 0 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_119_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_119_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_119_cont_3_params.json 1
+Executing repayBorrowBehalf(sp.record(borrower = sp.to_constant(sp.test_account("Alice").address), repayAmount = 1))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 62 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000045360929286672 7) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000045360929286672)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 17 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrower = sp.TAddress, cToken = sp.TAddress, payer = sp.TAddress, repayAmount = sp.TNat).layout(("cToken", ("payer", ("borrower", "repayAmount")))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%repayBorrowAllowed')).open_some()
+Executing (queue) repayBorrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].accountBorrows.principal == 7...
+ OK
+Comment...
+ h3: Repay more than borrowed
+ => ../TezFinTest/CToken_Tests/step_122_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_122_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_122_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 62 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000045360929286672 7) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000045360929286672)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 17 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 17, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 17, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000045360929286672 7) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 17 (Pair 0 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_123_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_123_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_123_cont_3_params.json 1
+Executing repayBorrow(1000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1000)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrower = sp.TAddress, cToken = sp.TAddress, payer = sp.TAddress, repayAmount = sp.TNat).layout(("cToken", ("payer", ("borrower", "repayAmount")))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%repayBorrowAllowed')).open_some()
+Executing (queue) repayBorrowAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), payer = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1000))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Alice").address)].accountBorrows.principal == 0...
+ OK
+Comment...
+ h3: Try repayBorrow in callback
+ => ../TezFinTest/CToken_Tests/step_126_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_126_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_126_cont_3_params.json 1
+Executing getCash((sp.unit, sp.contract_typed(KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%redeem)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: 1030
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%redeem')).open_some()
+Executing (queue) redeem(1030)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender != sp.self_address : sp.TBool) (contracts/CToken.py, line 738)
+Message: 'CT_INTERNAL_CALL'
+ (contracts/CToken.py, line 738)
+Comment...
+ h2: Test transfer
+Comment...
+ h3: No tokens to transfer
+ => ../TezFinTest/CToken_Tests/step_129_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_129_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_129_cont_3_params.json 4
+Executing transfer(sp.record(from_ = sp.to_constant(sp.test_account("Carl").address), to_ = sp.to_constant(sp.test_account("Alice").address), value = 100))...
+ -> --- Expected failure in transaction --- Wrong condition: (self.data.balances[params.from_].balance >= params.value : sp.TBool) (contracts/CToken.py, line 253)
+Message: 'CT_INSUFFICIENT_BALANCE'
+ (contracts/CToken.py, line 253)
+Comment...
+ h3: No approved tokens to transfer
+ => ../TezFinTest/CToken_Tests/step_131_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_131_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_131_cont_3_params.json 4
+Executing transfer(sp.record(from_ = sp.to_constant(sp.test_account("Alice").address), to_ = sp.to_constant(sp.test_account("Carl").address), value = 100))...
+ -> --- Expected failure in transaction --- Missing item in map: sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58') is not in {} while evaluating self.data.balances[params.from_].approvals[sp.sender]
+Comment...
+ h3: Transfer successfully
+ => ../TezFinTest/CToken_Tests/step_133_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_133_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_133_cont_3_params.json 4
+Executing transfer(sp.record(from_ = sp.to_constant(sp.test_account("Alice").address), to_ = sp.to_constant(sp.test_account("Carl").address), value = 100))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188580)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 100))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), src = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), dst = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), transferTokens = 100)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, dst = sp.TAddress, src = sp.TAddress, transferTokens = sp.TNat).layout((("cToken", "src"), ("dst", "transferTokens"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%transferAllowed')).open_some()
+Executing (queue) transferAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), src = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), dst = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), transferTokens = 100))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_134_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_134_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_134_cont_3_params.json 1
+Executing getBalance((sp.to_constant(sp.test_account("Carl").address), sp.contract_typed(KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188580)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {} 100))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: 100
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat')).open_some()
+Executing (queue) targetNat(100)...
+ -> (Some 100)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(0).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(100), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Approve and transfer successfully
+ => ../TezFinTest/CToken_Tests/step_137_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_137_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_137_cont_3_params.json 1
+Executing approve(sp.record(spender = sp.to_constant(sp.test_account("Alice").address), value = 100))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188580)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 100} 100))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_138_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_138_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_138_cont_3_params.json 7
+Executing getAllowance((sp.record(owner = sp.to_constant(sp.test_account("Carl").address), spender = sp.to_constant(sp.test_account("Alice").address)), sp.contract_typed(KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188580)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 100} 100))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: 100
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat')).open_some()
+Executing (queue) targetNat(100)...
+ -> (Some 100)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(0).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(100), sp.TOption(sp.TNat)))...
+ OK
+ => ../TezFinTest/CToken_Tests/step_140_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_140_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_140_cont_3_params.json 4
+Executing transfer(sp.record(from_ = sp.to_constant(sp.test_account("Carl").address), to_ = sp.to_constant(sp.test_account("Alice").address), value = 100))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), src = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), dst = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), transferTokens = 100)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, dst = sp.TAddress, src = sp.TAddress, transferTokens = sp.TNat).layout((("cToken", "src"), ("dst", "transferTokens"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%transferAllowed')).open_some()
+Executing (queue) transferAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), src = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), dst = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), transferTokens = 100))...
+ -> (Pair (Pair True True) (Pair True True))
+Verifying sp.contract_data(3).balances[sp.to_constant(sp.test_account("Carl").address)].balance == 0...
+ OK
+Comment...
+ h2: Admin functions
+Comment...
+ h3: Pending governance
+Comment...
+ h4: Common user attempts to set pending governance
+ => ../TezFinTest/CToken_Tests/step_145_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_145_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_145_cont_3_params.json 1
+Executing setPendingGovernance(sp.to_constant(sp.test_account("Bob").address))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/CToken.py, line 724)
+Message: 'CT_NOT_ADMIN'
+ (contracts/CToken.py, line 724)
+Comment...
+ h4: Admin attempts to set pending governance
+ => ../TezFinTest/CToken_Tests/step_147_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_147_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_147_cont_3_params.json 1
+Executing setPendingGovernance(sp.to_constant(sp.test_account("Bob").address))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False (Some "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C")))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Comment...
+ h3: Accept governance
+Comment...
+ h4: Not pending admin attempts to accept governance
+ => ../TezFinTest/CToken_Tests/step_150_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_150_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_150_cont_3_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.pendingAdministrator.open_some(message = 'CT_NOT_SET_PENDING_ADMIN') : sp.TBool) (contracts/CToken.py, line 592)
+Message: 'CT_NOT_PENDING_ADMIN'
+ (contracts/CToken.py, line 592)
+Comment...
+ h4: Pending admin attempts to accept governance
+ => ../TezFinTest/CToken_Tests/step_152_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_152_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_152_cont_3_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Verifying sp.contract_data(3).administrator == sp.to_constant(sp.test_account("Bob").address)...
+ OK
+Verifying sp.contract_data(3).pendingAdministrator == sp.none...
+ OK
+ => ../TezFinTest/CToken_Tests/step_155_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_155_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_155_cont_3_params.json 1
+Executing setPendingGovernance(sp.to_constant(sp.test_account("admin").address))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False (Some "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5")))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_156_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_156_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_156_cont_3_params.json 1
+Executing acceptGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Comment...
+ h3: Remove pending governance
+ => ../TezFinTest/CToken_Tests/step_158_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_158_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_158_cont_3_params.json 1
+Executing setPendingGovernance(sp.to_constant(sp.test_account("Bob").address))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False (Some "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C")))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Comment...
+ h4: Common user attempts to remove pending governance
+ => ../TezFinTest/CToken_Tests/step_160_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_160_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_160_cont_3_params.json 1
+Executing removePendingGovernance(sp.unit)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/CToken.py, line 724)
+Message: 'CT_NOT_ADMIN'
+ (contracts/CToken.py, line 724)
+Comment...
+ h4: Admin attempts to remove pending governance
+ => ../TezFinTest/CToken_Tests/step_162_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_162_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_162_cont_3_params.json 1
+Executing removePendingGovernance(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Verifying sp.contract_data(3).pendingAdministrator == sp.none...
+ OK
+Comment...
+ h3: Set comptroller
+Comment...
+ h4: Common user attempts to set comptroller
+ => ../TezFinTest/CToken_Tests/step_166_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_166_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_166_cont_3_params.json 1
+Executing setComptroller(sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/CToken.py, line 724)
+Message: 'CT_NOT_ADMIN'
+ (contracts/CToken.py, line 724)
+Comment...
+ h4: Admin attempts to set comptroller
+ => ../TezFinTest/CToken_Tests/step_168_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_168_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_168_cont_3_params.json 1
+Executing setComptroller(sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF'))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Verifying sp.contract_data(3).comptroller == sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF')...
+ OK
+Comment...
+ h3: Set interest rate model
+Comment...
+ h4: Common user attempts to set interest rate model
+ => ../TezFinTest/CToken_Tests/step_172_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_172_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_172_cont_3_params.json 1
+Executing setInterestRateModel(sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/CToken.py, line 724)
+Message: 'CT_NOT_ADMIN'
+ (contracts/CToken.py, line 724)
+Comment...
+ h4: Admin attempts to set interest rate model
+ => ../TezFinTest/CToken_Tests/step_174_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_174_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_174_cont_3_params.json 1
+Executing setInterestRateModel(sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {9}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%accrueInterest')).open_some()
+  + Transfer
+     params: sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TAddress, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setInterestRateModelInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 64 (Pair 5 {8; 9}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000047041005493033)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 86 (Pair 5 {9}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000065521874810814)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Executing (queue) setInterestRateModelInternal(sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H'))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 86 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000065521874810814)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Verifying sp.contract_data(3).interestRateModel == sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H')...
+ OK
+Comment...
+ h3: Set reserve factor
+Comment...
+ h4: Common user attempts to Set reserve factor
+ => ../TezFinTest/CToken_Tests/step_178_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_178_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_178_cont_3_params.json 1
+Executing setReserveFactor(1)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/CToken.py, line 724)
+Message: 'CT_NOT_ADMIN'
+ (contracts/CToken.py, line 724)
+Comment...
+ h4: Admin attempts to Set reserve factor
+ => ../TezFinTest/CToken_Tests/step_180_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_180_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_180_cont_3_params.json 1
+Executing setReserveFactor(1)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 86 (Pair 5 {10}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000065521874810814)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%accrueInterest')).open_some()
+  + Transfer
+     params: 1
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setReserveFactorInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 86 (Pair 5 {8; 10}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000065521874810814)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 88 (Pair 5 {10}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000067201984887563)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 0 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Executing (queue) setReserveFactorInternal(1)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 88 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000067201984887563)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Verifying sp.contract_data(3).reserveFactorMantissa == 1...
+ OK
+Comment...
+ h3: Add reserves
+ => ../TezFinTest/CToken_Tests/step_183_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_183_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_183_cont_3_params.json 1
+Executing addReserves(10)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 88 (Pair 5 {11}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000067201984887563)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%accrueInterest')).open_some()
+  + Transfer
+     params: sp.record(addAmount = 10, originalSender = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'))
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(addAmount = sp.TNat, originalSender = sp.TAddress).layout(("addAmount", "originalSender")), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%addReservesInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 88 (Pair 5 {8; 11}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000067201984887563)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 0))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 89 (Pair 5 {11}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000068042041337230)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 0 1030188680)))))
+Executing (queue) addReservesInternal(sp.record(addAmount = 10, originalSender = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 89 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000068042041337230)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 10 1030188680)))))
+Comment...
+ h4: Try add reserves in callback
+ => ../TezFinTest/CToken_Tests/step_185_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_185_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_185_cont_3_params.json 1
+Executing getCash((sp.unit, sp.contract_typed(KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%addReserves)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 89 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000068042041337230)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 10 1030188680)))))
+  + Transfer
+     params: 1030
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%addReserves')).open_some()
+Executing (queue) addReserves(1030)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender != sp.self_address : sp.TBool) (contracts/CToken.py, line 738)
+Message: 'CT_INTERNAL_CALL'
+ (contracts/CToken.py, line 738)
+Comment...
+ h3: Reduce reserves
+Comment...
+ h4: Common user attempts to reduce reserves
+ => ../TezFinTest/CToken_Tests/step_188_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_188_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_188_cont_3_params.json 1
+Executing reduceReserves(5)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/CToken.py, line 724)
+Message: 'CT_NOT_ADMIN'
+ (contracts/CToken.py, line 724)
+Comment...
+ h4: Admin attempts to reduce reserves
+ => ../TezFinTest/CToken_Tests/step_190_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_190_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_190_cont_3_params.json 1
+Executing reduceReserves(5)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 89 (Pair 5 {12}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000068042041337230)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 10 1030188680)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%accrueInterest')).open_some()
+  + Transfer
+     params: 5
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%reduceReservesInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 89 (Pair 5 {8; 12}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000068042041337230)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 10 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 10)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 10))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {12}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 10 1030188680)))))
+Executing (queue) reduceReservesInternal(5)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+Comment...
+ h4: Try to reduce insufficient
+ => ../TezFinTest/CToken_Tests/step_192_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_192_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_192_cont_3_params.json 1
+Executing reduceReserves(100000000000000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {12}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%accrueInterest')).open_some()
+  + Transfer
+     params: 100000000000000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%reduceReservesInternal')).open_some()
+Executing (queue) accrueInterest(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {8; 12}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 5)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 5))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 93 (Pair 5 {12}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000071402272075432)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+Executing (queue) reduceReservesInternal(100000000000000000000)...
+ -> --- Expected failure in transaction --- Wrong condition: ((self.data.totalSupply // 1000000) >= params : sp.TBool) (contracts/CToken.py, line 727)
+Message: 'CT_INSUFFICIENT_CASH'
+ (contracts/CToken.py, line 727)
+Comment...
+ h3: Check hardResetOp
+ => ../TezFinTest/CToken_Tests/step_194_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_194_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_194_cont_3_params.json 1
+Executing setActiveOp(1)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {1}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+Verifying sp.len(sp.contract_data(3).activeOperations) == 1...
+ OK
+Comment...
+ h4: Common user attempts to hardResetOp
+ => ../TezFinTest/CToken_Tests/step_197_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_197_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_197_cont_3_params.json 1
+Executing hardResetOp(sp.unit)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.administrator : sp.TBool) (contracts/CToken.py, line 724)
+Message: 'CT_NOT_ADMIN'
+ (contracts/CToken.py, line 724)
+Comment...
+ h4: Admin attempts to hardResetOp
+ => ../TezFinTest/CToken_Tests/step_199_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_199_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_199_cont_3_params.json 1
+Executing hardResetOp(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+Verifying sp.len(sp.contract_data(3).activeOperations) == 0...
+ OK
+Comment...
+ h2: Test getBalanceOfUnderlying
+Comment...
+ h3: View stored balance
+ => ../TezFinTest/CToken_Tests/step_203_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_203_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_203_cont_3_params.json 1
+Executing getBalanceOfUnderlying((sp.to_constant(sp.test_account("Alice").address), sp.contract_typed(KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+  + Transfer
+     params: 30
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat')).open_some()
+Executing (queue) targetNat(30)...
+ -> (Some 30)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(0).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(30), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Mint new tokens and check balance
+ => ../TezFinTest/CToken_Tests/step_206_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_206_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_206_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 92 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000070562212803174)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 5)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1030, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 5))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 98 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 30188680)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000075602568436726)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1030188680)))))
+ => ../TezFinTest/CToken_Tests/step_207_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_207_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_207_cont_3_params.json 1
+Executing mint(100)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 98 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000075602568436726)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), mintAmount = 100)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(cToken = sp.TAddress, mintAmount = sp.TNat, minter = sp.TAddress).layout(("cToken", ("minter", "mintAmount"))), sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%mintAllowed')).open_some()
+Executing (queue) mintAllowed(sp.record(cToken = sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC'), minter = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), mintAmount = 100))...
+ -> (Pair (Pair True True) (Pair True True))
+ => ../TezFinTest/CToken_Tests/step_208_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_208_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_208_cont_3_params.json 1
+Executing getBalanceOfUnderlying((sp.to_constant(sp.test_account("Alice").address), sp.contract_typed(KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat)))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 98 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000075602568436726)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair False None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: 130
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat')).open_some()
+Executing (queue) targetNat(130)...
+ -> (Some 130)
+Verifying sp.pack(sp.set_type_expr(sp.contract_data(0).last, sp.TOption(sp.TNat))) == sp.pack(sp.set_type_expr(sp.some(130), sp.TOption(sp.TNat)))...
+ OK
+Comment...
+ h3: Try with nonexistent account
+ => ../TezFinTest/CToken_Tests/step_211_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_211_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_211_cont_3_params.json 1
+Executing getBalanceOfUnderlying((sp.address('KT10'), sp.contract_typed(KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat)))...
+ -> --- Expected failure in transaction --- Missing item in map: sp.address('KT10') is not in {sp.address('tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C') : sp.record(accountBorrows = sp.record(interestIndex = 0, principal = 0), approvals = {}, balance = 1000000000), sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi') : sp.record(accountBorrows = sp.record(interestIndex = 1000047041005493033, principal = 0), approvals = {}, balance = 129723818), sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58') : sp.record(accountBorrows = sp.record(interestIndex = 1000005880011289607, principal = 10), approvals = {sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi') : 0}, balance = 0)} while evaluating self.data.balances[sp.fst(params)]
+Comment...
+ h2: Test getAccountSnapshot
+ => ../TezFinTest/CToken_Tests/step_213_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_213_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_213_cont_3_params.json 1
+Executing accrueInterest(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 98 (Pair 5 {8}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000075602568436726)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1129, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 5)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1129, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some(), reserves = 5))...
+ -> (Pair 840000000000 180000000000)
+  + Transfer
+     params: 840000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%doAccrueInterest')).open_some()
+Executing (queue) doAccrueInterest(840000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 102 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+ => ../TezFinTest/CToken_Tests/step_214_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_214_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_214_cont_3_params.json 1
+Executing updateAccountSnapshot(sp.to_constant(sp.test_account("Alice").address))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 102 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: (sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), sp.contract(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setAccountSnapshot')).open_some())
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TPair(sp.TAddress, sp.TContract(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%getAccountSnapshot')).open_some()
+Executing (queue) getAccountSnapshot((sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), sp.contract(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setAccountSnapshot')).open_some()))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 0 0)) (Pair 102 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: sp.record(account = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrowBalance = 0, cTokenBalance = 129723818, exchangeRateMantissa = 1003785156984)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))), sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setAccountSnapshot')).open_some()
+Executing (queue) setAccountSnapshot(sp.record(account = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), borrowBalance = 0, cTokenBalance = 129723818, exchangeRateMantissa = 1003785156984))...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 129723818 1003785156984)) (Pair 102 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+Verifying sp.contract_data(3).accCTokenBalance == 129723818...
+ OK
+Verifying sp.contract_data(3).accBorrowBalance == 0...
+ OK
+Verifying sp.contract_data(3).accExchangeRateMantissa == 1003785156984...
+ OK
+Comment...
+ h2: Test updateBorrowRatePerBlock
+Comment...
+ h3: Updated
+ => ../TezFinTest/CToken_Tests/step_220_cont_2_params.py 1
+ => ../TezFinTest/CToken_Tests/step_220_cont_2_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_220_cont_2_params.json 1
+Executing setBorrowRate(90000000000)...
+ -> (Pair 90000000000 180000000000)
+ => ../TezFinTest/CToken_Tests/step_221_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_221_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_221_cont_3_params.json 1
+Executing updateBorrowRatePerBlock(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 129723818 1003785156984)) (Pair 102 (Pair 5 {6}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%updateBorrowRateInternal')).open_some()
+Executing (queue) updateBorrowRateInternal(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 129723818 1003785156984)) (Pair 102 (Pair 5 {6}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 0 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1129, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setBorrowRatePerBlock')).open_some(), reserves = 5)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getBorrowRate')).open_some()
+Executing (queue) getBorrowRate(sp.record(borrows = 10, cash = 1129, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setBorrowRatePerBlock')).open_some(), reserves = 5))...
+ -> (Pair 90000000000 180000000000)
+  + Transfer
+     params: 90000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setBorrowRatePerBlock')).open_some()
+Executing (queue) setBorrowRatePerBlock(90000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 129723818 1003785156984)) (Pair 102 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 90000000000 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+Verifying sp.contract_data(3).borrowRatePerBlock == 90000000000...
+ OK
+Comment...
+ h3: Try internal
+ => ../TezFinTest/CToken_Tests/step_224_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_224_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_224_cont_3_params.json 1
+Executing updateBorrowRateInternal(sp.record())...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == sp.self_address : sp.TBool) (contracts/CToken.py, line 735)
+Message: 'CT_INTERNAL_FUNCTION'
+ (contracts/CToken.py, line 735)
+Comment...
+ h3: Try set directly
+ => ../TezFinTest/CToken_Tests/step_226_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_226_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_226_cont_3_params.json 1
+Executing setBorrowRatePerBlock(90000000000)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.interestRateModel : sp.TBool) (contracts/CToken.py, line 741)
+Message: 'CT_SENDER_NOT_IRM'
+ (contracts/CToken.py, line 741)
+Comment...
+ h2: Test updateSupplyRatePerBlock
+Comment...
+ h3: Updated
+ => ../TezFinTest/CToken_Tests/step_229_cont_2_params.py 1
+ => ../TezFinTest/CToken_Tests/step_229_cont_2_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_229_cont_2_params.json 1
+Executing setSupplyRate(80000000000)...
+ -> (Pair 90000000000 80000000000)
+ => ../TezFinTest/CToken_Tests/step_230_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_230_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_230_cont_3_params.json 1
+Executing updateSupplyRatePerBlock(sp.record())...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 129723818 1003785156984)) (Pair 102 (Pair 5 {7}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 90000000000 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: sp.unit
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TUnit, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%updateSupplyRateInternal')).open_some()
+Executing (queue) updateSupplyRateInternal(sp.unit)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 129723818 1003785156984)) (Pair 102 (Pair 5 {7}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 90000000000 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 0)) (Pair 10 (Pair 5 1129723818)))))
+  + Transfer
+     params: sp.record(borrows = 10, cash = 1129, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setSupplyRatePerBlock')).open_some(), reserves = 5)
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), sp.address('KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H%getSupplyRate')).open_some()
+Executing (queue) getSupplyRate(sp.record(borrows = 10, cash = 1129, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setSupplyRatePerBlock')).open_some(), reserves = 5))...
+ -> (Pair 90000000000 80000000000)
+  + Transfer
+     params: 80000000000
+     amount: sp.tez(0)
+     to:     sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%setSupplyRatePerBlock')).open_some()
+Executing (queue) setSupplyRatePerBlock(80000000000)...
+ -> (Pair (Pair (Pair (Pair 0 (Pair 129723818 1003785156984)) (Pair 102 (Pair 5 {}))) (Pair (Pair "tz1UyQDepgtUBnWjyzzonqeDwaiWoQzRKSP5" (Pair {Elt "tz1Rp4Bv8iUhYnNoCryHQgNzN2D7i3L1LF9C" (Pair (Pair 0 0) (Pair {} 1000000000)); Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" (Pair (Pair 1000047041005493033 0) (Pair {} 129723818)); Elt "tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58" (Pair (Pair 1000005880011289607 10) (Pair {Elt "tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi" 0} 0))} 1000078962822461355)) (Pair 5000000000000 (Pair 90000000000 "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF")))) (Pair (Pair (Pair 1000000000000000000 (Pair 500000000000000000 1000000000000)) (Pair "KT1Tezooo2zzSmartPyzzSTATiCzzzwqqQ4H" (Pair True None))) (Pair (Pair 1 (Pair 1000000000000000000 80000000000)) (Pair 10 (Pair 5 1129723818)))))
+Verifying sp.contract_data(3).supplyRatePerBlock == 80000000000...
+ OK
+Comment...
+ h3: Try internal
+ => ../TezFinTest/CToken_Tests/step_233_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_233_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_233_cont_3_params.json 1
+Executing updateSupplyRateInternal(sp.record())...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == sp.self_address : sp.TBool) (contracts/CToken.py, line 735)
+Message: 'CT_INTERNAL_FUNCTION'
+ (contracts/CToken.py, line 735)
+Comment...
+ h3: Try set directly
+ => ../TezFinTest/CToken_Tests/step_235_cont_3_params.py 1
+ => ../TezFinTest/CToken_Tests/step_235_cont_3_params.tz 1
+ => ../TezFinTest/CToken_Tests/step_235_cont_3_params.json 1
+Executing setSupplyRatePerBlock(80000000000)...
+ -> --- Expected failure in transaction --- Wrong condition: (sp.sender == self.data.interestRateModel : sp.TBool) (contracts/CToken.py, line 741)
+Message: 'CT_SENDER_NOT_IRM'
+ (contracts/CToken.py, line 741)
+ => ../TezFinTest/CToken_Tests/log.html 7205

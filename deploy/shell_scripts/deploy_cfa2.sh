@@ -4,11 +4,11 @@ set -e # Any subsequent(*) commands which fail will cause the shell script to ex
 # example:  ./deploy/shell_scripts/deploy_cfa2.sh ~/smartpy-cli/SmartPy.sh
 
 
-($1 compile ./deploy/compile_targets/CompileCFA2_IRM.py ./TezFinBuild/compiled_contracts --purge --protocol florence)\
+($1 compile ./deploy/compile_targets/CompileCFA2_IRM.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
 && echo "CompileCFA2_IRM.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy.js
 
 
-($1 compile ./deploy/compile_targets/CompileCFA2.py ./TezFinBuild/compiled_contracts --purge --protocol florence --erase-comments --erase-var-annots --initial-cast)\
+($1 compile ./deploy/compile_targets/CompileCFA2.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
 && echo "CompileCFA2.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy.js
