@@ -1,9 +1,9 @@
 {
-  "tezosNode": "https://tezos-florence.cryptonomic-infra.tech:443",
+  "tezosNode": "https://tezos-granada.cryptonomic-infra.tech:443",
   "conseilServer": {
-    "url": "https://conseil-florence.cryptonomic-infra.tech:443",
-    "apiKey": "db9467f2-2030-461f-bdb7-6da9e59033a1",
-    "network": "florencenet"
+    "url": "https://conseil-granada.cryptonomic-infra.tech:443",
+    "apiKey": "",
+    "network": "granadanet"
   },
   "originator": {
     "mnemonic": [
