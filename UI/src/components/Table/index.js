@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
 
-// import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-// import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
-// import { useSwitch } from '@mui/core/SwitchUnstyled';
-// import SwitchUnstyled, { switchUnstyledClasses } from '@mui/core/SwitchUnstyled';
 
 import BasicSwitch from '../Switch';
 import { useStyles } from './style';
 import Modal from '../Modal';
+import ConfirmModal from '../confirmModal';
 
 
 const BasicTable = (props) => {
@@ -26,6 +23,7 @@ const BasicTable = (props) => {
 
 // console.log(valueofRow, 'valueofRow');
   const [open, setOpen] = useState(false);
+  const [openConfirmModal, setConfirmModal] =useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -43,10 +41,24 @@ const BasicTable = (props) => {
     handleClickOpen();
   }
 
+
+  const handleClickConfirm = () => {
+    setConfirmModal(true);
+    setOpen(false);
+  };
+
+  const handleCloseConfirm = () => {
+    setConfirmModal(false);
+  };
+
+
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
       {valueofRow &&
-        <Modal open={open} close={handleClose} valueofRow={valueofRow}/>
+        <>
+          <Modal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} />
+          <ConfirmModal open={openConfirmModal} close={handleCloseConfirm}/>
+        </>
       }
       <Table>
         <TableHead>

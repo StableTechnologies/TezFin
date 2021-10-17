@@ -9,26 +9,35 @@ import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import CustomizedProgressBars from '../Header/progressBar';
-import IconButton from '@mui/material/IconButton';
 
 import Tabulator from '../Tabs';
+import CloseButton from '../closeBtn';
+import ConfirmModal from '../confirmModal';
 import { useStyles } from './style';
 
 import Tez from '../../assets/largeXTZ.svg';
-import closeBtn from '../../assets/close.svg';
-
 
 const Modal = (props) => {
   const classes = useStyles();
 
-  const {open, close, valueofRow} = props;
+  const {open, close, valueofRow, onClick} = props;
+
+  const [openConfirmModal, setConfirmModal] =useState(false);
+
+  const handleClickConfirm = () => {
+    close();
+    setConfirmModal(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setConfirmModal(false);
+  };
+
 
   return (
     <React.Fragment>
       <Dialog open={open} className={classes.root}>
-        <IconButton aria-label="close" onClick={close} className={classes.close} disableRipple>
-          <img src={closeBtn} alt="close-button" className={classes.closeBtn} />
-          </IconButton>
+        <CloseButton onClick={close} />
         <DialogTitle>
           <div>
             <img src={valueofRow.logo} alt="logo" className={classes.img}/>
@@ -80,7 +89,10 @@ const Modal = (props) => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button className={classes.btn}>Enable Token</Button>
+          <Button className={classes.btn} onClick={onClick}>Enable Token</Button>
+          {/* {setConfirmModal &&
+            <ConfirmModal open={openConfirmModal} close1={handleCloseConfirm}/>
+          } */}
         </DialogActions>
         <DialogContent>
           <Grid container textAlign="justify">
