@@ -11,4 +11,4 @@ TezFinBuild/deploy_result/deploy.json
 deploy/deploy_script/config.json
 deploy/deploy_script/node_modules
 util/node_modules
-
+util/build
