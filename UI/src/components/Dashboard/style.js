@@ -3,8 +3,6 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles({
   dashboard: {
     background: '#fff',
-    // padding: '8px 64px 100px',
-    // padding: '0px 6.25rem 4rem',
     padding: '0px 6.25rem 10.125rem',
     '@media(max-width: 768px)': {
      padding: '0px 4rem 10.125rem',

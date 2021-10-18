@@ -19,11 +19,9 @@ import ConfirmModal from '../ConfirmModal';
 const BasicTable = (props) => {
   const classes = useStyles();
 
-  const {heading1, heading2, heading3, heading4, toggle, tableData, openModal, val, supplyMkt, borrowMkt} =props;
+  const {heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt} =props;
   const [valueofRow, setValueOfRow] = useState();
 
-
-// console.log(valueofRow, 'valueofRow');
   const [open, setOpen] = useState(false);
   const [openConfirmModal, setConfirmModal] =useState(false);
 
@@ -37,7 +35,6 @@ const BasicTable = (props) => {
 
   const handleClick = (item, event) => {
 
-    // openModal(item);
     setValueOfRow(item);
     if (event.target.type === "checkbox") return;
     handleClickOpen();
@@ -58,7 +55,6 @@ const BasicTable = (props) => {
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
       {valueofRow &&
         <>
-          {/* <MarketModal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} /> */}
           {supplyMkt &&
             <SupplyModal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} />
           }

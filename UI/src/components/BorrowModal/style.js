@@ -6,9 +6,6 @@ export const useStyles = makeStyles({
       backgroundColor: 'red !important',
     },
   },
-  inkBarStyle: {
-    backgroundColor: 'red',
-  },
 
   btnSub: {
     background: '#9B51E0',
