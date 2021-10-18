@@ -25,7 +25,7 @@ const Dashboard =() => {
           heading3 = "Wallet"
           heading4 = "Collateral"
           toggle
-          // openModal = {() => handleClickOpen()}
+          supplyMkt
         />
       </Grid>
       <Grid item xs={12} md={6} className={classes.paddingLeft}>
@@ -36,7 +36,7 @@ const Dashboard =() => {
           heading2 = "APY"
           heading3 = "Wallet"
           heading4 = "Liquidity"
-          // openModal = {() => handleClickOpen()}
+          borrowMkt
         />
       </Grid>
     </Grid>
