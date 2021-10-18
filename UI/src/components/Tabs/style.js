@@ -11,9 +11,6 @@ export const useStyles = makeStyles({
     "& .MuiButtonBase-root-MuiTab-root": {
       // width: '50%',
     },
-    "& .MuiTabs-indicator": {
-      backgroundColor: '#39E4B8',
-    },
     "& .MuiButtonBase-root.Mui-selected": {
       color: '#000'
     },

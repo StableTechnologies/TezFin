@@ -9,20 +9,15 @@ import { useStyles } from './style';
 const Tabulator = (props) => {
   const classes = useStyles();
 
-  const { labelOne, labelTwo } = props;
+  const { labelOne, labelTwo, value, onChange, inkBarStyle } = props;
 
-  const [value, setValue] = useState('one');
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
   return (
     <React.Fragment>
       <Tabs
         value={value}
-        onChange={handleChange}
+        onChange={onChange}
         textColor="secondary"
-        indicatorColor="secondary"
+        classes={{ indicator: inkBarStyle}}
         aria-label="secondary tabs"
         className={classes.root}
       >
