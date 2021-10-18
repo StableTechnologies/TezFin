@@ -7,23 +7,6 @@ export const useStyles = makeStyles({
   //   backgroundColor: 'green',
   //   // color: (props) => props.color,
   // },
-  link: {
-    textDecoration: 'none',
-    fontWeight: '300',
-    fontSize: '1rem',
-    lineHeight: '1.875',
-    letterSpacing: '0.005em',
-    padding: '1.25rem 1rem',
-    color: '#000',
-    "&:hover": {
-      textDecoration: "underline"
-  },
-    "&:active": {
-      textDecoration: "underline"
-  },
-
-    // color: (props) => props.color,
-  },
   tezHeader: {
     paddingLeft: '2.6875rem',
     paddingTop: '1.625rem',
@@ -31,14 +14,34 @@ export const useStyles = makeStyles({
       width: '18.75rem',
     },
     '@media(max-width: 768px)': {
-      width: '12.5rem',
-    },
-    '@media(max-width: 320px)': {
+      // width: '12.5rem',
       width: '10rem',
+      paddingTop: '2.25rem',
+    },
+    '@media(max-width: 501px)': {
+      paddingLeft: '1.5rem',
     },
   },
   linkCon: {
     paddingTop: '2.25rem',
+    '@media(min-width: 1200px)': {
+      textAlign: 'end',
+    },
+  },
+  link: {
+    textDecoration: 'none',
+    fontWeight: '300',
+    fontSize: '1rem',
+    lineHeight: '1.875',
+    letterSpacing: '0.005em',
+    // padding: '1.25rem 1rem',
+    color: '#000',
+    "&:hover": {
+      borderBottom: '1px solid #000'
+    },
+  },
+  activeLink: {
+    borderBottom: '1px solid #000'
   },
   netAPY: {
     fontWeight: '500',
@@ -46,12 +49,21 @@ export const useStyles = makeStyles({
     lineHeight: '1.875rem',
     color: '#191919',
     padding: '2.6875rem 6.25rem 1.5rem',
+    '@media(max-width: 768px)': {
+      padding: '2.6875rem 4rem 1.5rem',
+    },
+    '@media(max-width: 501px)': {
+      padding: '2.6875rem 1.875rem 1.5rem',
+    },
   },
   questionCircle: {
     marginTop: '-4px'
   },
   padding100: {
     paddingLeft: '6.25rem',
+    '@media(max-width: 768px)': {
+    paddingLeft: '4rem',
+    },
     '@media(max-width: 501px)': {
     paddingLeft: '1.875rem',
     },
@@ -59,7 +71,8 @@ export const useStyles = makeStyles({
   padding30: {
     paddingLeft: '1.875rem',
     '@media(max-width: 768px)': {
-      paddingLeft: '6.255rem',
+      // paddingLeft: '6.255rem',
+      paddingLeft: '4rem',
       },
     '@media(max-width: 501px)': {
       paddingLeft: '1.875rem',
@@ -91,6 +104,30 @@ export const useStyles = makeStyles({
   box: {
     paddingTop: '55px',
     paddingBottom: '25px',
+  },
+  addWalletCon: {
+    paddingTop: '2.25rem',
+    paddingRight: '2.5rem',
+    textAlign: 'end',
+    '@media(max-width: 768px)': {
+      paddingRight: '1rem'
+    }
+  },
+  addWallet: {
+    minWidth: '10.75rem',
+    height: '1.875rem',
+    background: 'transparent',
+    color: '#2F80ED',
+    fontSize: '1rem',
+    fontWeight: '400',
+    lineHeight: '2.25rem',
+    textTransform: 'none',
+    border:'2px solid #2F80ED',
+    borderRadius: '.5rem',
+    '&:hover': {
+      background: '#2F80ED',
+      color: '#fff',
+    }
   }
 });
 

@@ -66,9 +66,7 @@ export const useStyles = makeStyles({
     margintTop: '36px',
     marginBottom: '23px',
   },
-  btn: {
-    background: '#39E4B8',
-    color: '#fff',
+  btnMain: {
     borderRadius: '.5rem',
     width: '380px',
     height: '48px',
@@ -78,7 +76,6 @@ export const useStyles = makeStyles({
     textTransform: 'unset',
     "&:hover": {
       opacity: '.8',
-      background: '#39E4B8',
     }
   },
   whiteSpace: {

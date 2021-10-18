@@ -9,26 +9,30 @@ import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import CustomizedProgressBars from '../Header/progressBar';
-import IconButton from '@mui/material/IconButton';
 
 import Tabulator from '../Tabs';
+import CloseButton from '../CloseBtn';
 import { useStyles } from './style';
 
 import Tez from '../../assets/largeXTZ.svg';
-import closeBtn from '../../assets/close.svg';
 
-
-const Modal = (props) => {
+const MarketModal = (props) => {
   const classes = useStyles();
 
-  const {open, close, valueofRow} = props;
+  const {
+      open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitUsed,
+      amountText, buttonOne, buttonTwo, btnSub, inkBarStyle} = props;
+
+  const [tabValue, setTabValue] = useState('one');
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   return (
     <React.Fragment>
       <Dialog open={open} className={classes.root}>
-        <IconButton aria-label="close" onClick={close} className={classes.close} disableRipple>
-          <img src={closeBtn} alt="close-button" className={classes.closeBtn} />
-          </IconButton>
+        <CloseButton onClick={close} />
         <DialogTitle>
           <div>
             <img src={valueofRow.logo} alt="logo" className={classes.img}/>
@@ -43,13 +47,13 @@ const Modal = (props) => {
             To supply and use {valueofRow.banner} as collateral, you will need to enable the token first.
           </DialogContentText>
         </DialogContent>
-        <Tabulator labelOne="Supply" labelTwo="Withdraw" />
+        <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
         <DialogContent className={classes.apyRate}>
           <Grid container>
             <Grid item sm={8}>
               <div>
                 <img src={valueofRow.logo} alt="logo" className={classes.img}/>
-                <Typography className={classes.imgTitle}> {valueofRow.title} Variable APY Rate </Typography>
+                <Typography className={classes.imgTitle}> {APYText} </Typography>
               </div>
             </Grid>
             <Grid item sm={2}></Grid>
@@ -58,14 +62,14 @@ const Modal = (props) => {
         </DialogContent>
         <DialogContent className={classes.limit}>
           <Grid container textAlign="justify">
-            <Grid item sm={7} className={classes.faintFont}> Borrow Limit </Grid>
+            <Grid item sm={7} className={classes.faintFont}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
             <Grid item sm={2}> $0.00 </Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container textAlign="justify">
-            <Grid item sm={7} className={classes.faintFont}> Borrow Limit Used </Grid>
+            <Grid item sm={7} className={classes.faintFont}> {LimitUsed} </Grid>
             <Grid item sm={3}></Grid>
             <Grid item sm={2}> 0% </Grid>
           </Grid>
@@ -80,11 +84,15 @@ const Modal = (props) => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button className={classes.btn}>Enable Token</Button>
+          {/* <Button className={classes.btn} onClick={onClick}> */}
+          <Button className={` ${classes.btnMain} ${btnSub} `} onClick={onClick}>
+            {tabValue === "one" && buttonOne}
+            {tabValue === "two" && buttonTwo}
+          </Button>
         </DialogActions>
         <DialogContent>
           <Grid container textAlign="justify">
-            <Grid item sm={7}> Wallet Balance </Grid>
+            <Grid item sm={7}> {amountText} </Grid>
             <Grid item sm={3}></Grid>
             <Grid item sm={2} className={classes.whiteSpace}> 25 {valueofRow.title} </Grid>
           </Grid>
@@ -94,4 +102,4 @@ const Modal = (props) => {
   )
 }
 
-export default Modal;
+export default MarketModal;

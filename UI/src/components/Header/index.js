@@ -1,8 +1,8 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 
 import Grid from '@mui/material/Grid';
-import { Typography } from '@mui/material';
+import { Typography, Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import CustomizedProgressBars from './progressBar';
@@ -19,21 +19,24 @@ const Header = () => {
   const classes = useStyles();
   return (
     <HeaderCon className={classes1.root}>
-      <Grid container justify="center" alignItems="center" md={12}>
-        <Grid item sm={4} lg={3}>
-          {/* <Title className={classes1.content}> Tezfin </Title> */}
+      <Grid container justify="center" alignItems="center">
+        <Grid item xs={6} sm={3} md={4} lg={3}>
           <img src={tezHeader} alt={tezHeader} className={classes.tezHeader}/>
         </Grid>
-        <Grid container item sm={6} md={5} lg={6} textAlign="center" className={classes.linkCon}>
-          <Grid item md={4} lg={4}>
-            <Link to="dashboard" className={classes.link}> Dashboard </Link>
+        <Grid container item xs={6} sm={6} md={5} lg={5} textAlign="center" className={classes.linkCon}>
+          <Grid item sm={4} md={4} lg={4}>
+            <NavLink to="dashboard" className={classes.link} activeClassName={classes.activeLink}> Dashboard </NavLink>
           </Grid>
-          <Grid item md={4} lg={4}>
-            <Link to="market" className={classes.link}> Market </Link>
+          <Grid item sm={4} md={4} lg={4}>
+            <NavLink to="market" className={classes.link} activeClassName={classes.activeLink}> Market </NavLink>
           </Grid>
-          <Grid item md={4} lg={4}>
-            <Link to="about" className={classes.link}> About </Link>
+          <Grid item sm={4} md={4} lg={4}>
+            <NavLink to="about" className={classes.link} activeClassName={classes.activeLink}> About </NavLink>
           </Grid>
+        </Grid>
+        <Grid item lg={2}></Grid>
+        <Grid item xs={12} sm={3} md={3} lg={2} className={classes.addWalletCon}>
+          <Button className={classes.addWallet}> Add Wallet </Button>
         </Grid>
       </Grid>
       <Grid container>
@@ -53,7 +56,7 @@ const Header = () => {
             <CustomizedProgressBars />
           </Box>
           <Box sx={{ paddingTop: '55px' }} className={classes.box}>
-            <Grid container xs={12}>
+            <Grid container>
               <Grid container item xs={12} sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
                     <img src={carbonGrowth} alt={"growth"} />
@@ -86,7 +89,7 @@ const Header = () => {
             <CustomizedProgressBars />
           </Box>
           <Box sx={{ paddingTop: '55px' }}>
-            <Grid container xs={12}>
+            <Grid container>
               <Grid container item sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
                     <img src={borrowing} alt={"borrowing icon"} />
