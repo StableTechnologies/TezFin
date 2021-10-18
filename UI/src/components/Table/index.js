@@ -10,14 +10,16 @@ import { Typography } from '@mui/material';
 
 import BasicSwitch from '../Switch';
 import { useStyles } from './style';
-import Modal from '../Modal';
-import ConfirmModal from '../confirmModal';
+import MarketModal from '../MarketModal';
+import SupplyModal from '../SupplyModal';
+import BorrowModal from '../BorrowModal';
+import ConfirmModal from '../ConfirmModal';
 
 
 const BasicTable = (props) => {
   const classes = useStyles();
 
-  const {heading1, heading2, heading3, heading4, toggle, tableData, openModal, val} =props;
+  const {heading1, heading2, heading3, heading4, toggle, tableData, openModal, val, supplyMkt, borrowMkt} =props;
   const [valueofRow, setValueOfRow] = useState();
 
 
@@ -56,7 +58,13 @@ const BasicTable = (props) => {
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
       {valueofRow &&
         <>
-          <Modal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} />
+          {/* <MarketModal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} /> */}
+          {supplyMkt &&
+            <SupplyModal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} />
+          }
+          {borrowMkt &&
+            <BorrowModal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} />
+          }
           <ConfirmModal open={openConfirmModal} close={handleCloseConfirm}/>
         </>
       }

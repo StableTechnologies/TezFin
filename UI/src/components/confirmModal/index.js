@@ -7,10 +7,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import CloseButton from '../closeBtn';
+import CloseButton from '../CloseBtn';
 
 import confirm from '../../assets/confirm.gif';
-
 
 import useStyles from './style';
 
