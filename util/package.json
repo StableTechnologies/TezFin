@@ -7,7 +7,7 @@
     "postinstall": "npm run build",
     "start": "node ./build/src/index.js",
     "build": "tsc",
-    "package": "rm -rf ./dist && tsc && copyfiles -u 1 \"./src/*.js\" dist/",
+    "package": "rm -rf ./build && tsc",
     "test": "npm run build && clear && npm run start"
   },
   "author": "",
