@@ -17,6 +17,11 @@ import questionCircle from '../../assets/questionCircle.svg';
 
 const Header = () => {
   const classes = useStyles();
+  // 1. call supplyComposition()
+  // 2. plug supplyComposition() results into progress bar
+  // 3. plug supplyComposition().totalUsdValue into supplying value display
+  // 4. plug supplyComposition().collateralUsdValue into collateral value display
+  // and same for borrowing
   return (
     <HeaderCon className={classes1.root}>
       <Grid container justify="center" alignItems="center">

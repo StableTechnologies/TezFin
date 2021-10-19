@@ -69,14 +69,14 @@ export namespace TezosLendingPlatform {
      */
     export interface SupplyComposition {
         assets: { assetType: FToken.AssetType, usdValue: number }[];
-        collateral: number;
+        collateralUsdValue: number;
         totalUsdValue: number;
     }
 
     /*
      * @description
      *
-     * @param
+     * @param account Account's address
      */
     export async function supplyComposition(account: string): Promise<SupplyComposition> {
         return {
@@ -84,7 +84,7 @@ export namespace TezosLendingPlatform {
                 { assetType: FToken.AssetType.XTZ, usdValue: 10 },
                 { assetType: FToken.AssetType.FA2, usdValue: 10 },
             ],
-            collateral: 44,
+            collateralUsdValue: 44,
             totalUsdValue: 100
         }
     }
@@ -96,7 +96,7 @@ export namespace TezosLendingPlatform {
      */
     export interface BorrowComposition {
         assets: { assetType: FToken.AssetType, usdValue: number }[];
-        borrowLimit: number;
+        borrowLimitUsd: number;
         totalUsdValue: number;
     }
 
@@ -111,7 +111,7 @@ export namespace TezosLendingPlatform {
                 { assetType: FToken.AssetType.XTZ, usdValue: 13 },
                 { assetType: FToken.AssetType.FA2, usdValue: 15 },
             ],
-            borrowLimit: 23,
+            borrowLimitUsd: 23,
             totalUsdValue: 400
         };
     }
