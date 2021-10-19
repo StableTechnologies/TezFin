@@ -12,7 +12,7 @@ import CustomizedProgressBars from '../Header/progressBar';
 import TextField from '@mui/material/TextField';
 
 import Tabulator from '../Tabs';
-import CloseButton from '../CloseBtn';
+import CloseButton from '../CloseButton';
 import { useStyles } from './style';
 
 import Tez from '../../assets/largeXTZ.svg';
