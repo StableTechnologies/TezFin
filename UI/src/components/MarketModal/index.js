@@ -9,6 +9,7 @@ import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import CustomizedProgressBars from '../Header/progressBar';
+import TextField from '@mui/material/TextField';
 
 import Tabulator from '../Tabs';
 import CloseButton from '../CloseBtn';
@@ -20,10 +21,11 @@ const MarketModal = (props) => {
   const classes = useStyles();
 
   const {
-      open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitUsed,
-      amountText, buttonOne, buttonTwo, btnSub, inkBarStyle} = props;
+      open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitValue, LimitUsed, LimitUsedValue,
+      amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText} = props;
 
   const [tabValue, setTabValue] = useState('one');
+  const [tokenValue, setTokenValue] = useState('');
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -39,13 +41,30 @@ const MarketModal = (props) => {
             <Typography className={classes.imgTitle}> {valueofRow.banner} </Typography>
           </div>
         </DialogTitle>
-        <DialogContent>
-          <img src={Tez} alt="logo" className={classes.tezImg}/>
-        </DialogContent>
+        {!visibility &&
+          <DialogContent>
+            <img src={Tez} alt="logo" className={classes.tezImg}/>
+          </DialogContent>
+        }
         <DialogContent className={classes.padding0}>
-          <DialogContentText>
-            To supply and use {valueofRow.banner} as collateral, you will need to enable the token first.
-          </DialogContentText>
+          {visibility ?
+            // <Grid container>
+            //   <Grid></Grid>
+            //   <Grid></Grid>
+              <TextField
+                // autoFocus
+                id="tokenValue"
+                type="text"
+                placeholder="0"
+                onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
+                value={tokenValue}
+                // className={classes.rightAlignText}
+                // InputProps={{ disableUnderline: true }}
+              />
+            // </Grid>
+            :
+            <DialogContentText> {headerText} </DialogContentText>
+          }
         </DialogContent>
         <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
         <DialogContent className={classes.apyRate}>
@@ -62,22 +81,22 @@ const MarketModal = (props) => {
         </DialogContent>
         <DialogContent className={classes.limit}>
           <Grid container textAlign="justify">
-            <Grid item sm={7} className={classes.faintFont}> {Limit} </Grid>
+            <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2}> $0.00 </Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> {LimitValue}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container textAlign="justify">
-            <Grid item sm={7} className={classes.faintFont}> {LimitUsed} </Grid>
+            <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {LimitUsed} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2}> 0% </Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> {LimitUsedValue} </Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container>
             <Grid item sm={12}>
-              <Box className={classes.progressBar}>
+              <Box className={`${classes.progressBar} ${visibility ?"": classes.visibility}`}>
                 <CustomizedProgressBars />
               </Box>
             </Grid>

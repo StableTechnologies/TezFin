@@ -17,6 +17,7 @@ export const useStyles = makeStyles({
     "& .MuiButtonBase-root": {
       width: '50%',
       color: '#BDBDBD',
+      textTransform: 'none',
     },
   },
 })

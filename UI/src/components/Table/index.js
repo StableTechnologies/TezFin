@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,7 +10,6 @@ import { Typography } from '@mui/material';
 
 import BasicSwitch from '../Switch';
 import { useStyles } from './style';
-import MarketModal from '../MarketModal';
 import SupplyModal from '../SupplyModal';
 import BorrowModal from '../BorrowModal';
 import ConfirmModal from '../ConfirmModal';
@@ -18,37 +17,40 @@ import ConfirmModal from '../ConfirmModal';
 
 const BasicTable = (props) => {
   const classes = useStyles();
-
   const {heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt} =props;
+
   const [valueofRow, setValueOfRow] = useState();
-
-  const [open, setOpen] = useState(false);
+  const [openMktModal, setMktModal] = useState(false);
   const [openConfirmModal, setConfirmModal] =useState(false);
+  const [enableToken, setEnableToken] =useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+
+  const closeMktModal = () => {
+    setMktModal(false);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleClick = (item, event) => {
-
+  const handleClickMktModal = (item, event) => {
     setValueOfRow(item);
     if (event.target.type === "checkbox") return;
-    handleClickOpen();
+    setMktModal(true);
   }
 
-
-  const handleClickConfirm = () => {
+  const handleClickEnableToken = () => {
     setConfirmModal(true);
-    setOpen(false);
+    setMktModal(false);
   };
 
   const handleCloseConfirm = () => {
     setConfirmModal(false);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(()=>{
+      setConfirmModal(false);
+      setMktModal(true);
+    }, 3000);
+    return () => { clearTimeout(timer); setEnableToken(true); };
+  }, [openConfirmModal]);
 
 
   return (
@@ -56,12 +58,12 @@ const BasicTable = (props) => {
       {valueofRow &&
         <>
           {supplyMkt &&
-            <SupplyModal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} />
+            <SupplyModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} onClick={handleClickEnableToken} enableToken={enableToken} />
           }
           {borrowMkt &&
-            <BorrowModal open={open} close={handleClose} valueofRow={valueofRow} onClick={handleClickConfirm} />
+            <BorrowModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} onClick={handleClickEnableToken} />
           }
-          <ConfirmModal open={openConfirmModal} close={handleCloseConfirm}/>
+          <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} enableTokenText/>
         </>
       }
       <Table>
@@ -75,7 +77,7 @@ const BasicTable = (props) => {
         </TableHead>
         <TableBody>
           {tableData.map(data =>(
-            <TableRow key={data.title} onClick={(event) => handleClick(data, event)}>
+            <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
                 <img src={data.logo} alt="" className={classes.img} />
                 <Typography sx={{ display: 'inline' }}> {data.title} </Typography>

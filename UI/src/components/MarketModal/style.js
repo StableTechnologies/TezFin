@@ -74,9 +74,6 @@ export const useStyles = makeStyles({
     fontWeight: '500',
     lineHeight: '1.875rem',
     textTransform: 'unset',
-    "&:hover": {
-      opacity: '.8',
-    }
   },
   whiteSpace: {
     whiteSpace: 'nowrap',
@@ -97,5 +94,8 @@ export const useStyles = makeStyles({
   },
   faintFont: {
     color: '#828282',
+  },
+  visibility: {
+    visibility: 'hidden',
   },
 })

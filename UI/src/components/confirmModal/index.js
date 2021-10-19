@@ -14,7 +14,7 @@ import confirm from '../../assets/confirm.gif';
 import useStyles from './style';
 
 const ConfirmModal = (props) => {
-  const {open, close} = props;
+  const {open, close, enableTokenText, supplyTokenText} = props;
 
   const classes = useStyles();
 
@@ -28,7 +28,10 @@ const ConfirmModal = (props) => {
         <img src={confirm} alt="confirm-gif" className={classes.gif}/>
       </DialogContent>
       <DialogContent>
-        <DialogContentText> To enable XTZ token, please confirm the transaction. </DialogContentText>
+        <DialogContentText>
+          {enableTokenText && "To enable XTZ token, please confirm the transaction."}
+          {supplyTokenText && "To supply XTZ token, please confirm the transaction."}
+        </DialogContentText>
       </DialogContent>
     </Dialog>
   )
