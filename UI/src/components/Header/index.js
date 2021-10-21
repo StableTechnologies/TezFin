@@ -17,6 +17,7 @@ import roundSpeed from '../../assets/roundSpeed.svg';
 import questionCircle from '../../assets/questionCircle.svg';
 
 import {supplyCompositionAction} from '../../reduxContent/supplyComposition/actions';
+import {borrowCompositionAction} from '../../reduxContent/borrowComposition/actions';
 
 const Header = () => {
   const classes = useStyles();
@@ -29,8 +30,10 @@ const Header = () => {
   // and same for borrowing
 
   const {supplyComposition} = useSelector(state => state.supplyComposition);
+  const {borrowComposition} = useSelector(state => state.borrowComposition);
   useEffect(() => {
     dispatch(supplyCompositionAction())
+    dispatch(borrowCompositionAction())
   }, [dispatch])
 
   return (
@@ -113,7 +116,7 @@ const Header = () => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Borrowing</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${borrowComposition.totalUsdValue}</Typography>
                   </Box>
                 </Grid>
               </Grid>
@@ -125,7 +128,7 @@ const Header = () => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Borrow limit</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${borrowComposition.borrowLimitUsd}</Typography>
                   </Box>
                 </Grid>
               </Grid>
