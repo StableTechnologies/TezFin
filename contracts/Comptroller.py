@@ -38,7 +38,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             self,
             administrator = administrator_,
             pendingAdministrator = sp.none,
-            markets = sp.map(l={}, tkey = sp.TAddress, tvalue = TMarket), # Official mapping of cTokens -> Market metadata. Used e.g. to determine if a market is supported
+            markets = sp.big_map(l={}, tkey = sp.TAddress, tvalue = TMarket), # Official mapping of cTokens -> Market metadata. Used e.g. to determine if a market is supported
             marketNameToAddress = sp.map(tkey = sp.TString, tvalue = sp.TAddress), # The mapping of Market names -> CToken
             transferPaused = sp.bool(True),
             collaterals = sp.big_map(l={}, tkey = sp.TAddress, tvalue = sp.TSet(sp.TAddress)), # Per-account mapping of collaterals, capped by maxAssets
