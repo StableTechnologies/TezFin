@@ -4,15 +4,20 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// import { ThemeProvider } from '@material-ui/core/styles';
+import store from "./store";
+import { Provider } from 'react-redux';
+
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 
+
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
