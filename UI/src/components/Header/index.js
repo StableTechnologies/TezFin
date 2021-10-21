@@ -10,10 +10,10 @@ import CustomizedProgressBars from './progressBar';
 
 import {HeaderCon, classes1, Title, useStyles} from "./style";
 import tezHeader from '../../assets/tezHeader.svg';
-import carbonGrowth from '../../assets/carbonGrowth.svg';
-import checkmarkLock from '../../assets/checkmarkLock.svg';
-import borrowing from '../../assets/borrowing.svg';
-import roundSpeed from '../../assets/roundSpeed.svg';
+import supplyingIcon from '../../assets/supplyingIcon.svg';
+import collateralizedIcon from '../../assets/collateralizedIcon.svg';
+import borrowingIcon from '../../assets/borrowing.svg';
+import borrowLimitIcon from '../../assets/borrowLimitIcon.svg';
 import questionCircle from '../../assets/questionCircle.svg';
 
 import {supplyCompositionAction} from '../../reduxContent/supplyComposition/actions';
@@ -40,7 +40,7 @@ const Header = () => {
     <HeaderCon className={classes1.root}>
       <Grid container justify="center" alignItems="center">
         <Grid item xs={6} sm={3} md={4} lg={3}>
-          <img src={tezHeader} alt={tezHeader} className={classes.tezHeader}/>
+          <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
         </Grid>
         <Grid container item xs={6} sm={6} md={5} lg={5} textAlign="center" className={classes.linkCon}>
           <Grid item sm={4} md={4} lg={4}>
@@ -78,7 +78,7 @@ const Header = () => {
             <Grid container>
               <Grid container item xs={12} sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
-                    <img src={carbonGrowth} alt={"growth"} />
+                    <img src={supplyingIcon} alt="supplying-Icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
@@ -90,7 +90,7 @@ const Header = () => {
               <Grid sm={1}></Grid>
               <Grid container item xs={12} sm={6} lg={4}>
                 <Grid item>
-                    <img src={checkmarkLock} alt={"checkmarkLock"} />
+                    <img src={collateralizedIcon} alt="collateralized-Icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
@@ -111,7 +111,7 @@ const Header = () => {
             <Grid container>
               <Grid container item sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
-                    <img src={borrowing} alt={"borrowing icon"} />
+                    <img src={borrowingIcon} alt="borrowing-icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
@@ -123,7 +123,7 @@ const Header = () => {
               <Grid sm={1}></Grid>
               <Grid container item sm={6} lg={4}>
                 <Grid item>
-                    <img src={roundSpeed} alt={"roundSpeed"} />
+                    <img src={borrowLimitIcon} alt="borrowLimit-Icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>

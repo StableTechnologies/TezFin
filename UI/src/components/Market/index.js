@@ -79,7 +79,7 @@ const Market = (props) => {
           {tableData.map(data =>(
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
-                <img src={data.logo} alt="" className={classes.img} />
+                <img src={data.logo} alt={data.title+ "-Icon"} className={classes.img} />
                 <Typography sx={{ display: 'inline' }}> {data.title} </Typography>
               </TableCell>
               <TableCell></TableCell>
