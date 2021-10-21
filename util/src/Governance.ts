@@ -11,7 +11,7 @@ export namespace Governance {
      */
     export interface SupportMarketPair {
         comptroller: string;
-        cToken: {
+        fToken: {
             address: string;
             name: string;
         };
@@ -26,8 +26,8 @@ export namespace Governance {
         return `{"prim": "Pair", "args": [
             { "bytes": "${TezosMessageUtils.writeAddress(supportMarket.comptroller)}" },
             { "prim": "Pair", "args": [
-                { "bytes": "${TezosMessageUtils.writeAddress(supportMarket.cToken.address)}" },
-                { "string": "${supportMarket.cToken.name}" }]}
+                { "bytes": "${TezosMessageUtils.writeAddress(supportMarket.fToken.address)}" },
+                { "string": "${supportMarket.fToken.name}" }]}
         ]}`;
     }
 
@@ -50,7 +50,7 @@ export namespace Governance {
      */
     export interface DisableMarketPair {
         comptroller: string;
-        cTokenAddress: string;
+        fTokenAddress: string;
     }
 
     /*
@@ -61,7 +61,7 @@ export namespace Governance {
     export function DisableMarketMicheline(disableMarket: DisableMarketPair): string {
         return `{"prim": "Pair", "args": [
             { "bytes": "${TezosMessageUtils.writeAddress(disableMarket.comptroller)}" },
-            { "bytes": "${TezosMessageUtils.writeAddress(disableMarket.cTokenAddress)}" }
+            { "bytes": "${TezosMessageUtils.writeAddress(disableMarket.fTokenAddress)}" }
         ]}`;
     }
 
@@ -86,7 +86,7 @@ export namespace Governance {
     export interface SetMintPausedPair {
         comptrollerAddress: string;
         tokenState: {
-            cTokenAddress: string;
+            fTokenAddress: string;
             state: boolean;
         }
     }
@@ -105,7 +105,7 @@ export namespace Governance {
         return `{ "prim": "Pair", "args": [
             { "bytes": "${TezosMessageUtils.writeAddress(setMintPaused.comptrollerAddress)}"},
             { "prim": "Pair", "args": [
-                { "bytes": "${TezosMessageUtils.writeAddress(setMintPaused.tokenState.cTokenAddress)}"} ,
+                { "bytes": "${TezosMessageUtils.writeAddress(setMintPaused.tokenState.fTokenAddress)}"} ,
                 { "prim": "${setMintPaused.tokenState.state ? "True" : "False" }"}
             ]}
         ]}`;
