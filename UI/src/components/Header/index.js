@@ -95,7 +95,7 @@ const Header = () => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Collateralized</Typography>
-                    <Typography className={classes.statsValue}>${supplyComposition.collateralUsdValue}</Typography>
+                    <Typography className={classes.statsValue}>${supplyComposition.collateral}</Typography>
                   </Box>
                 </Grid>
               </Grid>
@@ -128,7 +128,7 @@ const Header = () => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Borrow limit</Typography>
-                    <Typography className={classes.statsValue}>${borrowComposition.borrowLimitUsd}</Typography>
+                    <Typography className={classes.statsValue}>${borrowComposition.borrowLimit}</Typography>
                   </Box>
                 </Grid>
               </Grid>

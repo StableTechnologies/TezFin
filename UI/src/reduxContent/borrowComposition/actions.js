@@ -1,6 +1,6 @@
 import {GET_BORROW_COMPOSITION_DATA} from './types.js';
 
-import {TezosLendingPlatform} from '../../util/TezosLendingPlatform';
+import {TezosLendingPlatform} from 'tezoslendingplatformjs';
 
 export const borrowCompositionAction = (account)=> async (dispatch) => {
   const borrowComposition = await TezosLendingPlatform.borrowComposition(account);

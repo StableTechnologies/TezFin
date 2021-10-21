@@ -9,12 +9,6 @@ import Dashboard from './components/Dashboard';
 
 import Grid from '@mui/material/Grid';
 
-import {TezosLendingPlatform} from './util/TezosLendingPlatform';
-
-function f() {
-    TezosLendingPlatform.getMarketInfo(undefined);
-}
-
 function App() {
   return (
     <Router>
