@@ -15,7 +15,7 @@ import BorrowModal from '../BorrowModal';
 import ConfirmModal from '../ConfirmModal';
 
 
-const BasicTable = (props) => {
+const Market = (props) => {
   const classes = useStyles();
   const {heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt} =props;
 
@@ -79,7 +79,7 @@ const BasicTable = (props) => {
           {tableData.map(data =>(
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
-                <img src={data.logo} alt="" className={classes.img} />
+                <img src={data.logo} alt={data.title+ "-Icon"} className={classes.img} />
                 <Typography sx={{ display: 'inline' }}> {data.title} </Typography>
               </TableCell>
               <TableCell></TableCell>
@@ -97,4 +97,4 @@ const BasicTable = (props) => {
   )
 }
 
-export default BasicTable;
+export default Market;

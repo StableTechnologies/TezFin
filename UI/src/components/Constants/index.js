@@ -6,7 +6,7 @@ import kUSD from "../../assets/kUSD.svg";
 import plenty from "../../assets/plenty.svg";
 import USDtz from "../../assets/USDtz.svg";
 import XTZ from "../../assets/XTZ.svg";
-import { FToken } from '../../util/FToken';
+import { FToken } from 'tezoslendingplatformjs';
 
 export const tokens = [
   { title: 'BTCtz', logo: BTCtz, banner: 'BTCtz'},

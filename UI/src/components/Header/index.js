@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {NavLink} from "react-router-dom";
 
 import Grid from '@mui/material/Grid';
@@ -9,24 +10,37 @@ import CustomizedProgressBars from './progressBar';
 
 import {HeaderCon, classes1, Title, useStyles} from "./style";
 import tezHeader from '../../assets/tezHeader.svg';
-import carbonGrowth from '../../assets/carbonGrowth.svg';
-import checkmarkLock from '../../assets/checkmarkLock.svg';
-import borrowing from '../../assets/borrowing.svg';
-import roundSpeed from '../../assets/roundSpeed.svg';
+import supplyingIcon from '../../assets/supplyingIcon.svg';
+import collateralizedIcon from '../../assets/collateralizedIcon.svg';
+import borrowingIcon from '../../assets/borrowing.svg';
+import borrowLimitIcon from '../../assets/borrowLimitIcon.svg';
 import questionCircle from '../../assets/questionCircle.svg';
+
+import {supplyCompositionAction} from '../../reduxContent/supplyComposition/actions';
+import {borrowCompositionAction} from '../../reduxContent/borrowComposition/actions';
 
 const Header = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   // 1. call supplyComposition()
   // 2. plug supplyComposition() results into progress bar
   // 3. plug supplyComposition().totalUsdValue into supplying value display
   // 4. plug supplyComposition().collateralUsdValue into collateral value display
   // and same for borrowing
+
+  const {supplyComposition} = useSelector(state => state.supplyComposition);
+  const {borrowComposition} = useSelector(state => state.borrowComposition);
+  useEffect(() => {
+    dispatch(supplyCompositionAction())
+    dispatch(borrowCompositionAction())
+  }, [dispatch])
+
   return (
     <HeaderCon className={classes1.root}>
       <Grid container justify="center" alignItems="center">
         <Grid item xs={6} sm={3} md={4} lg={3}>
-          <img src={tezHeader} alt={tezHeader} className={classes.tezHeader}/>
+          <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
         </Grid>
         <Grid container item xs={6} sm={6} md={5} lg={5} textAlign="center" className={classes.linkCon}>
           <Grid item sm={4} md={4} lg={4}>
@@ -64,24 +78,24 @@ const Header = () => {
             <Grid container>
               <Grid container item xs={12} sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
-                    <img src={carbonGrowth} alt={"growth"} />
+                    <img src={supplyingIcon} alt="supplying-Icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Supplying</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${supplyComposition.totalUsdValue}</Typography>
                   </Box>
                 </Grid>
               </Grid>
               <Grid sm={1}></Grid>
               <Grid container item xs={12} sm={6} lg={4}>
                 <Grid item>
-                    <img src={checkmarkLock} alt={"checkmarkLock"} />
+                    <img src={collateralizedIcon} alt="collateralized-Icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Collateralized</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${supplyComposition.collateral}</Typography>
                   </Box>
                 </Grid>
               </Grid>
@@ -97,24 +111,24 @@ const Header = () => {
             <Grid container>
               <Grid container item sm={5} lg={3} className={classes.borderRight}>
                 <Grid item>
-                    <img src={borrowing} alt={"borrowing icon"} />
+                    <img src={borrowingIcon} alt="borrowing-icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Borrowing</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${borrowComposition.totalUsdValue}</Typography>
                   </Box>
                 </Grid>
               </Grid>
               <Grid sm={1}></Grid>
               <Grid container item sm={6} lg={4}>
                 <Grid item>
-                    <img src={roundSpeed} alt={"roundSpeed"} />
+                    <img src={borrowLimitIcon} alt="borrowLimit-Icon" />
                 </Grid>
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Borrow limit</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${borrowComposition.borrowLimit}</Typography>
                   </Box>
                 </Grid>
               </Grid>
