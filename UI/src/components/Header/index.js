@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {NavLink} from "react-router-dom";
 
 import Grid from '@mui/material/Grid';
@@ -15,13 +16,23 @@ import borrowing from '../../assets/borrowing.svg';
 import roundSpeed from '../../assets/roundSpeed.svg';
 import questionCircle from '../../assets/questionCircle.svg';
 
+import {supplyCompositionAction} from '../../reduxContent/supplyComposition/actions';
+
 const Header = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   // 1. call supplyComposition()
   // 2. plug supplyComposition() results into progress bar
   // 3. plug supplyComposition().totalUsdValue into supplying value display
   // 4. plug supplyComposition().collateralUsdValue into collateral value display
   // and same for borrowing
+
+  const {supplyComposition} = useSelector(state => state.supplyComposition);
+  useEffect(() => {
+    dispatch(supplyCompositionAction())
+  }, [dispatch])
+
   return (
     <HeaderCon className={classes1.root}>
       <Grid container justify="center" alignItems="center">
@@ -69,7 +80,7 @@ const Header = () => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Supplying</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${supplyComposition.totalUsdValue}</Typography>
                   </Box>
                 </Grid>
               </Grid>
@@ -81,7 +92,7 @@ const Header = () => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}>Collateralized</Typography>
-                    <Typography className={classes.statsValue}>$0.00</Typography>
+                    <Typography className={classes.statsValue}>${supplyComposition.collateralUsdValue}</Typography>
                   </Box>
                 </Grid>
               </Grid>
