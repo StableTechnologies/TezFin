@@ -22,7 +22,12 @@ export namespace TezosLendingPlatform {
         priceFeed: string;
     }
 
-    // TODO: add mainnet addresses as a constant
+    /*
+     * @description placeholder
+     *
+     * @param
+     */
+    export const mainnetAddresses = {} as ProtocolAddresses;
 
     /*
      * Description
