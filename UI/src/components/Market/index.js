@@ -15,7 +15,7 @@ import BorrowModal from '../BorrowModal';
 import ConfirmModal from '../ConfirmModal';
 
 
-const BasicTable = (props) => {
+const Market = (props) => {
   const classes = useStyles();
   const {heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt} =props;
 
@@ -97,4 +97,4 @@ const BasicTable = (props) => {
   )
 }
 
-export default BasicTable;
+export default Market;
