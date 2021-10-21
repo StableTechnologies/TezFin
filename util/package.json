@@ -2,7 +2,7 @@
   "name": "tezoslendingplatformjs",
   "version": "0.0.1",
   "description": "Typescript util for working with the Tezos Lending Platform",
-  "main": "index.ts",
+  "main": "build/index.js",
   "scripts": {
     "postinstall": "npm run build",
     "start": "node ./build/src/index.js",
