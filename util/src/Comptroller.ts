@@ -58,14 +58,14 @@ export namespace Comptroller {
      * @param mapId
      * @param address
      */
-    export async function GetCollaterals(address: string, comptroller: Storage, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string): Promise<FToken.AssetType[]> {
+    export async function GetCollaterals(address: string, comptroller: Storage, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string): Promise<TezosLendingPlatform.AssetType[]> {
         const packedAccountKey = TezosMessageUtils.encodeBigMapKey(
             Buffer.from(TezosMessageUtils.writePackedData(`0x${TezosMessageUtils.writeAddress(address)}`, '', TezosParameterFormat.Michelson), 'hex')
         );
 
         try {
             const assetsResult = await TezosNodeReader.getValueForBigMapKey(server, comptroller.accountAssetsMapId, packedAccountKey);
-            const fTokenAddresses: FToken.AssetType[] = assetsResult.map((json) => json['string']);
+            const fTokenAddresses: TezosLendingPlatform.AssetType[] = assetsResult.map((json) => json['string']);
             return fTokenAddresses.map((fTokenAddress) => protocolAddresses.fTokensReverse[fTokenAddress]);
         } catch (err) {
             log.error(`${address} has no collateralized assets`);
@@ -184,7 +184,7 @@ export namespace Comptroller {
      * @param gas
      * @param freight
      */
-    export function DataRelevanceOperations(collaterals: FToken.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function DataRelevanceOperations(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // updateAssetPrice for every collateralized market
         for (const collateral of collaterals) {
@@ -208,7 +208,7 @@ export namespace Comptroller {
      * @param gas
      * @param freight
      */
-    export async function DataRelevance(collaterals: FToken.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function DataRelevance(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let ops: Transaction[] = DataRelevanceOperations(collaterals, protocolAddresses,counter, keystore, fee, gas, freight);

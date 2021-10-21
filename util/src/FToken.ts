@@ -3,52 +3,6 @@ import { TezosLendingPlatform } from './TezosLendingPlatform';
 import { JSONPath } from 'jsonpath-plus';
 
 export namespace FToken {
-    export enum AssetType {
-        XTZ = "XTZ",
-        FA12 = "FA12",
-        FA2 = "FA2"
-    }
-
-    /*
-     * Represents an underlying asset.
-     *
-     * @param address Contract address. Null for XTZ.
-     * @param tokenId FA2 token id. Null for XTZ, FA12.
-     */
-    export interface UnderlyingAsset {
-        assetType: AssetType;
-        address?: string;
-        tokenId?: number;
-    }
-
-    /*
-     * Represents metadata about a fToken contract.
-     *
-     * @param name Name of the underlying asset, e.g. Tezos.
-     * @param tokenSymbol Symbol of the underlying asset, e.g. XTZ.
-     * @param administrator Address of the fToken contract administrator, e.g. the governance contract.
-     * @param price Price according to the protocol's price oracle.
-     */
-    export interface UnderlyingAssetMetadata {
-        name: string;
-        tokenSymbol: string;
-        administrator: string;
-        price: number;
-    }
-
-    /*
-     * Represents the status of one side of a fToken's market (either supply or borrow)
-     *
-     * @param numParticipants The number of unique addresses in the market
-     * @param amount The total number of tokens in the market (either supplied or borrowed)
-     * @param rate Current interest rate
-     */
-    export interface MarketStatus {
-        numParticipants: number;
-        amount: number;
-        rate: number;
-    }
-
     /*
      * @description
      *
@@ -120,7 +74,7 @@ export namespace FToken {
      * @param gas
      * @param freight
      */
-    export function AccrueInterestOperations(collaterals: AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, keyStore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function AccrueInterestOperations(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, keyStore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction[] {
         const entrypoint = 'accrueInterest';
         const parameters = 'Unit'
         let ops: Transaction[] = [];
@@ -135,7 +89,7 @@ export namespace FToken {
      *
      * @param
      */
-    export async function AccrueInterest(markets: AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function AccrueInterest(markets: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let ops: Transaction[] = AccrueInterestOperations(markets, protocolAddresses, counter, keystore, fee, gas, freight);
@@ -152,7 +106,7 @@ export namespace FToken {
      * @param amount The amount to fTokens to mint
      */
     export interface MintPair {
-        underlying: AssetType;
+        underlying: TezosLendingPlatform.AssetType;
         amount: number;
     }
 
@@ -179,7 +133,7 @@ export namespace FToken {
     export function MintOperation(mint: MintPair, counter: number, fTokenAddress: string, keyStore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'mint';
         const parameters = MintPairMichelson(mint);
-        const xtzAmount = mint.underlying == AssetType.XTZ ? mint.amount : 0;
+        const xtzAmount = mint.underlying == TezosLendingPlatform.AssetType.XTZ ? mint.amount : 0;
         return TezosNodeWriter.constructContractInvocationOperation(keyStore.publicKeyHash, counter, fTokenAddress, xtzAmount, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
     }
 
@@ -189,7 +143,7 @@ export namespace FToken {
      * @param amount The amount of fTokens to redeem
      */
     export interface RedeemPair {
-        underlying: AssetType;
+        underlying: TezosLendingPlatform.AssetType;
         amount: number;
     }
 
@@ -220,7 +174,7 @@ export namespace FToken {
      * @param
      */
     export interface BorrowPair {
-        underlying: AssetType;
+        underlying: TezosLendingPlatform.AssetType;
         amount: number;
     }
 
@@ -251,7 +205,7 @@ export namespace FToken {
      * @param
      */
     export interface RepayBorrowPair {
-        underlying: AssetType;
+        underlying: TezosLendingPlatform.AssetType;
         amount: number;
     }
 
@@ -272,7 +226,7 @@ export namespace FToken {
     export function RepayBorrowOperation(repayBorrow: RepayBorrowPair, counter: number, fTokenAddress: string, keyStore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'repayBorrow';
         const parameters = RepayBorrowPairMichelson(repayBorrow);
-        const xtzAmount = repayBorrow.underlying == AssetType.XTZ ? repayBorrow.amount : 0;
+        const xtzAmount = repayBorrow.underlying == TezosLendingPlatform.AssetType.XTZ ? repayBorrow.amount : 0;
         return TezosNodeWriter.constructContractInvocationOperation(keyStore.publicKeyHash, counter, fTokenAddress, xtzAmount, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
     }
 

@@ -4,7 +4,7 @@ import { Comptroller } from './Comptroller';
 
 export namespace TezosLendingPlatform {
     /*
-     * Addresses of the protocol contracts
+     * @description Addresses of the protocol contracts
      *
      * @param fTokens List of fToken contract addresses, e.g. fTokens["XTZ"] == cXTZ contract address.
      * @param underlying Map of underlying assets' metadata.
@@ -14,8 +14,8 @@ export namespace TezosLendingPlatform {
     */
     export interface ProtocolAddresses {
         fTokens: { [underlying: string]: string};
-        fTokensReverse: { [address: string]: FToken.AssetType};
-        underlying: { [tokenName: string]: FToken.UnderlyingAsset };
+        fTokensReverse: { [address: string]: AssetType};
+        underlying: { [tokenName: string]: UnderlyingAsset };
         comptroller: string;
         interestRateModel: { [underlying: string]: string};
         governance: string;
@@ -30,22 +30,80 @@ export namespace TezosLendingPlatform {
     export const mainnetAddresses = {} as ProtocolAddresses;
 
     /*
+     * @description Enum identifying assets in the protocol. Corresponds to the string of the asset's symbol.
+     *
+     */
+    export enum AssetType {
+        XTZ = "XTZ",
+        FA12 = "FA12",
+        FA2 = "FA2",
+    }
+
+    /*
+     * @description Represents an underlying asset.
+     *
+     * @param address Contract address. Null for XTZ.
+     * @param tokenId FA2 token id. Null for XTZ, FA12.
+     */
+    export interface UnderlyingAsset {
+        assetType: AssetType;
+        address?: string;
+        tokenId?: number;
+    }
+
+    /*
+     * @description Represents metadata about a fToken contract.
+     *
+     * @param name Name of the underlying asset, e.g. Tezos.
+     * @param underlying Underlying asset identifier object
+     * @param administrator Address of the fToken contract administrator, e.g. the governance contract.
+     * @param price Price according to the protocol's price oracle.
+     */
+    export interface UnderlyingAssetMetadata {
+        name: string;
+        underlying: UnderlyingAsset;
+        administrator: string;
+        price: number;
+    }
+
+    /*
+     * @description Represents the status of one side of a fToken's market (either supply or borrow)
+     *
+     * @param numParticipants The number of unique addresses in the market
+     * @param totalAmount The total number of tokens in the market, fTokens for supply and underlying for borrow
+     * @param rate Current interest rate
+     */
+    export interface MarketData {
+        numParticipants: number;
+        totalAmount: number;
+        rate: number;
+    }
+
+    /*
      * Description
      *
-     * @param
+     * @param address fToken contract address
+     * @param asset Asset metadata
+     * @param cash Amount of underlying fToken held by contract
+     * @param supply Supply side data
+     * @param borrow Borrow side data
+     * @param dailyInterestPaid
+     * @param reserves
+     * @param reserveFactor
+     * @param collateralFactor The collateral factor required for this asset
+     * @param exchangeRate The fToken/underlying exchange rate. This increases as supply rate accrues
      */
-    export interface MarketMetadata {
-        asset: FToken.UnderlyingAsset;
-        metadata: FToken.UnderlyingAssetMetadata;
-        liquidity: number;
-        supply: FToken.MarketStatus;
-        borrow: FToken.MarketStatus;
+    export interface Market {
+        address: string;
+        asset: UnderlyingAssetMetadata;
+        cash: number;
+        supply: MarketData;
+        borrow: MarketData;
         dailyInterestPaid: number;
         reserves: number;
         reserveFactor: number;
         collateralFactor: number;
-        fTokensMinted: number;
-        fTokenExchangeRate: number;
+        exchangeRate: number;
     }
 
     /*
@@ -53,18 +111,61 @@ export namespace TezosLendingPlatform {
      *
      * @param address The fToken contract address to query
      */
-    export async function getMarketInfo(asset: FToken.UnderlyingAsset): Promise<MarketMetadata> {
-        // TODO: do this for each fToken
-        return {} as MarketMetadata;
+    export async function GetMarkets(protocolAddresses: ProtocolAddresses): Promise<Market[]> {
+        return [];
     }
 
     /*
      * @description
      *
-     * @param
+     * @param assetType
+     * @param supplyBalanceUnderlying Total underlying token amount supplied, fTokenBalance * exchangeRate
+     * @param supplyBalanceUsd Total USD value of funds supplied
+     * @param loanBalanceUnderlying Total underlying token amount borrowed
+     * @param loanBalanceUsd Total USD value of funds borrowed
+     * @param collateral True if market is collateralized, false otherwise
      */
-    export async function accountAPY(account: string): Promise<number> {
-        return 99;
+    export interface MarketBalance {
+        assetType: AssetType;
+        supplyBalanceUnderlying: number;
+        supplyBalanceUsd: number
+        loanBalanceUnderlying: number;
+        loanBalanceUsd: number;
+        collateral: boolean;
+    }
+
+    /*
+     * @description
+     *
+     * @param address Account address
+     * @param markets Account balances across all markets
+     * @param totalCollateralUsd Total USD value of collateral
+     * @param totalLoanUsd Total USD value of loans
+     * @param health Account LTV ratio, totalCollateralUsd / TotalLoanUsd
+     * @param rate Current net account rate across all markets, both supply and borrow, weighted by balance
+     */
+    export interface Account {
+        address: string;
+        markets: MarketBalance;
+        totalCollateralUsd: number;
+        totalLoanUsd: number;
+        health: number;
+        rate: number;
+    }
+
+    /*
+     * @description Returns the accout corresponding to address.
+     *
+     * @param address Address of the requested account
+     * @param markets List of fToken markets
+     */
+    export async function GetAccount(address: string, markets: Market[], protocolAddresses: ProtocolAddresses): Promise<Account> {
+        // check which markets are collaterals
+        // get balance in each market
+        // calculate usd balances using market exchange rate
+        // calculate total collateral and account health
+        // calculate net rate across all markets, weighted by balance
+        return {} as Account;
     }
 
     /*
@@ -73,7 +174,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface SupplyComposition {
-        assets: { assetType: FToken.AssetType, usdValue: number }[];
+        assets: { assetType: AssetType, usdValue: number }[];
         collateral: number;
         totalUsdValue: number;
     }
@@ -83,11 +184,11 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export async function supplyComposition(account: string): Promise<SupplyComposition> {
+    export function supplyComposition(account: Account): SupplyComposition {
         return {
             assets: [
-                { assetType: FToken.AssetType.XTZ, usdValue: 10 },
-                { assetType: FToken.AssetType.FA2, usdValue: 10 },
+                { assetType: AssetType.XTZ, usdValue: 10 },
+                { assetType: AssetType.FA2, usdValue: 10 },
             ],
             collateral: 44,
             totalUsdValue: 100
@@ -100,7 +201,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface BorrowComposition {
-        assets: { assetType: FToken.AssetType, usdValue: number }[];
+        assets: { assetType: AssetType, usdValue: number }[];
         borrowLimit: number;
         totalUsdValue: number;
     }
@@ -110,51 +211,14 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export async function borrowComposition(account: string): Promise<BorrowComposition> {
+    export function borrowComposition(account: Account): BorrowComposition {
         return {
             assets: [
-                { assetType: FToken.AssetType.XTZ, usdValue: 13 },
-                { assetType: FToken.AssetType.FA2, usdValue: 15 },
+                { assetType: AssetType.XTZ, usdValue: 13 },
+                { assetType: AssetType.FA2, usdValue: 15 },
             ],
             borrowLimit: 23,
             totalUsdValue: 400
-        };
-    }
-
-    /*
-     * @description
-     *
-     * @param
-     */
-    export interface TokenStatus {
-        apy: number;
-        tokenBalance: number;
-        usdValue: number;
-    }
-
-    /*
-     * @description
-     *
-     * @param
-     */
-    export async function getSupplyToken(asset: FToken.UnderlyingAsset, account: string): Promise<TokenStatus> {
-        return {
-            apy: 55,
-            tokenBalance: 99,
-            usdValue: 123
-        };
-    }
-
-    /*
-     * @description
-     *
-     * @param
-     */
-    export async function getBorrowToken(asset: FToken.UnderlyingAsset, account: string): Promise<TokenStatus> {
-        return {
-            apy: 55,
-            tokenBalance: 99,
-            usdValue: 123
         };
     }
 
@@ -175,7 +239,7 @@ export namespace TezosLendingPlatform {
      * @param LTV Loan-to-value ratio = borrowBalance / (supplyBalance * collateralFactor)
      */
     export interface LTVStatus {
-        suppliedAssets: MarketMetadata[];
+        suppliedAssets: Market[];
         supplyBalance: number;
         supplyAPY: number;
         collateralBalance: number;
@@ -192,7 +256,7 @@ export namespace TezosLendingPlatform {
      * @param priceFeed Protocol's price feed oracle
      * @param address The address for which to calculate LTV
      */
-    export function getLTVStatus(markets: MarketMetadata[], priceFeed: PriceFeed, address: string): LTVStatus {
+    export function getLTVStatus(markets: Market[], priceFeed: PriceFeed, address: string): LTVStatus {
         // TODO: for each market, call getAccountStatus() and sum over all markets using price feed
         return {} as LTVStatus;
     }
@@ -209,18 +273,18 @@ export namespace TezosLendingPlatform {
      * @param freight
      */
     export function permissionOperation(params: FToken.MintPair | FToken.RepayBorrowPair, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction | undefined {
-        const underlying: FToken.UnderlyingAsset = protocolAddresses.underlying[params.underlying] == undefined
-            ? { assetType: FToken.AssetType.XTZ }
+        const underlying: UnderlyingAsset = protocolAddresses.underlying[params.underlying] == undefined
+            ? { assetType: AssetType.XTZ }
             : protocolAddresses.underlying[params.underlying];
         switch (underlying.assetType) {
-            case FToken.AssetType.FA12:
+            case AssetType.FA12:
                 // fa12 approval operation
                 return cancelPermission ?
                     // fa12 approved balance is depleted, so no need to invoke again to cancel
                     undefined :
                     // fa12 approve balance
                     Tzip7ReferenceTokenHelper.ApproveBalanceOperation(params.amount, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, keystore, fee, gas, freight);
-            case FToken.AssetType.FA2:
+            case AssetType.FA2:
                 const updateOperator: UpdateOperator = {
                     owner: keystore.publicKeyHash,
                     operator: protocolAddresses.fTokens[params.underlying],
@@ -231,7 +295,7 @@ export namespace TezosLendingPlatform {
                     MultiAssetTokenHelper.RemoveOperatorsOperation(underlying.address!, counter, keystore, fee, [updateOperator]) :
                     // fa2 add operator
                     MultiAssetTokenHelper.AddOperatorsOperation(underlying.address!, counter, keystore, fee, [updateOperator]);
-            case FToken.AssetType.XTZ:
+            case AssetType.XTZ:
                 return undefined;
         }
     }
