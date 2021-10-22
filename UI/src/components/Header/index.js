@@ -18,6 +18,7 @@ import questionCircle from '../../assets/questionCircle.svg';
 
 import {supplyCompositionAction} from '../../reduxContent/supplyComposition/actions';
 import {borrowCompositionAction} from '../../reduxContent/borrowComposition/actions';
+import {addWalletAction} from '../../reduxContent/addWallet/actions';
 
 const Header = () => {
   const classes = useStyles();
@@ -31,6 +32,7 @@ const Header = () => {
 
   const {supplyComposition} = useSelector(state => state.supplyComposition);
   const {borrowComposition} = useSelector(state => state.borrowComposition);
+
   useEffect(() => {
     dispatch(supplyCompositionAction())
     dispatch(borrowCompositionAction())
@@ -55,7 +57,7 @@ const Header = () => {
         </Grid>
         <Grid item lg={2}></Grid>
         <Grid item xs={12} sm={3} md={3} lg={2} className={classes.addWalletCon}>
-          <Button className={classes.addWallet}> Add Wallet </Button>
+          <Button className={classes.addWallet} onClick={() => dispatch(addWalletAction())}> Add Wallet </Button>
         </Grid>
       </Grid>
       <Grid container>
