@@ -8,13 +8,13 @@ import Market from '../Market';
 import { useStyles } from './style';
 
 import {tokens} from '../Constants';
-import {supplyMarketAction} from '../../reduxContent/supplyMarket/actions';
+import {supplyMarketAction} from '../../reduxContent/market/actions';
 
 const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const {supplyMarketData} = useSelector(state => state.supplyMarket);
+  const {supplyMarketData} = useSelector(state => state.market);
 
   useEffect(() => {
     dispatch(supplyMarketAction())
