@@ -112,7 +112,35 @@ export namespace TezosLendingPlatform {
      * @param address The fToken contract address to query
      */
     export async function GetMarkets(protocolAddresses: ProtocolAddresses): Promise<Market[]> {
-        return [];
+        return [
+            {
+                address: "kt18a7h89",
+                asset: {
+                    name: "cXTZ",
+                    underlying: {
+                        assetType: AssetType.XTZ
+                    } as UnderlyingAsset,
+                    administrator: "tz123456",
+                    price: 5
+                } as UnderlyingAssetMetadata,
+                cash: 100,
+                supply: {
+                    numParticipants: 1,
+                    totalAmount: 100,
+                    rate: 1.05
+                } as MarketData,
+                borrow: {
+                    numParticipants: 1,
+                    totalAmount: 20,
+                    rate: 1.01
+                } as MarketData,
+                dailyInterestPaid: 0.3,
+                reserves: 0,
+                reserveFactor: 0,
+                collateralFactor: 0.6,
+                exchangeRate: 1.04
+            }
+        ];
     }
 
     /*
@@ -146,7 +174,7 @@ export namespace TezosLendingPlatform {
      */
     export interface Account {
         address: string;
-        markets: MarketBalance;
+        markets: MarketBalance[];
         totalCollateralUsd: number;
         totalLoanUsd: number;
         health: number;
@@ -165,7 +193,23 @@ export namespace TezosLendingPlatform {
         // calculate usd balances using market exchange rate
         // calculate total collateral and account health
         // calculate net rate across all markets, weighted by balance
-        return {} as Account;
+        return {
+            address: "kt2327a4b3h4",
+            markets: [
+                {
+                    assetType: AssetType.XTZ,
+                    supplyBalanceUnderlying:  100,
+                    supplyBalanceUsd: 500,
+                    loanBalanceUnderlying: 20,
+                    loanBalanceUsd: 100,
+                    collateral: true
+                } as MarketBalance
+            ],
+            totalCollateralUsd: 500,
+            totalLoanUsd: 100,
+            health: 0.2,
+            rate: 1.04
+        } as Account;
     }
 
     /*
