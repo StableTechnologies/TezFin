@@ -46,26 +46,26 @@ const MarketModal = (props) => {
             <img src={Tez} alt="logo" className={classes.tezImg}/>
           </DialogContent>
         }
-        <DialogContent className={classes.padding0}>
-          {visibility ?
-            // <Grid container>
-            //   <Grid></Grid>
-            //   <Grid></Grid>
+        {visibility ?
+          <DialogContent className={classes.formFieldCon}>
+            <form className={classes.form}>
               <TextField
-                // autoFocus
                 id="tokenValue"
                 type="text"
                 placeholder="0"
                 onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
                 value={tokenValue}
-                // className={classes.rightAlignText}
-                // InputProps={{ disableUnderline: true }}
+                inputProps={{className: classes.inputText}}
+                className={classes.textField}
               />
-            // </Grid>
+              <Button className={classes.inputBtn} disableRipple> Use Max </Button>
+            </form>
+          </DialogContent>
             :
-            <DialogContentText> {headerText} </DialogContentText>
-          }
+        <DialogContent className={classes.padding0}>
+          <DialogContentText> {headerText} </DialogContentText>
         </DialogContent>
+        }
         <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
         <DialogContent className={classes.apyRate}>
           <Grid container>
@@ -104,7 +104,7 @@ const MarketModal = (props) => {
         </DialogContent>
         <DialogActions>
           {/* <Button className={classes.btn} onClick={onClick}> */}
-          <Button className={` ${classes.btnMain} ${btnSub} `} onClick={onClick}>
+          <Button className={` ${classes.btnMain} ${btnSub} `} onClick={onClick} disableRipple>
             {tabValue === "one" && buttonOne}
             {tabValue === "two" && buttonTwo}
           </Button>
