@@ -18,6 +18,7 @@ export const useStyles = makeStyles({
       width: '50%',
       color: '#BDBDBD',
       textTransform: 'none',
+      fontSize: '1rem',
     },
   },
 })

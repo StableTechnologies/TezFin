@@ -19,7 +19,6 @@ export const useStyles = makeStyles({
         // padding: '0',
       }
     },
-
     "& .MuiDialogContentText-root": {
       fontWeight: '300',
       fontSize: '1rem',
@@ -33,11 +32,18 @@ export const useStyles = makeStyles({
     "& .MuiDialogActions-root": {
       padding: '0',
       margin: '2.3125rem 2.875rem 1.625rem',
-    }
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: '0',
+    },
+    '& .MuiButton-text': {
+      textTransform: 'none',
+    },
   },
+
   '@media(min-width: 1024px)': {
     padding0: {
-      padding: '0 !important',
+      // padding: '0 !important',
     },
   },
   img: {
@@ -98,4 +104,47 @@ export const useStyles = makeStyles({
   visibility: {
     visibility: 'hidden',
   },
+  formFieldCon: {
+    // padding: '66px 143px 85px !important',
+    padding: '66px 0px 85px !important',
+  },
+  form: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    paddingRight: '51px',
+    paddingLeft: '143px',
+  },
+  textField: {
+    height: '3.5rem',
+    width: '186px',
+    // padding: '122px 143px 0',
+    // top: '122px',
+  },
+  inputText: {
+    color: '#000',
+    fontSize: '40px',
+    fontWeight: 300,
+    textAlign: 'center',
+    lineHeight: '60px',
+    letterSpacing: '0.01em',
+    height: '3.5rem',
+    padding: '0',
+    boxSizing: 'border-box',
+    '&::placeholder': {
+    color: '#BDBDBD',
+    }
+  },
+  inputBtn: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    lineHeight: '1.875rem',
+    letterSpacing: '0.005em',
+    textAlign: 'left',
+    color: '#4F4F4F',
+    "&:hover": {
+      color: '#3391F6',
+      background: 'transparent',
+    }
+  }
 })

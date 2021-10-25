@@ -1,12 +1,6 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles({
-  root: {
-    "& .MuiTabs-indicator": {
-      backgroundColor: 'red !important',
-    },
-  },
-
   btnSub: {
     background: '#9B51E0',
     color: '#fff',

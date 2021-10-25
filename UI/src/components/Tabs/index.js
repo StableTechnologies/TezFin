@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
 
 import { useStyles } from './style';
 
@@ -21,8 +20,8 @@ const Tabulator = (props) => {
         aria-label="secondary tabs"
         className={classes.root}
       >
-        <Tab value="one" label= {labelOne} />
-        <Tab value="two" label= {labelTwo} />
+        <Tab value="one" label= {labelOne} disableRipple/>
+        <Tab value="two" label= {labelTwo} disableRipple/>
       </Tabs>
     </React.Fragment>
   )
