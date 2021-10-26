@@ -19,7 +19,7 @@ export namespace Comptroller {
         halfExpScale: number;
         liquidationIncentiveMantissa: number;
         liquidityPeriodRelevance: number;
-        markets: TezosLendingPlatform.MarketMetadata;
+        markets: TezosLendingPlatform.Market;
         oracleAddress: string;
         pendingAdministrator: string | undefined;
         pricePeriodRelevance: number;
@@ -43,7 +43,7 @@ export namespace Comptroller {
             halfExpScale: JSONPath({path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
             liquidationIncentiveMantissa: JSONPath({path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
             liquidityPeriodRelevance: JSONPath({path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
-            markets: {} as TezosLendingPlatform.MarketMetadata, // $.args[0].args[1].args[2]
+            markets: {} as TezosLendingPlatform.Market, // $.args[0].args[1].args[2]
             oracleAddress: JSONPath({path: '$.args[0].args[2].args[0].string', json: storageResult })[0],
             pendingAdministrator: JSONPath({path: '$.args[0].args[2].args[1].prim', json: storageResult })[0],
             pricePeriodRelevance: JSONPath({path: '$.args[0].args[3].int', json: storageResult })[0],
