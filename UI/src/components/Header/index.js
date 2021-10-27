@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {NavLink} from "react-router-dom";
+
+import {shorten} from '../../util';
 
 import Grid from '@mui/material/Grid';
 import { Typography, Button } from '@mui/material';
 import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
 import CustomizedProgressBars from './progressBar';
 
 import {HeaderCon, classes1, Title, useStyles} from "./style";
@@ -24,19 +25,24 @@ const Header = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  // 1. call supplyComposition()
-  // 2. plug supplyComposition() results into progress bar
-  // 3. plug supplyComposition().totalUsdValue into supplying value display
-  // 4. plug supplyComposition().collateralUsdValue into collateral value display
-  // and same for borrowing
+  const [tezAccount, setTezAccount] = useState('');
 
   const {supplyComposition} = useSelector(state => state.supplyComposition);
   const {borrowComposition} = useSelector(state => state.borrowComposition);
+  const {address} = useSelector(state => state.addWallet.account);
+
+  const addWallet = () => {
+    dispatch(addWalletAction());
+  }
 
   useEffect(() => {
     dispatch(supplyCompositionAction())
     dispatch(borrowCompositionAction())
   }, [dispatch])
+
+  useEffect(() => {
+    setTezAccount(address);
+  }, [addWallet])
 
   return (
     <HeaderCon className={classes1.root}>
@@ -57,7 +63,11 @@ const Header = () => {
         </Grid>
         <Grid item lg={2}></Grid>
         <Grid item xs={12} sm={3} md={3} lg={2} className={classes.addWalletCon}>
-          <Button className={classes.addWallet} onClick={() => dispatch(addWalletAction())}> Add Wallet </Button>
+          <Button
+            className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
+            onClick={addWallet}>
+            {tezAccount && (shorten(6, 6, tezAccount)) || "Add Wallet" }
+          </Button>
         </Grid>
       </Grid>
       <Grid container>

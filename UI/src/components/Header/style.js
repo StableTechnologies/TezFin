@@ -113,21 +113,30 @@ export const useStyles = makeStyles({
       paddingRight: '1rem'
     }
   },
-  addWallet: {
+  wallet: {
     minWidth: '10.75rem',
     height: '1.875rem',
     background: 'transparent',
-    color: '#2F80ED',
     fontSize: '1rem',
     fontWeight: '400',
     lineHeight: '2.25rem',
     textTransform: 'none',
-    border:'2px solid #2F80ED',
     borderRadius: '.5rem',
+  },
+  defaultWallet: {
+    border:'2px solid #2F80ED',
+    color: '#2F80ED',
     '&:hover': {
       background: '#2F80ED',
       color: '#fff',
-    }
+    },
+  },
+  connectedWallet: {
+    border:'.5px solid #828282',
+    color: '#000',
+    '&:hover': {
+      background: 'transparent',
+    },
   }
 });
 
