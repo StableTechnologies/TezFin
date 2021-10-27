@@ -97,6 +97,7 @@ export namespace TezosLendingPlatform {
         address: string;
         asset: UnderlyingAssetMetadata;
         cash: number;
+        // TODO: add cashUsd
         supply: MarketData;
         borrow: MarketData;
         dailyInterestPaid: number;
@@ -112,6 +113,9 @@ export namespace TezosLendingPlatform {
      * @param address The fToken contract address to query
      */
     export async function GetMarkets(protocolAddresses: ProtocolAddresses): Promise<Market[]> {
+        // TODO: return dictionary of AssetType -> Market
+        // markets = GetMarkets()
+        // cxtz = markets[AssetType.XTZ]
         return [
             {
                 address: "kt18a7h89",
@@ -132,6 +136,33 @@ export namespace TezosLendingPlatform {
                 borrow: {
                     numParticipants: 1,
                     totalAmount: 20,
+                    rate: 1.01
+                } as MarketData,
+                dailyInterestPaid: 0.3,
+                reserves: 0,
+                reserveFactor: 0,
+                collateralFactor: 0.6,
+                exchangeRate: 1.04
+            },
+            {
+                address: "kt14h17934y",
+                asset: {
+                    name: "cETH",
+                    underlying: {
+                        assetType: AssetType.XTZ
+                    } as UnderlyingAsset,
+                    administrator: "tz123456",
+                    price: 5
+                } as UnderlyingAssetMetadata,
+                cash: 200,
+                supply: {
+                    numParticipants: 1,
+                    totalAmount: 200,
+                    rate: 1.05
+                } as MarketData,
+                borrow: {
+                    numParticipants: 1,
+                    totalAmount: 400,
                     rate: 1.01
                 } as MarketData,
                 dailyInterestPaid: 0.3,
@@ -166,7 +197,7 @@ export namespace TezosLendingPlatform {
      * @description
      *
      * @param address Account address
-     * @param markets Account balances across all markets
+     * @param marketBalances Account balances across all markets
      * @param totalCollateralUsd Total USD value of collateral
      * @param totalLoanUsd Total USD value of loans
      * @param health Account LTV ratio, totalCollateralUsd / TotalLoanUsd
@@ -174,7 +205,8 @@ export namespace TezosLendingPlatform {
      */
     export interface Account {
         address: string;
-        markets: MarketBalance[];
+        // TODO: change to dictionary as well
+        marketBalances: MarketBalance[];
         totalCollateralUsd: number;
         totalLoanUsd: number;
         health: number;
@@ -195,13 +227,21 @@ export namespace TezosLendingPlatform {
         // calculate net rate across all markets, weighted by balance
         return {
             address: "kt2327a4b3h4",
-            markets: [
+            marketBalances: [
                 {
                     assetType: AssetType.XTZ,
                     supplyBalanceUnderlying:  100,
                     supplyBalanceUsd: 500,
                     loanBalanceUnderlying: 20,
                     loanBalanceUsd: 100,
+                    collateral: true
+                } as MarketBalance,
+                {
+                    assetType: AssetType.FA12,
+                    supplyBalanceUnderlying:  200,
+                    supplyBalanceUsd: 1000,
+                    loanBalanceUnderlying: 40,
+                    loanBalanceUsd: 200,
                     collateral: true
                 } as MarketBalance
             ],
@@ -229,10 +269,11 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function supplyComposition(account: Account): SupplyComposition {
+        // parse account for SupplyComposition
         return {
             assets: [
                 { assetType: AssetType.XTZ, usdValue: 10 },
-                { assetType: AssetType.FA2, usdValue: 10 },
+                { assetType: AssetType.FA2, usdValue: 40 },
             ],
             collateral: 44,
             totalUsdValue: 100
@@ -266,43 +307,47 @@ export namespace TezosLendingPlatform {
         };
     }
 
+    /*
+     * @description
+     *
+     * @param
+     */
+    export interface SupplyMarket {
+
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export function getSupplyMarkets(account: Account, markets: Market[]): SupplyMarket[] {
+        // TODO: use dictionary instead of array
+        return [];
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export interface BorrowMarket {
+
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export function getBorrowMarkets(account: Account, markets: Market[]): BorrowMarket[] {
+        // TODO: use dictionary instead of array
+        return [];
+    }
+
     // TODO: Price feed oracle
     export interface PriceFeed {
         address: string;
-    }
-
-    /*
-     * Represents an address' LTV status across the platform, denominated in USD according to the price feed
-     *
-     * @param supplyBalance Total value supplied
-     * @param supplyAPY Current supply APY across assets
-     * @param collateralBalance Total value collateralized
-     * @param borrowBalance Total value borrowed
-     * @param borrowAPY Current borrow APY across assets
-     * @param collateralFactor Max fraction of total value supplied available for use as collateral
-     * @param LTV Loan-to-value ratio = borrowBalance / (supplyBalance * collateralFactor)
-     */
-    export interface LTVStatus {
-        suppliedAssets: Market[];
-        supplyBalance: number;
-        supplyAPY: number;
-        collateralBalance: number;
-        borrowBalance: number;
-        borrowAPY: number;
-        collateralFactor: number;
-        LTV: number;
-    }
-
-    /*
-     * Get an account's LTV across given markets
-     *
-     * @param markets Array of fTokens over which to calculate LTV
-     * @param priceFeed Protocol's price feed oracle
-     * @param address The address for which to calculate LTV
-     */
-    export function getLTVStatus(markets: Market[], priceFeed: PriceFeed, address: string): LTVStatus {
-        // TODO: for each market, call getAccountStatus() and sum over all markets using price feed
-        return {} as LTVStatus;
     }
 
     /*

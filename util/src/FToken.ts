@@ -99,7 +99,6 @@ export namespace FToken {
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
    }
 
-
     /*
      * Mint entrypoint parameters
      *
