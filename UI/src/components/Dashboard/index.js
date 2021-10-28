@@ -7,19 +7,19 @@ import Grid from '@mui/material/Grid';
 import Market from '../Market';
 import { useStyles } from './style';
 
-import {tokens} from '../Constants';
-import {supplyMarketAction} from '../../reduxContent/market/actions';
+import {marketAction} from '../../reduxContent/market/actions';
 
 const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const {supplyMarketData} = useSelector(state => state.market);
+  const {supplyMarkets, borrowMarkets} = useSelector(state => state.market.marketData);
+
+  console.log(borrowMarkets, 'borrowMarkets');
 
   useEffect(() => {
-    dispatch(supplyMarketAction())
+    dispatch(marketAction());
   }, [dispatch])
-
 
   return (
     <Grid container className={classes.dashboard}>
@@ -29,7 +29,7 @@ const Dashboard =() => {
       <Grid item xs={12} md={6} className={classes.paddingRight}>
         <Typography className={classes.tableTitle}> Supply Markets </Typography>
         <Market
-          tableData = {supplyMarketData}
+          tableData = {supplyMarkets}
           heading1 = "Token"
           heading2 = "APY"
           heading3 = "Wallet"
@@ -41,7 +41,7 @@ const Dashboard =() => {
       <Grid item xs={12} md={6} className={classes.paddingLeft}>
         <Typography className={classes.tableTitle}> Borrow Markets </Typography>
         <Market
-          tableData = {tokens}
+          tableData = {borrowMarkets}
           heading1 = "Token"
           heading2 = "APY"
           heading3 = "Wallet"
