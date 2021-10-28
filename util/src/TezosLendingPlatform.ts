@@ -37,6 +37,8 @@ export namespace TezosLendingPlatform {
         XTZ = "XTZ",
         FA12 = "FA12",
         FA2 = "FA2",
+        ETH = "ETH",
+        BTC = "BTC"
     }
 
     /*
@@ -113,8 +115,9 @@ export namespace TezosLendingPlatform {
      * @param address The fToken contract address to query
      */
     export async function GetMarkets(protocolAddresses: ProtocolAddresses): Promise<{ [assetType: string]: Market }> {
-        // markets = GetMarkets()
-        // cxtz = markets[AssetType.XTZ]
+        // for asset, addr in protocolAddresses.fTokens
+        // FToken.GetStorage(addr)
+        // map to Market objects
         let ret: { [assetType: string]: Market } = {};
         ret[AssetType.XTZ] = {
             address: "kt18a7h89",
@@ -408,6 +411,7 @@ export namespace TezosLendingPlatform {
         let removePermissionOp = permissionOperation(mint, true, protocolAddresses, counter, keystore, fee);
         if (removePermissionOp != undefined)
             ops.push(removePermissionOp);
+        // TODO: return ops for beacon
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation

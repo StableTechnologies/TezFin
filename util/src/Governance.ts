@@ -1,4 +1,5 @@
 import { KeyStore, Signer, TezosNodeWriter, TezosContractUtils, TezosMessageUtils, TezosParameterFormat } from 'conseiljs';
+import {TezosLendingPlatform} from './TezosLendingPlatform';
 
 export namespace Governance {
     // TODO:
@@ -13,7 +14,7 @@ export namespace Governance {
         comptroller: string;
         fToken: {
             address: string;
-            name: string;
+            name: TezosLendingPlatform.AssetType;
         };
     }
 
