@@ -11,15 +11,17 @@ export namespace Comptroller {
      * @param
      */
     export interface Storage {
-        accountAssetsMapId: number;
-        accountLiquidity: number;
+        // accountAssetsMapId: number;
+        accountLiquidityMapId: number;
+        collateralsMapId: number;
+        loansMapId: number;
         administrator: string;
         closeFactorMantissa: number;
         expScale: number;
         halfExpScale: number;
         liquidationIncentiveMantissa: number;
         liquidityPeriodRelevance: number;
-        markets: TezosLendingPlatform.Market;
+        marketsMapId: number;
         oracleAddress: string;
         pendingAdministrator: string | undefined;
         pricePeriodRelevance: number;
@@ -35,19 +37,21 @@ export namespace Comptroller {
     export async function GetStorage(address: string, server: string): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         return {
-            accountAssetsMapId: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-            accountLiquidity: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[1].int', json: storageResult })[0],
-            administrator: JSONPath({path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
-            closeFactorMantissa: JSONPath({path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+            // accountAssetsMapId: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+            accountLiquidityMapId: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+            collateralsMapId: JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
+            loansMapId: JSONPath({path: '$.args[0].args[1].args[1].int', json: storageResult })[0],
+            administrator: JSONPath({path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+            closeFactorMantissa: JSONPath({path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
             expScale: JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
             halfExpScale: JSONPath({path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
             liquidationIncentiveMantissa: JSONPath({path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
             liquidityPeriodRelevance: JSONPath({path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
-            markets: {} as TezosLendingPlatform.Market, // $.args[0].args[1].args[2]
-            oracleAddress: JSONPath({path: '$.args[0].args[2].args[0].string', json: storageResult })[0],
-            pendingAdministrator: JSONPath({path: '$.args[0].args[2].args[1].prim', json: storageResult })[0],
-            pricePeriodRelevance: JSONPath({path: '$.args[0].args[3].int', json: storageResult })[0],
-            transferPaused: JSONPath({path: '$.args[0].args[4].prim', json: storageResult })[0], // fix boolean
+            marketsMapId: JSONPath({path: '$.args[0].args[2].args[0].int', json: storageResult })[0],
+            oracleAddress: JSONPath({path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
+            pendingAdministrator: JSONPath({path: '$.args[0].args[3].prim', json: storageResult })[0],
+            pricePeriodRelevance: JSONPath({path: '$.args[0].args[4].int', json: storageResult })[0],
+            transferPaused: JSONPath({path: '$.args[0].args[5].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t')
         };
     }
 
@@ -64,8 +68,8 @@ export namespace Comptroller {
         );
 
         try {
-            const assetsResult = await TezosNodeReader.getValueForBigMapKey(server, comptroller.accountAssetsMapId, packedAccountKey);
-            const fTokenAddresses: TezosLendingPlatform.AssetType[] = assetsResult.map((json) => json['string']);
+            const collateralsResult = await TezosNodeReader.getValueForBigMapKey(server, comptroller.collateralsMapId, packedAccountKey);
+            const fTokenAddresses: TezosLendingPlatform.AssetType[] = collateralsResult.map((json) => json['string']);
             return fTokenAddresses.map((fTokenAddress) => protocolAddresses.fTokensReverse[fTokenAddress]);
         } catch (err) {
             log.error(`${address} has no collateralized assets`);
