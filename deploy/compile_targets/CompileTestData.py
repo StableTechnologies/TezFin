@@ -9,6 +9,6 @@ FA2 = sp.io.import_script_from_url("file:deploy/test_data/FA2.py")
 UTILS.checkDependencies(CFG.FA12)
 UTILS.checkDependencies(CFG.FA2)
 
-Oracle.compile()
+# Oracle.compile()
 FA12.compile(CFG.deployResult.OriginatorAddress)
 FA2.compile(CFG.deployResult.OriginatorAddress)

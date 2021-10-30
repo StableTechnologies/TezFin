@@ -8,7 +8,7 @@ UTILS = sp.io.import_script_from_url("file:deploy/compile_targets/Utils.py")
 UTILS.checkDependencies(CFG.Comptroller)
 
 sp.add_compilation_target("Comptroller", CMPT.Comptroller(administrator_ = sp.address(CFG.deployResult.Governance),
-    oracleAddress_ = sp.address(CFG.deployResult.PriceOracle),
+    oracleAddress_ = sp.address("KT1AQuWowr3WKwF69oTGcKaJrMajic3CKwR2"),
     closeFactorMantissa_ = sp.nat(CFG.Comptroller.closeFactorMantissa),
     liquidationIncentiveMantissa_ = sp.nat(CFG.Comptroller.liquidationIncentiveMantissa)
     ))
