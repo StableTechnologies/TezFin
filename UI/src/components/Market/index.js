@@ -76,14 +76,14 @@ const Market = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {tableData.map(data =>(
+          {tableData && tableData.map(data =>(
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
                 <img src={data.logo} alt={data.title+ "-Icon"} className={classes.img} />
                 <Typography sx={{ display: 'inline' }}> {data.title} </Typography>
               </TableCell>
-              <TableCell></TableCell>
-              <TableCell></TableCell>
+              <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
+              <TableCell> {data.wallet ? "$" + data.wallet : "0 " + data.title} </TableCell>
               <TableCell className={classes.toggle}>
               {toggle &&
                 <BasicSwitch />

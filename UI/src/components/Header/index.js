@@ -2,15 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {NavLink} from "react-router-dom";
 
-import {shorten} from '../../util';
-
 import Grid from '@mui/material/Grid';
-import { Typography, Button } from '@mui/material';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
+
 import CustomizedProgressBars from './progressBar';
+import Nav from './nav';
 
 import {HeaderCon, classes1, Title, useStyles} from "./style";
-import tezHeader from '../../assets/tezHeader.svg';
 import supplyingIcon from '../../assets/supplyingIcon.svg';
 import collateralizedIcon from '../../assets/collateralizedIcon.svg';
 import borrowingIcon from '../../assets/borrowing.svg';
@@ -19,57 +18,24 @@ import questionCircle from '../../assets/questionCircle.svg';
 
 import {supplyCompositionAction} from '../../reduxContent/supplyComposition/actions';
 import {borrowCompositionAction} from '../../reduxContent/borrowComposition/actions';
-import {addWalletAction} from '../../reduxContent/addWallet/actions';
+import MobileNav from './mobileNav';
 
 const Header = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const [tezAccount, setTezAccount] = useState('');
-
   const {supplyComposition} = useSelector(state => state.supplyComposition);
   const {borrowComposition} = useSelector(state => state.borrowComposition);
-  const {address} = useSelector(state => state.addWallet.account);
-
-  const addWallet = () => {
-    dispatch(addWalletAction());
-  }
 
   useEffect(() => {
     dispatch(supplyCompositionAction())
     dispatch(borrowCompositionAction())
   }, [dispatch])
 
-  useEffect(() => {
-    setTezAccount(address);
-  }, [addWallet])
-
   return (
     <HeaderCon className={classes1.root}>
-      <Grid container justify="center" alignItems="center">
-        <Grid item xs={6} sm={3} md={4} lg={3}>
-          <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
-        </Grid>
-        <Grid container item xs={6} sm={6} md={5} lg={5} textAlign="center" className={classes.linkCon}>
-          <Grid item sm={4} md={4} lg={4}>
-            <NavLink to="dashboard" className={classes.link} activeClassName={classes.activeLink}> Dashboard </NavLink>
-          </Grid>
-          <Grid item sm={4} md={4} lg={4}>
-            <NavLink to="market" className={classes.link} activeClassName={classes.activeLink}> Market </NavLink>
-          </Grid>
-          <Grid item sm={4} md={4} lg={4}>
-            <NavLink to="about" className={classes.link} activeClassName={classes.activeLink}> About </NavLink>
-          </Grid>
-        </Grid>
-        <Grid item lg={2}></Grid>
-        <Grid item xs={12} sm={3} md={3} lg={2} className={classes.addWalletCon}>
-          <Button
-            className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
-            onClick={addWallet}>
-            {tezAccount && (shorten(6, 6, tezAccount)) || "Add Wallet" }
-          </Button>
-        </Grid>
-      </Grid>
+      <Nav />
+      {/* <MobileNav /> */}
       <Grid container>
         <Grid item xs={12} className={classes.netAPY}>
           <Typography>

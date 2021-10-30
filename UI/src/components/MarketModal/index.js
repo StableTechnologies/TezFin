@@ -16,20 +16,33 @@ import CloseButton from '../CloseButton';
 import { useStyles } from './style';
 
 import Tez from '../../assets/largeXTZ.svg';
+import { useDispatch, useSelector } from 'react-redux';
 
 const MarketModal = (props) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
+  const {marketBalances} = useSelector(state => state.addWallet.account);
   const {
-      open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitValue, LimitUsed, LimitUsedValue,
-      amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText} = props;
+    open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitValue, LimitUsed, LimitUsedValue,
+    amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText} = props;
 
-  const [tabValue, setTabValue] = useState('one');
-  const [tokenValue, setTokenValue] = useState('');
+    const [tabValue, setTabValue] = useState('one');
+    const [tokenValue, setTokenValue] = useState('');
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
+    const handleTabChange = (event, newValue) => {
+      setTabValue(newValue);
+    };
+
+    if(valueofRow && marketBalances) {
+      Object.keys(marketBalances).map((marketBalance)=>{
+        if(marketBalances[marketBalance].assetType.toLowerCase() === valueofRow.assetType.toLowerCase()) {
+          valueofRow.borrowLimit =  marketBalances[marketBalance].loanBalanceUnderlying
+          valueofRow.borrowLimitUsed =  marketBalances[marketBalance].loanBalanceUsd
+          valueofRow.balance =  marketBalances[marketBalance].supplyBalanceUnderlying
+        }
+      })
+    }
 
   return (
     <React.Fragment>
@@ -76,21 +89,21 @@ const MarketModal = (props) => {
               </div>
             </Grid>
             <Grid item sm={2}></Grid>
-            <Grid item sm={2}>6.34%</Grid>
+            <Grid item sm={2}> {valueofRow.apy}% </Grid>
           </Grid>
         </DialogContent>
         <DialogContent className={classes.limit}>
           <Grid container textAlign="justify">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> {LimitValue}</Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> ${valueofRow.borrowLimit || LimitValue}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container textAlign="justify">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {LimitUsed} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> {LimitUsedValue} </Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> {valueofRow.borrowLimitUsed || LimitUsedValue}% </Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
@@ -113,7 +126,7 @@ const MarketModal = (props) => {
           <Grid container textAlign="justify">
             <Grid item sm={7}> {amountText} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={classes.whiteSpace}> 25 {valueofRow.title} </Grid>
+            <Grid item sm={2} className={classes.whiteSpace}> {valueofRow.balance} {valueofRow.title} </Grid>
           </Grid>
         </DialogContent>
       </Dialog>
