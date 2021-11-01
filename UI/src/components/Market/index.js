@@ -85,9 +85,9 @@ const Market = (props) => {
               <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
               <TableCell> {data.wallet ? "$" + data.wallet : "0 " + data.title} </TableCell>
               <TableCell className={classes.toggle}>
-              {toggle &&
+              {/* {toggle && */}
                 <BasicSwitch />
-              }
+              {/* } */}
               </TableCell>
             </TableRow>
           ))}
