@@ -12,7 +12,7 @@ import BasicSwitch from '../Switch';
 import { useStyles } from './style';
 import SupplyModal from '../SupplyModal';
 import BorrowModal from '../BorrowModal';
-import ConfirmModal from '../ConfirmModal/index';
+import ConfirmModal from '../ConfirmModal/index.js';
 
 
 const Market = (props) => {
