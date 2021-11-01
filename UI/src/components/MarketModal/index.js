@@ -24,7 +24,7 @@ const MarketModal = (props) => {
 
   const {marketBalances} = useSelector(state => state.addWallet.account);
   const {
-    open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitValue, LimitUsed, LimitUsedValue,
+    open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitUsed,
     amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText} = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -96,14 +96,14 @@ const MarketModal = (props) => {
           <Grid container textAlign="justify">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> ${valueofRow.borrowLimit || LimitValue}</Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> ${valueofRow.borrowLimit || "0.00"}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container textAlign="justify">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {LimitUsed} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> {valueofRow.borrowLimitUsed || LimitUsedValue}% </Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> {valueofRow.borrowLimitUsed || 0}% </Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
@@ -126,7 +126,7 @@ const MarketModal = (props) => {
           <Grid container textAlign="justify">
             <Grid item sm={7}> {amountText} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={classes.whiteSpace}> {valueofRow.balance} {valueofRow.title} </Grid>
+            <Grid item sm={2} className={classes.whiteSpace}> {valueofRow.balance || 0} {valueofRow.title} </Grid>
           </Grid>
         </DialogContent>
       </Dialog>

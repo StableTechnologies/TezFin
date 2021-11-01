@@ -11,9 +11,7 @@ const SupplyModal = (props) =>{
       headerText = {enableToken ? "": "To supply and use" +" "+ valueofRow.banner +" "+ "as collateral, you will need to enable the token first."}
       APYText = {valueofRow.title +" "+ "Variable APY Rate"}
       Limit = "Borrow Limit"
-      LimitValue = "0.00"
       LimitUsed = "Borrow Limit Used"
-      LimitUsedValue = "0"
       amountText = "Wallet Balance"
       open = {open}
       close = {close}

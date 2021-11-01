@@ -11,9 +11,7 @@ const BorrowModal = (props) =>{
    <MarketModal
       APYText = "Borrow APY"
       Limit = "Borrow Balance"
-      LimitValue = "0.00"
       LimitUsed = "Borrow Limit Used"
-      LimitUsedValue = "0"
       amountText = "Currently Borrowing"
       open = {open}
       close = {close}
