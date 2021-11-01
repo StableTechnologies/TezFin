@@ -12,7 +12,7 @@ import BasicSwitch from '../Switch';
 import { useStyles } from './style';
 import SupplyModal from '../SupplyModal';
 import BorrowModal from '../BorrowModal';
-import ConfirmModal from '../ConfirmModal';
+import ConfirmModal from '../ConfirmModal/index';
 
 
 const Market = (props) => {
@@ -85,9 +85,9 @@ const Market = (props) => {
               <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
               <TableCell> {data.wallet ? "$" + data.wallet : "0 " + data.title} </TableCell>
               <TableCell className={classes.toggle}>
-              {/* {toggle && */}
+              {toggle &&
                 <BasicSwitch />
-              {/* } */}
+              }
               </TableCell>
             </TableRow>
           ))}
