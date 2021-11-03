@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
 
 import BasicSwitch from '../Switch';
 import { useStyles } from './style';
@@ -71,7 +72,9 @@ const Market = (props) => {
           <TableRow>
             <TableCell>{heading1}</TableCell>
             <TableCell>{heading2}</TableCell>
-            <TableCell>{heading3}</TableCell>
+            <TableCell>
+              {heading3}
+            </TableCell>
             <TableCell>{heading4}</TableCell>
           </TableRow>
         </TableHead>
@@ -83,7 +86,13 @@ const Market = (props) => {
                 <Typography sx={{ display: 'inline' }}> {data.title} </Typography>
               </TableCell>
               <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
-              <TableCell> {data.wallet ? "$" + data.wallet : "0 " + data.title} </TableCell>
+              <TableCell>
+                <Typography> $71,700.00 </Typography>
+                {supplyMkt &&
+                  <Typography className={classes.faintFont}>  10,000 XTZ  </Typography>
+                }
+                {/* <Grid>{data.wallet ? "$" + data.wallet : "0 " + data.title}  </Grid> */}
+              </TableCell>
               <TableCell className={classes.toggle}>
               {toggle &&
                 <BasicSwitch />

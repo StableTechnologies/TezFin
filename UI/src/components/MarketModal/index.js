@@ -81,7 +81,7 @@ const MarketModal = (props) => {
         }
         <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
         <DialogContent className={classes.apyRate}>
-          <Grid container>
+          <Grid container justifyContent="space-between">
             <Grid item sm={8}>
               <div>
                 <img src={valueofRow.logo} alt="logo" className={classes.img}/>
@@ -89,21 +89,21 @@ const MarketModal = (props) => {
               </div>
             </Grid>
             <Grid item sm={2}></Grid>
-            <Grid item sm={2}> {valueofRow.apy}% </Grid>
+            <Grid item sm={2}> {valueofRow.apy || "0"}% </Grid>
           </Grid>
         </DialogContent>
         <DialogContent className={classes.limit}>
-          <Grid container textAlign="justify">
+          <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
             <Grid item sm={2} className={visibility ?"": classes.visibility}> ${valueofRow.borrowLimit || "0.00"}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
-          <Grid container textAlign="justify">
+          <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {LimitUsed} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> {valueofRow.borrowLimitUsed || 0}% </Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> {valueofRow.borrowLimitUsed || "0"}% </Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
@@ -123,7 +123,7 @@ const MarketModal = (props) => {
           </Button>
         </DialogActions>
         <DialogContent>
-          <Grid container textAlign="justify">
+          <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7}> {amountText} </Grid>
             <Grid item sm={3}></Grid>
             <Grid item sm={2} className={classes.whiteSpace}> {valueofRow.balance || 0} {valueofRow.title} </Grid>

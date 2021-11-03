@@ -12,6 +12,7 @@ export const useStyles = makeStyles({
     },
     "& .MuiTableCell-root": {
       borderBottom: '1px solid #E0E0E0',
+      padding: '.5rem',
       '@media(max-width: 501px)': {
         padding: '.5rem',
       },
@@ -31,12 +32,14 @@ export const useStyles = makeStyles({
     "& .MuiTableBody-root ":{
       "& .MuiTableRow-root": {
           height: '4.5rem',
-      "&:hover": {
-        background: '#DDF5FC66',
-      }
-      },
-      "& .MuiTableCell-root": {
-        fontSize: '1rem',
+          "&:hover": {
+            background: '#DDF5FC66',
+          }
+        },
+        "& .MuiTableCell-root": {
+          '@media(min-width: 501px)': {
+            fontSize: '1rem',
+          },
       },
     }
 
@@ -57,5 +60,8 @@ export const useStyles = makeStyles({
       marginBottom: '-4px',
       fontSize: '0.75rem',
     },
-  }
+  },
+  faintFont: {
+    color: '#828282',
+  },
 })
