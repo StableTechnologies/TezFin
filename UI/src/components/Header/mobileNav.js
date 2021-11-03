@@ -28,9 +28,11 @@ const  MobileNav = () => {
   };
   const drawerWidth = 240;
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }} className={classes.mobileNav}>
       <Box sx={{ ...(open && { display: 'none' }) }}>
-        <CloseButton  onClick={handleDrawerOpen}/>
+        <IconButton aria-label="close" onClick={handleDrawerOpen} className={classes.hamburgerCon} disableRipple>
+          <img src={hamburger} alt="hamburger-button" className={classes.hamburger} />
+        </IconButton>
       </Box>
       <Drawer
         sx={{

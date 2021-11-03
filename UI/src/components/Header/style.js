@@ -36,9 +36,11 @@ export const useStyles = makeStyles({
     letterSpacing: '0.005em',
     // padding: '1.25rem 1rem',
     color: '#000',
-    "&:hover": {
-      borderBottom: '1px solid #000'
-    },
+    '@media(min-width: 501px)': {
+      "&:hover": {
+        borderBottom: '1px solid #000'
+      },
+    }
   },
   activeLink: {
     borderBottom: '1px solid #000'
@@ -137,6 +139,31 @@ export const useStyles = makeStyles({
     '&:hover': {
       background: 'transparent',
     },
+  },
+  hamburgerCon: {
+    position: 'absolute',
+    top: '0.8125rem',
+    right: '1rem',
+    width: '1.5rem',
+    height: '1.5rem',
+    "&:hover": {
+      background: 'transparent',
+    }
+  },
+  hamburger: {
+    width: '1.5rem',
+    height: '1.5rem',
+  },
+  nav: {
+    '@media(max-width: 501px)': {
+      display: "none"
+    },
+  },
+  mobileNav: {
+    display: "none",
+    '@media(max-width: 501px)': {
+      display: "block"
+    }
   }
 });
 

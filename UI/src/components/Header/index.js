@@ -35,7 +35,7 @@ const Header = () => {
   return (
     <HeaderCon className={classes1.root}>
       <Nav />
-      {/* <MobileNav /> */}
+      <MobileNav />
       <Grid container>
         <Grid item xs={12} className={classes.netAPY}>
           <Typography>
@@ -65,7 +65,7 @@ const Header = () => {
                   </Box>
                 </Grid>
               </Grid>
-              <Grid sm={1}></Grid>
+              <Grid item sm={1}></Grid>
               <Grid container item xs={12} sm={6} lg={4}>
                 <Grid item>
                     <img src={collateralizedIcon} alt="collateralized-Icon" />
@@ -98,7 +98,7 @@ const Header = () => {
                   </Box>
                 </Grid>
               </Grid>
-              <Grid sm={1}></Grid>
+              <Grid item sm={1}></Grid>
               <Grid container item sm={6} lg={4}>
                 <Grid item>
                     <img src={borrowLimitIcon} alt="borrowLimit-Icon" />

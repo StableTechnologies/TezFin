@@ -35,7 +35,7 @@ const Nav = () => {
 
 
   return (
-    <Grid container justify="center" alignItems="center">
+    <Grid container justify="center" alignItems="center" className={classes.nav}>
       <Grid item xs={6} sm={3} md={4} lg={3}>
         <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
       </Grid>
