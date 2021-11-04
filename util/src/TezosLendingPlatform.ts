@@ -44,6 +44,7 @@ export namespace TezosLendingPlatform {
     /*
      * @description Represents an underlying asset.
      *
+     * @param assetType
      * @param address Contract address. Null for XTZ.
      * @param tokenId FA2 token id. Null for XTZ, FA12.
      */
@@ -345,6 +346,51 @@ export namespace TezosLendingPlatform {
     export function getBorrowMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket }{
         return {}
     }
+
+    /*
+     * @description Information to display for Supply, Withdraw, and Collateralize/Uncollateralize modals
+     *
+     * @param rate Current rate paid to suppliers. Undefined for Collateralize/Uncollateralize.
+     * @param borrowLimit Current borrow limit
+     * @param borrowLimitUsed Percentage of account's borrow limit currently used
+     */
+    export interface SupplyMarketModal {
+        rate?: number;
+        borrowLimit: number;
+        borrowLimitUsed: number
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export function getSupplyMarketModal(account: Account, market: Market): SupplyMarketModal {
+        return {} as SupplyMarketModal;
+    }
+
+    /*
+     * @description
+     *
+     * @param rate Current rate paid by borrowers
+     * @param borrowBalance Current USD amount borrowed
+     * @param borrowLimitUsed Percentage of account's bhorrow limit currently used
+     */
+    export interface BorrowMarketModal {
+        rate: number;
+        borrowBalance: number;
+        borrowLimitUsed: number
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export function getBorrowMarketModal(account: Account, market: Market): BorrowMarketModal {
+        return {} as BorrowMarketModal;
+    }
+
 
     // TODO: Price feed oracle
     export interface PriceFeed {
