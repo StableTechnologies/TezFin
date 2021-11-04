@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {NavLink} from "react-router-dom";
 
-import {shorten, getWallet} from '../../util';
+import {shorten, getWallet, getAssetsDetails} from '../../util';
 
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
@@ -24,8 +24,7 @@ const Nav = () => {
   const addWallet = async() => {
     try {
       const { clients } = await getWallet();
-      const address = clients.tezos.account;
-      dispatch(addWalletAction(address));
+      dispatch(addWalletAction(clients));
     } catch (error) {}
   }
 
