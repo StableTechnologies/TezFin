@@ -4,6 +4,7 @@ import { Mutex } from "async-mutex";
 import Tezos from "../library/tezos";
 // const config = require(`../library/${process.env.REACT_APP_ENV || "prod"
 //   }-network-config.json`);
+const config = require('../library/dev-network-config.json');
 
 
 /**
@@ -38,12 +39,17 @@ export const getWallet = async () => {
     tezos: new Tezos(
       client,
       tezAccount,
-      // config.tezos.priceOracle,
-      // config.tezos.feeContract,
-      // config.tezos.RPC,
-      // config.tezos.conseilServer,
+      config.tezos.priceOracle,
+      config.tezos.feeContract,
+      config.tezos.RPC,
+      config.tezos.conseilServer,
       mutex
     )
   };
   return { clients };
 };
+
+export const getAssetsDetails = ()=> {
+  const assets = config.assets;
+  return assets
+}

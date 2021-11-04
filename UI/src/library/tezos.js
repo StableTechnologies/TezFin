@@ -25,6 +25,18 @@ export default class Tezos {
   }
 
   /**
+   * Get the tezos balance for an account
+   *
+   * @param address tezos address for the account
+   */
+   async balance(address) {
+    return await TezosNodeReader.getSpendableBalanceForAccount(
+      this.rpc,
+      address
+    );
+  }
+
+  /**
     * Get the tezos fa1.2 token balance for an account
     *
     * @param tokenContract tezos fa1.2 token contract details {address:string, mapID:nat, type:string, tokenID:nat}

@@ -87,11 +87,10 @@ const Market = (props) => {
               </TableCell>
               <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
               <TableCell>
-                <Typography> $71,700.00 </Typography>
-                {supplyMkt &&
+                <Typography>{data.wallet ? "$" + data.wallet : "0 " + data.title}  </Typography>
+                {/* {supplyMkt &&
                   <Typography className={classes.faintFont}>  10,000 XTZ  </Typography>
-                }
-                {/* <Grid>{data.wallet ? "$" + data.wallet : "0 " + data.title}  </Grid> */}
+                } */}
               </TableCell>
               <TableCell className={classes.toggle}>
               {toggle &&

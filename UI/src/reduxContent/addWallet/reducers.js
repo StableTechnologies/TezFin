@@ -1,8 +1,9 @@
-import {GET_ACCOUNT} from './types';
+import {GET_ACCOUNT, GET_CLIENTS} from './types';
 
 const initState = {
   isFetching: true,
   account: {},
+  clients: {},
 }
 
 const addWalletReducer = (state=initState, action) => {
@@ -12,6 +13,12 @@ const addWalletReducer = (state=initState, action) => {
         ...state,
         isFetching: false,
         account: action.payload
+      }
+    case GET_CLIENTS:
+      return {
+        ...state,
+        isFetching: false,
+        clients: action.payload
       }
     default:
       return state;
