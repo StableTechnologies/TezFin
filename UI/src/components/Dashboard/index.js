@@ -15,8 +15,6 @@ const Dashboard =() => {
 
   const {supplyMarkets, borrowMarkets} = useSelector(state => state.market.marketData);
 
-  console.log(borrowMarkets, 'borrowMarkets');
-
   useEffect(() => {
     dispatch(marketAction());
   }, [dispatch])

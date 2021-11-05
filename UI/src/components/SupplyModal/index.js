@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import MarketModal from '../MarketModal';
+import { supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
+
 import { useStyles } from './style';
 
 const SupplyModal = (props) =>{
   const classes = useStyles();
+  const dispatch = useDispatch();
   const {open, close, valueofRow, onClick, enableToken} = props;
+
+  const {account} = useSelector(state => state.addWallet);
+
+  useEffect(() => {
+    dispatch(supplyMarketModalAction(account));
+  }, [dispatch, account])
+
   return (
    <MarketModal
       headerText = {enableToken ? "": "To supply and use" +" "+ valueofRow.banner +" "+ "as collateral, you will need to enable the token first."}
