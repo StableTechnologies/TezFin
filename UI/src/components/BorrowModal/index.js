@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { borrowMarketModalAction, borrowTokenAction } from '../../reduxContent/marketModal/actions';
+import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
 
 import MarketModal from '../MarketModal';
 import { useStyles } from './style';
@@ -17,8 +17,15 @@ const BorrowModal = (props) =>{
   const borrowToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
     const borrowPair =  {underlying, amount: amount}
-    console.log(borrowPair, 'borrowPair');
     dispatch( borrowTokenAction(borrowPair));
+    close();
+    setAmount('')
+  }
+
+  const repayBorrowToken = () => {
+    const underlying = valueofRow.assetType.toLowerCase()
+    const repayBorrowPair =  {underlying, amount: amount}
+    dispatch( repayBorrowTokenAction(repayBorrowPair));
     close();
     setAmount('')
   }
@@ -26,6 +33,7 @@ const BorrowModal = (props) =>{
   useEffect(() => {
     dispatch(borrowMarketModalAction(account));
   }, [dispatch, account])
+
   return (
    <MarketModal
       APYText = "Borrow APY"
@@ -35,7 +43,8 @@ const BorrowModal = (props) =>{
       open = {open}
       close = {close}
       valueofRow = {valueofRow}
-      handleBtnClick = {borrowToken}
+      handleClickTabOne = {borrowToken}
+      handleClickTabTwo = {repayBorrowToken}
       labelOne = "Borrow"
       labelTwo = "Repay"
       buttonOne = "Borrow"

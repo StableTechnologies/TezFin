@@ -23,7 +23,7 @@ const MarketModal = (props) => {
 
   const {marketBalances} = useSelector(state => state.addWallet.account);
   const {
-    open, close, valueofRow, handleBtnClick, labelOne, labelTwo, APYText, Limit, LimitUsed,
+    open, close, valueofRow, handleClickTabOne,handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
     amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount
   } = props;
 
@@ -123,11 +123,15 @@ const MarketModal = (props) => {
         <DialogActions>
           <>
             {tokenValue ?
-              <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleBtnClick} disableRipple>
-                {tabValue === "one" && buttonOne}
-                {tabValue === "two" && buttonTwo}
-              </Button> :
-              <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleBtnClick} disabled>
+              <>
+                {tabValue === "one" &&
+                  <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne} disableRipple> {buttonOne} </Button>
+                }
+                {tabValue === "two" &&
+                  <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabTwo } disableRipple> {buttonTwo} </Button>
+                }
+              </> :
+              <Button className={` ${classes.btnMain} ${btnSub} `} disabled>
                 {tabValue === "one" && buttonOne}
                 {tabValue === "two" && buttonTwo}
               </Button>

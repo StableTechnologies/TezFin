@@ -46,11 +46,12 @@ const SupplyModal = (props) =>{
       valueofRow = {valueofRow}
       // onClick = {enableToken ? supply : onClick}
       onClick = {onClick}
-      handleBtnClick = {enableToken ? mintToken : onClick}
+      handleClickTabOne = {enableToken ? mintToken : onClick}
       labelOne="Supply"
       labelTwo="Withdraw"
       buttonOne ={enableToken ? "Supply" : "Enable Token"}
-      buttonTwo = "No balance to withdraw"
+      buttonTwo = "Withdraw"
+      // buttonTwo = {valueofRow.balance ? "Withdraw" : "No balance to withdraw"}
       btnSub = {classes.btnSub}
       inkBarStyle = {classes.inkBarStyle}
       visibility={enableToken}
