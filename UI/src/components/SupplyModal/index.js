@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import MarketModal from '../MarketModal';
-import { supplyMarketModalAction, supplyTokenAction } from '../../reduxContent/marketModal/actions';
+import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
 
 import { useStyles } from './style';
 
@@ -18,8 +18,15 @@ const SupplyModal = (props) =>{
   const mintToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
     const mintPair =  {underlying, amount: amount}
-    console.log(mintPair, 'mintPair');
     dispatch( supplyTokenAction(mintPair));
+    close();
+    setAmount('')
+  }
+
+  const withdrawToken = () => {
+    const underlying = valueofRow.assetType.toLowerCase()
+    const redeemPair =  {underlying, amount: amount}
+    dispatch( withdrawTokenAction(redeemPair));
     close();
     setAmount('')
   }
@@ -47,6 +54,7 @@ const SupplyModal = (props) =>{
       // onClick = {enableToken ? supply : onClick}
       onClick = {onClick}
       handleClickTabOne = {enableToken ? mintToken : onClick}
+      handleClickTabTwo = {withdrawToken}
       labelOne="Supply"
       labelTwo="Withdraw"
       buttonOne ={enableToken ? "Supply" : "Enable Token"}
