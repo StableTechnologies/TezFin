@@ -62,7 +62,7 @@ const Market = (props) => {
             <SupplyModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} onClick={handleClickEnableToken} enableToken={enableToken} />
           }
           {borrowMkt &&
-            <BorrowModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} onClick={handleClickEnableToken} />
+            <BorrowModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} />
           }
           <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} enableTokenText/>
         </>

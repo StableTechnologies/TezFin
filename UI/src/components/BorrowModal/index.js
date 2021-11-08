@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { borrowMarketModalAction } from '../../reduxContent/marketModal/actions';
+import { borrowMarketModalAction, borrowTokenAction } from '../../reduxContent/marketModal/actions';
 
 import MarketModal from '../MarketModal';
 import { useStyles } from './style';
@@ -8,9 +8,20 @@ import { useStyles } from './style';
 const BorrowModal = (props) =>{
   const classes = useStyles();
   const dispatch = useDispatch();
-  const {open, close, valueofRow, onClick} = props;
+  const {open, close, valueofRow} = props;
+  const [amount, setAmount] = useState('');
 
   const {account} = useSelector(state => state.addWallet);
+
+
+  const borrowToken = () => {
+    const underlying = valueofRow.assetType.toLowerCase()
+    const borrowPair =  {underlying, amount: amount}
+    console.log(borrowPair, 'borrowPair');
+    dispatch( borrowTokenAction(borrowPair));
+    close();
+    setAmount('')
+  }
 
   useEffect(() => {
     dispatch(borrowMarketModalAction(account));
@@ -24,7 +35,7 @@ const BorrowModal = (props) =>{
       open = {open}
       close = {close}
       valueofRow = {valueofRow}
-      onClick = {onClick}
+      handleBtnClick = {borrowToken}
       labelOne = "Borrow"
       labelTwo = "Repay"
       buttonOne = "Borrow"
@@ -32,6 +43,7 @@ const BorrowModal = (props) =>{
       btnSub = {classes.btnSub}
       inkBarStyle = {classes.inkBarStyle}
       visibility = {true}
+      amount={(e)=>{setAmount(e.target.value)}}
    />
   )
 }

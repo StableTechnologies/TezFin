@@ -1,10 +1,11 @@
-import {GET_SUPPLY_MARKET_MODAL_DATA, GET_BORROW_MARKET_MODAL_DATA, MINT_TOKEN} from './types';
+import {GET_SUPPLY_MARKET_MODAL_DATA, GET_BORROW_MARKET_MODAL_DATA, MINT_TOKEN, BORROW_TOKEN} from './types';
 
 const initState = {
   isFetching: true,
   supplyMarketModal: {},
   borrowMarketModal: {},
   mintToken: {},
+  borrowToken: {},
 }
 
 const marketModalReducer = (state=initState, action) => {
@@ -26,6 +27,12 @@ const marketModalReducer = (state=initState, action) => {
         ...state,
         isFetching: false,
         mintToken: action.payload
+      }
+    case BORROW_TOKEN:
+      return {
+        ...state,
+        isFetching: false,
+        borrowToken: action.payload
       }
     default:
       return state;
