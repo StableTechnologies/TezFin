@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   market: marketReducer,
   supplyComposition: supplyCompositionReducer,
   borrowComposition: borrowCompositionReducer,
-  marketModalReducer: marketModalReducer,
+  marketModal: marketModalReducer,
   addWallet: addWalletReducer,
 });
 
