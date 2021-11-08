@@ -317,7 +317,9 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface SupplyMarket {
-
+        rate: number;
+        balanceUnderlying: number;
+        balanceUsd: number;
     }
 
     /*
@@ -326,7 +328,14 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getSupplyMarkets(account: Account, markets: Market[]): { [assetType: string]: SupplyMarket } {
-        return {};
+        const asset = AssetType.ETH;
+        return {
+                asset: {
+                rate: 0.0498,
+                balanceUnderlying: 32.34,
+                balanceUsd: 3209.34
+            } as SupplyMarket
+        };
     }
 
     /*
@@ -335,7 +344,11 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface BorrowMarket {
-
+        rate: number;
+        balanceUnderlying: number;
+        balanceUsd: number;
+        liquidityUnderlying: number;
+        liquidityUsd: number;
     }
 
     /*
@@ -344,7 +357,16 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getBorrowMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket }{
-        return {}
+        const asset = AssetType.BTC;
+        return {
+            asset: {
+                rate: 0.0323,
+                balanceUnderlying: 3.23,
+                balanceUsd: 85.32,
+                liquidityUnderlying: 938293,
+                liquidityUsd: 34342.11
+            } as BorrowMarket
+        }
     }
 
     /*
@@ -366,7 +388,11 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getSupplyMarketModal(account: Account, market: Market): SupplyMarketModal {
-        return {} as SupplyMarketModal;
+        return {
+            rate: 0.0534,
+            borrowLimit: 2324,
+            borrowLimitUsed: 0.54
+        } as SupplyMarketModal;
     }
 
     /*
@@ -378,7 +404,7 @@ export namespace TezosLendingPlatform {
      */
     export interface BorrowMarketModal {
         rate: number;
-        borrowBalance: number;
+        borrowBalanceUsd: number;
         borrowLimitUsed: number
     }
 
@@ -388,7 +414,11 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getBorrowMarketModal(account: Account, market: Market): BorrowMarketModal {
-        return {} as BorrowMarketModal;
+        return {
+            rate: 0.656,
+            borrowBalanceUsd: 433.22,
+            borrowLimitUsed: 0.54
+        } as BorrowMarketModal;
     }
 
 
