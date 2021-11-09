@@ -12,6 +12,7 @@ const BorrowModal = (props) =>{
   const [amount, setAmount] = useState('');
 
   const {account} = useSelector(state => state.addWallet);
+  const {markets} = useSelector(state => state.marketModal.borrowMarketModal);
 
 
   const borrowToken = () => {
@@ -30,9 +31,22 @@ const BorrowModal = (props) =>{
     setAmount('')
   }
 
+  if(valueofRow && markets) {
+    Object.keys(markets).map((x)=>{
+      if(x.toLowerCase() === valueofRow.assetType.toLowerCase()) {
+        // valueofRow.apy =  markets[x].rate
+        valueofRow.borrowBalance =  markets[x].borrowBalanceUsd
+        valueofRow.borrowLimitUsed =  markets[x].borrowLimitUsed
+      }
+    })
+  }
+
+
   useEffect(() => {
-    dispatch(borrowMarketModalAction(account));
+    dispatch(borrowMarketModalAction(account, markets, valueofRow));
   }, [dispatch, account])
+        console.log(valueofRow.apy, 'valueofRow.apy');
+
 
   return (
    <MarketModal

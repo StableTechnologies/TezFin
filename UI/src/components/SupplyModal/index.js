@@ -14,6 +14,7 @@ const SupplyModal = (props) =>{
   const [amount, setAmount] = useState('');
 
   const {account} = useSelector(state => state.addWallet);
+  const {markets} = useSelector(state => state.marketModal.supplyMarketModal);
 
   const mintToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
@@ -32,13 +33,22 @@ const SupplyModal = (props) =>{
   }
 
   useEffect(() => {
-    dispatch(supplyMarketModalAction(account));
+    dispatch(supplyMarketModalAction(account, markets));
   }, [dispatch, account])
 
   useEffect(() => {
     setAmount('')
   }, [close])
 
+  if(valueofRow && markets) {
+    Object.keys(markets).map((market)=>{
+      if(market.toLowerCase() === valueofRow.assetType.toLowerCase()) {
+        // valueofRow.apy =  markets[market].rate
+        valueofRow.borrowLimit =  markets[market].borrowLimit
+        valueofRow.borrowLimitUsed =  markets[market].borrowLimitUsed
+      }
+    })
+  }
 
 
   return (
