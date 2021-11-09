@@ -1,4 +1,4 @@
-import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Transaction, TezosParameterFormat } from 'conseiljs';
+import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Transaction, TezosParameterFormat, ConseilQuery, ConseilQueryBuilder, ConseilOperator, TezosConseilClient, ConseilServerInfo } from 'conseiljs';
 import { TezosLendingPlatform } from './TezosLendingPlatform';
 import { JSONPath } from 'jsonpath-plus';
 
@@ -13,10 +13,19 @@ export namespace FToken {
         accrualIntPeriodRelevance: number;
         administrator: string;
         balancesMapId: number;
-        borrowIndex: number;
-        borrowRateMaxMantissa: number;
-        borrowRatePerBlock: number;
-        comptroller: string;
+        supply: {
+            numSuppliers?: number;
+            totalSupply: number;
+            supplyRatePerBlock: number;
+        };
+        borrow: {
+            numBorrowers?: number;
+            totalBorrows: number;
+            borrowIndex: number;
+            borrowRateMaxMantissa: number;
+            borrowRatePerBlock: number;
+        };
+        comptrollerAddress: string;
         expScale: number;
         halfExpScale: number;
         initialExchangeRateMantissa: number;
@@ -25,11 +34,7 @@ export namespace FToken {
         pendingAdministrator: string | undefined;
         reserveFactorMantissa: number;
         reserveFactorMaxMantissa: number;
-        supplyRatePerBlock: number;
-        totalBorrows: number;
         totalReserves: number;
-        totalSupply: number;
-
     }
 
     /*
@@ -38,17 +43,30 @@ export namespace FToken {
      * @param
      * @param
      */
-    export async function getStorage(server: string, fTokenAddress: string): Promise<Storage> {
+    export async function GetStorage(fTokenAddress: string, server: string): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
+        const balancesMapId = JSONPath({path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0];
+        // TODO: implement numSuppliers and numBorrowers
+        // get numSuppliers
+        // const suppliersQuery = makeSuppliersQuery(balancesMapId);
+        // get numBorrowers
+        // const borrowersQuery = makeBorrowersQuery(balancesMapId);
         return {
             accrualBlockNumber: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
             accrualIntPeriodRelevance: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[1].int', json: storageResult })[0],
             administrator: JSONPath({path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
-            balancesMapId: JSONPath({path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
-            borrowIndex: JSONPath({path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
-            borrowRateMaxMantissa: JSONPath({path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
-            borrowRatePerBlock: JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
-            comptroller: JSONPath({path: '$.args[0].args[0].args[3].string', json: storageResult })[0],
+            balancesMapId: balancesMapId,
+            supply: {
+                totalSupply: JSONPath({path: '$.args[0].args[5].int', json: storageResult })[0],
+                supplyRatePerBlock: JSONPath({path: '$.args[0].args[2].args[2].int', json: storageResult })[0]
+            },
+            borrow: {
+                totalBorrows: JSONPath({path: '$.args[0].args[3].int', json: storageResult })[0],
+                borrowIndex: JSONPath({path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                borrowRateMaxMantissa: JSONPath({path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                borrowRatePerBlock: JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0]
+            },
+            comptrollerAddress: JSONPath({path: '$.args[0].args[0].args[3].string', json: storageResult })[0],
             expScale: JSONPath({path: '$.args[0].args[0].args[4].int', json: storageResult })[0],
             halfExpScale: JSONPath({path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
             initialExchangeRateMantissa: JSONPath({path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
@@ -57,15 +75,122 @@ export namespace FToken {
             pendingAdministrator: JSONPath({path: '$.args[0].args[1].args[3].prim', json: storageResult })[0], // fix optional
             reserveFactorMantissa: JSONPath({path: '$.args[0].args[2].args[0].int', json: storageResult })[0],
             reserveFactorMaxMantissa: JSONPath({path: '$.args[0].args[2].args[1].int', json: storageResult })[0],
-            supplyRatePerBlock: JSONPath({path: '$.args[0].args[2].args[2].int', json: storageResult })[0],
-            totalBorrows: JSONPath({path: '$.args[0].args[3].int', json: storageResult })[0],
-            totalReserves: JSONPath({path: '$.args[0].args[4].int', json: storageResult })[0],
-            totalSupply: JSONPath({path: '$.args[0].args[5].int', json: storageResult })[0]
+            totalReserves: JSONPath({path: '$.args[0].args[4].int', json: storageResult })[0]
         };
     }
 
     /*
-     * Return the operation for invoking the accrueInterest entrypoint of the given fToken address
+     * @description TODO
+     *
+     * @param
+     */
+    export function makeSuppliersQuery(balancesMapId: number): ConseilQuery {
+        let suppliersQuery = ConseilQueryBuilder.blankQuery();
+        suppliersQuery = ConseilQueryBuilder.addFields(suppliersQuery, 'key', 'value', 'operation_group_id');
+        suppliersQuery = ConseilQueryBuilder.addPredicate(suppliersQuery, 'big_map_id', ConseilOperator.EQ, [balancesMapId]);
+        // TODO: get all values with value.balance > 0
+        suppliersQuery = ConseilQueryBuilder.setLimit(suppliersQuery, 10_000);
+        return suppliersQuery;
+    }
+
+    /*
+     * @description TODO
+     *
+     * @param
+     */
+    export function makeBorrowersQuery(balancesMapId: number): ConseilQuery {
+        let borrowersQuery = ConseilQueryBuilder.blankQuery();
+        borrowersQuery = ConseilQueryBuilder.addFields(borrowersQuery, 'key', 'value', 'operation_group_id');
+        borrowersQuery = ConseilQueryBuilder.addPredicate(borrowersQuery, 'big_map_id', ConseilOperator.EQ, [balancesMapId]);
+        // TODO: get all values with value.principal > 0
+        borrowersQuery = ConseilQueryBuilder.setLimit(borrowersQuery, 10_000);
+        return borrowersQuery;
+    }
+
+    /*
+     * @description TODO
+     *
+     * @param storage
+     */
+    export function GetCash(storage: Storage): number {
+        return storage.supply.totalSupply - storage.borrow.totalBorrows - storage.totalReserves;
+    }
+
+    /*
+     * @description TODO
+     *
+     * @param storage
+     */
+    export function GetExchangeRate(storage: Storage): number {
+        return 5;
+    }
+
+    /*
+     * @description TODO
+     *
+     * @param storage
+     */
+    export function GetSupplyRate(storage: Storage): number {
+        return 4;
+    }
+
+    /*
+     * @description TODO
+     *
+     * @param storage
+     */
+    export function GetBorrowRate(storage: Storage): number {
+        return 3;
+    }
+
+    /*
+     * @description
+     *
+     * @param assetType
+     * @param supplyBalanceUnderlying Total underlying token amount supplied, fTokenBalance * exchangeRate
+     * @param supplyBalanceUsd Total USD value of funds supplied
+     * @param loanBalanceUnderlying Total underlying token amount borrowed
+     * @param loanBalanceUsd Total USD value of funds borrowed
+     * @param collateral True if market is collateralized, false otherwise
+     */
+    export interface Balance {
+        assetType: TezosLendingPlatform.AssetType;
+        supplyBalanceUnderlying: number;
+        supplyBalanceUsd?: number
+        loanBalanceUnderlying: number;
+        loanBalanceUsd?: number;
+        collateral?: boolean;
+    }
+
+    export type BalanceMap = { [assetType: string]: Balance };
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export async function GetBalance(account: string, assetType: TezosLendingPlatform.AssetType, balancesMapId: number, server: string, conseilServerInfo: ConseilServerInfo): Promise<Balance> {
+        const balanceQuery = makeBalanceQuery(account, balancesMapId, server);
+        const balanceResult = await TezosConseilClient.getTezosEntityData(conseilServerInfo, conseilServerInfo.network, 'big_map_contents', balanceQuery);
+        return {
+            assetType: assetType,
+            supplyBalanceUnderlying: 0,
+            loanBalanceUnderlying: 0
+        } as Balance;
+    }
+
+    /*
+     * @description TODO
+     *
+     * @param
+     */
+    export function makeBalanceQuery(account: string, balancesMapId: number, server: string): ConseilQuery {
+        let balanceQuery = ConseilQueryBuilder.blankQuery();
+        return balanceQuery;
+    }
+
+    /*
+     * @description Return the operation for invoking the accrueInterest entrypoint of the given fToken address
      *
      * @param counter Current account counter
      * @param fTokenAddress The relevant FToken contract address
