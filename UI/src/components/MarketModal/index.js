@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -16,16 +16,16 @@ import CloseButton from '../CloseButton';
 import { useStyles } from './style';
 
 import Tez from '../../assets/largeXTZ.svg';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const MarketModal = (props) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const {marketBalances} = useSelector(state => state.addWallet.account);
   const {
-    open, close, valueofRow, onClick, labelOne, labelTwo, APYText, Limit, LimitUsed,
-    amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText} = props;
+    open, close, valueofRow, handleClickTabOne,handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
+    amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount
+  } = props;
 
     const [tabValue, setTabValue] = useState('one');
     const [tokenValue, setTokenValue] = useState('');
@@ -33,6 +33,10 @@ const MarketModal = (props) => {
     const handleTabChange = (event, newValue) => {
       setTabValue(newValue);
     };
+
+    useEffect(() => {
+      setTokenValue('')
+    }, [close])
 
     if(valueofRow && marketBalances) {
       Object.keys(marketBalances).map((marketBalance)=>{
@@ -67,6 +71,7 @@ const MarketModal = (props) => {
                 type="text"
                 placeholder="0"
                 onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
+                onChange={(e)=>amount(e)}
                 value={tokenValue}
                 inputProps={{className: classes.inputText}}
                 className={classes.textField}
@@ -116,11 +121,22 @@ const MarketModal = (props) => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          {/* <Button className={classes.btn} onClick={onClick}> */}
-          <Button className={` ${classes.btnMain} ${btnSub} `} onClick={onClick} disableRipple>
-            {tabValue === "one" && buttonOne}
-            {tabValue === "two" && buttonTwo}
-          </Button>
+          <>
+            {tokenValue ?
+              <>
+                {tabValue === "one" &&
+                  <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne} disableRipple> {buttonOne} </Button>
+                }
+                {tabValue === "two" &&
+                  <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabTwo } disableRipple> {buttonTwo} </Button>
+                }
+              </> :
+              <Button className={` ${classes.btnMain} ${btnSub} `} disabled>
+                {tabValue === "one" && buttonOne}
+                {tabValue === "two" && buttonTwo}
+              </Button>
+            }
+          </>
         </DialogActions>
         <DialogContent>
           <Grid container textAlign="justify" justifyContent="space-between">

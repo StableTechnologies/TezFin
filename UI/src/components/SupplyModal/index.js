@@ -1,21 +1,45 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import MarketModal from '../MarketModal';
-import { supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
+import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
 
 import { useStyles } from './style';
 
 const SupplyModal = (props) =>{
   const classes = useStyles();
   const dispatch = useDispatch();
-  const {open, close, valueofRow, onClick, enableToken} = props;
+  const {open, close, valueofRow, onClick, supply, enableToken} = props;
+
+  const [amount, setAmount] = useState('');
 
   const {account} = useSelector(state => state.addWallet);
+
+  const mintToken = () => {
+    const underlying = valueofRow.assetType.toLowerCase()
+    const mintPair =  {underlying, amount: amount}
+    dispatch( supplyTokenAction(mintPair));
+    close();
+    setAmount('')
+  }
+
+  const withdrawToken = () => {
+    const underlying = valueofRow.assetType.toLowerCase()
+    const redeemPair =  {underlying, amount: amount}
+    dispatch( withdrawTokenAction(redeemPair));
+    close();
+    setAmount('')
+  }
 
   useEffect(() => {
     dispatch(supplyMarketModalAction(account));
   }, [dispatch, account])
+
+  useEffect(() => {
+    setAmount('')
+  }, [close])
+
+
 
   return (
    <MarketModal
@@ -27,15 +51,19 @@ const SupplyModal = (props) =>{
       open = {open}
       close = {close}
       valueofRow = {valueofRow}
-      onClick = {enableToken ?"": onClick}
-      // onClick = {onClick}
+      // onClick = {enableToken ? supply : onClick}
+      onClick = {onClick}
+      handleClickTabOne = {enableToken ? mintToken : onClick}
+      handleClickTabTwo = {withdrawToken}
       labelOne="Supply"
       labelTwo="Withdraw"
       buttonOne ={enableToken ? "Supply" : "Enable Token"}
-      buttonTwo = "No balance to withdraw"
+      buttonTwo = "Withdraw"
+      // buttonTwo = {valueofRow.balance ? "Withdraw" : "No balance to withdraw"}
       btnSub = {classes.btnSub}
       inkBarStyle = {classes.inkBarStyle}
       visibility={enableToken}
+      amount={(e)=>{setAmount(e.target.value)}}
    />
   )
 }

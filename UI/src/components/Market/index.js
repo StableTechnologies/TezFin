@@ -23,7 +23,7 @@ const Market = (props) => {
   const [valueofRow, setValueOfRow] = useState();
   const [openMktModal, setMktModal] = useState(false);
   const [openConfirmModal, setConfirmModal] =useState(false);
-  const [enableToken, setEnableToken] =useState(false);
+  const [enableToken, setEnableToken] =useState(true);
 
 
   const closeMktModal = () => {
@@ -31,9 +31,9 @@ const Market = (props) => {
   };
 
   const handleClickMktModal = (item, event) => {
-    setValueOfRow(item);
     if (event.target.type === "checkbox") return;
     setMktModal(true);
+    setValueOfRow(item);
   }
 
   const handleClickEnableToken = () => {
@@ -62,7 +62,7 @@ const Market = (props) => {
             <SupplyModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} onClick={handleClickEnableToken} enableToken={enableToken} />
           }
           {borrowMkt &&
-            <BorrowModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} onClick={handleClickEnableToken} />
+            <BorrowModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} />
           }
           <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} enableTokenText/>
         </>

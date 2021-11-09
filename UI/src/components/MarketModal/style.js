@@ -39,6 +39,10 @@ export const useStyles = makeStyles({
     '& .MuiButton-text': {
       textTransform: 'none',
     },
+    '& .Mui-disabled' :{
+      opacity: '0.5',
+      color: '#fff',
+    }
   },
 
   '@media(min-width: 1024px)': {
