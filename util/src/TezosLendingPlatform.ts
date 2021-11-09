@@ -444,7 +444,7 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * Construct and invoke the operation group for minting fTokens.
+     * Construct the operation group for minting fTokens.
      *
      * @param
      */
@@ -482,7 +482,7 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * Construct and invoke the operation group for redeeming fTokens for the underlying asset.
+     * Construct the operation group for redeeming fTokens for the underlying asset.
      *
      * @param
      */
@@ -517,7 +517,7 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * Construct and invoke the operation group for borrowing underlying assets.
+     * Construct the operation group for borrowing underlying assets.
      *
      * @param
      */
@@ -542,16 +542,8 @@ export namespace TezosLendingPlatform {
     export async function Borrow(borrow: FToken.BorrowPair, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        let ops: Transaction[] = [];
         let collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
-        // accrue interest operation
-        if (!collaterals.includes(borrow.underlying)) // need to accrueInterest on the borrowed market as well
-            collaterals.push(borrow.underlying);
-        ops = ops.concat(FToken.AccrueInterestOperations(collaterals, protocolAddresses, counter, keystore, fee, gas, freight));
-        // comptroller data relevance
-        ops = ops.concat(Comptroller.DataRelevanceOperations(collaterals, protocolAddresses, counter, keystore, fee));
-        // borrow operation
-        ops.push(FToken.BorrowOperation(borrow, counter, protocolAddresses.fTokens[borrow.underlying], keystore, fee, gas, freight));
+        const ops: Transaction[] = BorrowOpGroup(borrow, collaterals, protocolAddresses, keystore, fee);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
@@ -560,7 +552,7 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * Construct and invoke the operation group for repaying borrowed fTokens.
+     * Construct the operation group for repaying borrowed fTokens.
      *
      * @param
      */
