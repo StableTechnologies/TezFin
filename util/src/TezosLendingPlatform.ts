@@ -1,6 +1,7 @@
-import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Tzip7ReferenceTokenHelper, MultiAssetTokenHelper, UpdateOperator, Transaction } from 'conseiljs';
+import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Tzip7ReferenceTokenHelper, MultiAssetTokenHelper, UpdateOperator, Transaction, TezosConseilClient, ConseilServerInfo, ConseilQuery } from 'conseiljs';
 import { FToken } from './FToken';
 import { Comptroller } from './Comptroller';
+import log from 'loglevel';
 
 export namespace TezosLendingPlatform {
     /*
@@ -15,7 +16,7 @@ export namespace TezosLendingPlatform {
     export interface ProtocolAddresses {
         fTokens: { [underlying: string]: string};
         fTokensReverse: { [address: string]: AssetType};
-        underlying: { [tokenName: string]: UnderlyingAsset };
+        underlying: { [assetType: string]: UnderlyingAsset };
         comptroller: string;
         interestRateModel: { [underlying: string]: string};
         governance: string;
@@ -28,6 +29,15 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export const mainnetAddresses = {} as ProtocolAddresses;
+
+    /*
+     * @description TODO: convert mantissa to number
+     *
+     * @param
+     */
+    export function ConvertFromMantissa(mantissa: number): number {
+        return mantissa;
+    }
 
     /*
      * @description Enum identifying assets in the protocol. Corresponds to the string of the asset's symbol.
@@ -108,94 +118,70 @@ export namespace TezosLendingPlatform {
         reserveFactor: number;
         collateralFactor: number;
         exchangeRate: number;
+        storage: FToken.Storage;
+    }
+
+    export type MarketMap = { [assetType: string]: Market }
+
+    /*
+     * @description Converts an fToken contract's storage to Market object
+     *
+     * @param fToken The fToken contract's storage
+     */
+    export function MakeMarket(fToken: FToken.Storage, comptroller: Comptroller.Storage, address: string, name: string, underlying: UnderlyingAsset): Market {
+        const asset: UnderlyingAssetMetadata = {
+            name: name,
+            underlying: underlying,
+            administrator: fToken.administrator,
+            price: comptroller.markets[underlying.assetType].price
+        };
+        const supply: MarketData = {
+            // TODO
+            // numParticipants: fToken.supply.numSuppliers?,
+            numParticipants: 0,
+            totalAmount: fToken.supply.totalSupply,
+            rate: FToken.GetSupplyRate(fToken)
+        };
+        const borrow: MarketData = {
+            // TODO
+            // numParticipants: fToken.borrow.numBorrowers,
+            numParticipants: 0,
+            totalAmount: fToken.borrow.totalBorrows,
+            rate: FToken.GetBorrowRate(fToken)
+        };
+        return {
+            address: address,
+            asset: asset,
+            cash: FToken.GetCash(fToken),
+            cashUsd: comptroller.markets[underlying.assetType].price * FToken.GetCash(fToken),
+            supply: supply,
+            borrow: borrow,
+            dailyInterestPaid: 0,
+            reserves: fToken.totalReserves,
+            reserveFactor: ConvertFromMantissa(fToken.reserveFactorMantissa),
+            collateralFactor: comptroller.markets[underlying.assetType].price,
+            exchangeRate: FToken.GetExchangeRate(fToken),
+            storage: fToken
+        } as Market;
     }
 
     /*
-     * Get a market's metadata
+     * @description Gets the market data for all markets in protocolAddresses
      *
      * @param address The fToken contract address to query
+     * @param server Tezos node URL
      */
-    export async function GetMarkets(protocolAddresses: ProtocolAddresses): Promise<{ [assetType: string]: Market }> {
-        // for asset, addr in protocolAddresses.fTokens
-        // FToken.GetStorage(addr)
-        // map to Market objects
-        let ret: { [assetType: string]: Market } = {};
-        ret[AssetType.XTZ] = {
-            address: "kt18a7h89",
-            asset: {
-                name: "cXTZ",
-                underlying: {
-                    assetType: AssetType.XTZ
-                } as UnderlyingAsset,
-                administrator: "tz123456",
-                price: 5
-            } as UnderlyingAssetMetadata,
-            cash: 100,
-            cashUsd: 500,
-            supply: {
-                numParticipants: 1,
-                totalAmount: 100,
-                rate: 1.05
-            } as MarketData,
-            borrow: {
-                numParticipants: 1,
-                totalAmount: 20,
-                rate: 1.01
-            } as MarketData,
-            dailyInterestPaid: 0.3,
-            reserves: 0,
-            reserveFactor: 0,
-            collateralFactor: 0.6,
-            exchangeRate: 1.04
-        };
-        ret[AssetType.FA12] = {
-            address: "kt14h17934y",
-            asset: {
-                name: "cETH",
-                underlying: {
-                    assetType: AssetType.FA12
-                } as UnderlyingAsset,
-                administrator: "tz123456",
-                price: 5
-            } as UnderlyingAssetMetadata,
-            cash: 200,
-            cashUsd: 1000,
-            supply: {
-                numParticipants: 1,
-                totalAmount: 200,
-                rate: 1.05
-            } as MarketData,
-            borrow: {
-                numParticipants: 1,
-                totalAmount: 400,
-                rate: 1.01
-            } as MarketData,
-            dailyInterestPaid: 0.3,
-            reserves: 0,
-            reserveFactor: 0,
-            collateralFactor: 0.6,
-            exchangeRate: 1.04
-        };
-        return ret;
-    }
-
-    /*
-     * @description
-     *
-     * @param assetType
-     * @param supplyBalanceUnderlying Total underlying token amount supplied, fTokenBalance * exchangeRate
-     * @param supplyBalanceUsd Total USD value of funds supplied
-     * @param loanBalanceUnderlying Total underlying token amount borrowed
-     * @param loanBalanceUsd Total USD value of funds borrowed
-     * @param collateral True if market is collateralized, false otherwise
-     */
-    export interface MarketBalance {
-        assetType: AssetType;
-        supplyBalanceUnderlying: number;
-        supplyBalanceUsd: number
-        loanBalanceUnderlying: number;
-        loanBalanceUsd: number;
-        collateral: boolean;
+    export async function GetMarkets(comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<MarketMap> {
+        // get storage for all contracts
+        let markets: MarketMap = {};
+        for (const asset in protocolAddresses.fTokens) {
+            const fTokenAddress = protocolAddresses.fTokens[asset];
+            const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server);
+            // TODO: name from constants
+            const name = "test"
+            markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, name, protocolAddresses.underlying[asset]);
+        }
+        return markets;
     }
 
     /*
@@ -210,7 +196,7 @@ export namespace TezosLendingPlatform {
      */
     export interface Account {
         address: string;
-        marketBalances: { [assetType: string]: MarketBalance };
+        marketBalances: FToken.BalanceMap;
         totalCollateralUsd: number;
         totalLoanUsd: number;
         health: number;
@@ -222,38 +208,65 @@ export namespace TezosLendingPlatform {
      *
      * @param address Address of the requested account
      * @param markets List of fToken markets
+     * @param comptroller Comptroller storage
+     * @param protocolAddresses
+     * @param server Tezos node
      */
-    export async function GetAccount(address: string, markets: Market[], protocolAddresses: ProtocolAddresses): Promise<Account> {
+    export async function GetAccount(address: string, markets: MarketMap, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Account> {
         // check which markets are collaterals
+        const collaterals = await Comptroller.GetCollaterals(address, comptroller, protocolAddresses, server);
         // get balance in each market
-        // calculate usd balances using market exchange rate
-        // calculate total collateral and account health
-        // calculate net rate across all markets, weighted by balance
-        let marketBalances: { [assetType: string]: MarketBalance } = {};
-        marketBalances[AssetType.XTZ] = {
-            assetType: AssetType.XTZ,
-            supplyBalanceUnderlying:  100,
-            supplyBalanceUsd: 500,
-            loanBalanceUnderlying: 20,
-            loanBalanceUsd: 100,
-            collateral: true
-        };
-        marketBalances[AssetType.FA12] = {
-            assetType: AssetType.FA12,
-            supplyBalanceUnderlying:  200,
-            supplyBalanceUsd: 1000,
-            loanBalanceUnderlying: 40,
-            loanBalanceUsd: 200,
-            collateral: true
-        };
+        const balances = await GetBalances(address, markets, protocolAddresses, server, conseilServerInfo);
+        // get prices from oracle
+        // calculate usd balances and collaterals
+        for (const asset in balances) {
+            balances[asset].supplyBalanceUsd = comptroller.markets[asset].price * balances[asset].supplyBalanceUnderlying;
+            balances[asset].loanBalanceUsd = comptroller.markets[asset].price * balances[asset].loanBalanceUnderlying;
+            if (collaterals.includes(asset as AssetType))
+                balances[asset].collateral = true;
+            else
+                balances[asset].collateral = false;
+        }
+        let totalCollateralUsd = 0;
+        let totalLoanUsd = 0;
+        let rate = 1;
+        for (const asset in balances) {
+            // calculate total collateral and loan balance
+            if (balances[asset].collateral!)
+                totalCollateralUsd += balances[asset].supplyBalanceUsd!;
+            totalLoanUsd += balances[asset].loanBalanceUsd!;
+            // TODO: calculate net rate across all markets, weighted by balance
+        }
         return {
-            address: "kt2327a4b3h4",
-            marketBalances: marketBalances,
-            totalCollateralUsd: 500,
-            totalLoanUsd: 100,
-            health: 0.2,
-            rate: 1.04
+            address: address,
+            marketBalances: balances,
+            totalCollateralUsd: totalCollateralUsd,
+            totalLoanUsd: totalLoanUsd,
+            health: calculateHealth(totalCollateralUsd, totalLoanUsd),
+            rate: rate
         } as Account;
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export async function GetBalances(address: string, markets: MarketMap, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<FToken.BalanceMap> {
+        await Promise.all(Object.entries(protocolAddresses.fTokens).map(async (asset, fTokenAddress) => {
+            // TODO
+            // const balanceResult = await FToken.GetBalance(address, markets[asset].storage.balancesMapId, server, conseilServerInfo);
+        }));
+        return {} as FToken.BalanceMap;
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export function calculateHealth(collateral: number, loans: number): number {
+        return collateral / loans;
     }
 
     /*
@@ -317,9 +330,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface SupplyMarket {
-        rate: number;
-        balanceUnderlying: number;
-        balanceUsd: number;
+
     }
 
     /*
@@ -328,14 +339,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getSupplyMarkets(account: Account, markets: Market[]): { [assetType: string]: SupplyMarket } {
-        const asset = AssetType.ETH;
-        return {
-                asset: {
-                rate: 0.0498,
-                balanceUnderlying: 32.34,
-                balanceUsd: 3209.34
-            } as SupplyMarket
-        };
+        return {};
     }
 
     /*
@@ -344,11 +348,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface BorrowMarket {
-        rate: number;
-        balanceUnderlying: number;
-        balanceUsd: number;
-        liquidityUnderlying: number;
-        liquidityUsd: number;
+
     }
 
     /*
@@ -357,16 +357,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getBorrowMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket }{
-        const asset = AssetType.BTC;
-        return {
-            asset: {
-                rate: 0.0323,
-                balanceUnderlying: 3.23,
-                balanceUsd: 85.32,
-                liquidityUnderlying: 938293,
-                liquidityUsd: 34342.11
-            } as BorrowMarket
-        }
+        return {};
     }
 
     /*
@@ -388,11 +379,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getSupplyMarketModal(account: Account, market: Market): SupplyMarketModal {
-        return {
-            rate: 0.0534,
-            borrowLimit: 2324,
-            borrowLimitUsed: 0.54
-        } as SupplyMarketModal;
+        return {} as SupplyMarketModal;
     }
 
     /*
@@ -404,7 +391,7 @@ export namespace TezosLendingPlatform {
      */
     export interface BorrowMarketModal {
         rate: number;
-        borrowBalanceUsd: number;
+        borrowBalance: number;
         borrowLimitUsed: number
     }
 
@@ -414,17 +401,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getBorrowMarketModal(account: Account, market: Market): BorrowMarketModal {
-        return {
-            rate: 0.656,
-            borrowBalanceUsd: 433.22,
-            borrowLimitUsed: 0.54
-        } as BorrowMarketModal;
-    }
-
-
-    // TODO: Price feed oracle
-    export interface PriceFeed {
-        address: string;
+        return {} as BorrowMarketModal;
     }
 
     /*
