@@ -16,12 +16,10 @@ import CloseButton from '../CloseButton';
 import { useStyles } from './style';
 
 import Tez from '../../assets/largeXTZ.svg';
-import { useSelector } from 'react-redux';
 
 const MarketModal = (props) => {
   const classes = useStyles();
 
-  const {marketBalances} = useSelector(state => state.addWallet.account);
   const {
     open, close, valueofRow, handleClickTabOne,handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
     amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount
@@ -37,16 +35,6 @@ const MarketModal = (props) => {
     useEffect(() => {
       setTokenValue('')
     }, [close])
-
-    if(valueofRow && marketBalances) {
-      Object.keys(marketBalances).map((marketBalance)=>{
-        if(marketBalances[marketBalance].assetType.toLowerCase() === valueofRow.assetType.toLowerCase()) {
-          valueofRow.borrowLimit =  marketBalances[marketBalance].loanBalanceUnderlying
-          valueofRow.borrowLimitUsed =  marketBalances[marketBalance].loanBalanceUsd
-          valueofRow.balance =  marketBalances[marketBalance].supplyBalanceUnderlying
-        }
-      })
-    }
 
   return (
     <React.Fragment>
@@ -101,7 +89,7 @@ const MarketModal = (props) => {
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> ${valueofRow.borrowLimit || "0.00"}</Grid>
+            <Grid item sm={2} className={visibility ?"": classes.visibility}> ${(valueofRow.borrowLimit || valueofRow.borrowBalance) || "0.00"}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>

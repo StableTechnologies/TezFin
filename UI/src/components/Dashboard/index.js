@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 import Market from '../Market';
 import { useStyles } from './style';
 
-import {marketAction} from '../../reduxContent/market/actions';
+import {borrowMarketAction, marketAction, supplyMarketAction} from '../../reduxContent/market/actions';
 
 const Dashboard =() => {
   const classes = useStyles();
@@ -17,6 +17,8 @@ const Dashboard =() => {
 
   useEffect(() => {
     dispatch(marketAction());
+    dispatch(supplyMarketAction());
+    dispatch(borrowMarketAction());
   }, [dispatch])
 
   return (

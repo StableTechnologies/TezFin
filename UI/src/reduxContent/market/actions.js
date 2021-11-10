@@ -1,4 +1,4 @@
-import {GET_MARKET_DATA} from './types.js';
+import { GET_MARKET_DATA, GET_SUPPLY_MARKET_DATA, GET_BORROW_MARKET_DATA } from './types.js';
 
 import {TezosLendingPlatform} from 'tezoslendingplatformjs';
 
@@ -29,4 +29,14 @@ export const marketAction = (protocolAddresses)=> async (dispatch) => {
 
   const marketData = {supplyMarkets, borrowMarkets}
   dispatch({ type: GET_MARKET_DATA, payload: marketData });
+}
+
+export const supplyMarketAction = (account, markets)=> async (dispatch) => {
+  const supplyMarket = TezosLendingPlatform.getSupplyMarkets(account, markets);
+  dispatch({ type: GET_SUPPLY_MARKET_DATA, payload: supplyMarket });
+}
+
+export const borrowMarketAction = (account, markets)=> async (dispatch) => {
+  const borrowMarket = TezosLendingPlatform.getBorrowMarkets(account, markets);
+  dispatch({ type: GET_BORROW_MARKET_DATA, payload: borrowMarket });
 }
