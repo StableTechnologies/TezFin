@@ -76,7 +76,7 @@ export namespace TezosLendingPlatform {
         name: string;
         underlying: UnderlyingAsset;
         administrator: string;
-        price: number;
+        price: string;
     }
 
     /*
@@ -88,8 +88,8 @@ export namespace TezosLendingPlatform {
      */
     export interface MarketData {
         numParticipants: number;
-        totalAmount: number;
-        rate: number;
+        totalAmount: string;
+        rate: string;
     }
 
     /*
@@ -109,15 +109,15 @@ export namespace TezosLendingPlatform {
     export interface Market {
         address: string;
         asset: UnderlyingAssetMetadata;
-        cash: number;
-        cashUsd: number;
+        cash: string;
+        cashUsd: string;
         supply: MarketData;
         borrow: MarketData;
-        dailyInterestPaid: number;
-        reserves: number;
-        reserveFactor: number;
-        collateralFactor: number;
-        exchangeRate: number;
+        dailyInterestPaid: string;
+        reserves: string;
+        reserveFactor: string;
+        collateralFactor: string;
+        exchangeRate: string;
         storage: FToken.Storage;
     }
 
@@ -197,10 +197,10 @@ export namespace TezosLendingPlatform {
     export interface Account {
         address: string;
         marketBalances: FToken.BalanceMap;
-        totalCollateralUsd: number;
-        totalLoanUsd: number;
-        health: number;
-        rate: number;
+        totalCollateralUsd: string;
+        totalLoanUsd: string;
+        health: string;
+        rate: string;
     }
 
     /*
@@ -220,19 +220,21 @@ export namespace TezosLendingPlatform {
         // get prices from oracle
         // calculate usd balances and collaterals
         for (const asset in balances) {
-            balances[asset].supplyBalanceUsd = comptroller.markets[asset].price * balances[asset].supplyBalanceUnderlying;
-            balances[asset].loanBalanceUsd = comptroller.markets[asset].price * balances[asset].loanBalanceUnderlying;
+            // TODO: use bigints
+            balances[asset].supplyBalanceUsd = 'comptroller.markets[asset].price * balances[asset].supplyBalanceUnderlying';
+            balances[asset].loanBalanceUsd = 'comptroller.markets[asset].price * balances[asset].loanBalanceUnderlying';
             if (collaterals.includes(asset as AssetType))
                 balances[asset].collateral = true;
             else
                 balances[asset].collateral = false;
         }
-        let totalCollateralUsd = 0;
-        let totalLoanUsd = 0;
-        let rate = 1;
+        let totalCollateralUsd = "0";
+        let totalLoanUsd = "0";
+        let rate = "1";
         for (const asset in balances) {
             // calculate total collateral and loan balance
             if (balances[asset].collateral!)
+                // TODO: use bigints
                 totalCollateralUsd += balances[asset].supplyBalanceUsd!;
             totalLoanUsd += balances[asset].loanBalanceUsd!;
             // TODO: calculate net rate across all markets, weighted by balance
@@ -252,12 +254,12 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export async function GetBalances(address: string, markets: MarketMap, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<FToken.BalanceMap> {
-        await Promise.all(Object.entries(protocolAddresses.fTokens).map(async (asset, fTokenAddress) => {
-            // TODO
-            // const balanceResult = await FToken.GetBalance(address, markets[asset].storage.balancesMapId, server, conseilServerInfo);
+    export async function GetBalances(address: string, markets: MarketMap, protocolAddresses: ProtocolAddresses, server: string): Promise<FToken.BalanceMap> {
+        let balances: FToken.BalanceMap = {};
+        await Promise.all(Object.keys(protocolAddresses.fTokens).map(async (asset) => {
+            balances[asset] = await FToken.GetBalance(address, asset as AssetType, markets[asset].storage.borrow.borrowIndex, markets[asset].storage.balancesMapId,  server);
         }));
-        return {} as FToken.BalanceMap;
+        return balances;
     }
 
     /*
@@ -265,8 +267,8 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function calculateHealth(collateral: number, loans: number): number {
-        return collateral / loans;
+    export function calculateHealth(collateral: string, loans: string): string {
+        return 'collateral / loans';
     }
 
     /*
@@ -443,7 +445,7 @@ export namespace TezosLendingPlatform {
      * @param gas
      * @param freight
      */
-    export function permissionOperation(params: FToken.MintPair | FToken.RepayBorrowPair, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction | undefined {
+    export function permissionOperation(params: FToken.MintPair | FToken.RepayBorrowPair, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction | undefined {
         const underlying: UnderlyingAsset = protocolAddresses.underlying[params.underlying] == undefined
             ? { assetType: AssetType.XTZ }
             : protocolAddresses.underlying[params.underlying];
@@ -454,18 +456,18 @@ export namespace TezosLendingPlatform {
                     // fa12 approved balance is depleted, so no need to invoke again to cancel
                     undefined :
                     // fa12 approve balance
-                    Tzip7ReferenceTokenHelper.ApproveBalanceOperation(params.amount, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, keystore, fee, gas, freight);
+                    Tzip7ReferenceTokenHelper.ApproveBalanceOperation(params.amount, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, pkh, fee, gas, freight);
             case AssetType.FA2:
                 const updateOperator: UpdateOperator = {
-                    owner: keystore.publicKeyHash,
+                    owner: pkh,
                     operator: protocolAddresses.fTokens[params.underlying],
                     tokenid: underlying.tokenId!
                 };
                 return cancelPermission ?
                     // fa2 remove operator
-                    MultiAssetTokenHelper.RemoveOperatorsOperation(underlying.address!, counter, keystore, fee, [updateOperator]) :
+                    MultiAssetTokenHelper.RemoveOperatorsOperation(underlying.address!, counter, pkh, fee, [updateOperator]) :
                     // fa2 add operator
-                    MultiAssetTokenHelper.AddOperatorsOperation(underlying.address!, counter, keystore, fee, [updateOperator]);
+                    MultiAssetTokenHelper.AddOperatorsOperation(underlying.address!, counter, pkh, fee, [updateOperator]);
             case AssetType.XTZ:
                 return undefined;
         }
@@ -476,18 +478,18 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function MintOpGroup(mint: FToken.MintPair, protocolAddresses: ProtocolAddresses, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function MintOpGroup(mint: FToken.MintPair, protocolAddresses: ProtocolAddresses, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOperations([mint.underlying], protocolAddresses, 0, keystore, fee, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup([mint.underlying], protocolAddresses, 0, pkh, fee, gas, freight));
         // get permissions from underlying asset
-        let permissionOp = permissionOperation(mint, false, protocolAddresses, 0, keystore, fee);
+        let permissionOp = permissionOperation(mint, false, protocolAddresses, 0, pkh, fee);
         if (permissionOp != undefined)
             ops.push(permissionOp);
         // mint operation
-        ops.push(FToken.MintOperation(mint, 0, protocolAddresses.fTokens[mint.underlying], keystore, fee, gas, freight));
+        ops.push(FToken.MintOperation(mint, 0, protocolAddresses.fTokens[mint.underlying], pkh, fee, gas, freight));
         // remove permissions from underlying asset
-        let removePermissionOp = permissionOperation(mint, true, protocolAddresses, 0, keystore, fee);
+        let removePermissionOp = permissionOperation(mint, true, protocolAddresses, 0, pkh, fee);
         if (removePermissionOp != undefined)
             ops.push(removePermissionOp);
         return ops;
@@ -501,7 +503,7 @@ export namespace TezosLendingPlatform {
     export async function Mint(mint: FToken.MintPair, protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        const ops: Transaction[] = MintOpGroup(mint, protocolAddresses, keystore, fee, gas, freight);
+        const ops: Transaction[] = MintOpGroup(mint, protocolAddresses, keystore.publicKeyHash, fee, gas, freight);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
@@ -514,16 +516,16 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function RedeemOpGroup(redeem: FToken.RedeemPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function RedeemOpGroup(redeem: FToken.RedeemPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // accrue interest operation
         if (!collaterals.includes(redeem.underlying)) // need to accrueInterest on the redeemed market as well)
             collaterals.push(redeem.underlying);
-        ops = ops.concat(FToken.AccrueInterestOperations(collaterals, protocolAddresses, 0, keystore, fee, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(collaterals, protocolAddresses, 0, pkh, fee, gas, freight));
         // comptroller data relevance
-        ops = ops.concat(Comptroller.DataRelevanceOperations(collaterals, protocolAddresses, 0, keystore, fee));
+        ops = ops.concat(Comptroller.DataRelevanceOpGroup(collaterals, protocolAddresses, 0, pkh, fee));
         // redeem operation
-        ops.push(FToken.RedeemOperation(redeem, 0, protocolAddresses.fTokens[redeem.underlying], keystore, fee, gas, freight));
+        ops.push(FToken.RedeemOperation(redeem, 0, protocolAddresses.fTokens[redeem.underlying], pkh, fee, gas, freight));
         return ops;
     }
 
@@ -536,7 +538,7 @@ export namespace TezosLendingPlatform {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
-        const ops: Transaction[] = RedeemOpGroup(redeem, collaterals, protocolAddresses, keystore, fee);
+        const ops: Transaction[] = RedeemOpGroup(redeem, collaterals, protocolAddresses, keystore.publicKeyHash, fee);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
@@ -549,16 +551,16 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function BorrowOpGroup(borrow: FToken.BorrowPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function BorrowOpGroup(borrow: FToken.BorrowPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // accrue interest operation
         if (!collaterals.includes(borrow.underlying)) // need to accrueInterest on the borrowed market as well
             collaterals.push(borrow.underlying);
-        ops = ops.concat(FToken.AccrueInterestOperations(collaterals, protocolAddresses, 0, keystore, fee, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(collaterals, protocolAddresses, 0, pkh, fee, gas, freight));
         // comptroller data relevance
-        ops = ops.concat(Comptroller.DataRelevanceOperations(collaterals, protocolAddresses, 0, keystore, fee));
+        ops = ops.concat(Comptroller.DataRelevanceOpGroup(collaterals, protocolAddresses, 0, pkh, fee));
         // borrow operation
-        ops.push(FToken.BorrowOperation(borrow, 0, protocolAddresses.fTokens[borrow.underlying], keystore, fee, gas, freight));
+        ops.push(FToken.BorrowOperation(borrow, 0, protocolAddresses.fTokens[borrow.underlying], pkh, fee, gas, freight));
         return ops;
     }
 
@@ -571,7 +573,7 @@ export namespace TezosLendingPlatform {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
-        const ops: Transaction[] = BorrowOpGroup(borrow, collaterals, protocolAddresses, keystore, fee);
+        const ops: Transaction[] = BorrowOpGroup(borrow, collaterals, protocolAddresses, keystore.publicKeyHash, fee);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
@@ -584,18 +586,18 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function RepayBorrowOpGroup(repayBorrow: FToken.RepayBorrowPair, protocolAddresses: ProtocolAddresses, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function RepayBorrowOpGroup(repayBorrow: FToken.RepayBorrowPair, protocolAddresses: ProtocolAddresses, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOperations([repayBorrow.underlying], protocolAddresses, 0, keystore, fee, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup([repayBorrow.underlying], protocolAddresses, 0, pkh, fee, gas, freight));
         // get permissions from underlying asset
-        let permissionOp = permissionOperation(repayBorrow, false, protocolAddresses, 0, keystore, fee);
+        let permissionOp = permissionOperation(repayBorrow, false, protocolAddresses, 0, pkh, fee);
         if (permissionOp != undefined)
             ops.push(permissionOp);
         // repayBorrow operation
-        ops.push(FToken.RepayBorrowOperation(repayBorrow, 0, protocolAddresses.fTokens[repayBorrow.underlying], keystore, fee, gas, freight));
+        ops.push(FToken.RepayBorrowOperation(repayBorrow, 0, protocolAddresses.fTokens[repayBorrow.underlying], pkh, fee, gas, freight));
         // remove permissions from underlying asset
-        let removePermissionOp = permissionOperation(repayBorrow, true, protocolAddresses, 0, keystore, fee);
+        let removePermissionOp = permissionOperation(repayBorrow, true, protocolAddresses, 0, pkh, fee);
         if (removePermissionOp != undefined)
             ops.push(removePermissionOp);
         return ops;
@@ -609,7 +611,7 @@ export namespace TezosLendingPlatform {
     export async function RepayBorrow(repayBorrow: FToken.RepayBorrowPair, protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        const ops: Transaction[] = RepayBorrowOpGroup(repayBorrow, protocolAddresses, keystore, fee, gas, freight);
+        const ops: Transaction[] = RepayBorrowOpGroup(repayBorrow, protocolAddresses, keystore.publicKeyHash, fee, gas, freight);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
@@ -622,14 +624,14 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function EnterMarketsOpGroup(enterMarkets: Comptroller.EnterMarketsPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function EnterMarketsOpGroup(enterMarkets: Comptroller.EnterMarketsPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOperations(collaterals, protocolAddresses, 0, keystore, fee, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(collaterals, protocolAddresses, 0, pkh, fee, gas, freight));
         // comptroller data relevance
-        ops = ops.concat(Comptroller.DataRelevanceOperations(collaterals, protocolAddresses, 0, keystore, fee));
+        ops = ops.concat(Comptroller.DataRelevanceOpGroup(collaterals, protocolAddresses, 0, pkh, fee));
         // enterMarkets operation
-        ops.push(Comptroller.EnterMarketsOperation(enterMarkets, protocolAddresses.comptroller, 0, keystore, fee, gas, freight));
+        ops.push(Comptroller.EnterMarketsOperation(enterMarkets, protocolAddresses.comptroller, 0, pkh, fee, gas, freight));
         return ops;
     }
 
@@ -642,7 +644,7 @@ export namespace TezosLendingPlatform {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
-        const ops: Transaction[] = EnterMarketsOpGroup(enterMarkets, collaterals, protocolAddresses, keystore, fee);
+        const ops: Transaction[] = EnterMarketsOpGroup(enterMarkets, collaterals, protocolAddresses, keystore.publicKeyHash, fee);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
@@ -655,14 +657,14 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function ExitMarketOpGroup(exitMarket: Comptroller.ExitMarketPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function ExitMarketOpGroup(exitMarket: Comptroller.ExitMarketPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOperations(collaterals, protocolAddresses, 0, keystore, fee, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(collaterals, protocolAddresses, 0, pkh, fee, gas, freight));
         // comptroller data relevance
-        ops = ops.concat(Comptroller.DataRelevanceOperations(collaterals, protocolAddresses, 0, keystore, fee));
+        ops = ops.concat(Comptroller.DataRelevanceOpGroup(collaterals, protocolAddresses, 0, pkh, fee));
         // enterMarkets operation
-        ops.push(Comptroller.ExitMarketOperation(exitMarket, protocolAddresses.comptroller, 0, keystore, fee, gas, freight));
+        ops.push(Comptroller.ExitMarketOperation(exitMarket, protocolAddresses.comptroller, 0, pkh, fee, gas, freight));
         return ops;
     }
 
@@ -675,7 +677,7 @@ export namespace TezosLendingPlatform {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
-        const ops: Transaction[] = ExitMarketOpGroup(exitMarket, collaterals, protocolAddresses, keystore, fee);
+        const ops: Transaction[] = ExitMarketOpGroup(exitMarket, collaterals, protocolAddresses, keystore.publicKeyHash, fee);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
