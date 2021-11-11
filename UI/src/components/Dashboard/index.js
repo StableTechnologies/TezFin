@@ -8,6 +8,7 @@ import Market from '../Market';
 import { useStyles } from './style';
 
 import {borrowMarketAction, marketAction, supplyMarketAction} from '../../reduxContent/market/actions';
+import { supplying } from '../Constants';
 
 const Dashboard =() => {
   const classes = useStyles();
@@ -27,6 +28,16 @@ const Dashboard =() => {
         {/* <Grid md={12}>
         </Grid> */}
       <Grid item xs={12} md={6} className={classes.paddingRight}>
+        <Typography className={classes.tableTitle}> supplying </Typography>
+        <Market
+          tableData = {supplying}
+          heading1 = "Token"
+          heading2 = "APY/Earned"
+          heading3 = "Balance"
+          heading4 = "Collateral"
+          toggle
+          supplyingMkt
+        />
         <Typography className={classes.tableTitle}> Supply Markets </Typography>
         <Market
           tableData = {supplyMarkets}

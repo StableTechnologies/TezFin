@@ -59,7 +59,7 @@ const BasicSwitchThumb = styled('span')(`
   }
 `);
 
-export default function BasicSwitch(props) {
+function BasicSwitch(props) {
   const { getInputProps, checked, disabled, focusVisible } = useSwitch(props);
 
   const stateClasses = {
@@ -73,5 +73,27 @@ export default function BasicSwitch(props) {
       <BasicSwitchThumb className={clsx(stateClasses)} />
       <BasicSwitchInput {...getInputProps()} aria-label="Demo switch" />
     </BasicSwitchRoot>
+  );
+}
+export default function Switch(props) {
+  const { data } = props;
+  const [checked, setChecked] = React.useState(false);
+
+  const handleChange = (event) => {
+    setChecked( event.target.checked );
+  };
+
+  React.useEffect(() => {
+    setChecked(data.collateral);
+  }, [data])
+
+  return (
+    <div>
+      <BasicSwitch
+        checked={checked}
+        onChange={handleChange}
+        inputProps={{ 'aria-label': 'controlled' }}
+      />
+    </div>
   );
 }

@@ -22,7 +22,7 @@ const MarketModal = (props) => {
 
   const {
     open, close, valueofRow, handleClickTabOne,handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
-    amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount
+    amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount, collateralize, extraPadding
   } = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -46,12 +46,12 @@ const MarketModal = (props) => {
             <Typography className={classes.imgTitle}> {valueofRow.banner} </Typography>
           </div>
         </DialogTitle>
-        {!visibility &&
+        {(!visibility || collateralize) &&
           <DialogContent>
             <img src={Tez} alt="logo" className={classes.tezImg}/>
           </DialogContent>
         }
-        {visibility ?
+        {(visibility && !collateralize) ?
           <DialogContent className={classes.formFieldCon}>
             <form className={classes.form}>
               <TextField
@@ -68,23 +68,27 @@ const MarketModal = (props) => {
             </form>
           </DialogContent>
             :
-        <DialogContent className={classes.padding0}>
+        <DialogContent className={`${classes.padding0} ${extraPadding}`}>
           <DialogContentText> {headerText} </DialogContentText>
         </DialogContent>
         }
-        <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
-        <DialogContent className={classes.apyRate}>
-          <Grid container justifyContent="space-between">
-            <Grid item sm={8}>
-              <div>
-                <img src={valueofRow.logo} alt="logo" className={classes.img}/>
-                <Typography className={classes.imgTitle}> {APYText} </Typography>
-              </div>
-            </Grid>
-            <Grid item sm={2}></Grid>
-            <Grid item sm={2}> {valueofRow.apy || "0"}% </Grid>
-          </Grid>
-        </DialogContent>
+        {collateralize ? ""
+          :<>
+            <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
+            <DialogContent className={classes.apyRate}>
+              <Grid container justifyContent="space-between">
+                <Grid item sm={8}>
+                  <div>
+                    <img src={valueofRow.logo} alt="logo" className={classes.img}/>
+                    <Typography className={classes.imgTitle}> {APYText} </Typography>
+                  </div>
+                </Grid>
+                <Grid item sm={2}></Grid>
+                <Grid item sm={2}> {valueofRow.apy || "0"}% </Grid>
+              </Grid>
+            </DialogContent>
+          </>
+        }
         <DialogContent className={classes.limit}>
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {Limit} </Grid>
@@ -110,20 +114,25 @@ const MarketModal = (props) => {
         </DialogContent>
         <DialogActions>
           <>
-            {tokenValue ?
-              <>
-                {tabValue === "one" &&
-                  <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne} disableRipple> {buttonOne} </Button>
-                }
-                {tabValue === "two" &&
-                  <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabTwo } disableRipple> {buttonTwo} </Button>
-                }
-              </> :
-              <Button className={` ${classes.btnMain} ${btnSub} `} disabled>
-                {tabValue === "one" && buttonOne}
-                {tabValue === "two" && buttonTwo}
-              </Button>
-            }
+          {collateralize ?
+            <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne } disableRipple> {buttonOne} </Button> :
+            <>
+              {tokenValue ?
+                <>
+                  {tabValue === "one" &&
+                    <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne} disableRipple> {buttonOne} </Button>
+                  }
+                  {tabValue === "two" &&
+                    <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabTwo } disableRipple> {buttonTwo} </Button>
+                  }
+                </> :
+                <Button className={` ${classes.btnMain} ${btnSub} `} disabled>
+                  {tabValue === "one" && buttonOne}
+                  {tabValue === "two" && buttonTwo}
+                </Button>
+              }
+            </>
+          }
           </>
         </DialogActions>
         <DialogContent>

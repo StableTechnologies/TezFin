@@ -21,6 +21,9 @@ export const useStyles = makeStyles({
       "& .MuiTableCell-root": {
           color: '#BDBDBD',
           fontSize: '.875rem',
+          '@media(min-width: 768px)': {
+            minWidth: '5.5625rem',
+          },
           '@media(max-width: 320px)': {
             fontSize: '0.75rem',
           },

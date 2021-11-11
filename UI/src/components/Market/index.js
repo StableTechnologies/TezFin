@@ -9,22 +9,24 @@ import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 
-import BasicSwitch from '../Switch';
+import Tez from '../../assets/largeXTZ.svg';
+
+import Switch from '../Switch';
 import { useStyles } from './style';
 import SupplyModal from '../SupplyModal';
 import BorrowModal from '../BorrowModal';
+import CollateralizeModal from '../CollateralizeModal';
 import ConfirmModal from '../ConfirmModal/index.js';
 
 
 const Market = (props) => {
   const classes = useStyles();
-  const {heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt} =props;
+  const {heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt} =props;
 
   const [valueofRow, setValueOfRow] = useState();
   const [openMktModal, setMktModal] = useState(false);
   const [openConfirmModal, setConfirmModal] =useState(false);
-  const [enableToken, setEnableToken] =useState(true);
-
+  const [enableToken, setEnableToken] =useState(false);
 
   const closeMktModal = () => {
     setMktModal(false);
@@ -64,6 +66,9 @@ const Market = (props) => {
           {borrowMkt &&
             <BorrowModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} />
           }
+          {supplyingMkt &&
+            <CollateralizeModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} />
+          }
           <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} enableTokenText/>
         </>
       }
@@ -82,19 +87,20 @@ const Market = (props) => {
           {tableData && tableData.map(data =>(
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
-                <img src={data.logo} alt={data.title+ "-Icon"} className={classes.img} />
+                <img src={supplyingMkt ? Tez : data.logo} alt={data.title+ "-Icon"} className={classes.img} />
                 <Typography sx={{ display: 'inline' }}> {data.title} </Typography>
               </TableCell>
               <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
               <TableCell>
-                <Typography>{data.wallet ? "$" + data.wallet : "0 " + data.title}  </Typography>
-                {/* {supplyMkt &&
-                  <Typography className={classes.faintFont}>  10,000 XTZ  </Typography>
-                } */}
+                <Typography>$ {data.wallet ?  data.wallet : "0.00"}  </Typography>
+                {supplyMkt &&
+                // <Typography>$ {data.wallet ?  data.wallet : "0.00" + data.title}  </Typography>
+                  <Typography className={classes.faintFont}>  0 XTZ  </Typography>
+                }
               </TableCell>
               <TableCell className={classes.toggle}>
               {toggle &&
-                <BasicSwitch />
+                <Switch data={data}  />
               }
               </TableCell>
             </TableRow>
