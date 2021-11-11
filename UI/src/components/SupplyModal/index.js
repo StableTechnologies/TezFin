@@ -63,16 +63,19 @@ const SupplyModal = (props) =>{
       valueofRow = {valueofRow}
       // onClick = {enableToken ? supply : onClick}
       onClick = {onClick}
-      handleClickTabOne = {enableToken ? mintToken : onClick}
-      handleClickTabTwo = {withdrawToken}
+      // handleClickTabOne = {enableToken ? mintToken : onClick}
+      handleClickTabOne = { mintToken }
+      handleClickTabTwo = { withdrawToken }
       labelOne="Supply"
       labelTwo="Withdraw"
-      buttonOne ={enableToken ? "Supply" : "Enable Token"}
+      // buttonOne ={enableToken ? "Supply" : "Enable Token"}
+      buttonOne ={"Supply"}
       buttonTwo = "Withdraw"
       // buttonTwo = {valueofRow.balance ? "Withdraw" : "No balance to withdraw"}
       btnSub = {classes.btnSub}
       inkBarStyle = {classes.inkBarStyle}
-      visibility={enableToken}
+      // visibility={enableToken}
+      visibility = {true}
       amount={(e)=>{setAmount(e.target.value)}}
    />
   )
