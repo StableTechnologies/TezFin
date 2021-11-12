@@ -16,7 +16,7 @@ import { useStyles } from './style';
 import SupplyModal from '../SupplyModal';
 import BorrowModal from '../BorrowModal';
 import CollateralizeModal from '../CollateralizeModal';
-import ConfirmModal from '../ConfirmModal/index.js';
+import ConfirmModal from '../PendingModal/index.js';
 import DisableCollateralModal from '../DisableCollateralModal';
 
 
