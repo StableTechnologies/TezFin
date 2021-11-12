@@ -8,13 +8,13 @@ import Market from '../Market';
 import { useStyles } from './style';
 
 import {borrowMarketAction, marketAction, supplyMarketAction} from '../../reduxContent/market/actions';
-import { supplying } from '../Constants';
+
 
 const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const {supplyMarkets, borrowMarkets} = useSelector(state => state.market.marketData);
+  const {supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
 
   useEffect(() => {
     dispatch(marketAction());
@@ -28,17 +28,21 @@ const Dashboard =() => {
         {/* <Grid md={12}>
         </Grid> */}
       <Grid item xs={12} md={6} className={classes.paddingRight}>
-        <Typography className={classes.tableTitle}> supplying </Typography>
-        <Market
-          tableData = {supplying}
-          heading1 = "Token"
-          heading2 = "APY/Earned"
-          heading3 = "Balance"
-          heading4 = "Collateral"
-          toggle
-          supplyingMkt
-        />
-        <Typography className={classes.tableTitle}> Supply Markets </Typography>
+        {supplyingMarkets &&
+        <>
+          <Typography className={classes.tableTitle}> supplying </Typography>
+          <Market
+            tableData = {supplyingMarkets}
+            heading1 = "Token"
+            heading2 = "APY/Earned"
+            heading3 = "Balance"
+            heading4 = "Collateral"
+            toggle
+            supplyingMkt
+            />
+        </>}
+        {/* <Typography className={classes.tableTitle}> Supply Markets </Typography> */}
+        <Typography className={classes.tableTitleTwo}> All Supply Markets </Typography>
         <Market
           tableData = {supplyMarkets}
           heading1 = "Token"
