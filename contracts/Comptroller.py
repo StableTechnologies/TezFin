@@ -14,7 +14,6 @@ TMarket = sp.TRecord(isListed = sp.TBool,  # Whether or not this market is liste
      collateralFactor = Exponential.TExp,  # Multiplier representing the most one can borrow against their collateral in this market.
                                           # For instance, 0.9 to allow borrowing 90% of collateral value.
                                           # Must be between 0 and 1, and stored as a mantissa.
-     accountMembership = sp.TBigMap(sp.TAddress, sp.TBool),  # Per-market mapping of "accounts in this asset"
      mintPaused = sp.TBool,
      borrowPaused = sp.TBool,
      name = sp.TString, # Asset name for price oracle
@@ -22,7 +21,7 @@ TMarket = sp.TRecord(isListed = sp.TBool,  # Whether or not this market is liste
      updateLevel = sp.TNat, # Block level of last price update
      borrowCap = sp.TNat # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
     )
-    
+
 TLiquidity = sp.TRecord(
         liquidity = sp.TInt, # Current account liquidity. Negative value indicates shortfall
         updateLevel = sp.TNat, # Block level of last update
@@ -39,10 +38,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             self,
             administrator = administrator_,
             pendingAdministrator = sp.none,
-            markets = sp.map(l={}, tkey = sp.TAddress, tvalue = TMarket), # Official mapping of cTokens -> Market metadata. Used e.g. to determine if a market is supported
+            markets = sp.big_map(l={}, tkey = sp.TAddress, tvalue = TMarket), # Official mapping of cTokens -> Market metadata. Used e.g. to determine if a market is supported
             marketNameToAddress = sp.map(tkey = sp.TString, tvalue = sp.TAddress), # The mapping of Market names -> CToken
             transferPaused = sp.bool(True),
-            account_assets = sp.big_map(l={}, tkey = sp.TAddress, tvalue = sp.TSet(sp.TAddress)), # Per-account mapping of "assets you are in", capped by maxAssets
+            collaterals = sp.big_map(l={}, tkey = sp.TAddress, tvalue = sp.TSet(sp.TAddress)), # Per-account mapping of collaterals, capped by maxAssets
+            loans = sp.big_map(l={}, tkey = sp.TAddress, tvalue = sp.TSet(sp.TAddress)), # Per-account mapping of loans, capped by maxAssets
             account_liquidity = sp.big_map(l={}, tkey = sp.TAddress, tvalue = TLiquidity), # Per-account mapping of current liquidity
             oracleAddress = oracleAddress_,
             activeOperations = sp.set(t=sp.TNat), # Set of currently active operations to protect execution flow
@@ -62,7 +62,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         )
 
 
-    """    
+    """
         Add assets to be included in account liquidity calculation
 
         cTokens: TList(TAddress) - The list of addresses of the cToken markets to be enabled
@@ -71,18 +71,15 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def enterMarkets(self, cTokens):
         sp.set_type(cTokens, sp.TList(sp.TAddress))
         sp.for token in cTokens:
-           self.addToMarketInternal(token, sp.sender)
+           self.addToCollaterals(token, sp.sender)
         self.invalidateLiquidity(sp.sender)
 
-    def addToMarketInternal(self, cToken, borrower):
+    def addToCollaterals(self, cToken, lender):
         self.verifyMarketListed(cToken)
-        marketToJoin = self.data.markets[cToken]
-        sp.verify( ~ (marketToJoin.accountMembership.contains(borrower) & marketToJoin.accountMembership[borrower]), EC.CMPT_MARKET_JOINED)
-        marketToJoin.accountMembership[borrower] = sp.bool(True)
-        sp.if self.data.account_assets.contains(borrower):
-            self.data.account_assets[borrower].add(cToken)
+        sp.if self.data.collaterals.contains(lender):
+            self.data.collaterals[lender].add(cToken)
         sp.else:
-            self.data.account_assets[borrower] = sp.set([cToken])
+            self.data.collaterals[lender] = sp.set([cToken])
 
 
     """
@@ -101,10 +98,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def exitMarket(self, cToken):
         sp.set_type(cToken, sp.TAddress)
         self.activateOp(OP.ComptrollerOperations.EXIT_MARKET)
-        
+
         destination = sp.contract(sp.TPair(sp.TAddress, sp.TContract(CTI.TAccountSnapshot)), cToken, "getAccountSnapshot").open_some()
         sp.transfer(sp.pair(sp.sender, sp.self_entry_point("setAccountSnapAndExitMarket")), sp.mutez(0), destination)
-    
+
 
     """
         Helper for exitMarket. Must be called only by underlying cToken.getAccountSnapshot viewer within exitMarket action 
@@ -117,17 +114,13 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(accountSnapshot.borrowBalance == sp.nat(0), EC.CMPT_BORROW_IN_MARKET)  
         cTokenAddress = sp.sender
         self.redeemAllowedInternal(cTokenAddress, accountSnapshot.account, accountSnapshot.cTokenBalance)
-        marketToExit = self.data.markets[cTokenAddress]
-        # finish execution if the sender is not already ‘in’ the market
-        sp.if marketToExit.accountMembership.contains(accountSnapshot.account) & marketToExit.accountMembership[accountSnapshot.account]:
-            # remove cToken account membership
-            del marketToExit.accountMembership[accountSnapshot.account]
-            # Delete cToken from the account’s list of assets
-            self.data.account_assets[accountSnapshot.account].remove(cTokenAddress)
+        sp.if self.data.collaterals.contains(accountSnapshot.account):
+            # if sender has collateralized this market, remove from collaterals
+            self.data.collaterals[accountSnapshot.account].remove(cTokenAddress)
         self.invalidateLiquidity(accountSnapshot.account)
 
 
-    """    
+    """
         Checks if the account should be allowed to mint tokens in the given market
 
         params: TRecord
@@ -142,8 +135,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyMarketListed(params.cToken)
         self.invalidateLiquidity(params.minter)
 
-        
-    """    
+
+    """
         Checks if the account should be allowed to redeem tokens in the given market
 
         requirements:
@@ -164,7 +157,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyMarketListed(cToken)
         market = self.data.markets[cToken]
         # If the redeemer is not 'in' the market, then we can bypass the liquidity check
-        sp.if market.accountMembership.contains(redeemer) & market.accountMembership[redeemer]:
+        sp.if self.data.collaterals.contains(redeemer):
             self.checkInsuffLiquidityInternal(cToken, redeemer, redeemAmount)
         self.invalidateLiquidity(redeemer)
 
@@ -175,7 +168,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(newLiquidity >= 0, EC.CMPT_REDEEMER_SHORTFALL)
 
 
-    """    
+    """
         Checks if the account should be allowed to borrow the underlying asset of the given market
 
         requirements:
@@ -192,11 +185,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(params, CMPTInterface.TBorrowAllowedParams)
         sp.verify(~ self.data.markets[params.cToken].borrowPaused, EC.CMPT_BORROW_PAUSED)
         self.verifyMarketListed(params.cToken)
-
-        market = self.data.markets[params.cToken]
-        sp.if ~ (market.accountMembership.contains(params.borrower) & market.accountMembership[params.borrower]):
-            sp.verify(sp.sender == params.cToken, EC.CMPT_INVALID_BORROW_SENDER) # only cTokens may call borrowAllowed if borrower not in market
-            self.addToMarketInternal(sp.sender, params.borrower)
+        sp.if ~ self.data.loans.contains(params.borrower):
+            # only cTokens may call borrowAllowed if borrower not in market
+            sp.verify(sp.sender == params.cToken, EC.CMPT_INVALID_BORROW_SENDER)
+            self.addToLoans(sp.sender, params.borrower)
         self.checkInsuffLiquidityInternal(params.cToken, params.borrower, params.borrowAmount)
         self.invalidateLiquidity(params.borrower)
 
@@ -204,8 +196,15 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         price = self.getAssetPrice(cToken)
         sp.verify(price.mantissa > 0, EC.CMPT_INVALID_PRICE)
 
+    def addToLoans(self, cToken, borrower):
+        self.verifyMarketListed(cToken)
+        sp.if self.data.loans.contains(borrower):
+            self.data.loans[borrower].add(cToken)
+        sp.else:
+            self.data.loans[borrower] = sp.set([cToken])
 
-    """    
+
+    """
         Checks if the account should be allowed to repay a borrow in the given market
 
         params: TRecord
@@ -220,9 +219,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyMarketListed(params.cToken)
         self.invalidateLiquidity(params.borrower)
         self.invalidateLiquidity(params.payer)
-        
 
-    """    
+
+    """
         Checks if the account should be allowed to transfer tokens in the given market
 
         requirements:
@@ -234,7 +233,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             src: TAddress - The account which sources the tokens
             dst: TAddress - The account which receives the tokens
             transferTokens: TNat - The number of cTokens to transfer
-    """    
+    """
     @sp.entry_point(lazify = True)
     def transferAllowed(self, params):
         sp.set_type(params, CMPTInterface.TTransferAllowedParams)
@@ -256,7 +255,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             # get asset-USD price from oracle
             priceParams = (self.data.markets[asset].name + "-USD", sp.self_entry_point("setAssetPrice"))
             sp.transfer(priceParams, sp.mutez(0), handle)
-    
+
     @sp.entry_point(lazify = True)
     def setAssetPrice(self, params):
         sp.set_type(params, OracleInterface.TSetPriceParam)
@@ -289,7 +288,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(account, sp.TAddress)
         self.calculateCurrentAccountLiquidity(account)
         sp.transfer(sp.unit, sp.mutez(0), sp.self_entry_point("setAccountLiquidity"))
-        
+
     @sp.entry_point(lazify = True)
     def setAccountLiquidity(self, params):
         sp.set_type(params, sp.TUnit)
@@ -301,7 +300,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.resetCalculation()
 
 
-    """    
+    """
         Determine what the account liquidity would be if the given amounts were redeemed/borrowed
 
         requirements:
@@ -339,11 +338,19 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def calculateAccountLiquidity(self, params):
         self.activateOp(OP.ComptrollerOperations.GET_LIQUIDITY)
         self.initCalculation(params.cTokenModify, params.account, params.redeemTokens, params.borrowAmount)
-        sp.if self.data.account_assets.contains(params.account):
-            sp.for asset in self.data.account_assets[params.account].elements():
+        sp.if self.data.collaterals.contains(params.account):
+            sp.for asset in self.data.collaterals[params.account].elements():
                 # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
                 # updateAssetPrice() should be executed within 5 blocks prior to this call
                 self.getAccountLiquidityForAsset(asset, params.account)
+        sp.if self.data.loans.contains(params.account):
+            sp.for asset in self.data.loans[params.account].elements():
+                # only get liquidity for assets that aren't in collaterals to avoid double counting
+                sp.if ~ self.data.collaterals.contains(asset):
+                    # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
+                    # updateAssetPrice() should be executed within 5 blocks prior to this call
+                    self.getAccountLiquidityForAsset(asset, params.account)
+
 
     def initCalculation(self, cTokenModify, account, redeemTokens, borrowAmount):
         self.data.calculation = sp.record(
@@ -368,7 +375,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def getAccountLiquidityForAsset(self, asset, account):
         handle = sp.contract(sp.TPair(sp.TAddress, sp.TContract(CTI.TAccountSnapshot)), asset, entry_point="getAccountSnapshot").open_some()
         sp.transfer((account, sp.self_entry_point("calculateAccountAssetLiquidity")), sp.mutez(0), handle)
-    
+
     @sp.entry_point(lazify = True)
     def calculateAccountAssetLiquidity(self, params):
         sp.set_type(params, CTI.TAccountSnapshot)
@@ -386,7 +393,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
 
     # Admin functions
-    """    
+    """
         # Set the number of blocks since the last update until the price is considered valid
 
         blockNumber: TNat
@@ -398,7 +405,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.pricePeriodRelevance = blockNumber
 
 
-    """    
+    """
         # Set the number of blocks since the last update until the liquidity is considered valid
 
         blockNumber: TNat
@@ -408,9 +415,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyAdministrator()
         sp.set_type(blockNumber, sp.TNat)
         self.data.liquidityPeriodRelevance = blockNumber
-    
 
-    """    
+
+    """
         Sets a new pending governance for the market
 
         dev: Governance function to set a new governance
@@ -424,7 +431,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.pendingAdministrator = sp.some(pendingAdminAddress)
 
 
-    """    
+    """
         Accept a new governance for the market
 
         dev: Governance function to set a new governance
@@ -439,7 +446,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.pendingAdministrator = sp.none
 
 
-    """    
+    """
         Pause or activate the mint of given CToken
 
         dev: Governance function to pause or activate the mint of given CToken
@@ -456,7 +463,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.markets[params.cToken].mintPaused = params.state
 
 
-    """    
+    """
         Pause or activate the borrow of given CToken
 
         dev: Governance function to pause or activate the borrow of given CToken
@@ -473,7 +480,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.markets[params.cToken].borrowPaused = params.state
 
 
-    """    
+    """
         Pause or activate the transfer of CTokens
 
         dev: Governance function to pause or activate the transfer of CTokens
@@ -487,7 +494,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.transferPaused = state
 
 
-    """    
+    """
         Sets a new price oracle for the comptroller
 
         dev: Governance function to set a new price oracle
@@ -501,7 +508,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.oracleAddress = priceOracle
 
 
-    """    
+    """
         Sets the closeFactor used when liquidating borrows
 
         dev: Governance function to set closeFactor
@@ -515,7 +522,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.closeFactorMantissa = closeFactorMantissa
 
 
-    """    
+    """
         Sets the collateralFactor for a market
 
         dev: Governance function to set per-market collateralFactor
@@ -532,7 +539,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.markets[params.cToken].collateralFactor.mantissa = params.newCollateralFactor
 
 
-    """    
+    """
         Sets liquidationIncentive
 
         dev: Governance function to set liquidationIncentive
@@ -546,7 +553,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.liquidationIncentiveMantissa = liquidationIncentiveMantissa
 
 
-    """    
+    """
         Add the market to the markets mapping and set it as listed
 
         dev: Governance function to set isListed and add support for the market
@@ -562,7 +569,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyMarketNotListed(params.cToken)
         self.data.markets[params.cToken] = sp.record(isListed = sp.bool(True),
             collateralFactor = self.makeExp(sp.nat(DEFAULT_COLLATERAL_FACTOR)),
-            accountMembership = sp.big_map(l={}, tkey = sp.TAddress, tvalue = sp.TBool),
             mintPaused = sp.bool(True),
             borrowPaused = sp.bool(True),
             name = params.name,
@@ -572,7 +578,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.marketNameToAddress[params.name] = params.cToken
 
 
-    """    
+    """
         Disable the supported market
 
         dev: Governance function to set isDisabled for the supported market
@@ -587,7 +593,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.markets[cToken].isListed = sp.bool(False)
 
 
-    """    
+    """
         Set the given borrow cap for the given cToken market. Borrowing that brings total borrows to or above borrow cap will revert.
 
         dev: Governance function to set the borrow caps. A borrow cap of 0 corresponds to unlimited borrowing.
