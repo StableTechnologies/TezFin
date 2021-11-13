@@ -252,7 +252,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.if self.data.markets[asset].updateLevel < sp.level:
             self.activateOp(OP.ComptrollerOperations.UPDATE_PRICE)
             handle = sp.contract(OracleInterface.TGetPriceParam, self.data.oracleAddress, entry_point="get").open_some()
-            priceParams = (self.data.markets[asset].name, sp.self_entry_point("setAssetPrice"))
+            # get asset-USD price from oracle
+            priceParams = (self.data.markets[asset].name + "-USD", sp.self_entry_point("setAssetPrice"))
             sp.transfer(priceParams, sp.mutez(0), handle)
 
     @sp.entry_point(lazify = True)
