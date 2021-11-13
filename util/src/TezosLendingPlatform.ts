@@ -37,11 +37,21 @@ export namespace TezosLendingPlatform {
     }
 
     /*
+     * @description
+     *
+     * @param
+     */
+    export const tokenNames: { [assetType: string]: string } = {
+        "ETH": "ETH",
+        "BTC": "BTC"
+    };
+
+    /*
      * @description placeholder
      *
      * @param
      */
-    export const granadanetAddresses = {
+    export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
             "XTZ": "KT1QurT1CaFNUFKXHgtkshdxeYWfPS9cnCcp",
             "ETH": "KT1ATDse59koJup7V7rkL7kCRnBFgiXWt4CT",
@@ -71,7 +81,7 @@ export namespace TezosLendingPlatform {
         },
         governance: "KT1Dp7Ap1rofX9PuLM74AbVmRmbvABrqsXk9",
         priceFeed: "KT1QHLX81ks4sQkL4rdQReBELwSMZByspZxf"
-    } as ProtocolAddresses;
+    };
 
     /*
      * @description TODO: convert mantissa to number
@@ -159,9 +169,9 @@ export namespace TezosLendingPlatform {
      *
      * @param fToken The fToken contract's storage
      */
-    export function MakeMarket(fToken: FToken.Storage, comptroller: Comptroller.Storage, address: string, name: string, underlying: UnderlyingAsset): Market {
+    export function MakeMarket(fToken: FToken.Storage, comptroller: Comptroller.Storage, address: string, underlying: UnderlyingAsset): Market {
         const asset: UnderlyingAssetMetadata = {
-            name: name,
+            name: tokenNames[underlying.assetType],
             underlying: underlying,
             administrator: fToken.administrator,
             price: comptroller.markets[underlying.assetType].price
@@ -178,6 +188,7 @@ export namespace TezosLendingPlatform {
             totalAmount: fToken.borrow.totalBorrows,
             rate: FToken.GetBorrowRate(fToken)
         };
+        // TODO: fix fraction
         const reserveFactor = 1 / ConvertFromMantissa(fToken.reserveFactorMantissa);
         return {
             address: address,
@@ -186,7 +197,7 @@ export namespace TezosLendingPlatform {
             cashUsd: comptroller.markets[underlying.assetType].price.multiply(FToken.GetCash(fToken)),
             supply: supply,
             borrow: borrow,
-            dailyInterestPaid: bigInt('0'),
+            dailyInterestPaid: bigInt('0'), // TODO: calculate this
             reserves: fToken.totalReserves,
             reserveFactor: reserveFactor,
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
@@ -207,8 +218,7 @@ export namespace TezosLendingPlatform {
         for (const asset in protocolAddresses.fTokens) {
             const fTokenAddress = protocolAddresses.fTokens[asset];
             const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server);
-            const name = asset as string;
-            markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, name, protocolAddresses.underlying[asset]);
+            markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset]);
         }
         return markets;
     }
