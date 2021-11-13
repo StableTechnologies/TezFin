@@ -189,7 +189,7 @@ export namespace TezosLendingPlatform {
             rate: FToken.GetBorrowRate(fToken)
         };
         // TODO: fix fraction
-        const reserveFactor = 1 / ConvertFromMantissa(fToken.reserveFactorMantissa);
+        // const reserveFactor = 1 / ConvertFromMantissa(fToken.reserveFactorMantissa);
         return {
             address: address,
             asset: asset,
@@ -197,9 +197,9 @@ export namespace TezosLendingPlatform {
             cashUsd: comptroller.markets[underlying.assetType].price.multiply(FToken.GetCash(fToken)),
             supply: supply,
             borrow: borrow,
-            dailyInterestPaid: bigInt('0'), // TODO: calculate this
+            dailyInterestPaid: bigInt('0'), // TODO: parse this
             reserves: fToken.totalReserves,
-            reserveFactor: reserveFactor,
+            reserveFactor: 0, // TODO: parse this
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
             exchangeRate: FToken.GetExchangeRate(fToken),
             storage: fToken
@@ -266,16 +266,16 @@ export namespace TezosLendingPlatform {
             else
                 balances[asset].collateral = false;
         }
+        // calculate total collateral and loan balance
         let totalCollateralUsd = bigInt(0);
         let totalLoanUsd = bigInt(0);
         for (const asset in balances) {
-            // calculate total collateral and loan balance
             if (balances[asset].collateral!)
                 totalCollateralUsd = totalCollateralUsd.add(balances[asset].supplyBalanceUsd!);
             totalLoanUsd = totalLoanUsd.add(balances[asset].loanBalanceUsd!);
         }
+        // calculate aggregate account rate
         const rate = calculateAccountRate(totalCollateralUsd, balances, markets);
-
         return {
             address: address,
             marketBalances: balances,
@@ -305,7 +305,8 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function calculateHealth(collateral: bigInt.BigInteger, loans: bigInt.BigInteger): number {
-        return collateral / loans;
+        // TODO: fractions
+        return 0.9; // collateral / loans;
     }
 
     /*
@@ -314,11 +315,13 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function calculateAccountRate(totalCollateralUsd: bigInt.BigInteger, balances: FToken.BalanceMap, markets: MarketMap): number {
-        let rate = 0;
+        let rate = 1;
         for (const asset in balances) {
             // rate += ( asset supply rate ) * ( (asset supply balance) / totalCollateralUsd )
             if (balances[asset].collateral!)
-                rate += FToken.GetSupplyRate(markets[asset].storage) * (balances[asset].supplyBalanceUsd! / totalCollateralUsd);
+                // TODO: fractions
+                // rate += FToken.GetSupplyRate(markets[asset].storage) * (balances[asset].supplyBalanceUsd! / totalCollateralUsd);
+                rate += 0;
         }
         return rate;
     }

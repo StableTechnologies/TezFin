@@ -3,6 +3,7 @@ import { JSONPath } from 'jsonpath-plus';
 import { FToken } from './FToken';
 import { TezosLendingPlatform } from './TezosLendingPlatform';
 import log from 'loglevel';
+import bigInt from 'big-integer';
 
 export namespace Comptroller {
     /*
@@ -14,7 +15,7 @@ export namespace Comptroller {
         assetType: TezosLendingPlatform.AssetType;
         borrowCap: bigInt.BigInteger;
         borrowPaused: boolean;
-        collateralFactor: bigInt.BigInteger;
+        collateralFactor: number;
         isListed: boolean;
         mintPaused: boolean;
         price: bigInt.BigInteger;
@@ -113,7 +114,7 @@ export namespace Comptroller {
             collateralFactor: JSONPath({path: '$.args[0].args[1].int', json: result })[0],
             isListed: JSONPath({path: '$.args[0].args[2].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
             mintPaused: JSONPath({path: '$.args[1].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-            price: JSONPath({path: '$.args[2].int', json: result })[0],
+            price: bigInt(JSONPath({path: '$.args[2].int', json: result })[0]),
             updateLevel: JSONPath({path: '$.args[3].int', json: result })[0],
         } as Market;
     }

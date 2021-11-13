@@ -111,6 +111,8 @@ export namespace FToken {
         return borrowersQuery;
     }
 
+    const blocksPerYear = 2*60*24*365;
+
     /*
      * @description 
      *
@@ -126,7 +128,7 @@ export namespace FToken {
      * @param storage
      */
     export function GetExchangeRate(storage: Storage): number {
-        return 5;
+        return 0.95; // TODO: fix bigInt(1).divide(storage.initialExchangeRateMantissa);
     }
 
     /*
@@ -135,6 +137,7 @@ export namespace FToken {
      * @param storage
      */
     export function GetSupplyRate(storage: Storage): number {
+        // dailyInterestPaid adjusted by blocksPerYear
         return 4;
     }
 
