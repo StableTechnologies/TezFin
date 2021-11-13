@@ -5,24 +5,27 @@ import MarketModal from '../MarketModal';
 
 import { useStyles } from './style';
 
-const CollateralizeModal = (props) =>{
+const DisableCollateralModal = (props) =>{
   const classes = useStyles();
   // const dispatch = useDispatch();
   const {open, close, valueofRow, onClick} = props;
-
-  // const {account} = useSelector(state => state.addWallet);
-  // const {markets} = useSelector(state => state.marketModal.supplyMarketModal);
   const {supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
 
-  const collateralizeToken = () => {
-    valueofRow.collateral = true
+
+
+  const disableToken = () => {
+    valueofRow.collateral = false;
+    console.log(valueofRow.title, 'closed!!');
+    console.log(valueofRow.collateral, 'vvvvv!!');
     console.log(valueofRow, 'collateralize!!');
     close()
+    // update store using thunk
   }
+
 
   return (
    <MarketModal
-      headerText = "Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
+      headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
       APYText = {valueofRow.title +" "+ "Variable APY Rate"}
       Limit = "Borrow Limit"
       LimitUsed = "Borrow Limit Used"
@@ -30,8 +33,9 @@ const CollateralizeModal = (props) =>{
       open = {open}
       close = {close}
       valueofRow = {valueofRow}
-      handleClickTabOne = {collateralizeToken}
-      buttonOne = "Use as Collateral"
+      onClick = {onClick}
+      handleClickTabOne = {disableToken}
+      buttonOne = "Disable Token"
       btnSub = {classes.btnSub}
       extraPadding = {classes.collateralizePadding}
       collateralize
@@ -40,4 +44,4 @@ const CollateralizeModal = (props) =>{
   )
 }
 
-export default CollateralizeModal;
+export default DisableCollateralModal;

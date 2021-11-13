@@ -77,21 +77,11 @@ function BasicSwitch(props) {
 }
 export default function Switch(props) {
   const { data } = props;
-  const [checked, setChecked] = React.useState(false);
-
-  const handleChange = (event) => {
-    setChecked( event.target.checked );
-  };
-
-  React.useEffect(() => {
-    setChecked(data.collateral);
-  }, [data])
 
   return (
     <div>
       <BasicSwitch
-        checked={checked}
-        onChange={handleChange}
+        checked={data.collateral}
         inputProps={{ 'aria-label': 'controlled' }}
       />
     </div>

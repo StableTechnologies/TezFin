@@ -17,6 +17,7 @@ import SupplyModal from '../SupplyModal';
 import BorrowModal from '../BorrowModal';
 import CollateralizeModal from '../CollateralizeModal';
 import ConfirmModal from '../ConfirmModal/index.js';
+import DisableCollateralModal from '../DisableCollateralModal';
 
 
 const Market = (props) => {
@@ -25,17 +26,25 @@ const Market = (props) => {
 
   const [valueofRow, setValueOfRow] = useState();
   const [openMktModal, setMktModal] = useState(false);
+  const [collModal, setCollModal] = useState(false);
+  const [disableCollModal, setDisableCollModal] = useState(false);
   const [openConfirmModal, setConfirmModal] =useState(false);
   const [enableToken, setEnableToken] =useState(false);
 
-  const closeMktModal = () => {
+  const closeModal = () => {
     setMktModal(false);
+    setDisableCollModal(false);
+    setCollModal(false);
   };
 
   const handleClickMktModal = (item, event) => {
-    if (event.target.type === "checkbox") return;
-    setMktModal(true);
     setValueOfRow(item);
+    if (event.target.type === "checkbox") {
+      if(item.collateral === true) { setDisableCollModal(true) }
+      if(item.collateral === false) {setCollModal(true) }
+    }
+    else { setMktModal(true) }
+
   }
 
   const handleClickEnableToken = () => {
@@ -60,15 +69,19 @@ const Market = (props) => {
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
       {valueofRow &&
         <>
-          {supplyMkt &&
-            <SupplyModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} onClick={handleClickEnableToken} enableToken={enableToken} />
+          {(supplyMkt || supplyingMkt) &&
+            <SupplyModal open={openMktModal} close={closeModal} valueofRow={valueofRow} onClick={handleClickEnableToken} enableToken={enableToken} />
           }
           {borrowMkt &&
-            <BorrowModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} />
+            <BorrowModal open={openMktModal} close={closeModal} valueofRow={valueofRow} />
           }
           {supplyingMkt &&
-            <CollateralizeModal open={openMktModal} close={closeMktModal} valueofRow={valueofRow} />
+          <>
+            {/* <CollateralizeModal open={openMktModal} close={closeModal} valueofRow={valueofRow} /> */}
+          </>
           }
+          <DisableCollateralModal open={disableCollModal} close={closeModal} valueofRow={valueofRow} />
+          <CollateralizeModal open={collModal} close={closeModal} valueofRow={valueofRow} />
           <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} enableTokenText/>
         </>
       }

@@ -2,13 +2,21 @@ import { GET_MARKET_DATA, GET_SUPPLY_MARKET_DATA, GET_BORROW_MARKET_DATA } from 
 
 import {TezosLendingPlatform} from 'tezoslendingplatformjs';
 
-import {tokens} from '../../components/Constants';
+import {tokens, supplying} from '../../components/Constants';
 
 
 export const marketAction = (comptroller, protocolAddresses, server)=> async (dispatch) => {
   // const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
   const supplyMarkets =  JSON.parse(JSON.stringify(tokens));
   const borrowMarkets =  JSON.parse(JSON.stringify(tokens));
+  const supplyingMarkets =  JSON.parse(JSON.stringify(supplying));
+
+  supplyMarkets.map((x)=>{
+    x.collateral = false;
+  })
+  supplyingMarkets.map((x)=>{
+    x.collateral = true;
+  })
 
   // Object.keys(markets).map((market)=>{
   //   supplyMarkets.map((supplyMarket)=>{
@@ -27,7 +35,7 @@ export const marketAction = (comptroller, protocolAddresses, server)=> async (di
   //   })
   // })
 
-  const marketData = {supplyMarkets, borrowMarkets}
+  const marketData = {supplyMarkets, borrowMarkets, supplyingMarkets}
   dispatch({ type: GET_MARKET_DATA, payload: marketData });
 }
 

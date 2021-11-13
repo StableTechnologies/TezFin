@@ -24,5 +24,13 @@ export const useStyles = makeStyles({
       fontSize: '1.25rem',
       fontWeight: '500',
       lineHeight: '30px',
+    },
+    tableTitleTwo: {
+      color: '#BDBDBD',
+      padding: ' 36px 0 .5rem 8px',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      lineHeight: '26px',
+      letterSpacing: '0.05em'
     }
 })
