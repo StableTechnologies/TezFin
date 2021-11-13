@@ -12,12 +12,12 @@ export namespace Comptroller {
      */
     export interface Market {
         assetType: TezosLendingPlatform.AssetType;
-        borrowCap: string;
+        borrowCap: bigInt.BigInteger;
         borrowPaused: boolean;
-        collateralFactor: string;
+        collateralFactor: bigInt.BigInteger;
         isListed: boolean;
         mintPaused: boolean;
-        price: string;
+        price: bigInt.BigInteger;
         updateLevel: number;
     }
 
@@ -33,10 +33,10 @@ export namespace Comptroller {
         collateralsMapId: number;
         loansMapId: number;
         administrator: string;
-        closeFactorMantissa: string;
-        expScale: string;
-        halfExpScale: string;
-        liquidationIncentiveMantissa: string;
+        closeFactorMantissa: bigInt.BigInteger;
+        expScale: bigInt.BigInteger;
+        halfExpScale: bigInt.BigInteger;
+        liquidationIncentiveMantissa: bigInt.BigInteger;
         liquidityPeriodRelevance: string;
         marketsMapId: number;
         oracleAddress: string;
@@ -104,10 +104,10 @@ export namespace Comptroller {
      */
     function parseMarketResult(result): Market {
         log.info(result);
-        // TODO: assetType from name $.args[1].args[1]
         // need to add constants for this
+        const assetType: TezosLendingPlatform.AssetType =  JSONPath({path: '$.args[1].args[1].string', json: result })[0] as TezosLendingPlatform.AssetType;
         return {
-            assetType: TezosLendingPlatform.AssetType.BTC,
+            assetType: assetType,
             borrowCap: JSONPath({path: '$.args[0].args[0].args[0].int', json: result })[0],
             borrowPaused: JSONPath({path: '$.args[0].args[0].args[1].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
             collateralFactor: JSONPath({path: '$.args[0].args[1].int', json: result })[0],
@@ -352,7 +352,7 @@ export namespace Comptroller {
     export function ExitMarketOperation(exitMarket: ExitMarketPair, comptrollerAddress: string, counter: number, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'exitMarket';
         const parameters = ExitMarketPairMicheline(exitMarket);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh.publicKeyHash, counter, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
+        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     }
 
     /*
