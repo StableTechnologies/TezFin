@@ -34,7 +34,7 @@
         ]
     },
     "CFA12": {
-        "initialExchangeRateMantissa": 100000000000000000000,
+        "initialExchangeRateMantissa": 1000000000000000000,
         "dependencies": [
             "Governance",
             "FA12",
