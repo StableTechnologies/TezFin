@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
+import ConfirmModal from '../ConfirmModal';
 
 import MarketModal from '../MarketModal';
 import { useStyles } from './style';
@@ -14,6 +15,16 @@ const BorrowModal = (props) =>{
   const {account} = useSelector(state => state.addWallet);
   const {markets} = useSelector(state => state.marketModal.borrowMarketModal);
 
+  const [openConfirmModal, setConfirmModal] =useState(false);
+  const [tokenText, setTokenText] =useState('');
+
+  const handleOpenConfirm = () => {
+    setConfirmModal(true);
+
+  };
+  const handleCloseConfirm = () => {
+    setConfirmModal(false);
+  };
 
   const borrowToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
@@ -21,6 +32,8 @@ const BorrowModal = (props) =>{
     dispatch( borrowTokenAction(borrowPair));
     close();
     setAmount('')
+    setTokenText('borrow')
+    handleOpenConfirm();
   }
 
   const repayBorrowToken = () => {
@@ -29,6 +42,8 @@ const BorrowModal = (props) =>{
     dispatch( repayBorrowTokenAction(repayBorrowPair));
     close();
     setAmount('')
+    setTokenText('repay')
+    handleOpenConfirm();
   }
 
   if(valueofRow && markets) {
@@ -45,29 +60,30 @@ const BorrowModal = (props) =>{
   useEffect(() => {
     dispatch(borrowMarketModalAction(account, markets, valueofRow));
   }, [dispatch, account])
-        console.log(valueofRow.apy, 'valueofRow.apy');
-
 
   return (
-   <MarketModal
-      APYText = "Borrow APY"
-      Limit = "Borrow Balance"
-      LimitUsed = "Borrow Limit Used"
-      amountText = "Currently Borrowing"
-      open = {open}
-      close = {close}
-      valueofRow = {valueofRow}
-      handleClickTabOne = {borrowToken}
-      handleClickTabTwo = {repayBorrowToken}
-      labelOne = "Borrow"
-      labelTwo = "Repay"
-      buttonOne = "Borrow"
-      buttonTwo = "Repay"
-      btnSub = {classes.btnSub}
-      inkBarStyle = {classes.inkBarStyle}
-      visibility = {true}
-      amount={(e)=>{setAmount(e.target.value)}}
-   />
+    <>
+      <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText= {tokenText}/>
+      <MarketModal
+         APYText = "Borrow APY"
+         Limit = "Borrow Balance"
+         LimitUsed = "Borrow Limit Used"
+         amountText = "Currently Borrowing"
+         open = {open}
+         close = {close}
+         valueofRow = {valueofRow}
+         handleClickTabOne = {borrowToken}
+         handleClickTabTwo = {repayBorrowToken}
+         labelOne = "Borrow"
+         labelTwo = "Repay"
+         buttonOne = "Borrow"
+         buttonTwo = "Repay"
+         btnSub = {classes.btnSub}
+         inkBarStyle = {classes.inkBarStyle}
+         visibility = {true}
+         amount={(e)=>{setAmount(e.target.value)}}
+      />
+    </>
   )
 }
 

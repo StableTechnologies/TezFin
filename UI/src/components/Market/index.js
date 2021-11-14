@@ -48,21 +48,21 @@ const Market = (props) => {
   }
 
   const handleClickEnableToken = () => {
-    setConfirmModal(true);
-    setMktModal(false);
+    // setConfirmModal(true);
+    // setMktModal(false);
   };
 
   const handleCloseConfirm = () => {
-    setConfirmModal(false);
+    // setConfirmModal(false);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(()=>{
-      setConfirmModal(false);
-      setMktModal(true);
-    }, 3000);
-    return () => { clearTimeout(timer); setEnableToken(true); };
-  }, [openConfirmModal]);
+  // useEffect(() => {
+  //   const timer = setTimeout(()=>{
+  //     setConfirmModal(false);
+  //     setMktModal(true);
+  //   }, 3000);
+  //   return () => { clearTimeout(timer); setEnableToken(true); };
+  // }, [openConfirmModal]);
 
 
   return (
@@ -82,7 +82,7 @@ const Market = (props) => {
           }
           <DisableCollateralModal open={disableCollModal} close={closeModal} valueofRow={valueofRow} />
           <CollateralizeModal open={collModal} close={closeModal} valueofRow={valueofRow} />
-          <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} enableTokenText/>
+          {/* <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} /> */}
         </>
       }
       <Table>
@@ -101,7 +101,7 @@ const Market = (props) => {
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
                 <img src={supplyingMkt ? Tez : data.logo} alt={data.title+ "-Icon"} className={classes.img} />
-                <Typography sx={{ display: 'inline' }}> {data.title} </Typography>
+                <Typography sx={{ display: 'inline' }}> {supplyingMkt ? "ꜰ"+data.title : data.title} </Typography>
               </TableCell>
               <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
               <TableCell>
