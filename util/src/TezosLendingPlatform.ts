@@ -53,34 +53,34 @@ export namespace TezosLendingPlatform {
      */
     export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
-            "XTZ": "KT1QurT1CaFNUFKXHgtkshdxeYWfPS9cnCcp",
-            "ETH": "KT1ATDse59koJup7V7rkL7kCRnBFgiXWt4CT",
-            "BTC": "KT1SVoJ6NciCZqSfvi3VbqDYpfbSmoiFgoov"
+            "XTZ": "KT1PK6aLVkUW8Gs4kbA5PiAwudY71bkqpbo1",
+            "ETH": "KT1KYxnWd1kN2w7angPgJ27Db2q6jrffyd8T",
+            "BTC": "KT1P1TQUXLRoTQR2cFhZmmhHmU6QqVRyvDqp"
         },
         fTokensReverse: {
-            "KT1QurT1CaFNUFKXHgtkshdxeYWfPS9cnCcp": AssetType.XTZ,
-            "KT1ATDse59koJup7V7rkL7kCRnBFgiXWt4CT": AssetType.ETH,
-            "KT1SVoJ6NciCZqSfvi3VbqDYpfbSmoiFgoov": AssetType.BTC
+            "KT1PK6aLVkUW8Gs4kbA5PiAwudY71bkqpbo1": AssetType.XTZ,
+            "KT1KYxnWd1kN2w7angPgJ27Db2q6jrffyd8T": AssetType.ETH,
+            "KT1P1TQUXLRoTQR2cFhZmmhHmU6QqVRyvDqp": AssetType.BTC
         },
         underlying: {
             "ETH": {
-                "assetType": AssetType.ETH,
-                "address": "KT1GNnSpcLGNUbHrcAeLeMKzPP4t7Wpojyp5"
+                assetType: AssetType.ETH,
+                address: "KT1PZBbxYSdgKgSKCNy3onfvTGqtsu5ziCBg"
             },
             "BTC": {
-                "assetType": AssetType.BTC,
-                "address": "KT1M3DTJ4uthZi9qQeDn5nwa4AWiyFR1PGBt",
-                "tokenId": 0
+                assetType: AssetType.BTC,
+                address: "KT1HVynHxTpjyQvjVh9DWQztMWJztTEDtPo7",
+                tokenId: 0
             }
         },
-        comptroller: "KT1VkpwAtt8PoYvyTE9X1hjMd5tFxsGN9aUS", 
+        comptroller: "KT1EMX6Jt4Kt6MppjUBtYVwtuZSvjsESf1FW",
         interestRateModel: {
-            "XTZ": "KT1QcaW34g8ArvTAwQeuTsYhf6oMZ4wzmTCF",
-            "ETH": "KT1VRYKzh46X1wbtCQMbsjq2eUJrfYaT1bbB",
-            "BTC": "KT1FH3b7tJ8sZPrBJ4V6c8LfD7U1AwtaxeqM"
+            "XTZ": "KT1DogBXrPGhXByNRfJ4yTaPyU7Dh84nhYC5",
+            "ETH": "KT1LMDkYiXwTpGickdwgjq1Jkgu63HZcZedt",
+            "BTC": "KT1DF1QugTQJ6zAkqSfgkeVEbER5EYkWH5cn"
         },
-        governance: "KT1Dp7Ap1rofX9PuLM74AbVmRmbvABrqsXk9",
-        priceFeed: "KT1QHLX81ks4sQkL4rdQReBELwSMZByspZxf"
+        governance: "KT1X8BwnBcLzSavKqAD1iSejrshmnQhg3VJL",
+        priceFeed: "KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe"
     };
 
     /*
