@@ -2,7 +2,7 @@
   "tezosNode": "https://tezos-granada.cryptonomic-infra.tech:443",
   "conseilServer": {
     "url": "https://conseil-granada.cryptonomic-infra.tech:443",
-    "apiKey": "hooman",
+    "apiKey": "",
     "network": "granadanet"
   },
   "originator": {
