@@ -58,10 +58,21 @@ export namespace Comptroller {
         // get marketsMapId
         const marketsMapId = JSONPath({path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
         // get all market values for fTokens from protocolAddresses
-        const marketsQuery = makeMarketsQuery(marketsMapId, Object.values(protocolAddresses.fTokens));
-        const marketsResults = await TezosConseilClient.getTezosEntityData(conseilServerInfo, conseilServerInfo.network, 'big_map_contents', marketsQuery);
+        const markets: MarketMap = {};
+        try {
+            await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
+                const marketsQuery = makeMarketsQuery(marketsMapId, addr);
+                const marketsResult = await TezosConseilClient.getTezosEntityData(conseilServerInfo, conseilServerInfo.network, 'big_map_contents', marketsQuery);
+                log.info(marketsResult);
+                const asset = protocolAddresses.fTokensReverse[addr];
+                log.info(asset);
+                markets[asset] = parseMarketResult(marketsResult);
+            }));
+        } catch (e) {
+            log.error(`Unable to get Comptroller.Markets big map content.\n${e}`);
+            throw e;
+        }
         // parse results
-        const markets = marketsResults.map((result) => parseMarketResult(result)).reduce((ms, m) => ({...ms, [m.assetType]: m}), {});
         return {
             accountLiquidityMapId: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
             collateralsMapId: JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
@@ -88,13 +99,13 @@ export namespace Comptroller {
      * @param marketsMapId
      * @param marketAddresses
      */
-    function makeMarketsQuery(marketsMapId: number, marketAddresses: string[]): ConseilQuery {
+    function makeMarketsQuery(marketsMapId: number, marketAddress: string): ConseilQuery {
         let marketsQuery = ConseilQueryBuilder.blankQuery();
         marketsQuery = ConseilQueryBuilder.addFields(marketsQuery, 'key', 'value', 'operation_group_id');
         marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'big_map_id', ConseilOperator.EQ, [marketsMapId]);
         // key is in marketAddresses
-        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'key', ConseilOperator.STARTSWITH, marketAddresses.map(addr => `Pair 0x${TezosMessageUtils.writeAddress(addr)}`));
-        marketsQuery = ConseilQueryBuilder.setLimit(marketsQuery, marketAddresses.length);
+        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'key', ConseilOperator.STARTSWITH, [ `Pair 0x${TezosMessageUtils.writeAddress(marketAddress)}`]);
+        marketsQuery = ConseilQueryBuilder.setLimit(marketsQuery, marketAddress.length);
         return marketsQuery;
     }
 
