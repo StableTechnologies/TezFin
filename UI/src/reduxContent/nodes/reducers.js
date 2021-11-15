@@ -1,8 +1,9 @@
-import { GET_TEZOS_NODE, GET_GRANADANET_ADDRESSES } from './types';
+import { GET_TEZOS_NODE, GET_PROTOCOL_ADDRESSES, GET_COMPTROLLER } from './types';
 
 const initState = {
   tezosNode: {},
-  granadanetAddresses: {},
+  protocolAddresses: {},
+  comptroller: {},
 }
 
 const nodesReducer = (state=initState, action) => {
@@ -12,10 +13,15 @@ const nodesReducer = (state=initState, action) => {
         ...state,
         tezosNode: action.payload
       }
-    case GET_GRANADANET_ADDRESSES:
+    case GET_PROTOCOL_ADDRESSES:
       return {
         ...state,
-        granadanetAddresses: action.payload
+        protocolAddresses: action.payload
+      }
+    case GET_COMPTROLLER:
+      return {
+        ...state,
+        comptroller: action.payload
       }
     default:
       return state;

@@ -1,10 +1,10 @@
-import { GET_TEZOS_NODE, GET_GRANADANET_ADDRESSES } from './types.js';
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
+import { GET_TEZOS_NODE, GET_PROTOCOL_ADDRESSES, GET_COMPTROLLER } from './types.js';
+import { TezosLendingPlatform, Comptroller } from 'tezoslendingplatformjs';
 
 export const granadanetAction = ()=> async (dispatch) => {
 
-  const granadanetAddresses = TezosLendingPlatform.granadanetAddresses;
-  dispatch({ type: GET_GRANADANET_ADDRESSES, payload: granadanetAddresses });
+  const protocolAddresses = TezosLendingPlatform.granadanetAddresses;
+  dispatch({ type: GET_PROTOCOL_ADDRESSES, payload: protocolAddresses });
 }
 
 export const tezosNodeAction = ()=> async (dispatch) => {
@@ -20,3 +20,8 @@ export const tezosNodeAction = ()=> async (dispatch) => {
   dispatch({ type: GET_TEZOS_NODE, payload: tezosNode });
 }
 
+export const comptrollerAction = (protocolAddresses, server, conseilServerInfo)=> async (dispatch) => {
+  const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, server, conseilServerInfo);
+
+  dispatch({ type: GET_COMPTROLLER, payload: comptroller });
+}
