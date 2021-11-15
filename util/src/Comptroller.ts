@@ -61,11 +61,10 @@ export namespace Comptroller {
         const markets: MarketMap = {};
         try {
             await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
-                const marketsQuery = makeMarketsQuery(marketsMapId, addr);
-                const marketsResult = await TezosConseilClient.getTezosEntityData(conseilServerInfo, conseilServerInfo.network, 'big_map_contents', marketsQuery);
-                log.info(marketsResult);
+                const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
+                const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
+                console.log(marketsResult);
                 const asset = protocolAddresses.fTokensReverse[addr];
-                log.info(asset);
                 markets[asset] = parseMarketResult(marketsResult);
             }));
         } catch (e) {
@@ -101,11 +100,11 @@ export namespace Comptroller {
      */
     function makeMarketsQuery(marketsMapId: number, marketAddress: string): ConseilQuery {
         let marketsQuery = ConseilQueryBuilder.blankQuery();
-        marketsQuery = ConseilQueryBuilder.addFields(marketsQuery, 'key', 'value', 'operation_group_id');
+        marketsQuery = ConseilQueryBuilder.addFields(marketsQuery, 'key', 'value');
         marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'big_map_id', ConseilOperator.EQ, [marketsMapId]);
         // key is in marketAddresses
-        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'key', ConseilOperator.STARTSWITH, [ `Pair 0x${TezosMessageUtils.writeAddress(marketAddress)}`]);
-        marketsQuery = ConseilQueryBuilder.setLimit(marketsQuery, marketAddress.length);
+        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'key', ConseilOperator.EQ, [ `0x${TezosMessageUtils.writeAddress(marketAddress)}`]);
+        marketsQuery = ConseilQueryBuilder.setLimit(marketsQuery, 1000);
         return marketsQuery;
     }
 
@@ -115,7 +114,6 @@ export namespace Comptroller {
      * @param
      */
     function parseMarketResult(result): Market {
-        log.info(result);
         // need to add constants for this
         const assetType: TezosLendingPlatform.AssetType =  JSONPath({path: '$.args[1].args[1].string', json: result })[0] as TezosLendingPlatform.AssetType;
         return {
