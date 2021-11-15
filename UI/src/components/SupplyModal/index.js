@@ -30,6 +30,8 @@ const SupplyModal = (props) =>{
   const mintToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
     const mintPair =  {underlying, amount: amount}
+    // TODO
+    // 1. call and pass protocolAddresses into supplyTokenAction
     dispatch( supplyTokenAction(mintPair));
     close();
     setAmount('')

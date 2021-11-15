@@ -26,6 +26,9 @@ const Header = () => {
 
   const {supplyComposition} = useSelector(state => state.supplyComposition);
   const {borrowComposition} = useSelector(state => state.borrowComposition);
+  // TODO:
+  // 1. call account from the store
+  // 2. pass it into supplyCompositionAction and borrowCompositionAction
 
   useEffect(() => {
     dispatch(supplyCompositionAction())
@@ -39,6 +42,7 @@ const Header = () => {
       <Grid container>
         <Grid item xs={12} className={classes.netAPY}>
           <Typography>
+
             Net APY: 0.00%
             {/* <span className={classes.questionCircle}>
               <img src={questionCircle} alt={questionCircle} />

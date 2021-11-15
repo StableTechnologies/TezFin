@@ -103,12 +103,12 @@ const Market = (props) => {
                 <img src={supplyingMkt ? Tez : data.logo} alt={data.title+ "-Icon"} className={classes.img} />
                 <Typography sx={{ display: 'inline' }}> {supplyingMkt ? "ꜰ"+data.title : data.title} </Typography>
               </TableCell>
-              <TableCell> {data.apy ? data.apy + "%" : ""} </TableCell>
+              <TableCell> {data.rate ? data.rate + "%" : ""} </TableCell>
               <TableCell>
                 <Typography>$ {data.wallet ?  data.wallet : "0.00"}  </Typography>
                 {supplyMkt &&
                 // <Typography>$ {data.wallet ?  data.wallet : "0.00" + data.title}  </Typography>
-                  <Typography className={classes.faintFont}>  0 XTZ  </Typography>
+                  <Typography className={classes.faintFont}> {data.walletUSD ?  data.walletUSD : "0"} XTZ  </Typography>
                 }
               </TableCell>
               <TableCell className={classes.toggle}>

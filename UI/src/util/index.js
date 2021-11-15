@@ -39,11 +39,11 @@ export const getWallet = async () => {
     tezos: new Tezos(
       client,
       tezAccount,
-      config.tezos.priceOracle,
-      config.tezos.feeContract,
-      config.tezos.RPC,
-      config.tezos.conseilServer,
-      mutex
+      // config.tezos.priceOracle,
+      // config.tezos.feeContract,
+      // config.tezos.RPC,
+      // config.tezos.conseilServer,
+      // mutex
     )
   };
   return { clients };
