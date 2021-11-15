@@ -18,22 +18,6 @@ export const marketAction = (comptroller, protocolAddresses, server)=> async (di
     x.collateral = true;
   })
 
-  // Object.keys(markets).map((market)=>{
-  //   supplyMarkets.map((supplyMarket)=>{
-  //     if(supplyMarket.assetType.toLowerCase() !== undefined && market.toLowerCase() !== undefined){
-  //       if(market.toLowerCase() === supplyMarket.assetType.toLowerCase()) {
-  //         supplyMarket.apy = markets[market].supply.rate
-  //       }
-  //     }
-  //   })
-  //   Object.keys(markets).map((market)=>{
-  //     borrowMarkets.map((borrowMarket)=>{
-  //       if(market.toLowerCase() === borrowMarket.assetType.toLowerCase()) {
-  //         borrowMarket.apy = markets[market].borrow.rate
-  //       }
-  //     })
-  //   })
-  // })
 
   const marketData = {markets, supplyMarkets, borrowMarkets, supplyingMarkets}
   dispatch({ type: GET_MARKET_DATA, payload: marketData });
@@ -41,6 +25,15 @@ export const marketAction = (comptroller, protocolAddresses, server)=> async (di
 
 export const supplyMarketAction = (account, markets)=> async (dispatch) => {
   const supplyMarket = TezosLendingPlatform.getSupplyMarkets(account, markets);
+
+  // Object.keys(markets).map((market)=>{
+  //   supplyMarkets.map((supplyMarket)=>{
+  //     if(supplyMarket.assetType.toLowerCase() !== undefined && market.toLowerCase() !== undefined){
+  //       if(market.toLowerCase() === supplyMarket.assetType.toLowerCase()) {
+  //         supplyMarket.rate = markets[market].supply.rate
+  //       }
+  //     }
+  //   })
   dispatch({ type: GET_SUPPLY_MARKET_DATA, payload: supplyMarket });
 }
 

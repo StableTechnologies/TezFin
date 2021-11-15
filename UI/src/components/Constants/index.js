@@ -10,8 +10,8 @@ import XTZ from "../../assets/XTZ.svg";
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 export const tokens = [
-  { title: 'BTCtz', logo: BTCtz, banner: 'BTCtz', assetType: '' },
-  { title: 'ETHtz', logo: Ethtz, banner: 'ETH Tez', assetType: '' },
+  { title: 'BTCtz', logo: BTCtz, banner: 'BTCtz', assetType: TezosLendingPlatform.AssetType.ETH },
+  { title: 'ETHtz', logo: Ethtz, banner: 'ETH Tez', assetType: TezosLendingPlatform.AssetType.BTC },
   { title: 'XTZ', logo: XTZ, banner: 'Tez',  assetType: TezosLendingPlatform.AssetType.XTZ },
   { title: 'kUSD', logo: kUSD, banner: 'kUSD', assetType: TezosLendingPlatform.AssetType.FA12 },
   { title: 'PLENTY', logo: plenty, banner: 'PLENTY', assetType: ''},

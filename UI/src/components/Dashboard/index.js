@@ -17,6 +17,28 @@ const Dashboard =() => {
   const {supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
   const { server } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
+  const { marketBalances } = useSelector(state => state.addWallet.account);
+
+  console.log(marketBalances, 'marketBalances');
+
+  // if(marketBalances) {
+  //   Object.keys(marketBalances).map((x)=>{
+  //     supplyMarkets.map((supplyMarket)=>{
+  //       if(x.toLowerCase() === supplyMarket.assetType.toLowerCase()) {
+  //         supplyMarket.wallet = marketBalances[x].supplyBalanceUnderlying
+  //         supplyMarket.walletUSD = marketBalances[x].supplyBalanceUsd
+  //         supplyMarket.collateral = marketBalances[x].collateral
+  //       }
+  //     })
+
+  //     borrowMarkets.map((borrowMarket)=>{
+  //       if(x.toLowerCase() === borrowMarket.assetType.toLowerCase()) {
+  //         borrowMarket.wallet = marketBalances[x].loanBalanceUnderlying
+  //         borrowMarket.walletUSD = marketBalances[x].loanBalanceUsd
+  //       }
+  //     })
+  //   })
+  // }
 
   useEffect(() => {
     dispatch(marketAction(comptroller, protocolAddresses, server));
