@@ -1,15 +1,24 @@
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
-import logo from './logo.svg';
+import { useDispatch } from "react-redux";
+import { granadanetAction, tezosNodeAction } from "./reduxContent/nodes/actions";
+
 import './App.css';
-// import './test.scss';
 
 import Header from './components/Header';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 
 import Grid from '@mui/material/Grid';
+import { useEffect } from "react";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(tezosNodeAction());
+    dispatch(granadanetAction());
+  }, [dispatch])
+
   return (
     <Router>
       <Grid className="App">
