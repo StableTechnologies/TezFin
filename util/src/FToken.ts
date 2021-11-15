@@ -119,7 +119,7 @@ export namespace FToken {
      * @param storage
      */
     export function GetCash(storage: Storage): bigInt.BigInteger {
-        return storage.supply.totalSupply.minus(storage.borrow.totalBorrows.minus(storage.totalReserves));
+        return bigInt(0); // storage.supply.totalSupply.minus(storage.borrow.totalBorrows.minus(storage.totalReserves));
     }
 
     /*
@@ -188,7 +188,7 @@ export namespace FToken {
      * @param
      */
     export function normalizeToIndex(amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
-        return amount.multiply(currentIndex.divide(prevIndex));
+        return bigInt(0); // amount.multiply(currentIndex.divide(prevIndex));
     }
 
     /*
