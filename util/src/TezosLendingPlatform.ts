@@ -53,12 +53,10 @@ export namespace TezosLendingPlatform {
      */
     export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
-            "XTZ": "KT1PK6aLVkUW8Gs4kbA5PiAwudY71bkqpbo1",
             "ETH": "KT1KYxnWd1kN2w7angPgJ27Db2q6jrffyd8T",
             "BTC": "KT1P1TQUXLRoTQR2cFhZmmhHmU6QqVRyvDqp"
         },
         fTokensReverse: {
-            "KT1PK6aLVkUW8Gs4kbA5PiAwudY71bkqpbo1": AssetType.XTZ,
             "KT1KYxnWd1kN2w7angPgJ27Db2q6jrffyd8T": AssetType.ETH,
             "KT1P1TQUXLRoTQR2cFhZmmhHmU6QqVRyvDqp": AssetType.BTC
         },
@@ -75,7 +73,6 @@ export namespace TezosLendingPlatform {
         },
         comptroller: "KT1EMX6Jt4Kt6MppjUBtYVwtuZSvjsESf1FW",
         interestRateModel: {
-            "XTZ": "KT1DogBXrPGhXByNRfJ4yTaPyU7Dh84nhYC5",
             "ETH": "KT1LMDkYiXwTpGickdwgjq1Jkgu63HZcZedt",
             "BTC": "KT1DF1QugTQJ6zAkqSfgkeVEbER5EYkWH5cn"
         },

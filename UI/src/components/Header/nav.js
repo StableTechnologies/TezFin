@@ -20,13 +20,19 @@ const Nav = () => {
   const [tezAccount, setTezAccount] = useState('');
 
   const {address} = useSelector(state => state.addWallet.account);
+  const server = "https://tezos-granada.cryptonomic-infra.tech/";
+  const conseilServerInfo = {
+    "url": "https://conseil-granada.cryptonomic-infra.tech:443",
+    "apiKey": "",
+    "network": "granadanet"
+  };
 
   const addWallet = async() => {
     try {
       const { clients } = await getWallet();
-      dispatch(addWalletAction(clients));
+      dispatch(addWalletAction(clients, server, conseilServerInfo));
     } catch (error) {}
-  }
+  };
 
   useEffect(() => {
     setTezAccount(address);
