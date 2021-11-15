@@ -11,6 +11,7 @@ import tezHeader from '../../assets/tezHeader.svg';
 
 import { useStyles} from "./style";
 import { addWalletAction } from '../../reduxContent/addWallet/actions';
+import { comptrollerAction } from '../../reduxContent/nodes/actions';
 
 
 const Nav = () => {
@@ -20,23 +21,24 @@ const Nav = () => {
   const [tezAccount, setTezAccount] = useState('');
 
   const {address} = useSelector(state => state.addWallet.account);
-  const server = "https://tezos-granada.cryptonomic-infra.tech/";
-  const conseilServerInfo = {
-    "url": "https://conseil-granada.cryptonomic-infra.tech:443",
-    "apiKey": "",
-    "network": "granadanet"
-  };
+  const { server, conseilServerInfo } = useSelector(state => state.nodes.tezosNode);
+  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
+  const { markets } = useSelector(state => state.market.marketData);
 
   const addWallet = async() => {
     try {
       const { clients } = await getWallet();
-      dispatch(addWalletAction(clients, server, conseilServerInfo));
+      dispatch(addWalletAction(clients, server, conseilServerInfo, comptroller, markets));
     } catch (error) {}
   };
 
   useEffect(() => {
     setTezAccount(address);
   }, [addWallet])
+
+  useEffect(() => {
+    dispatch(comptrollerAction(protocolAddresses, server, conseilServerInfo));
+  }, [dispatch, server])
 
 
   return (

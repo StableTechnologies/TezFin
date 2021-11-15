@@ -15,12 +15,14 @@ const Dashboard =() => {
   const dispatch = useDispatch();
 
   const {supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
+  const { server } = useSelector(state => state.nodes.tezosNode);
+  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
 
   useEffect(() => {
-    dispatch(marketAction());
+    dispatch(marketAction(comptroller, protocolAddresses, server));
     dispatch(supplyMarketAction());
     dispatch(borrowMarketAction());
-  }, [dispatch])
+  }, [dispatch, comptroller])
 
   return (
     <Grid container className={classes.dashboard}>
