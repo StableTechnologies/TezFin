@@ -31,6 +31,11 @@ export const connectTezAccount = async () => {
   return { client, account: account["address"] };
 };
 
+/**
+ * This function lets a user to connect to a tezos wallet.
+ *
+ * @returns clients
+ */
 export const getWallet = async () => {
   const { client, account: tezAccount } = await connectTezAccount();
 
