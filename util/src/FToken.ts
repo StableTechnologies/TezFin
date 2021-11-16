@@ -162,7 +162,7 @@ export namespace FToken {
      */
     export interface Balance {
         assetType: TezosLendingPlatform.AssetType;
-        approvals?: { [address: string]: bigInt.BigInteger }; // address -> amount map
+        approvals?: { [address: string]: bigInt.BigInteger };
         supplyBalanceUnderlying: bigInt.BigInteger;
         supplyBalanceUsd?: bigInt.BigInteger;
         loanBalanceUnderlying: bigInt.BigInteger;
@@ -214,10 +214,11 @@ export namespace FToken {
         const borrowPrincipal = JSONPath({path: '$.args[0].args[1].int', json: json })[0];
         const supplyPrincipal = JSONPath({path: '$.args[2].int', json: json })[0];
         // TODO: parse approvals
+        // return 0 balance if uninitialized in contract
         return {
             assetType: assetType,
-            supplyBalanceUnderlying: normalizeToIndex(supplyPrincipal, bigInt(1_000_000), currentIndex),
-            loanBalanceUnderlying: normalizeToIndex(borrowPrincipal, borrowIndex, currentIndex)
+            supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex(supplyPrincipal, bigInt(1_000_000), currentIndex),
+            loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex(borrowPrincipal, borrowIndex, currentIndex)
         }
      }
 

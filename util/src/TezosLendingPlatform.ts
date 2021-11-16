@@ -233,6 +233,7 @@ export namespace TezosLendingPlatform {
     export interface Account {
         address: string;
         marketBalances: FToken.BalanceMap;
+        // TODO: add totalSupplying
         totalCollateralUsd: bigInt.BigInteger;
         totalLoanUsd: bigInt.BigInteger;
         health: number;
@@ -329,9 +330,9 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface SupplyComposition {
-        assets: { assetType: AssetType, usdValue: number }[];
-        collateral: number;
-        totalUsdValue: number;
+        assets: { assetType: AssetType, usdValue: bigInt.BigInteger }[];
+        collateral: bigInt.BigInteger;
+        totalUsdValue: bigInt.BigInteger;
     }
 
     /*
@@ -340,14 +341,21 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function supplyComposition(account: Account): SupplyComposition {
-        // parse account for SupplyComposition
+        let assets: { assetType: AssetType, usdValue: bigInt.BigInteger }[] = [];
+        let collateral = bigInt(0);
+        let totalUsdValue = bigInt(0);
+        for (const asset in account.marketBalances) {
+            const balance = account.marketBalances[asset].supplyBalanceUsd!;
+            if (balance.geq(bigInt(0)))
+                assets.push({ assetType: asset as AssetType, usdValue: balance });
+            if (account.marketBalances[asset].collateral!)
+                collateral = collateral.add(balance);
+            totalUsdValue = totalUsdValue.add(balance);
+        }
         return {
-            assets: [
-                { assetType: AssetType.XTZ, usdValue: 10 },
-                { assetType: AssetType.FA2, usdValue: 40 },
-            ],
-            collateral: 44,
-            totalUsdValue: 100
+            assets: assets,
+            collateral: collateral,
+            totalUsdValue: totalUsdValue
         }
     }
 
@@ -357,9 +365,9 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface BorrowComposition {
-        assets: { assetType: AssetType, usdValue: number }[];
-        borrowLimit: number;
-        totalUsdValue: number;
+        assets: { assetType: AssetType, usdValue: bigInt.BigInteger }[];
+        borrowLimit: bigInt.BigInteger;
+        totalUsdValue: bigInt.BigInteger;
     }
 
     /*
@@ -368,14 +376,22 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function borrowComposition(account: Account): BorrowComposition {
+        let assets: { assetType: AssetType, usdValue: bigInt.BigInteger }[] = [];
+        let borrowLimit = bigInt(0);
+        let totalUsdValue = bigInt(0);
+        for (const asset in account.marketBalances) {
+            const balance = account.marketBalances[asset].loanBalanceUsd!;
+            if (balance.geq(bigInt(0)))
+                assets.push({ assetType: asset as AssetType, usdValue: balance });
+            if (account.marketBalances[asset].collateral!)
+                borrowLimit = borrowLimit.add(balance);
+            totalUsdValue = totalUsdValue.add(balance);
+        }
         return {
-            assets: [
-                { assetType: AssetType.XTZ, usdValue: 13 },
-                { assetType: AssetType.FA2, usdValue: 15 },
-            ],
-            borrowLimit: 23,
-            totalUsdValue: 400
-        };
+            assets: assets,
+            borrowLimit: borrowLimit,
+            totalUsdValue: totalUsdValue
+        }
     }
 
     /*

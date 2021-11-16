@@ -20,6 +20,7 @@ export const borrowMarketModalAction = (account, market)=> async (dispatch) => {
 }
 
 export const supplyTokenAction = (mintPair, protocolAddresses, server, signer, keystore, fee, gas, freight)=> async (dispatch) => {
+  // TODO
   // mintPair: {underlying: TezosLendingPlatform.AssetType; amount: number;}
 
   const mint = TezosLendingPlatform.Mint(mintPair, protocolAddresses, server, signer, keystore, fee, gas, freight);

@@ -63,7 +63,6 @@ export namespace Comptroller {
             await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
                 const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
                 const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
-                console.log(marketsResult);
                 const asset = protocolAddresses.fTokensReverse[addr];
                 markets[asset] = parseMarketResult(marketsResult);
             }));
