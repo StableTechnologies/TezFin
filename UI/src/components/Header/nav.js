@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {NavLink} from "react-router-dom";
-
-import {shorten, getWallet } from '../../util';
+import { NavLink } from "react-router-dom";
 
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 
 import tezHeader from '../../assets/tezHeader.svg';
-
-import { useStyles} from "./style";
+import { shorten, getWallet } from '../../util';
 import { addWalletAction } from '../../reduxContent/addWallet/actions';
 import { comptrollerAction } from '../../reduxContent/nodes/actions';
+import { marketAction } from '../../reduxContent/market/actions';
 
+import { useStyles } from "./style";
 
 const Nav = () => {
   const classes = useStyles();
@@ -40,6 +39,9 @@ const Nav = () => {
     dispatch(comptrollerAction(protocolAddresses, server, conseilServerInfo));
   }, [dispatch, server])
 
+  useEffect(() => {
+    dispatch(marketAction(comptroller, protocolAddresses, server));
+  }, [dispatch, comptroller])
 
   return (
     <Grid container justify="center" alignItems="center" className={classes.nav}>
