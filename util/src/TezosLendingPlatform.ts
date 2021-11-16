@@ -386,6 +386,7 @@ export namespace TezosLendingPlatform {
             const balance = account.marketBalances[asset].loanBalanceUsd!;
             if (balance.geq(bigInt(0)))
                 assets.push({ assetType: asset as AssetType, usdValue: balance });
+            // TODO: fix
             if (account.marketBalances[asset].collateral!)
                 borrowLimit = borrowLimit.add(balance);
             totalUsdValue = totalUsdValue.add(balance);
@@ -410,11 +411,11 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * @description
+     * @description Returns map of supply side info for markets in which account has supplied funds.
      *
      * @param
      */
-    export function getSuppliedMarkets(account: Account, markets: Market[]): { [assetType: string]: SupplyMarket } {
+    export function getSuppliedMarkets(account: Account, markets: MarketMap): { [assetType: string]: SupplyMarket } {
         const suppliedMarkets: { [assetType: string]: SupplyMarket } = {};
         for (const asset in account.marketBalances) {
             const balance = account.marketBalances[asset];
@@ -430,11 +431,11 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * @description
+     * @description Returns map of supply side info for markets in which account has *not* supplied funds.
      *
      * @param
      */
-    export function getUnsuppliedMarkets(account: Account, markets: Market[]): { [assetType: string]: SupplyMarket } {
+    export function getUnsuppliedMarkets(account: Account, markets: MarketMap): { [assetType: string]: SupplyMarket } {
         const unsuppliedMarkets: { [assetType: string]: SupplyMarket } = {};
         for (const asset in account.marketBalances) {
             const balance = account.marketBalances[asset];
@@ -463,11 +464,11 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * @description
+     * @description Returns map of borrow side info for markets in which account has borrowed funds.
      *
      * @param
      */
-    export function getBorrowedMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket } {
+    export function getBorrowedMarkets(account: Account, markets: MarketMap): { [assetType: string]: BorrowMarket } {
         const borrowedMarkets: { [assetType: string]: BorrowMarket } = {};
         for (const asset in account.marketBalances) {
             const balance = account.marketBalances[asset];
@@ -484,11 +485,11 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * @description
+     * @description Returns map of borrow sides for markets in which user has not borrowed funds.
      *
      * @param
      */
-    export function getUnborrowedMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket }{
+    export function getUnborrowedMarkets(account: Account, markets: MarketMap): { [assetType: string]: BorrowMarket } {
         const unborrowedMarkets: { [assetType: string]: BorrowMarket } = {};
         for (const asset in account.marketBalances) {
             const balance = account.marketBalances[asset];
@@ -531,7 +532,7 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * @description
+     * @description Information to display for Borrow, RepayBorrow modals
      *
      * @param rate Current rate paid by borrowers
      * @param borrowBalance Current USD amount borrowed
@@ -618,7 +619,7 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * Construct and invoke the operation group for minting fTokens.
+     * Construct and invoke the operation group for minting fTokens (supplying underlying).
      *
      * @param
      */
