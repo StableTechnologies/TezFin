@@ -42,9 +42,6 @@ const Dashboard =() => {
   //   })
   // }
 
-  useEffect(() => {
-    dispatch(marketAction(comptroller, protocolAddresses, server));
-  }, [dispatch, comptroller, protocolAddresses, server])
 
   useEffect(() => {
     dispatch(suppliedMarketAction(account, markets));

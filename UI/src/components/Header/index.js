@@ -24,12 +24,17 @@ const Header = () => {
 
   const {supplyComposition} = useSelector(state => state.supplyComposition);
   const {borrowComposition} = useSelector(state => state.borrowComposition);
-  const {account} = useSelector(state => state.addWallet);
+  const account = useSelector(state => state.addWallet.account);
 
+  console.log(account);
+  console.log(supplyComposition, 'supplyComposition');
+  console.log(borrowComposition, 'borrowComposition');
 
   useEffect(() => {
-    // dispatch(supplyCompositionAction())
-    // dispatch(borrowCompositionAction())
+    if(account) {
+      dispatch(supplyCompositionAction(account))
+      dispatch(borrowCompositionAction(account))
+    }
   }, [dispatch])
 
   return (

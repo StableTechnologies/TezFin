@@ -9,7 +9,8 @@ import { useStyles } from './style';
 
 const Composition = (props) => {
   const classes = useStyles();
-  const {title, data, dataIcon,dataTitle, dataLimitIcon, dataLimitTitle, gridClass, boxClass, progressBarColor} = props
+  const {title, data, dataIcon,dataTitle, dataLimitIcon, dataLimitTitle, gridClass, boxClass, progressBarColor} = props;
+
   return (
     <Grid item xs={12} md={6} className={gridClass}>
       <Typography> {title} </Typography>
@@ -25,7 +26,8 @@ const Composition = (props) => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}> {dataTitle} </Typography>
-                    <Typography className={classes.statsValue}>${data.totalUsdValue || "0.00"}</Typography>
+                    <Typography className={classes.statsValue}>${"0.00"}</Typography>
+                    {/* <Typography className={classes.statsValue}>${data.totalUsdValue || "0.00"}</Typography> */}
                   </Box>
                 </Grid>
               </Grid>
@@ -37,7 +39,8 @@ const Composition = (props) => {
                 <Grid item>
                   <Box sx={{paddingLeft: '1rem'}}>
                     <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
-                    <Typography className={classes.statsValue}>${(data.collateral || data.Limit) || "0.00"}</Typography>
+                    <Typography className={classes.statsValue}>${"0.00"}</Typography>
+                    {/* <Typography className={classes.statsValue}>${(data.collateral || data.Limit) || "0.00"}</Typography> */}
                   </Box>
                 </Grid>
               </Grid>
