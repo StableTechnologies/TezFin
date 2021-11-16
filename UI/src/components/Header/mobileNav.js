@@ -58,7 +58,7 @@ const  MobileNav = () => {
           <ListItem button key={"Market"} onClick={handleDrawerClose}>
             <NavLink to="market" className={classes.link}> Market </NavLink>
           </ListItem>
-          <ListItem button key={"Market"} onClick={handleDrawerClose}>
+          <ListItem button key={"About"} onClick={handleDrawerClose}>
             <NavLink to="about" className={classes.link}> About </NavLink>
           </ListItem>
         </List>
