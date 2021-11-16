@@ -71,6 +71,9 @@ export namespace TezosLendingPlatform {
                 assetType: AssetType.BTC,
                 address: "KT1SM4x48cbemJaipLqRGZgbwfWukZEdz4jw",
                 tokenId: 0
+            },
+            "XTZ": {
+                assetType: AssetType.XTZ
             }
         },
         comptroller: "KT1JWffF2nqDua1ATkpt9o5i8NiSX6EABiMP",
@@ -217,8 +220,15 @@ export namespace TezosLendingPlatform {
         let markets: MarketMap = {};
         for (const asset in protocolAddresses.fTokens) {
             const fTokenAddress = protocolAddresses.fTokens[asset];
-            const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server);
-            markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset]);
+
+            try {
+                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server);
+                markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset]);
+            } catch (e) {
+                log.error(`Failed in GetMarkets for ${asset} at ${protocolAddresses.fTokens[asset]} and ${protocolAddresses.underlying[asset]} with ${e}`);
+                log.error(`Comptroller state: ${comptroller}`);
+            }
+            
         }
         return markets;
     }
