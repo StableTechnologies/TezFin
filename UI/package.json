@@ -12,7 +12,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "async-mutex": "^0.3.2",
-    "conseiljs": "5.0.9",
+    "conseiljs": "5.0.9-4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.5",

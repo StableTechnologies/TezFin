@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "big-integer": "^1.6.51",
-    "conseiljs": "file:~/code/cryptonomic/local/conseiljs",
+    "conseiljs": "5.0.9-4",
     "jsonpath-plus": "^6.0.1"
   }
 }
