@@ -4,24 +4,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 
-import Market from '../Market';
-import { useStyles } from './style';
-
 import {marketAction, borrowedMarketAction, unBorrowedMarketAction, unSuppliedMarketAction, suppliedMarketAction} from '../../reduxContent/market/actions';
 
+import Market from '../Market';
+import { useStyles } from './style';
 
 const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const {markets, supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
+  const { markets, supplyMarkets, borrowMarkets, supplyingMarkets } = useSelector(state => state.market.marketData);
   const { server } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { marketBalances } = useSelector(state => state.addWallet.account);
-  const {account} = useSelector(state => state.addWallet);
+  const { account } = useSelector(state => state.addWallet);
 
-
-  console.log(marketBalances, 'marketBalances');
+  console.log('marketBalances', marketBalances);
+  console.log('dashboard account', account)
 
   // if(marketBalances) {
   //   Object.keys(marketBalances).map((x)=>{
@@ -42,13 +41,17 @@ const Dashboard =() => {
   //   })
   // }
 
-
   useEffect(() => {
     dispatch(suppliedMarketAction(account, markets));
     dispatch(unSuppliedMarketAction(account, markets));
     dispatch(borrowedMarketAction(account, markets));
     dispatch(unBorrowedMarketAction(account, markets));
   }, [dispatch, account, markets])
+
+  console.log(`dashboard markets ${JSON.stringify(markets)}`)
+  console.log(`dashboard supplyMarkets ${JSON.stringify(supplyMarkets)}`)
+  console.log(`dashboard borrowMarkets ${JSON.stringify(borrowMarkets)}`)
+  console.log(`dashboard supplyingMarkets ${JSON.stringify(supplyingMarkets)}`)
 
   return (
     <Grid container className={classes.dashboard}>
