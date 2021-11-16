@@ -9,18 +9,25 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   // borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+    backgroundColor: '#EAEAEA',
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
+    backgroundColor: '#3391F6',
+    // background: 'linear-gradient(90deg, #39E4B8 65.26%, rgba(233, 238, 8, 0.99) 79.48%)'
+
   },
 }));
 
 
-export default function CustomizedProgressBars() {
+const CustomizedProgressBars = (props)=> {
+  const { value, backgroundColor } = props;
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <BorderLinearProgress variant="determinate" value={0} />
+      <BorderLinearProgress variant="determinate" value={58} className={backgroundColor}/>
     </Box>
   );
 }
+
+export default CustomizedProgressBars;

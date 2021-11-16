@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import CustomizedProgressBars from '../Header/progressBar';
+import CustomizedProgressBars from '../ProgessBar';
 import TextField from '@mui/material/TextField';
 
 import Tabulator from '../Tabs';
@@ -22,7 +22,8 @@ const MarketModal = (props) => {
 
   const {
     open, close, valueofRow, handleClickTabOne,handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
-    amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount, collateralize, extraPadding
+    amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount, collateralize,
+    extraPadding, progressBarColor
   } = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -107,7 +108,7 @@ const MarketModal = (props) => {
           <Grid container>
             <Grid item sm={12}>
               <Box className={`${classes.progressBar} ${visibility ?"": classes.visibility}`}>
-                <CustomizedProgressBars />
+                <CustomizedProgressBars backgroundColor={progressBarColor}/>
               </Box>
             </Grid>
           </Grid>

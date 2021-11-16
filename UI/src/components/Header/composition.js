@@ -4,17 +4,17 @@ import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 
-import CustomizedProgressBars from './progressBar';
+import CustomizedProgressBars from '../ProgessBar';
 import { useStyles } from './style';
 
 const Composition = (props) => {
   const classes = useStyles();
-  const {title, data, dataIcon,dataTitle, dataLimitIcon, dataLimitTitle, gridClass,boxClass} = props
+  const {title, data, dataIcon,dataTitle, dataLimitIcon, dataLimitTitle, gridClass, boxClass, progressBarColor} = props
   return (
     <Grid item xs={12} md={6} className={gridClass}>
       <Typography> {title} </Typography>
           <Box className={classes.progressBar}>
-            <CustomizedProgressBars />
+            <CustomizedProgressBars backgroundColor={progressBarColor}/>
           </Box>
           <Box sx={{ paddingTop: '55px' }} className={boxClass}>
             <Grid container>

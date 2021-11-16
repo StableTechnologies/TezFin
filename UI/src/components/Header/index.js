@@ -57,6 +57,7 @@ const Header = () => {
           dataLimitTitle = "Collateralized"
           boxClass={classes.box}
           gridClass={classes.padding100}
+          progressBarColor={classes.supplyBarColor} // add class
         />
         <Composition
           title = "Borrow  Limit"
@@ -65,7 +66,7 @@ const Header = () => {
           dataTitle = "Borrowing"
           dataLimitIcon = {borrowLimitIcon}
           dataLimitTitle = "Borrow limit"
-          gridClass={classes.padding30}
+          progressBarColor={classes.borrowBarColor} // add class
         />
       </Grid>
     </HeaderCon>
