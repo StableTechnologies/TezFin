@@ -26,10 +26,6 @@ const Header = () => {
   const {borrowComposition} = useSelector(state => state.borrowComposition);
   const account = useSelector(state => state.addWallet.account);
 
-  console.log(account);
-  console.log(supplyComposition, 'supplyComposition');
-  console.log(borrowComposition, 'borrowComposition');
-
   useEffect(() => {
     if(account) {
       dispatch(supplyCompositionAction(account))

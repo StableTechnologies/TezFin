@@ -24,7 +24,6 @@ const CollateralizeModal = (props) =>{
 
   const collateralizeToken = () => {
     valueofRow.collateral = true
-    console.log(valueofRow, 'collateralize!!');
     close()
     setTokenText('collateral')
     handleOpenConfirm();
