@@ -15,9 +15,10 @@ import { useStyles } from './style';
 import SupplyModal from '../SupplyModal';
 import BorrowModal from '../BorrowModal';
 import CollateralizeModal from '../CollateralizeModal';
-import ConfirmModal from '../ConfirmModal/index.js';
 import DisableCollateralModal from '../DisableCollateralModal';
 
+// TODO
+// 1.CHANGE 'data.wallet' & 'data.walletUSD' to 'data.walletUnderlying' & 'data.walletUsd' respectively
 
 const Market = (props) => {
   const classes = useStyles();
@@ -27,7 +28,6 @@ const Market = (props) => {
   const [openMktModal, setMktModal] = useState(false);
   const [collModal, setCollModal] = useState(false);
   const [disableCollModal, setDisableCollModal] = useState(false);
-  const [openConfirmModal, setConfirmModal] =useState(false);
   const [enableToken, setEnableToken] =useState(false);
 
   const closeModal = () => {
@@ -43,25 +43,8 @@ const Market = (props) => {
       if(item.collateral === false) {setCollModal(true) }
     }
     else { setMktModal(true) }
-
   }
 
-  const handleClickEnableToken = () => {
-    // setConfirmModal(true);
-    // setMktModal(false);
-  };
-
-  const handleCloseConfirm = () => {
-    // setConfirmModal(false);
-  };
-
-  // useEffect(() => {
-  //   const timer = setTimeout(()=>{
-  //     setConfirmModal(false);
-  //     setMktModal(true);
-  //   }, 3000);
-  //   return () => { clearTimeout(timer); setEnableToken(true); };
-  // }, [openConfirmModal]);
 
 
   return (
@@ -69,19 +52,13 @@ const Market = (props) => {
       {valueofRow &&
         <>
           {(supplyMkt || supplyingMkt) &&
-            <SupplyModal open={openMktModal} close={closeModal} valueofRow={valueofRow} onClick={handleClickEnableToken} enableToken={enableToken} />
+            <SupplyModal open={openMktModal} close={closeModal} valueofRow={valueofRow} enableToken={enableToken} />
           }
           {borrowMkt &&
             <BorrowModal open={openMktModal} close={closeModal} valueofRow={valueofRow} />
           }
-          {supplyingMkt &&
-          <>
-            {/* <CollateralizeModal open={openMktModal} close={closeModal} valueofRow={valueofRow} /> */}
-          </>
-          }
           <DisableCollateralModal open={disableCollModal} close={closeModal} valueofRow={valueofRow} />
           <CollateralizeModal open={collModal} close={closeModal} valueofRow={valueofRow} />
-          {/* <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} /> */}
         </>
       }
       <Table>
@@ -114,6 +91,7 @@ const Market = (props) => {
               {toggle &&
                 <Switch data={data}  />
               }
+              {/* display liquidity data  */}
               </TableCell>
             </TableRow>
           ))}

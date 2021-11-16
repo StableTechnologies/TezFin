@@ -5,11 +5,11 @@ import { TezosLendingPlatform, Comptroller, FToken } from 'tezoslendingplatformj
 /**
  * This function is used to get the account details of a user.
  *
- * @param {object} clients
- * @param {string} server
- * @param {object} conseilServerInfo
- * @param {object} comptroller
- * @param {object} markets
+ * @param  clients
+ * @param  server
+ * @param  conseilServerInfo
+ * @param  comptroller
+ * @param  markets
  */
 export const addWalletAction = (clients, server, conseilServerInfo, comptroller, markets) => async (dispatch) => {
   const address = clients.tezos.account;

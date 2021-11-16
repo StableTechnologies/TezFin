@@ -6,11 +6,11 @@ import {
 
 const initState = {
   isFetching: true,
-  marketData: [],
-  suppliedMarketData: [],
-  unSuppliedMarketData: [],
-  borrowedMarketData: [],
-  unBorrowedMarketData: [],
+  markets: [],
+  suppliedMarkets: [],
+  unSuppliedMarkets: [],
+  borrowedMarkets: [],
+  unBorrowedMarkets: [],
 }
 
 const marketReducer = (state=initState, action) => {
@@ -19,31 +19,31 @@ const marketReducer = (state=initState, action) => {
       return {
         ...state,
         isFetching: false,
-        marketData: action.payload
+        markets: action.payload
       }
     case GET_SUPPLIED_MARKET_DATA:
       return {
         ...state,
         isFetching: false,
-        suppliedMarketData: action.payload
+        suppliedMarkets: action.payload
       }
     case GET_UNSUPPLIED_MARKET_DATA:
       return {
         ...state,
         isFetching: false,
-        unSuppliedMarketData: action.payload
+        unSuppliedMarkets: action.payload
       }
     case GET_BORROWED_MARKET_DATA:
       return {
         ...state,
         isFetching: false,
-        borrowedMarketData: action.payload
+        borrowedMarkets: action.payload
       }
     case GET_UNBORROWED_MARKET_DATA:
       return {
         ...state,
         isFetching: false,
-        unBorrowedMarketData: action.payload
+        unBorrowedMarkets: action.payload
       }
 
     default:

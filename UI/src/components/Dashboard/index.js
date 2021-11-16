@@ -13,33 +13,9 @@ const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { markets, supplyMarkets, borrowMarkets, supplyingMarkets } = useSelector(state => state.market.marketData);
-  const { server } = useSelector(state => state.nodes.tezosNode);
-  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
-  const { marketBalances } = useSelector(state => state.addWallet.account);
   const { account } = useSelector(state => state.addWallet);
-
-  console.log('marketBalances', marketBalances);
-  console.log('dashboard account', account)
-
-  // if(marketBalances) {
-  //   Object.keys(marketBalances).map((x)=>{
-  //     supplyMarkets.map((supplyMarket)=>{
-  //       if(x.toLowerCase() === supplyMarket.assetType.toLowerCase()) {
-  //         supplyMarket.wallet = marketBalances[x].supplyBalanceUnderlying
-  //         supplyMarket.walletUSD = marketBalances[x].supplyBalanceUsd
-  //         supplyMarket.collateral = marketBalances[x].collateral
-  //       }
-  //     })
-
-  //     borrowMarkets.map((borrowMarket)=>{
-  //       if(x.toLowerCase() === borrowMarket.assetType.toLowerCase()) {
-  //         borrowMarket.wallet = marketBalances[x].loanBalanceUnderlying
-  //         borrowMarket.walletUSD = marketBalances[x].loanBalanceUsd
-  //       }
-  //     })
-  //   })
-  // }
+  const { markets } = useSelector(state => state.market);
+  const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector(state => state.market);
 
   useEffect(() => {
     dispatch(suppliedMarketAction(account, markets));
@@ -48,10 +24,10 @@ const Dashboard =() => {
     dispatch(unBorrowedMarketAction(account, markets));
   }, [dispatch, account, markets])
 
-  console.log(`dashboard markets ${JSON.stringify(markets)}`)
-  console.log(`dashboard supplyMarkets ${JSON.stringify(supplyMarkets)}`)
-  console.log(`dashboard borrowMarkets ${JSON.stringify(borrowMarkets)}`)
-  console.log(`dashboard supplyingMarkets ${JSON.stringify(supplyingMarkets)}`)
+  // console.log(`dashboard markets ${JSON.stringify(markets)}`)
+  // console.log(`dashboard supplyMarkets ${JSON.stringify(supplyMarkets)}`)
+  // console.log(`dashboard borrowMarkets ${JSON.stringify(borrowMarkets)}`)
+  // console.log(`dashboard supplyingMarkets ${JSON.stringify(supplyingMarkets)}`)
 
   return (
     <Grid container className={classes.dashboard}>
@@ -59,11 +35,10 @@ const Dashboard =() => {
         {/* <Grid md={12}>
         </Grid> */}
       <Grid item xs={12} md={6} className={classes.paddingRight}>
-        {supplyingMarkets &&
         <>
           <Typography className={classes.tableTitle}> supplying </Typography>
           <Market
-            tableData = {supplyingMarkets}
+            tableData = {suppliedMarkets}
             heading1 = "Token"
             heading2 = "APY/Earned"
             heading3 = "Balance"
@@ -71,11 +46,11 @@ const Dashboard =() => {
             toggle
             supplyingMkt
             />
-        </>}
+        </>
         {/* <Typography className={classes.tableTitle}> Supply Markets </Typography> */}
         <Typography className={classes.tableTitleTwo}> All Supply Markets </Typography>
         <Market
-          tableData = {supplyMarkets}
+          tableData = {unSuppliedMarkets}
           heading1 = "Token"
           heading2 = "APY"
           heading3 = "Wallet"
@@ -87,7 +62,7 @@ const Dashboard =() => {
       <Grid item xs={12} md={6} className={classes.paddingLeft}>
         <Typography className={classes.tableTitle}> Borrow Markets </Typography>
         <Market
-          tableData = {borrowMarkets}
+          tableData = {unBorrowedMarkets}
           heading1 = "Token"
           heading2 = "APY"
           heading3 = "Wallet"

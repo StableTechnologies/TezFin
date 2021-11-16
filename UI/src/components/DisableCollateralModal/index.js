@@ -10,7 +10,6 @@ const DisableCollateralModal = (props) =>{
   const classes = useStyles();
   // const dispatch = useDispatch();
   const {open, close, valueofRow, onClick} = props;
-  const {supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
 
   const [openConfirmModal, setConfirmModal] =useState(false);
   const [tokenText, setTokenText] =useState('');

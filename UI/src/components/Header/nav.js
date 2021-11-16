@@ -22,7 +22,7 @@ const Nav = () => {
   const {address} = useSelector(state => state.addWallet.account);
   const { server, conseilServerInfo } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
-  const { markets } = useSelector(state => state.market.marketData);
+  const { markets } = useSelector(state => state.market);
 
   const addWallet = async() => {
     try {
