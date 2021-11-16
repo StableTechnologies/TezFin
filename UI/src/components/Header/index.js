@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
@@ -7,7 +7,7 @@ import { Typography } from '@mui/material';
 import Nav from './nav';
 import Composition from './composition';
 
-import {HeaderCon, classes1, Title, useStyles} from "./style";
+import {HeaderCon, classes1, useStyles} from "./style";
 import supplyingIcon from '../../assets/supplyingIcon.svg';
 import collateralizedIcon from '../../assets/collateralizedIcon.svg';
 import borrowingIcon from '../../assets/borrowing.svg';
@@ -28,8 +28,8 @@ const Header = () => {
 
 
   useEffect(() => {
-    dispatch(supplyCompositionAction())
-    dispatch(borrowCompositionAction())
+    // dispatch(supplyCompositionAction())
+    // dispatch(borrowCompositionAction())
   }, [dispatch])
 
   return (

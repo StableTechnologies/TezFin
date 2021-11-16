@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Typography } from '@mui/material';
@@ -44,11 +44,14 @@ const Dashboard =() => {
 
   useEffect(() => {
     dispatch(marketAction(comptroller, protocolAddresses, server));
+  }, [dispatch, comptroller, protocolAddresses, server])
+
+  useEffect(() => {
     dispatch(suppliedMarketAction(account, markets));
     dispatch(unSuppliedMarketAction(account, markets));
     dispatch(borrowedMarketAction(account, markets));
     dispatch(unBorrowedMarketAction(account, markets));
-  }, [dispatch, comptroller, markets])
+  }, [dispatch, account, markets])
 
   return (
     <Grid container className={classes.dashboard}>

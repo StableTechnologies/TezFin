@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {NavLink} from "react-router-dom";
 
-import {shorten, getWallet, getAssetsDetails} from '../../util';
+import {shorten, getWallet } from '../../util';
 
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
@@ -62,7 +62,7 @@ const Nav = () => {
         <Button
           className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
           onClick={addWallet}>
-          {tezAccount && (shorten(6, 6, tezAccount)) || "Add Wallet" }
+          {tezAccount && ((shorten(6, 6, tezAccount)) || "Add Wallet") }
         </Button>
     </Grid>
   </Grid>
