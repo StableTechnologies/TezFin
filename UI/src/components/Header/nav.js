@@ -31,6 +31,7 @@ const Nav = () => {
     } catch (error) {}
   };
 
+
   useEffect(() => {
     setTezAccount(address);
   }, [addWallet])
@@ -41,7 +42,7 @@ const Nav = () => {
 
   useEffect(() => {
     dispatch(marketAction(comptroller, protocolAddresses, server));
-  }, [dispatch, comptroller])
+  }, [dispatch, comptroller, protocolAddresses, server])
 
   return (
     <Grid container justify="center" alignItems="center" className={classes.nav}>
