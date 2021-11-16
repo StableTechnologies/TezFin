@@ -62,7 +62,7 @@ const Nav = () => {
         <Button
           className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
           onClick={addWallet}>
-          {tezAccount && ((shorten(6, 6, tezAccount)) || "Add Wallet") }
+          {(tezAccount && (shorten(6, 6, tezAccount))) || "Add Wallet" }
         </Button>
     </Grid>
   </Grid>
