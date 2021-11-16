@@ -1,10 +1,20 @@
-import { GET_MARKET_DATA, GET_SUPPLY_MARKET_DATA, GET_BORROW_MARKET_DATA } from './types.js';
+import {
+  GET_MARKET_DATA,
+  GET_SUPPLIED_MARKET_DATA, GET_UNSUPPLIED_MARKET_DATA,
+  GET_BORROWED_MARKET_DATA, GET_UNBORROWED_MARKET_DATA
+} from './types.js';
 
 import {TezosLendingPlatform} from 'tezoslendingplatformjs';
 
 import {tokens, supplying} from '../../components/Constants';
 
-
+/**
+ * This function is used to get the market data .
+ *
+ * @param {object} comptroller Comptroller storage.
+ * @param {object} protocolAddresses Addresses of the protocol contracts
+ * @param {string} server server address
+ */
 export const marketAction = (comptroller, protocolAddresses, server)=> async (dispatch) => {
   const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
   const supplyMarkets =  JSON.parse(JSON.stringify(tokens));
@@ -23,8 +33,15 @@ export const marketAction = (comptroller, protocolAddresses, server)=> async (di
   dispatch({ type: GET_MARKET_DATA, payload: marketData });
 }
 
-export const supplyMarketAction = (account, markets)=> async (dispatch) => {
-  const supplyMarket = TezosLendingPlatform.getSupplyMarkets(account, markets);
+/**
+ * This function is used to get the supplied market data in which an account has supplied.
+ *
+ * @param {object} account
+ * @param {object} markets
+ * @returns suppliedMarket
+ */
+export const suppliedMarketAction = (account, markets)=> async (dispatch) => {
+  const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
 
   // Object.keys(markets).map((market)=>{
   //   supplyMarkets.map((supplyMarket)=>{
@@ -34,10 +51,40 @@ export const supplyMarketAction = (account, markets)=> async (dispatch) => {
   //       }
   //     }
   //   })
-  dispatch({ type: GET_SUPPLY_MARKET_DATA, payload: supplyMarket });
+  dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: suppliedMarket });
+}
+/**
+ * This function is used to get the supply market data in which an account has *NO* suppplied funds.
+ *
+ * @param {object} account
+ * @param {object} markets
+ * @returns unSuppliedMarket
+ */
+export const unSuppliedMarketAction = (account, markets)=> async (dispatch) => {
+  const unSuppliedMarket = TezosLendingPlatform.getUnsuppliedMarkets(account, markets);
+  dispatch({ type: GET_UNSUPPLIED_MARKET_DATA, payload: unSuppliedMarket });
 }
 
-export const borrowMarketAction = (account, markets)=> async (dispatch) => {
-  const borrowMarket = TezosLendingPlatform.getBorrowMarkets(account, markets);
-  dispatch({ type: GET_BORROW_MARKET_DATA, payload: borrowMarket });
+/**
+ * This function is used to get the borrowed market data in which an account has borrowed funds.
+ *
+ * @param {object} account .
+ * @param {object} markets
+ * @returns borrowedMarket
+ */
+export const borrowedMarketAction = (account, markets)=> async (dispatch) => {
+  const borrowedMarket = TezosLendingPlatform.getBorrowedMarkets(account, markets);
+  dispatch({ type: GET_BORROWED_MARKET_DATA, payload: borrowedMarket });
+}
+
+/**
+ * This function is used to get the borrowed market data in which an account has *NO* borrowed funds.
+ *
+ * @param {object} account
+ * @param {object} markets
+ * @returns unBorrowedMarket
+ */
+export const unBorrowedMarketAction = (account, markets)=> async (dispatch) => {
+  const unBorrowedMarket = TezosLendingPlatform.getUnborrowedMarkets(account, markets);
+  dispatch({ type: GET_UNBORROWED_MARKET_DATA, payload: unBorrowedMarket });
 }

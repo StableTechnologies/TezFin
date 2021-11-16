@@ -1,10 +1,16 @@
-import {GET_MARKET_DATA, GET_SUPPLY_MARKET_DATA, GET_BORROW_MARKET_DATA} from './types';
+import {
+  GET_MARKET_DATA,
+  GET_SUPPLIED_MARKET_DATA, GET_UNSUPPLIED_MARKET_DATA,
+  GET_BORROWED_MARKET_DATA, GET_UNBORROWED_MARKET_DATA
+} from './types';
 
 const initState = {
   isFetching: true,
   marketData: [],
-  supplyMarketData: [],
-  borrowMarketData: [],
+  suppliedMarketData: [],
+  unSuppliedMarketData: [],
+  borrowedMarketData: [],
+  unBorrowedMarketData: [],
 }
 
 const marketReducer = (state=initState, action) => {
@@ -15,17 +21,29 @@ const marketReducer = (state=initState, action) => {
         isFetching: false,
         marketData: action.payload
       }
-    case GET_SUPPLY_MARKET_DATA:
+    case GET_SUPPLIED_MARKET_DATA:
       return {
         ...state,
         isFetching: false,
-        supplyMarketData: action.payload
+        suppliedMarketData: action.payload
       }
-    case GET_BORROW_MARKET_DATA:
+    case GET_UNSUPPLIED_MARKET_DATA:
       return {
         ...state,
         isFetching: false,
-        borrowMarketData: action.payload
+        unSuppliedMarketData: action.payload
+      }
+    case GET_BORROWED_MARKET_DATA:
+      return {
+        ...state,
+        isFetching: false,
+        borrowedMarketData: action.payload
+      }
+    case GET_UNBORROWED_MARKET_DATA:
+      return {
+        ...state,
+        isFetching: false,
+        unBorrowedMarketData: action.payload
       }
 
     default:

@@ -7,17 +7,19 @@ import Grid from '@mui/material/Grid';
 import Market from '../Market';
 import { useStyles } from './style';
 
-import {borrowMarketAction, marketAction, supplyMarketAction} from '../../reduxContent/market/actions';
+import {marketAction, borrowedMarketAction, unBorrowedMarketAction, unSuppliedMarketAction, suppliedMarketAction} from '../../reduxContent/market/actions';
 
 
 const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const {supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
+  const {markets, supplyMarkets, borrowMarkets, supplyingMarkets} = useSelector(state => state.market.marketData);
   const { server } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { marketBalances } = useSelector(state => state.addWallet.account);
+  const {account} = useSelector(state => state.addWallet);
+
 
   console.log(marketBalances, 'marketBalances');
 
@@ -42,9 +44,11 @@ const Dashboard =() => {
 
   useEffect(() => {
     dispatch(marketAction(comptroller, protocolAddresses, server));
-    dispatch(supplyMarketAction());
-    dispatch(borrowMarketAction());
-  }, [dispatch, comptroller])
+    dispatch(suppliedMarketAction(account, markets));
+    dispatch(unSuppliedMarketAction(account, markets));
+    dispatch(borrowedMarketAction(account, markets));
+    dispatch(unBorrowedMarketAction(account, markets));
+  }, [dispatch, comptroller, markets])
 
   return (
     <Grid container className={classes.dashboard}>
