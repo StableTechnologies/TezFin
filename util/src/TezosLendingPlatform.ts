@@ -53,32 +53,35 @@ export namespace TezosLendingPlatform {
      */
     export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
-            "ETH": "KT1KYxnWd1kN2w7angPgJ27Db2q6jrffyd8T",
-            "BTC": "KT1P1TQUXLRoTQR2cFhZmmhHmU6QqVRyvDqp"
+            "XTZ": "KT1ASC5RdufbWnFYmjuRrceXedRBSUJogdTb",
+            "ETH": "KT1UoXhx4WR7iVH3iJqSC5Md9SsNYcuFag94",
+            "BTC": "KT1V6CQpfxS5pRjkUzoPx5Qmi7dSBnxdWshd"
         },
         fTokensReverse: {
-            "KT1KYxnWd1kN2w7angPgJ27Db2q6jrffyd8T": AssetType.ETH,
-            "KT1P1TQUXLRoTQR2cFhZmmhHmU6QqVRyvDqp": AssetType.BTC
+            "KT1ASC5RdufbWnFYmjuRrceXedRBSUJogdTb": AssetType.XTZ,
+            "KT1UoXhx4WR7iVH3iJqSC5Md9SsNYcuFag94": AssetType.ETH,
+            "KT1V6CQpfxS5pRjkUzoPx5Qmi7dSBnxdWshd": AssetType.BTC
         },
         underlying: {
             "ETH": {
                 assetType: AssetType.ETH,
-                address: "KT1PZBbxYSdgKgSKCNy3onfvTGqtsu5ziCBg"
+                address: "KT1LLL2RWrc4xi23umbq1564ej88RG6LcAoR"
             },
             "BTC": {
                 assetType: AssetType.BTC,
-                address: "KT1HVynHxTpjyQvjVh9DWQztMWJztTEDtPo7",
+                address: "KT1SM4x48cbemJaipLqRGZgbwfWukZEdz4jw",
                 tokenId: 0
             }
         },
-        comptroller: "KT1EMX6Jt4Kt6MppjUBtYVwtuZSvjsESf1FW",
+        comptroller: "KT1JWffF2nqDua1ATkpt9o5i8NiSX6EABiMP",
         interestRateModel: {
-            "ETH": "KT1LMDkYiXwTpGickdwgjq1Jkgu63HZcZedt",
-            "BTC": "KT1DF1QugTQJ6zAkqSfgkeVEbER5EYkWH5cn"
+            "XTZ": "KT1BxbwBgSAopMh17bj5UKmgbi78DsptXitc",
+            "ETH": "KT1XLYihVvuJKk4VJZVGdnPv4eo9CEEDpfHA",
+            "BTC": "KT1TYqwzPHMwreTPGBYXVnQFgi1hDH1Fa4ge"
         },
-        governance: "KT1X8BwnBcLzSavKqAD1iSejrshmnQhg3VJL",
+        governance: "KT1UUZNzmqobhGXYvsbWUjnAAeWK3de2JG2q",
         priceFeed: "KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe"
-    };
+   };
 
     /*
      * @description TODO: convert mantissa to number
@@ -417,7 +420,7 @@ export namespace TezosLendingPlatform {
             const balance = account.marketBalances[asset];
             if (balance.supplyBalanceUnderlying.geq(bigInt(0)))
                 suppliedMarkets[asset] = {
-                    rate: markets[asset].rate,
+                    rate: markets[asset].supply.rate,
                     balanceUnderlying: balance.supplyBalanceUnderlying,
                     balanceUsd: balance.supplyBalanceUsd!,
                     collateral: balance.collateral!
@@ -437,7 +440,7 @@ export namespace TezosLendingPlatform {
             const balance = account.marketBalances[asset];
             if (balance.supplyBalanceUnderlying.eq(bigInt(0)))
                 unsuppliedMarkets[asset] = {
-                    rate: markets[asset].rate,
+                    rate: markets[asset].supply.rate,
                     balanceUnderlying: balance.supplyBalanceUnderlying,
                     balanceUsd: balance.supplyBalanceUsd!,
                     collateral: balance.collateral!
@@ -470,7 +473,7 @@ export namespace TezosLendingPlatform {
             const balance = account.marketBalances[asset];
             if (balance.loanBalanceUnderlying.geq(bigInt(0)))
                 borrowedMarkets[asset] = {
-                    rate: markets[asset].rate,
+                    rate: markets[asset].borrow.rate,
                     balanceUnderlying: balance.loanBalanceUnderlying,
                     balanceUsd: balance.loanBalanceUsd!,
                     liquidityUnderlying: markets[asset].cash,
@@ -491,7 +494,7 @@ export namespace TezosLendingPlatform {
             const balance = account.marketBalances[asset];
             if (balance.loanBalanceUnderlying.eq(bigInt(0)))
                 unborrowedMarkets[asset] = {
-                    rate: markets[asset].rate,
+                    rate: markets[asset].borrow.rate,
                     balanceUnderlying: balance.loanBalanceUnderlying,
                     balanceUsd: balance.loanBalanceUsd!,
                     liquidityUnderlying: markets[asset].cash,
@@ -510,7 +513,7 @@ export namespace TezosLendingPlatform {
      */
     export interface SupplyMarketModal {
         rate?: number;
-        borrowLimitUsd: number;
+        borrowLimitUsd: bigInt.BigInteger;
         borrowLimitUsed: number
     }
 
@@ -521,9 +524,9 @@ export namespace TezosLendingPlatform {
      */
     export function getSupplyMarketModal(account: Account, market: Market): SupplyMarketModal {
         return {
-            rate: 0.0534,
-            borrowLimitUsd: 2324,
-            borrowLimitUsed: 0.54
+            rate: market.supply.rate,
+            borrowLimitUsd: account.totalCollateralUsd.multiply(bigInt(account.health)), // TODO
+            borrowLimitUsed: account.health
         } as SupplyMarketModal;
     }
 
@@ -536,7 +539,7 @@ export namespace TezosLendingPlatform {
      */
     export interface BorrowMarketModal {
         rate: number;
-        borrowBalanceUsd: number;
+        borrowBalanceUsd: bigInt.BigInteger;
         borrowLimitUsed: number
     }
 
@@ -547,9 +550,9 @@ export namespace TezosLendingPlatform {
      */
     export function getBorrowMarketModal(account: Account, market: Market): BorrowMarketModal {
         return {
-            rate: 0.656,
-            borrowBalanceUsd: 433.22,
-            borrowLimitUsed: 0.54
+            rate: market.borrow.rate,
+            borrowBalanceUsd: account.totalLoanUsd,
+            borrowLimitUsed: account.health
         } as BorrowMarketModal;
     }
 
