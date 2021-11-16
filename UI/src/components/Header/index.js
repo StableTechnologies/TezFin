@@ -30,8 +30,8 @@ const Header = () => {
 
 
   useEffect(() => {
-    dispatch(supplyCompositionAction(account))
-    dispatch(borrowCompositionAction(account))
+    dispatch(supplyCompositionAction())
+    dispatch(borrowCompositionAction())
   }, [dispatch])
 
   return (
