@@ -400,7 +400,10 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export interface SupplyMarket {
-
+        rate: number;
+        balanceUnderlying: bigInt.BigInteger;
+        balanceUsd: bigInt.BigInteger;
+        collateral: boolean;
     }
 
     /*
@@ -408,16 +411,40 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function getSupplyMarkets(account: Account, markets: Market[]): { [assetType: string]: SupplyMarket } {
-        const asset = AssetType.ETH;
-        return {
-            asset: {
-                rate: 0.0498,
-                balanceUnderlying: 32.34,
-                balanceUsd: 3209.34
-            } as SupplyMarket
-        };
+    export function getSuppliedMarkets(account: Account, markets: Market[]): { [assetType: string]: SupplyMarket } {
+        const suppliedMarkets: { [assetType: string]: SupplyMarket } = {};
+        for (const asset in account.marketBalances) {
+            const balance = account.marketBalances[asset];
+            if (balance.supplyBalanceUnderlying.geq(bigInt(0)))
+                suppliedMarkets[asset] = {
+                    rate: markets[asset].rate,
+                    balanceUnderlying: balance.supplyBalanceUnderlying,
+                    balanceUsd: balance.supplyBalanceUsd!,
+                    collateral: balance.collateral!
+                };
+        }
+        return suppliedMarkets;
     }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export function getUnsuppliedMarkets(account: Account, markets: Market[]): { [assetType: string]: SupplyMarket } {
+        const unsuppliedMarkets: { [assetType: string]: SupplyMarket } = {};
+        for (const asset in account.marketBalances) {
+            const balance = account.marketBalances[asset];
+            if (balance.supplyBalanceUnderlying.eq(bigInt(0)))
+                unsuppliedMarkets[asset] = {
+                    rate: markets[asset].rate,
+                    balanceUnderlying: balance.supplyBalanceUnderlying,
+                    balanceUsd: balance.supplyBalanceUsd!,
+                    collateral: balance.collateral!
+                };
+        }
+        return unsuppliedMarkets;
+   }
 
     /*
      * @description
@@ -426,10 +453,10 @@ export namespace TezosLendingPlatform {
      */
     export interface BorrowMarket {
         rate: number;
-        balanceUnderlying: number;
-        balanceUsd: number;
-        liquidityUnderlying: number;
-        liquidityUsd: number;
+        balanceUnderlying: bigInt.BigInteger;
+        balanceUsd: bigInt.BigInteger;
+        liquidityUnderlying: bigInt.BigInteger;
+        liquidityUsd: bigInt.BigInteger;
     }
 
     /*
@@ -437,17 +464,41 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export function getBorrowMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket }{
-        const asset = AssetType.ETH;
-        return {
-            asset: {
-                rate: 0.0323,
-                balanceUnderlying: 3.23,
-                balanceUsd: 85.32,
-                liquidityUnderlying: 938293,
-                liquidityUsd: 34342.11
-            } as BorrowMarket
-        };
+    export function getBorrowedMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket } {
+        const borrowedMarkets: { [assetType: string]: BorrowMarket } = {};
+        for (const asset in account.marketBalances) {
+            const balance = account.marketBalances[asset];
+            if (balance.loanBalanceUnderlying.geq(bigInt(0)))
+                borrowedMarkets[asset] = {
+                    rate: markets[asset].rate,
+                    balanceUnderlying: balance.loanBalanceUnderlying,
+                    balanceUsd: balance.loanBalanceUsd!,
+                    liquidityUnderlying: markets[asset].cash,
+                    liquidityUsd: markets[asset].cashUsd
+                };
+        }
+        return borrowedMarkets;
+    }
+
+    /*
+     * @description
+     *
+     * @param
+     */
+    export function getUnborrowedMarkets(account: Account, markets: Market[]): { [assetType: string]: BorrowMarket }{
+        const unborrowedMarkets: { [assetType: string]: BorrowMarket } = {};
+        for (const asset in account.marketBalances) {
+            const balance = account.marketBalances[asset];
+            if (balance.loanBalanceUnderlying.eq(bigInt(0)))
+                unborrowedMarkets[asset] = {
+                    rate: markets[asset].rate,
+                    balanceUnderlying: balance.loanBalanceUnderlying,
+                    balanceUsd: balance.loanBalanceUsd!,
+                    liquidityUnderlying: markets[asset].cash,
+                    liquidityUsd: markets[asset].cashUsd
+                };
+        }
+        return unborrowedMarkets;
     }
 
     /*
