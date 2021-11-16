@@ -1,19 +1,10 @@
 {
   "tezos": {
-    "RPC": "https://tezos-prod.cryptonomic-infra.tech:443",
-    "chain_id": "NetXdQprcVkpaWU",
+    "tezosNode": "https://tezos-prod.cryptonomic-infra.tech:443",
     "conseilServer": {
         "url": "https://conseil-prod.cryptonomic-infra.tech:443",
-        "apiKey": "4660121e-1bab-4740-8d57-083681e3441d",
+        "apiKey": "",
         "network": "mainnet"
-    },
-    "feeContract": {
-        "address": "KT1SHfrdJjpZNexZdrM8YvDjaVas2i8p8xbZ",
-        "mapID": ""
-    },
-    "priceOracle": {
-        "address": "KT1AdbYiPYb5hDuEuVrfxmFehtnBCXv4Np7r",
-        "mapID": 101
     }
   }
 }
