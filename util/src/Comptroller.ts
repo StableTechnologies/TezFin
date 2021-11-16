@@ -59,17 +59,18 @@ export namespace Comptroller {
         const marketsMapId = JSONPath({path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
         // get all market values for fTokens from protocolAddresses
         const markets: MarketMap = {};
-        try {
-            await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
+
+        await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
+            try {
                 const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
                 const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
                 const asset = protocolAddresses.fTokensReverse[addr];
                 markets[asset] = parseMarketResult(marketsResult);
-            }));
-        } catch (e) {
-            log.error(`Unable to get Comptroller.Markets big map content.\n${e}`);
-            throw e;
-        }
+            } catch (e) {
+                log.error(`Failed to get Comptroller.Markets big_map content for ${addr} from ${marketsMapId} with ${e}`);
+            }
+        }));
+
         // parse results
         return {
             accountLiquidityMapId: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
