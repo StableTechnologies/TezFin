@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch, useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { granadanetAction, tezosNodeAction } from "./reduxContent/nodes/actions";
 
@@ -11,8 +11,14 @@ import Dashboard from './components/Dashboard';
 import Grid from '@mui/material/Grid';
 import { useEffect } from "react";
 
-function App() {
+const App = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
+  console.log('history');
+  // useEffect(() => {
+  //   history.push("/dashboard")
+  // }, [history])
+
 
   useEffect(() => {
     dispatch(tezosNodeAction());
@@ -28,10 +34,10 @@ function App() {
           <Route exact path="/dashboard">
             <Dashboard />
           </Route>
-          <Route exact path="/market"></Route>
-          <Route exact path="/about"></Route>
+          {/* <Route exact path="/market"></Route> */}
+          {/* <Route exact path="/about"></Route> */}
           {/* <Route exact path="/"> <Home /> </Route> */}
-          <Route exact path="/"> </Route>
+          <Route exact path="/"> <Home /> </Route>
         </Switch>
       </Grid>
     </Router>
