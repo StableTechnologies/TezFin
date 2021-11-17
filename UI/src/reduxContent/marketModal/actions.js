@@ -10,8 +10,10 @@ import {
 import {TezosLendingPlatform} from 'tezoslendingplatformjs';
 
 export const supplyMarketModalAction = (account, market) => async (dispatch) => {
-  const supplyMarketModal = TezosLendingPlatform.getSupplyMarketModal(account, market);
-  dispatch({ type: GET_SUPPLY_MARKET_MODAL_DATA, payload: supplyMarketModal });
+  try {
+    const supplyMarketModal = TezosLendingPlatform.getSupplyMarketModal(account, market);
+    dispatch({ type: GET_SUPPLY_MARKET_MODAL_DATA, payload: supplyMarketModal });
+  } catch (error) {}
 }
 
 export const borrowMarketModalAction = (account, market) => async (dispatch) => {

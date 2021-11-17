@@ -16,7 +16,7 @@ const SupplyModal = (props) => {
 
   const { account } = useSelector(state => state.addWallet);
   const { markets } = useSelector(state => state.market);
-//   const { supplyMarketModal } = useSelector(state => state.supplyMarketModal);
+  const { supplyMarketModal } = useSelector(state => state.marketModal);
   const [openConfirmModal, setConfirmModal] =useState(false);
   const [tokenText, setTokenText] =useState('');
 
@@ -50,15 +50,15 @@ const SupplyModal = (props) => {
     handleOpenConfirm();
   }
 
-//   if (valueofRow && supplyMarketModal) {
-//     valueofRow.apy = supplyMarketModal.rate;
-//     valueofRow.borrowLimit = supplyMarketModal.borrowLimit;
-//     valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
-//   }
+  if (supplyMarketModal) {
+    valueofRow.rate = supplyMarketModal.rate;
+    valueofRow.borrowLimit = supplyMarketModal.borrowLimit;
+    valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
+  }
 
   useEffect(() => {
     dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
-  }, [dispatch, account]);
+  }, [dispatch]);
 
   useEffect(() => {
     setAmount('');

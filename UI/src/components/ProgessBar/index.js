@@ -18,7 +18,7 @@ const CustomizedProgressBars = (props)=> {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <BorderLinearProgress variant="determinate" value={value} className={backgroundColor}/>
+      <BorderLinearProgress variant="determinate" value={value || 0}  className={backgroundColor}/>
     </Box>
   );
 }
