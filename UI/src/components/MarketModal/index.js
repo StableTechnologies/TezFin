@@ -16,6 +16,7 @@ import CloseButton from '../CloseButton';
 import { useStyles } from './style';
 
 import Tez from '../../assets/largeXTZ.svg';
+import { useSelector } from 'react-redux';
 
 const MarketModal = (props) => {
   const classes = useStyles();
@@ -28,6 +29,9 @@ const MarketModal = (props) => {
 
     const [tabValue, setTabValue] = useState('one');
     const [tokenValue, setTokenValue] = useState('');
+
+  const { address } = useSelector(state => state.addWallet.account);
+
 
     const handleTabChange = (event, newValue) => {
       setTabValue(newValue);
@@ -118,7 +122,7 @@ const MarketModal = (props) => {
           {collateralize ?
             <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne } disableRipple> {buttonOne} </Button> :
             <>
-              {tokenValue ?
+              {(tokenValue && address) ?
                 <>
                   {tabValue === "one" &&
                     <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne} disableRipple> {buttonOne} </Button>
