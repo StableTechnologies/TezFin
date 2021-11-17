@@ -40,10 +40,10 @@ const Dashboard =() => {
           <Typography className={classes.tableTitle}> supplying </Typography>
           <Market
             tableData = {suppliedMarkets}
-            heading1 = "Token"
-            heading2 = "APY/Earned"
-            heading3 = "Balance"
-            heading4 = "Collateral"
+            headingOne = "Token"
+            headingTwo = "APY/Earned"
+            headingThree = "Balance"
+            headingFour = "Collateral"
             toggle
             supplyingMkt
             />
@@ -52,10 +52,10 @@ const Dashboard =() => {
         <Typography className={classes.tableTitleTwo}> All Supply Markets </Typography>
         <Market
           tableData = {unSuppliedMarkets}
-          heading1 = "Token"
-          heading2 = "APY"
-          heading3 = "Wallet"
-          heading4 = "Collateral"
+          headingOne = "Token"
+          headingTwo = "APY"
+          headingThree = "Wallet"
+          headingFour = "Collateral"
           toggle
           supplyMkt
         />
@@ -64,10 +64,10 @@ const Dashboard =() => {
         <Typography className={classes.tableTitle}> Borrow Markets </Typography>
         <Market
           tableData = {unBorrowedMarkets}
-          heading1 = "Token"
-          heading2 = "APY"
-          heading3 = "Wallet"
-          heading4 = "Liquidity"
+          headingOne = "Token"
+          headingTwo = "APY"
+          headingThree = "Wallet"
+          headingFour = "Liquidity"
           borrowMkt
         />
       </Grid>

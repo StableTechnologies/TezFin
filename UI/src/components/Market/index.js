@@ -17,12 +17,10 @@ import BorrowModal from '../BorrowModal';
 import CollateralizeModal from '../CollateralizeModal';
 import DisableCollateralModal from '../DisableCollateralModal';
 
-// TODO
-// 1.CHANGE 'data.wallet' & 'data.walletUSD' to 'data.walletUnderlying' & 'data.walletUsd' respectively
 
 const Market = (props) => {
   const classes = useStyles();
-  const { heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt } = props;
+  const { headingOne, headingTwo, headingThree, headingFour, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt } = props;
 
   const [valueofRow, setValueOfRow] = useState();
   const [openMktModal, setMktModal] = useState(false);
@@ -42,7 +40,9 @@ const Market = (props) => {
       if(item.collateral === true) { setDisableCollModal(true) }
       if(item.collateral === false) {setCollModal(true) }
     }
-    else { setMktModal(true) }
+    else {
+      setMktModal(true);
+    }
   }
 
   return (
@@ -50,43 +50,43 @@ const Market = (props) => {
       {valueofRow &&
         <>
           {(supplyMkt || supplyingMkt) &&
-            <SupplyModal open={openMktModal} close={closeModal} valueofRow={valueofRow} enableToken={enableToken} />
+            <SupplyModal open = {openMktModal} close = {closeModal} valueofRow = {valueofRow} enableToken = {enableToken} />
           }
           {borrowMkt &&
-            <BorrowModal open={openMktModal} close={closeModal} valueofRow={valueofRow} />
+            <BorrowModal open = {openMktModal} close = {closeModal} valueofRow = {valueofRow} />
           }
-          <DisableCollateralModal open={disableCollModal} close={closeModal} valueofRow={valueofRow} />
-          <CollateralizeModal open={collModal} close={closeModal} valueofRow={valueofRow} />
+          <DisableCollateralModal open = {disableCollModal} close = {closeModal} valueofRow = {valueofRow} />
+          <CollateralizeModal open = {collModal} close = {closeModal} valueofRow = {valueofRow} />
         </>
       }
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{heading1}</TableCell>
-            <TableCell>{heading2}</TableCell>
-            <TableCell>{heading3}</TableCell>
-            <TableCell>{heading4}</TableCell>
+            <TableCell> { headingOne } </TableCell>
+            <TableCell> { headingTwo } </TableCell>
+            <TableCell> { headingThree } </TableCell>
+            <TableCell> { headingFour } </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {tableData && tableData.map(data =>(
-            <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
+            <TableRow key={data.title} onClick = {(event) => handleClickMktModal(data, event)}>
               <TableCell>
-                <img src={supplyingMkt ? Tez : data.logo} alt={data.title+ "-Icon"} className={classes.img} />
+                <img src = {supplyingMkt ? Tez : data.logo} alt = {data.title+ "-Icon"} className = {classes.img} />
                 <Typography sx={{ display: 'inline' }}> {supplyingMkt ? "ꜰ"+data.title : data.title} </Typography>
               </TableCell>
-              <TableCell> {data.rate ? data.rate + "%" : ""} </TableCell>
+              <TableCell> { data.rate ? data.rate + "%" : "" } </TableCell>
               <TableCell>
-                <Typography>$ {data.wallet ? data.wallet.toString() : "0.00"}  </Typography>
+                <Typography> $ {(data.walletUnderlying > 0) ? data.walletUnderlying.toString() : "0.00"}  </Typography>
                 {supplyMkt &&
-                  <Typography className={classes.faintFont}> {data.walletUSD ? data.walletUSD.toString() : "0"} XTZ </Typography>
+                  <Typography className = {classes.faintFont}> {data.walletUsd ? data.walletUsd.toString() : "0"} XTZ </Typography>
                 }
               </TableCell>
-              <TableCell className={classes.toggle}>
-              {toggle &&
-                <Switch data={data}  />
+              <TableCell className = {classes.toggle}>
+              { toggle ?
+                <Switch data = {data}  /> :
+                <Typography> $ {(data.liquidityUsd > 0) ? data.liquidityUsd.toString() : "0.00"}  </Typography>
               }
-              {/* display liquidity data  */}
               </TableCell>
             </TableRow>
           ))}
