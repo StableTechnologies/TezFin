@@ -62,7 +62,7 @@ const SupplyModal = (props) => {
 
   useEffect(() => {
     dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
-  }, [dispatch]);
+  }, [dispatch, open]);
 
   useEffect(() => {
     setAmount('');

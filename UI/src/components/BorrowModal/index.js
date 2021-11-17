@@ -25,7 +25,6 @@ const BorrowModal = (props) =>{
 
   const handleOpenConfirm = () => {
     setConfirmModal(true);
-
   };
   const handleCloseConfirm = () => {
     setConfirmModal(false);
@@ -56,9 +55,10 @@ const BorrowModal = (props) =>{
     // valueofRow.borrowBalanceUsd = borrowMarketModal.borrowBalanceUsd.toString();
     valueofRow.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
   }
+
   useEffect(() => {
     dispatch(borrowMarketModalAction(account, markets[valueofRow['assetType']]));
-  }, [dispatch, account]);
+  }, [dispatch, open]);
 
   return (
     <>
