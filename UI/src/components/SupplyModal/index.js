@@ -12,14 +12,16 @@ const SupplyModal = (props) => {
   const dispatch = useDispatch();
   const { open, close, valueofRow, onClick, supply, enableToken, mint, withdraw } = props;
 
-  const [amount, setAmount] = useState('');
 
-  const { account } = useSelector(state => state.addWallet);
   // const account  = JSON.parse(localStorage.getItem('account'));
-
+  const { account } = useSelector(state => state.addWallet);
+  const { server } = useSelector(state => state.nodes.tezosNode);
+  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
   const { supplyMarketModal } = useSelector(state => state.marketModal);
   const [openConfirmModal, setConfirmModal] =useState(false);
+
+  const [amount, setAmount] = useState('');
   const [tokenText, setTokenText] =useState('');
 
   const handleOpenConfirm = () => {
@@ -34,7 +36,7 @@ const SupplyModal = (props) => {
     const underlying = valueofRow.assetType.toLowerCase();
     const mintPair = { underlying, amount };
 
-    dispatch(supplyTokenAction(mintPair));
+    dispatch(supplyTokenAction(mintPair, protocolAddresses, server));
     close();
     setAmount('');
     setTokenText('supply');
@@ -45,7 +47,7 @@ const SupplyModal = (props) => {
     const underlying = valueofRow.assetType.toLowerCase();
     const redeemPair = { underlying, amount };
 
-    dispatch(withdrawTokenAction(redeemPair));
+    dispatch(withdrawTokenAction(redeemPair, comptroller, protocolAddresses, server));
     close();
     setAmount('');
     setTokenText('withdraw');

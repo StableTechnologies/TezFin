@@ -19,7 +19,8 @@ const Nav = () => {
 
   const [tezAccount, setTezAccount] = useState('');
 
-  const { address } = JSON.parse(localStorage.getItem('account'));
+  // const { address } = JSON.parse(localStorage.getItem('account'));
+  const { address } = useSelector(state => state.addWallet);
   const { server, conseilServerInfo } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
