@@ -13,12 +13,6 @@ import { useEffect } from "react";
 
 const App = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
-  console.log('history');
-  // useEffect(() => {
-  //   history.push("/dashboard")
-  // }, [history])
-
 
   useEffect(() => {
     dispatch(tezosNodeAction());
