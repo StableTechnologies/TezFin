@@ -12,11 +12,15 @@ import { TezosLendingPlatform, Comptroller, FToken } from 'tezoslendingplatformj
  * @param  markets
  */
 export const addWalletAction = (clients, server, conseilServerInfo, comptroller, markets) => async (dispatch) => {
+
   const address = clients.tezos.account;
 
   const account = await TezosLendingPlatform.GetAccount(address, markets, comptroller, server, conseilServerInfo);
 
   dispatch({ type: GET_ACCOUNT, payload: account });
   dispatch({ type: GET_CLIENTS, payload: clients });
+
+  localStorage.setItem('clients', JSON.stringify(clients));
+  localStorage.setItem('account', JSON.stringify(account));
 }
 

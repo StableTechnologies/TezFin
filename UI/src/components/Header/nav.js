@@ -19,14 +19,14 @@ const Nav = () => {
 
   const [tezAccount, setTezAccount] = useState('');
 
-  const {address} = useSelector(state => state.addWallet.account);
+  const { address } = JSON.parse(localStorage.getItem('account'));
   const { server, conseilServerInfo } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
 
   const addWallet = async() => {
     try {
-      const { clients } = await getWallet();
+      let { clients } = await getWallet();
       dispatch(addWalletAction(clients, server, conseilServerInfo, comptroller, markets));
     } catch (error) {}
   };

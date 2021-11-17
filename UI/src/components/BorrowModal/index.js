@@ -12,6 +12,7 @@ const BorrowModal = (props) =>{
 
   const { open, close, valueofRow } = props;
 
+  // const account  = JSON.parse(localStorage.getItem('account'));
   const { account } = useSelector(state => state.addWallet);
   const { markets } = useSelector(state => state.market);
   const { borrowMarketModal } = useSelector(state => state.marketModal);

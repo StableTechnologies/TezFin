@@ -15,6 +15,8 @@ const SupplyModal = (props) => {
   const [amount, setAmount] = useState('');
 
   const { account } = useSelector(state => state.addWallet);
+  // const account  = JSON.parse(localStorage.getItem('account'));
+
   const { markets } = useSelector(state => state.market);
   const { supplyMarketModal } = useSelector(state => state.marketModal);
   const [openConfirmModal, setConfirmModal] =useState(false);
