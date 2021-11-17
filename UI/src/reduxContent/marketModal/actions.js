@@ -9,6 +9,13 @@ import {
 
 import {TezosLendingPlatform} from 'tezoslendingplatformjs';
 
+/**
+ * This function is used to get the supply market modal data of an account.
+ *
+ * @param  account
+ * @param  market
+ * @returns supplyMarketModal
+ */
 export const supplyMarketModalAction = (account, market) => async (dispatch) => {
   try {
     const supplyMarketModal = TezosLendingPlatform.getSupplyMarketModal(account, market);
@@ -16,34 +23,69 @@ export const supplyMarketModalAction = (account, market) => async (dispatch) => 
   } catch (error) {}
 }
 
+/**
+ * This function is used to get the borrow market modal data of an account.
+ *
+ * @param  account
+ * @param  market
+ * @returns borrowMarketModal
+ */
 export const borrowMarketModalAction = (account, market) => async (dispatch) => {
   const borrowMarketModal = TezosLendingPlatform.getBorrowMarketModal(account, market);
   dispatch({ type: GET_BORROW_MARKET_MODAL_DATA, payload: borrowMarketModal });
 }
 
-export const supplyTokenAction = (mintPair, protocolAddresses, server, signer, keystore, fee, gas, freight)=> async (dispatch) => {
-  // TODO
-  // mintPair: {underlying: TezosLendingPlatform.AssetType; amount: number;}
+/**
+ * This function is used to supply tokens to the market.
+ *
+ * @param  mintPair underlying asset and amount to be supplied
+ * @param  protocolAddresses Addresses of the protocol contracts
+ * @param  server server address
+ */
+export const supplyTokenAction = (mintPair, protocolAddresses, server)=> async (dispatch) => {
 
-  const mint = TezosLendingPlatform.Mint(mintPair, protocolAddresses, server, signer, keystore, fee, gas, freight);
+  const mint = TezosLendingPlatform.Mint(mintPair, protocolAddresses, server);
   dispatch({ type: MINT_TOKEN, payload: mint });
 }
 
-export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server, signer, keystore, fee, gas, freight)=> async (dispatch) => {
+/**
+ * This function is used for redeeming tokens for the underlying asset..
+ *
+ * @param  redeemPair underlying asset and amount to be redeemed
+ * @param  comptroller Comptroller storage.
+ * @param  protocolAddresses Addresses of the protocol contracts
+ * @param  server server address
+ */
+export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server)=> async (dispatch) => {
 
-  const withdraw = TezosLendingPlatform.Redeem(redeemPair, comptroller, protocolAddresses, server, signer, keystore, fee, gas, freight);
+  const withdraw = TezosLendingPlatform.Redeem(redeemPair, comptroller, protocolAddresses, server);
   dispatch({ type: WITHDRAW_TOKEN, payload: withdraw });
 }
 
-export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, server, signer, keystore, fee, gas, freight)=> async (dispatch) => {
+/**
+ * This function is used for borrowing tokens for the underlying asset..
+ *
+ * @param  borrowPair underlying asset and amount to be borrowed
+ * @param  comptroller Comptroller storage.
+ * @param  protocolAddresses Addresses of the protocol contracts
+ * @param  server server address
+ */
+export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, server)=> async (dispatch) => {
 
-  const borrow = TezosLendingPlatform.Borrow(borrowPair, comptroller, protocolAddresses, server, signer, keystore, fee, gas, freight);
+  const borrow = TezosLendingPlatform.Borrow(borrowPair, comptroller, protocolAddresses, server);
   dispatch({ type: BORROW_TOKEN, payload: borrow });
 }
 
-export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, server, signer, keystore, fee, gas, freight)=> async (dispatch) => {
+/**
+ * This function is used for repaying tokens for the underlying asset.
+ *
+ * @param  repayBorrowPair underlying asset and amount to be repayed.
+ * @param  protocolAddresses Addresses of the protocol contracts
+ * @param  server server address
+ */
+export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, server)=> async (dispatch) => {
 
-  const repayBorrow = TezosLendingPlatform.Borrow(repayBorrowPair, protocolAddresses, server, signer, keystore, fee, gas, freight);
+  const repayBorrow = TezosLendingPlatform.Borrow(repayBorrowPair, protocolAddresses, server);
   dispatch({ type: REPAY_BORROW_TOKEN, payload: repayBorrow });
 }
 
