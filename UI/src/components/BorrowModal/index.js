@@ -51,7 +51,6 @@ const BorrowModal = (props) =>{
   }
 
   if (borrowMarketModal !== undefined) {
-    valueofRow.rate = borrowMarketModal.rate;
     // valueofRow.borrowBalanceUsd = borrowMarketModal.borrowBalanceUsd.toString();
     valueofRow.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
   }
