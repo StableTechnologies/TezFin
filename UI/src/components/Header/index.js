@@ -67,6 +67,7 @@ const Header = () => {
           dataTitle = "Borrowing"
           dataLimitIcon = {borrowLimitIcon}
           dataLimitTitle = "Borrow limit"
+          gridClass={classes.padding30}
           progressBarColor={classes.borrowBarColor} // add class
         />
       </Grid>
