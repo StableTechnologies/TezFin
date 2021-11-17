@@ -55,8 +55,8 @@ export const suppliedMarketAction = (account, markets)=> async (dispatch) => {
 /**
  * This function is used to get the supply market data in which an account has *NO* suppplied funds.
  *
- * @param  account
- * @param  markets
+ * @param account
+ * @param markets
  * @returns unSuppliedMarket
  */
 export const unSuppliedMarketAction = (account, markets)=> async (dispatch) => {

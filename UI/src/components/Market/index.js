@@ -22,7 +22,7 @@ import DisableCollateralModal from '../DisableCollateralModal';
 
 const Market = (props) => {
   const classes = useStyles();
-  const {heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt} =props;
+  const { heading1, heading2, heading3, heading4, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt } = props;
 
   const [valueofRow, setValueOfRow] = useState();
   const [openMktModal, setMktModal] = useState(false);
@@ -45,8 +45,6 @@ const Market = (props) => {
     else { setMktModal(true) }
   }
 
-
-
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
       {valueofRow &&
@@ -66,9 +64,7 @@ const Market = (props) => {
           <TableRow>
             <TableCell>{heading1}</TableCell>
             <TableCell>{heading2}</TableCell>
-            <TableCell>
-              {heading3}
-            </TableCell>
+            <TableCell>{heading3}</TableCell>
             <TableCell>{heading4}</TableCell>
           </TableRow>
         </TableHead>
@@ -81,10 +77,9 @@ const Market = (props) => {
               </TableCell>
               <TableCell> {data.rate ? data.rate + "%" : ""} </TableCell>
               <TableCell>
-                <Typography>$ {data.wallet ?  data.wallet : "0.00"}  </Typography>
+                <Typography>$ {data.wallet ? data.wallet.toString() : "0.00"}  </Typography>
                 {supplyMkt &&
-                // <Typography>$ {data.wallet ?  data.wallet : "0.00" + data.title}  </Typography>
-                  <Typography className={classes.faintFont}> {data.walletUSD ?  data.walletUSD : "0"} XTZ  </Typography>
+                  <Typography className={classes.faintFont}> {data.walletUSD ? data.walletUSD.toString() : "0"} XTZ </Typography>
                 }
               </TableCell>
               <TableCell className={classes.toggle}>

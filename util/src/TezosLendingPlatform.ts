@@ -240,7 +240,7 @@ export namespace TezosLendingPlatform {
      * @param marketBalances Account balances across all markets
      * @param totalCollateralUsd Total USD value of collateral
      * @param totalLoanUsd Total USD value of loans
-     * @param health Account LTV ratio, totalCollateralUsd / TotalLoanUsd
+     * @param health Account LTV ratio, totalCollateralUsd / totalLoanUsd expressed as bps
      * @param rate Current net account rate across all markets, both supply and borrow, weighted by balance
      */
     export interface Account {
@@ -281,8 +281,10 @@ export namespace TezosLendingPlatform {
         let totalCollateralUsd = bigInt(0);
         let totalLoanUsd = bigInt(0);
         for (const asset in balances) {
-            if (balances[asset].collateral!)
+            if (balances[asset].collateral!) {
                 totalCollateralUsd = totalCollateralUsd.add(balances[asset].supplyBalanceUsd!);
+            }
+
             totalLoanUsd = totalLoanUsd.add(balances[asset].loanBalanceUsd!);
         }
         // calculate aggregate account rate
@@ -311,13 +313,16 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * @description
+     * @description Returns the ratio of loans to collateral in terms of basis points.
      *
      * @param
      */
     export function calculateHealth(collateral: bigInt.BigInteger, loans: bigInt.BigInteger): number {
-        // TODO: fractions
-        return 0.9; // collateral / loans;
+        return 1000;
+
+        if (collateral.eq(0)) { return Number.POSITIVE_INFINITY; }
+
+        return loans.divide(collateral).multiply(10000).toJSNumber();
     }
 
     /*
@@ -457,6 +462,7 @@ export namespace TezosLendingPlatform {
                     collateral: balance.collateral!
                 };
         }
+
         return unsuppliedMarkets;
    }
 
