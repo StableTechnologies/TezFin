@@ -52,7 +52,7 @@ const SupplyModal = (props) => {
 
   if (supplyMarketModal) {
     valueofRow.rate = supplyMarketModal.rate;
-    valueofRow.borrowLimit = supplyMarketModal.borrowLimit;
+    // valueofRow.borrowLimit = supplyMarketModal.borrowLimitUsd.toString();
     valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
   }
 

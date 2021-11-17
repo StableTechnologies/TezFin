@@ -31,8 +31,10 @@ export const supplyMarketModalAction = (account, market) => async (dispatch) => 
  * @returns borrowMarketModal
  */
 export const borrowMarketModalAction = (account, market) => async (dispatch) => {
-  const borrowMarketModal = TezosLendingPlatform.getBorrowMarketModal(account, market);
-  dispatch({ type: GET_BORROW_MARKET_MODAL_DATA, payload: borrowMarketModal });
+  try {
+    const borrowMarketModal = TezosLendingPlatform.getBorrowMarketModal(account, market);
+    dispatch({ type: GET_BORROW_MARKET_MODAL_DATA, payload: borrowMarketModal });
+  } catch (error) {}
 }
 
 /**

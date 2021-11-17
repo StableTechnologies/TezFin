@@ -94,7 +94,7 @@ const MarketModal = (props) => {
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ? "": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ? "" : classes.visibility}> ${(valueofRow.borrowLimit || valueofRow.borrowBalance) || "0.00"}</Grid>
+            <Grid item sm={2} className={visibility ? "" : classes.visibility}> ${(valueofRow.borrowLimit || valueofRow.borrowBalanceUsd) || "0.00"}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
