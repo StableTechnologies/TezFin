@@ -46,7 +46,7 @@ export const borrowMarketModalAction = (account, market) => async (dispatch) => 
  */
 export const supplyTokenAction = (mintPair, protocolAddresses, server)=> async (dispatch) => {
 
-  const mint = TezosLendingPlatform.Mint(mintPair, protocolAddresses, server);
+  const mint = await TezosLendingPlatform.Mint(mintPair, protocolAddresses, server);
   dispatch({ type: MINT_TOKEN, payload: mint });
 }
 
@@ -60,7 +60,7 @@ export const supplyTokenAction = (mintPair, protocolAddresses, server)=> async (
  */
 export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server)=> async (dispatch) => {
 
-  const withdraw = TezosLendingPlatform.Redeem(redeemPair, comptroller, protocolAddresses, server);
+  const withdraw = await TezosLendingPlatform.Redeem(redeemPair, comptroller, protocolAddresses, server);
   dispatch({ type: WITHDRAW_TOKEN, payload: withdraw });
 }
 
@@ -74,7 +74,7 @@ export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, 
  */
 export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, server)=> async (dispatch) => {
 
-  const borrow = TezosLendingPlatform.Borrow(borrowPair, comptroller, protocolAddresses, server);
+  const borrow = await TezosLendingPlatform.Borrow(borrowPair, comptroller, protocolAddresses, server);
   dispatch({ type: BORROW_TOKEN, payload: borrow });
 }
 
@@ -87,7 +87,7 @@ export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, se
  */
 export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, server)=> async (dispatch) => {
 
-  const repayBorrow = TezosLendingPlatform.Borrow(repayBorrowPair, protocolAddresses, server);
+  const repayBorrow = await TezosLendingPlatform.RepayBorrow(repayBorrowPair, protocolAddresses, server);
   dispatch({ type: REPAY_BORROW_TOKEN, payload: repayBorrow });
 }
 

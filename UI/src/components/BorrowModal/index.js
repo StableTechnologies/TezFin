@@ -14,6 +14,8 @@ const BorrowModal = (props) =>{
 
   // const account  = JSON.parse(localStorage.getItem('account'));
   const { account } = useSelector(state => state.addWallet);
+  const { server } = useSelector(state => state.nodes.tezosNode);
+  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
   const { borrowMarketModal } = useSelector(state => state.marketModal);
 
@@ -32,7 +34,7 @@ const BorrowModal = (props) =>{
   const borrowToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
     const borrowPair =  {underlying, amount: amount}
-    dispatch( borrowTokenAction(borrowPair));
+    dispatch( borrowTokenAction(borrowPair, comptroller, protocolAddresses, server));
     close();
     setAmount('')
     setTokenText('borrow')
@@ -42,7 +44,7 @@ const BorrowModal = (props) =>{
   const repayBorrowToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
     const repayBorrowPair =  {underlying, amount: amount}
-    dispatch( repayBorrowTokenAction(repayBorrowPair));
+    dispatch( repayBorrowTokenAction(repayBorrowPair, protocolAddresses, server));
     close();
     setAmount('');
     setTokenText('repay')
