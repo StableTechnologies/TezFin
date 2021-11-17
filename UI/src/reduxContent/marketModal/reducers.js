@@ -17,7 +17,7 @@ const initState = {
   repayBorrowToken: {},
 }
 
-const marketModalReducer = (state=initState, action) => {
+const marketModalReducer = (state = initState, action) => {
   switch(action.type) {
     case GET_SUPPLY_MARKET_MODAL_DATA:
       return {

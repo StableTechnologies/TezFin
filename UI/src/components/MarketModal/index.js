@@ -92,23 +92,23 @@ const MarketModal = (props) => {
         }
         <DialogContent className={classes.limit}>
           <Grid container textAlign="justify" justifyContent="space-between">
-            <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {Limit} </Grid>
+            <Grid item sm={7} className={`${classes.faintFont} ${visibility ? "": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> ${(valueofRow.borrowLimit || valueofRow.borrowBalance) || "0.00"}</Grid>
+            <Grid item sm={2} className={visibility ? "" : classes.visibility}> ${(valueofRow.borrowLimit || valueofRow.borrowBalance) || "0.00"}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container textAlign="justify" justifyContent="space-between">
-            <Grid item sm={7} className={`${classes.faintFont} ${visibility ?"": classes.visibility}`}> {LimitUsed} </Grid>
+            <Grid item sm={7} className={`${classes.faintFont} ${visibility ? "" : classes.visibility}`}> {LimitUsed} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ?"": classes.visibility}> {valueofRow.borrowLimitUsed || "0"}% </Grid>
+            <Grid item sm={2} className={visibility ? "" : classes.visibility}> {valueofRow.borrowLimitUsed || "0"}% </Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container>
             <Grid item sm={12}>
-              <Box className={`${classes.progressBar} ${visibility ?"": classes.visibility}`}>
-                <CustomizedProgressBars backgroundColor={progressBarColor}/>
+              <Box className={`${classes.progressBar} ${visibility ? "" : classes.visibility}`}>
+                <CustomizedProgressBars backgroundColor={progressBarColor} value={valueofRow.borrowLimitUsed} />
               </Box>
             </Grid>
           </Grid>

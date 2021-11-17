@@ -24,10 +24,11 @@ const Dashboard =() => {
     dispatch(unBorrowedMarketAction(account, markets));
   }, [dispatch, account, markets])
 
-  // console.log(`dashboard markets ${JSON.stringify(markets)}`)
-  // console.log(`dashboard supplyMarkets ${JSON.stringify(supplyMarkets)}`)
-  // console.log(`dashboard borrowMarkets ${JSON.stringify(borrowMarkets)}`)
-  // console.log(`dashboard supplyingMarkets ${JSON.stringify(supplyingMarkets)}`)
+//   console.log(`dashboard markets ${JSON.stringify(markets)}`)
+//   console.log(`dashboard suppliedMarkets ${JSON.stringify(suppliedMarkets)}`)
+//   console.log(`dashboard borrowedMarkets ${JSON.stringify(borrowedMarkets)}`)
+//   console.log(`dashboard unSuppliedMarkets ${JSON.stringify(unSuppliedMarkets)}`)
+//   console.log(`dashboard unBorrowedMarkets ${JSON.stringify(unBorrowedMarkets)}`)
 
   return (
     <Grid container className={classes.dashboard}>

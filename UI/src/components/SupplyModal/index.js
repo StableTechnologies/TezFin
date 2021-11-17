@@ -7,15 +7,16 @@ import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from 
 import { useStyles } from './style';
 import ConfirmModal from '../ConfirmModal';
 
-const SupplyModal = (props) =>{
+const SupplyModal = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const {open, close, valueofRow, onClick, supply, enableToken, mint, withdraw} = props;
+  const { open, close, valueofRow, onClick, supply, enableToken, mint, withdraw } = props;
 
   const [amount, setAmount] = useState('');
 
-  const {account} = useSelector(state => state.addWallet);
-  const {markets} = useSelector(state => state.marketModal.supplyMarketModal);
+  const { account } = useSelector(state => state.addWallet);
+  const { markets } = useSelector(state => state.market);
+//   const { supplyMarketModal } = useSelector(state => state.supplyMarketModal);
   const [openConfirmModal, setConfirmModal] =useState(false);
   const [tokenText, setTokenText] =useState('');
 
@@ -28,52 +29,49 @@ const SupplyModal = (props) =>{
   };
 
   const mintToken = () => {
-    const underlying = valueofRow.assetType.toLowerCase()
-    const mintPair =  {underlying, amount: amount}
-    // TODO
-    // 1. call and pass protocolAddresses into supplyTokenAction
-    dispatch( supplyTokenAction(mintPair));
+    const underlying = valueofRow.assetType.toLowerCase();
+    const mintPair = { underlying, amount };
+
+    dispatch(supplyTokenAction(mintPair));
     close();
-    setAmount('')
-    setTokenText('supply')
+    setAmount('');
+    setTokenText('supply');
     handleOpenConfirm();
   }
 
   const withdrawToken = () => {
-    const underlying = valueofRow.assetType.toLowerCase()
-    const redeemPair =  {underlying, amount: amount}
-    dispatch( withdrawTokenAction(redeemPair));
+    const underlying = valueofRow.assetType.toLowerCase();
+    const redeemPair = { underlying, amount };
+
+    dispatch(withdrawTokenAction(redeemPair));
     close();
-    setAmount('')
-    setTokenText('withdraw')
+    setAmount('');
+    setTokenText('withdraw');
     handleOpenConfirm();
   }
 
-  if(valueofRow && markets) {
-    Object.keys(markets).map((market)=>{
-      if(market.toLowerCase() === valueofRow.assetType.toLowerCase()) {
-        // valueofRow.apy =  markets[market].rate
-        valueofRow.borrowLimit =  markets[market].borrowLimit
-        valueofRow.borrowLimitUsed =  markets[market].borrowLimitUsed
-      }
-    })
-  }
+//   if (valueofRow && supplyMarketModal) {
+//     valueofRow.apy = supplyMarketModal.rate;
+//     valueofRow.borrowLimit = supplyMarketModal.borrowLimit;
+//     valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
+//   }
 
   useEffect(() => {
-    dispatch(supplyMarketModalAction(account, markets));
-  }, [dispatch, account])
-
+    dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
+  }, [dispatch, account]);
 
   useEffect(() => {
-    setAmount('')
-  }, [close])
+    setAmount('');
+  }, [close]);
+
+  const modalHeaderText = enableToken ? '' : `To supply and use ${valueofRow.banner} as collateral, you will need to enable the token first.`;
 
   return (
     <>
-    <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText= {tokenText}/>
+    <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText={tokenText}/>
     <MarketModal
-        headerText = {enableToken ? "": "To supply and use" +" "+ valueofRow.banner +" "+ "as collateral, you will need to enable the token first."}
-        APYText = {valueofRow.title +" "+ "Variable APY Rate"}
+        headerText = {modalHeaderText}
+        APYText = {`${valueofRow.title} Variable APY Rate`}
         Limit = "Borrow Limit"
         LimitUsed = "Borrow Limit Used"
         amountText = "Wallet Balance"
@@ -88,7 +86,7 @@ const SupplyModal = (props) =>{
         labelOne="Supply"
         labelTwo="Withdraw"
         // buttonOne ={enableToken ? "Supply" : "Enable Token"}
-        buttonOne ={"Supply"}
+        buttonOne ="Supply"
         buttonTwo = "Withdraw"
         // buttonTwo = {valueofRow.balance ? "Withdraw" : "No balance to withdraw"}
         btnSub = {classes.btnSub}
