@@ -54,13 +54,9 @@ const SupplyModal = (props) => {
     handleOpenConfirm();
   }
 
-  if (supplyMarketModal) {
-    // valueofRow.borrowLimit = supplyMarketModal.borrowLimitUsd.toString();
-    valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
-  }
-
   useEffect(() => {
     dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
+    valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
   }, [dispatch, open]);
 
   useEffect(() => {

@@ -50,13 +50,9 @@ const BorrowModal = (props) =>{
     handleOpenConfirm();
   }
 
-  if (borrowMarketModal !== undefined) {
-    // valueofRow.borrowBalanceUsd = borrowMarketModal.borrowBalanceUsd.toString();
-    valueofRow.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
-  }
-
-  useEffect(() => {
-    dispatch(borrowMarketModalAction(account, markets[valueofRow['assetType']]));
+    useEffect(() => {
+      dispatch(borrowMarketModalAction(account, markets[valueofRow['assetType']]));
+      valueofRow.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
   }, [dispatch, open]);
 
   return (
