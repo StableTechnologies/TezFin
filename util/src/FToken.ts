@@ -233,12 +233,12 @@ export namespace FToken {
      * @param gas
      * @param freight
      */
-    export function AccrueInterestOpGroup(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function AccrueInterestOpGroup(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         const entrypoint = 'accrueInterest';
         const parameters = 'Unit'
         let ops: Transaction[] = [];
         for (const collateral of collaterals) {
-            ops.push(TezosNodeWriter.constructContractInvocationOperation(pkh, counter, protocolAddresses.fTokens[collateral], 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson));
+            ops.push(TezosNodeWriter.constructContractInvocationOperation(pkh, counter, protocolAddresses.fTokens[collateral], 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson));
         }
         return ops;
     }
@@ -251,7 +251,7 @@ export namespace FToken {
     export async function AccrueInterest(markets: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        let ops: Transaction[] = AccrueInterestOpGroup(markets, protocolAddresses, counter, keystore.publicKeyHash, fee, gas, freight);
+        let ops: Transaction[] = AccrueInterestOpGroup(markets, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
@@ -288,11 +288,11 @@ export namespace FToken {
      * @param gas
      * @param freight
      */
-    export function MintOperation(mint: MintPair, counter: number, fTokenAddress: string, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function MintOperation(mint: MintPair, counter: number, fTokenAddress: string, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'mint';
         const parameters = MintPairMichelson(mint);
         const xtzAmount = mint.underlying == TezosLendingPlatform.AssetType.XTZ ? mint.amount : 0;
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, xtzAmount, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
+        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, xtzAmount, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
     }
 
     /*

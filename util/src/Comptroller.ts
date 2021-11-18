@@ -188,10 +188,10 @@ export namespace Comptroller {
      *
      * @param
      */
-    export function UpdateAssetPriceOperation(updateAssetPrice: UpdateAssetPricePair, counter: number, comptrollerAddress: string, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function UpdateAssetPriceOperation(updateAssetPrice: UpdateAssetPricePair, counter: number, comptrollerAddress: string, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'updateAssetPrice';
         const parameters = UpdateAssetPriceMicheline(updateAssetPrice);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
+        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     }
 
     /*
@@ -238,10 +238,10 @@ export namespace Comptroller {
      *
      * @param
      */
-    export function UpdateAccountLiquidityOperation(updateAccountLiquidity: UpdateAccountLiquidityPair, counter: number, comptrollerAddress: string, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function UpdateAccountLiquidityOperation(updateAccountLiquidity: UpdateAccountLiquidityPair, counter: number, comptrollerAddress: string, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'updateAccountLiquidity';
         const parameters = UpdateAccountLiquidityMicheline(updateAccountLiquidity);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
+        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     }
 
     /*
@@ -266,17 +266,17 @@ export namespace Comptroller {
      * @param gas
      * @param freight
      */
-    export function DataRelevanceOpGroup(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function DataRelevanceOpGroup(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // updateAssetPrice for every collateralized market
         for (const collateral of collaterals) {
             const updateAssetPrice: Comptroller.UpdateAssetPricePair = { address: protocolAddresses.fTokens[collateral] };
-            const updateAssetPriceOp = Comptroller.UpdateAssetPriceOperation(updateAssetPrice, counter, protocolAddresses.comptroller, pkh, fee,  gas, freight);
+            const updateAssetPriceOp = Comptroller.UpdateAssetPriceOperation(updateAssetPrice, counter, protocolAddresses.comptroller, pkh, gas, freight);
             ops.push(updateAssetPriceOp);
         }
         // updateAccountLiquidity
         const updateAccountLiquidity: Comptroller.UpdateAccountLiquidityPair = { address: pkh };
-        const updateAccountLiquidityOp = Comptroller.UpdateAccountLiquidityOperation(updateAccountLiquidity, counter, protocolAddresses.comptroller, pkh, fee,  gas, freight);
+        const updateAccountLiquidityOp = Comptroller.UpdateAccountLiquidityOperation(updateAccountLiquidity, counter, protocolAddresses.comptroller, pkh, gas, freight);
         ops.push(updateAccountLiquidityOp);
         return ops;
     }
@@ -293,7 +293,7 @@ export namespace Comptroller {
     export async function DataRelevance(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses,counter, keystore.publicKeyHash, fee, gas, freight);
+        let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses,counter, keystore.publicKeyHash, gas, freight);
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
@@ -323,10 +323,10 @@ export namespace Comptroller {
      *
      * @param
      */
-    export function EnterMarketsOperation(enterMarkets: EnterMarketsPair, comptrollerAddress: string, counter: number, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function EnterMarketsOperation(enterMarkets: EnterMarketsPair, comptrollerAddress: string, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'enterMarkets';
         const parameters = EnterMarketsPairMicheline(enterMarkets);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
+        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     }
 
     /*
@@ -364,10 +364,10 @@ export namespace Comptroller {
      *
      * @param
      */
-    export function ExitMarketOperation(exitMarket: ExitMarketPair, comptrollerAddress: string, counter: number, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function ExitMarketOperation(exitMarket: ExitMarketPair, comptrollerAddress: string, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'exitMarket';
         const parameters = ExitMarketPairMicheline(exitMarket);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
+        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     }
 
     /*
