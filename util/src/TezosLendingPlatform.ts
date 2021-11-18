@@ -977,7 +977,7 @@ export namespace TezosLendingPlatform {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
-        const ops: Transaction[] = ExitMarketOpGroup(exitMarket, collaterals, protocolAddresses, keystore.publicKeyHash, fee);
+        const ops: Transaction[] = ExitMarketOpGroup(exitMarket, collaterals, protocolAddresses, keystore.publicKeyHash, gas, freight);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
