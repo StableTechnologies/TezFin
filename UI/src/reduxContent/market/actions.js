@@ -16,9 +16,10 @@ import {tokens, supplying} from '../../components/Constants';
  * @param {string} server server address
  */
 export const marketAction = (comptroller, protocolAddresses, server)=> async (dispatch) => {
-
-  const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
-  dispatch({ type: GET_MARKET_DATA, payload: markets });
+  if(comptroller) {
+    const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
+    dispatch({ type: GET_MARKET_DATA, payload: markets });
+  }
 }
 
 /**

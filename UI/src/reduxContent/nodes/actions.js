@@ -21,7 +21,8 @@ export const tezosNodeAction = ()=> async (dispatch) => {
 }
 
 export const comptrollerAction = (protocolAddresses, server, conseilServerInfo)=> async (dispatch) => {
-  const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, server, conseilServerInfo);
-
-  dispatch({ type: GET_COMPTROLLER, payload: comptroller });
+  if(server) {
+    const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, server, conseilServerInfo);
+    dispatch({ type: GET_COMPTROLLER, payload: comptroller });
+  }
 }

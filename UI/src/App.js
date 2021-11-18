@@ -1,6 +1,7 @@
 import { Route, BrowserRouter as Router, Switch, useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { granadanetAction, tezosNodeAction } from "./reduxContent/nodes/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { comptrollerAction, granadanetAction, tezosNodeAction } from "./reduxContent/nodes/actions";
+import { marketAction } from "./reduxContent/market/actions";
 
 import './App.css';
 
@@ -13,11 +14,21 @@ import { useEffect } from "react";
 
 const App = () => {
   const dispatch = useDispatch();
+  const { server, conseilServerInfo } = useSelector(state => state.nodes.tezosNode);
+  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
 
   useEffect(() => {
     dispatch(tezosNodeAction());
     dispatch(granadanetAction());
   }, [dispatch])
+
+  useEffect(() => {
+    dispatch(comptrollerAction(protocolAddresses, server, conseilServerInfo));
+  }, [dispatch, server])
+
+  useEffect(() => {
+    dispatch(marketAction(comptroller, protocolAddresses, server));
+  }, [dispatch, comptroller, protocolAddresses, server])
 
   return (
     <Router>

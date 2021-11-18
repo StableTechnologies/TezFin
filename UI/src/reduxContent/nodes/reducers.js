@@ -2,8 +2,8 @@ import { GET_TEZOS_NODE, GET_PROTOCOL_ADDRESSES, GET_COMPTROLLER } from './types
 
 const initState = {
   tezosNode: {},
-  protocolAddresses: {},
-  comptroller: {},
+  protocolAddresses: undefined,
+  comptroller: undefined,
 }
 
 const nodesReducer = (state=initState, action) => {

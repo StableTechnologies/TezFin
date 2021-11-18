@@ -8,8 +8,6 @@ import { Button } from '@mui/material';
 import tezHeader from '../../assets/tezHeader.svg';
 import { shorten, getWallet } from '../../util';
 import { addWalletAction } from '../../reduxContent/addWallet/actions';
-import { comptrollerAction } from '../../reduxContent/nodes/actions';
-import { marketAction } from '../../reduxContent/market/actions';
 
 import { useStyles } from "./style";
 
@@ -22,7 +20,7 @@ const Nav = () => {
   // const { address } = JSON.parse(localStorage.getItem('account'));
   const { address } = useSelector(state => state.addWallet.account);
   const { server, conseilServerInfo } = useSelector(state => state.nodes.tezosNode);
-  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
+  const { comptroller } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
 
   const addWallet = async() => {
@@ -32,18 +30,10 @@ const Nav = () => {
     } catch (error) {}
   };
 
-
   useEffect(() => {
     setTezAccount(address);
   }, [addWallet])
 
-  useEffect(() => {
-    dispatch(comptrollerAction(protocolAddresses, server, conseilServerInfo));
-  }, [dispatch, server])
-
-  useEffect(() => {
-    dispatch(marketAction(comptroller, protocolAddresses, server));
-  }, [dispatch, comptroller, protocolAddresses, server])
 
   return (
     <Grid container justify="center" alignItems="center" className={classes.nav}>
