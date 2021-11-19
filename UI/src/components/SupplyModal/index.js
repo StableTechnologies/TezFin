@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { KeyStore} from 'conseiljs';
 
 import MarketModal from '../MarketModal';
 import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
@@ -19,8 +20,9 @@ const SupplyModal = (props) => {
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
   const { supplyMarketModal } = useSelector(state => state.marketModal);
-  const [openConfirmModal, setConfirmModal] =useState(false);
+  const publicKeyHash = account.address;
 
+  const [openConfirmModal, setConfirmModal] =useState(false);
   const [amount, setAmount] = useState('');
   const [tokenText, setTokenText] =useState('');
 
@@ -32,11 +34,10 @@ const SupplyModal = (props) => {
     setConfirmModal(false);
   };
 
-  const mintToken = () => {
+  const supplyToken = async() => {
     const underlying = valueofRow.assetType.toLowerCase();
     const mintPair = { underlying, amount };
-
-    dispatch(supplyTokenAction(mintPair, protocolAddresses, server));
+    dispatch(supplyTokenAction(mintPair, protocolAddresses, publicKeyHash));
     close();
     setAmount('');
     setTokenText('supply');
@@ -47,7 +48,7 @@ const SupplyModal = (props) => {
     const underlying = valueofRow.assetType.toLowerCase();
     const redeemPair = { underlying, amount };
 
-    dispatch(withdrawTokenAction(redeemPair, comptroller, protocolAddresses, server));
+    dispatch(withdrawTokenAction(redeemPair, comptroller, protocolAddresses, server, publicKeyHash, KeyStore));
     close();
     setAmount('');
     setTokenText('withdraw');
@@ -62,6 +63,7 @@ const SupplyModal = (props) => {
   useEffect(() => {
     setAmount('');
   }, [close]);
+
 
   const modalHeaderText = enableToken ? '' : `To supply and use ${valueofRow.banner} as collateral, you will need to enable the token first.`;
 
@@ -79,8 +81,8 @@ const SupplyModal = (props) => {
         valueofRow = {valueofRow}
         // onClick = {enableToken ? supply : onClick}
         onClick = {onClick}
-        // handleClickTabOne = {enableToken ? mintToken : onClick}
-        handleClickTabOne = { mintToken }
+        // handleClickTabOne = {enableToken ? supplyToken : onClick}
+        handleClickTabOne = { supplyToken }
         handleClickTabTwo = { withdrawToken }
         labelOne="Supply"
         labelTwo="Withdraw"
