@@ -178,8 +178,12 @@ export namespace FToken {
      * @param
      */
     export async function GetBalance(account: string, assetType: TezosLendingPlatform.AssetType, currentIndex: bigInt.BigInteger, balancesMapId: number, server: string): Promise<Balance> {
-        const balanceResult = makeBalanceQuery(account, balancesMapId, server);
-        return parseBalanceResult(balanceResult, currentIndex, assetType);
+        try {
+            const balanceResult = await makeBalanceQuery(account, balancesMapId, server);
+            return parseBalanceResult(balanceResult, currentIndex, assetType);
+        } catch (e) {
+            return parseBalanceResult('0', currentIndex, assetType);
+        }
     }
 
     /*
@@ -197,6 +201,7 @@ export namespace FToken {
      * @param
      */
     export async function makeBalanceQuery(account: string, balancesMapId: number, server: string): Promise<string> {
+        console.log('makeBalanceQuery', balancesMapId)
         const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(account, 'address'), 'hex'));
         const mapResult = await TezosNodeReader.getValueForBigMapKey(server, balancesMapId, packedKey);
 
