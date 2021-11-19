@@ -1,7 +1,9 @@
 // import { BigNumber } from "bignumber.js";
-import { DAppClient } from "@airgap/beacon-sdk";
+import { DAppClient, TezosOperationType } from "@airgap/beacon-sdk";
 import { Mutex } from "async-mutex";
 import Tezos from "../library/tezos";
+import { TezosLanguageUtil } from "conseiljs";
+
 // const config = require(`../library/${process.env.REACT_APP_ENV || "prod"
 //   }-network-config.json`);
 const config = require('../library/dev-network-config.json');
@@ -54,7 +56,46 @@ export const getWallet = async () => {
   return { clients };
 };
 
-export const getAssetsDetails = ()=> {
+export const getAssetsDetails = () => {
   const assets = config.assets;
   return assets
+}
+
+/**
+ * Sends a transaction to the blockchain
+ *
+ * @param operations List of operations needed to be sent to the chain
+ *
+ * @return operation response
+ */
+export const confirmOps = async ( operations ) => {
+  const client = new DAppClient({ name: "TEZFIN" });
+
+  try {
+    let ops = [];
+    operations.forEach((x) => {
+      ops.push({
+        kind: x.kind,
+        amount: 1,
+        destination: x.destination,
+        source: x.source,
+        parameters: {
+          entrypoint: x.entrypoint,
+          value: 1,
+        // value: JSON.parse(
+        //   TezosLanguageUtil.translateParameterMichelsonToMicheline(
+        //       x.value
+        //   )
+        // ),
+      },
+    });
+  });
+  const response = await client.requestOperation({
+    operationDetails: ops,
+  });
+  return response;
+  }
+  catch (error) {
+    throw error;
+  }
 }

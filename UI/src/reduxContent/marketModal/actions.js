@@ -7,7 +7,9 @@ import {
   REPAY_BORROW_TOKEN,
 } from './types.js';
 
-import {TezosLendingPlatform} from 'tezoslendingplatformjs';
+import { Comptroller, TezosLendingPlatform } from 'tezoslendingplatformjs';
+
+import { confirmOps } from '../../util/index.js';
 
 /**
  * This function is used to get the supply market modal data of an account.
@@ -42,12 +44,13 @@ export const borrowMarketModalAction = (account, market) => async (dispatch) => 
  *
  * @param  mintPair underlying asset and amount to be supplied
  * @param  protocolAddresses Addresses of the protocol contracts
- * @param  server server address
+ * @param  publicKeyHash address of the connected account.
+ * @param  fee
  */
-export const supplyTokenAction = (mintPair, protocolAddresses, server)=> async (dispatch) => {
-
-  const mint = await TezosLendingPlatform.Mint(mintPair, protocolAddresses, server);
+export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash)=> async (dispatch) => {
+  const mint = TezosLendingPlatform.MintOpGroup(mintPair, protocolAddresses, publicKeyHash);
   dispatch({ type: MINT_TOKEN, payload: mint });
+  const res = await confirmOps(mint, publicKeyHash);
 }
 
 /**
@@ -56,12 +59,16 @@ export const supplyTokenAction = (mintPair, protocolAddresses, server)=> async (
  * @param  redeemPair underlying asset and amount to be redeemed
  * @param  comptroller Comptroller storage.
  * @param  protocolAddresses Addresses of the protocol contracts
- * @param  server server address
+ * @param  server server address.
+ * @param  publicKeyHash address of the connected account.
+ * @param  keystore
  */
-export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server)=> async (dispatch) => {
+export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server, publicKeyHash, keystore)=> async (dispatch) => {
+  const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
 
-  const withdraw = await TezosLendingPlatform.Redeem(redeemPair, comptroller, protocolAddresses, server);
+  const withdraw = TezosLendingPlatform.RedeemOpGroup(redeemPair, collaterals, protocolAddresses, publicKeyHash);
   dispatch({ type: WITHDRAW_TOKEN, payload: withdraw });
+  confirmOps(withdraw);
 }
 
 /**
@@ -71,11 +78,15 @@ export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, 
  * @param  comptroller Comptroller storage.
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  server server address
+ * @param  publicKeyHash address of the connected account.
+ * @param  keystore
  */
-export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, server)=> async (dispatch) => {
+export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, server, publicKeyHash, keystore)=> async (dispatch) => {
+  const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
 
-  const borrow = await TezosLendingPlatform.Borrow(borrowPair, comptroller, protocolAddresses, server);
+  const borrow = TezosLendingPlatform.BorrowOpGroup(borrowPair, collaterals, protocolAddresses, publicKeyHash);
   dispatch({ type: BORROW_TOKEN, payload: borrow });
+  confirmOps(borrow);
 }
 
 /**
@@ -83,11 +94,12 @@ export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, se
  *
  * @param  repayBorrowPair underlying asset and amount to be repayed.
  * @param  protocolAddresses Addresses of the protocol contracts
- * @param  server server address
+ * @param  publicKeyHash address of the connected account.
  */
-export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, server)=> async (dispatch) => {
+export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publicKeyHash)=> async (dispatch) => {
 
-  const repayBorrow = await TezosLendingPlatform.RepayBorrow(repayBorrowPair, protocolAddresses, server);
+  const repayBorrow = TezosLendingPlatform.RepayBorrowOpGroup(repayBorrowPair, protocolAddresses, publicKeyHash);
   dispatch({ type: REPAY_BORROW_TOKEN, payload: repayBorrow });
+  confirmOps(repayBorrow);
 }
 

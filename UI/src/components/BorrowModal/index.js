@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { KeyStore} from 'conseiljs';
+
 import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
 import ConfirmModal from '../ConfirmModal';
 
@@ -18,6 +20,8 @@ const BorrowModal = (props) =>{
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
   const { borrowMarketModal } = useSelector(state => state.marketModal);
+  const publicKeyHash = account.address;
+
 
   const [amount, setAmount] = useState('');
   const [openConfirmModal, setConfirmModal] =useState(false);
@@ -33,7 +37,7 @@ const BorrowModal = (props) =>{
   const borrowToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
     const borrowPair =  {underlying, amount: amount}
-    dispatch( borrowTokenAction(borrowPair, comptroller, protocolAddresses, server));
+    dispatch( borrowTokenAction(borrowPair, comptroller, protocolAddresses, server, publicKeyHash, KeyStore));
     close();
     setAmount('')
     setTokenText('borrow')
@@ -43,7 +47,7 @@ const BorrowModal = (props) =>{
   const repayBorrowToken = () => {
     const underlying = valueofRow.assetType.toLowerCase()
     const repayBorrowPair =  {underlying, amount: amount}
-    dispatch( repayBorrowTokenAction(repayBorrowPair, protocolAddresses, server));
+    dispatch( repayBorrowTokenAction(repayBorrowPair, protocolAddresses, publicKeyHash));
     close();
     setAmount('');
     setTokenText('repay')
