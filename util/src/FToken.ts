@@ -200,8 +200,7 @@ export namespace FToken {
         const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(account, 'address'), 'hex'));
         const mapResult = await TezosNodeReader.getValueForBigMapKey(server, balancesMapId, packedKey);
 
-        if (mapResult === undefined) { throw new Error(`Map ${balancesMapId} does not contain a record for ${account}`); }
-        return mapResult;
+        return mapResult || '0';
     }
 
     /*
@@ -221,7 +220,6 @@ export namespace FToken {
             loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex(borrowPrincipal, borrowIndex, currentIndex)
         }
      }
-
 
     /*
      * @description Return the operation for invoking the accrueInterest entrypoint of the given fToken address
