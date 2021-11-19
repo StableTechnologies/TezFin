@@ -19,6 +19,8 @@ const Dashboard =() => {
   const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector(state => state.market);
 
   useEffect(() => {
+    if (!account.address || !markets) { return; }
+
     dispatch(suppliedMarketAction(account, markets));
     dispatch(unSuppliedMarketAction(account, markets));
     dispatch(borrowedMarketAction(account, markets));

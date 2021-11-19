@@ -9,9 +9,9 @@ export const granadanetAction = ()=> async (dispatch) => {
 
 export const tezosNodeAction = ()=> async (dispatch) => {
 
-  const server = "https://tezos-granada.cryptonomic-infra.tech/";
+  const server = "https://tezos-granada.cryptonomic-infra.tech";
   const conseilServerInfo = {
-    "url": "https://conseil-granada.cryptonomic-infra.tech:443",
+    "url": "https://conseil-granada.cryptonomic-infra.tech",
     "apiKey": "",
     "network": "granadanet"
   };
