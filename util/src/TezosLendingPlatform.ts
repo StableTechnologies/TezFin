@@ -80,12 +80,14 @@ export namespace TezosLendingPlatform {
         underlying: {
             "ETH": {
                 assetType: AssetType.ETH,
-                address: "KT1LLL2RWrc4xi23umbq1564ej88RG6LcAoR"
+                address: "KT1LLL2RWrc4xi23umbq1564ej88RG6LcAoR",
+                balancesMapId: 135623
             },
             "BTC": {
                 assetType: AssetType.BTC,
                 address: "KT1SM4x48cbemJaipLqRGZgbwfWukZEdz4jw",
-                tokenId: 0
+                tokenId: 0,
+                balancesMapId: 135627
             },
             "XTZ": {
                 assetType: AssetType.XTZ
@@ -282,20 +284,21 @@ export namespace TezosLendingPlatform {
     export async function GetAccount(address: string, markets: MarketMap, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<Account> {
         // check which markets are collaterals
         const collaterals = await Comptroller.GetCollaterals(address, comptroller, protocolAddresses, server);
+
         // get balance in each underlying
         const underlyingBalances = await GetUnderlyingBalances(address, markets, server);
+
         // get balance in each market
         const marketBalances = await GetFtokenBalances(address, markets, server);
+
         // get prices from oracle
         // calculate usd balances and collaterals
         for (const asset in marketBalances) {
             marketBalances[asset].supplyBalanceUsd = comptroller.markets[asset].price.multiply(marketBalances[asset].supplyBalanceUnderlying);
             marketBalances[asset].loanBalanceUsd = comptroller.markets[asset].price.multiply(marketBalances[asset].loanBalanceUnderlying);
-            if (collaterals.includes(asset as AssetType))
-                marketBalances[asset].collateral = true;
-            else
-                marketBalances[asset].collateral = false;
+            marketBalances[asset].collateral = collaterals.includes(asset as AssetType);
         }
+
         // calculate total collateral and loan balance
         let totalSupplyingUsd = bigInt(0);
         let totalCollateralUsd = bigInt(0);
@@ -307,6 +310,7 @@ export namespace TezosLendingPlatform {
             totalSupplyingUsd = totalSupplyingUsd.add(marketBalances[asset].supplyBalanceUsd!);
             totalLoanUsd = totalLoanUsd.add(marketBalances[asset].loanBalanceUsd!);
         }
+
         // calculate aggregate account rate
         const rate = calculateAccountRate(totalCollateralUsd, marketBalances, markets);
         return {
@@ -341,14 +345,20 @@ export namespace TezosLendingPlatform {
      */
     export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: bigInt.BigInteger }> {
         let balances = {};
+
         await Promise.all(Object.keys(markets).map(async (asset) => {
             switch (assetTypeToStandard(asset as AssetType)) {
                 case TokenStandard.XTZ:
                     balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
+                    break;
                 case TokenStandard.FA12:
                     balances[asset] = await GetUnderlyingBalanceFA12(asset as AssetType, markets, address, server);
+                    break;
                 case TokenStandard.FA2:
                     balances[asset] = await GetUnderlyingBalanceFA2(asset as AssetType, markets, address, server);
+                    break;
+                default:
+                    break;
             }
         }));
         return balances;
@@ -362,6 +372,7 @@ export namespace TezosLendingPlatform {
     export async function GetUnderlyingBalanceXTZ(address: string, server: string): Promise<bigInt.BigInteger> {
         try {
             const balance = await TezosNodeReader.getSpendableBalanceForAccount(server, address);
+            console.log('GetUnderlyingBalanceXTZ', address, balance)
             return bigInt(balance);
         } catch(e) {
             log.error(`Unable to read XTZ balance for ${address}\n${e}`);
@@ -405,14 +416,14 @@ export namespace TezosLendingPlatform {
                 const fa2Storage = await MultiAssetTokenHelper.getSimpleStorage(server, markets[asset].asset.underlying.address!);
                 mapId = fa2Storage.ledger;
             } catch(e) {
-                log.error(`Unable to read contract storage for FA2 fToken ${markets[asset].asset.underlying.address!}`);
+                log.error(`Unable to read contract storage for FA2 ${asset} fToken ${markets[asset].asset.underlying.address!}`);
             }
         }
         try {
             const balance = await MultiAssetTokenHelper.getAccountBalance(server, mapId!, address, markets[asset].asset.underlying.tokenId!);
             return bigInt(balance);
         } catch(e) {
-            log.error(`Unable to read contract storage for FA2 fToken ${markets[asset].asset.underlying.address!}\n${e}`);
+            log.error(`Unable to read account balance of ${address} from fToken ${markets[asset].asset.underlying.address!} in map ${mapId}\n${e}`);
             return bigInt(-1); // TODO: should default return values be undefined?
         }
     }
@@ -539,16 +550,17 @@ export namespace TezosLendingPlatform {
     function parseSupplyMarkets(balances: FToken.BalanceMap | undefined, markets: MarketMap, compare: (bi: bigInt.BigInteger) => boolean): { [assetType: string]: SupplyMarket } {
         // if undefined balances passed in (no account), get values for all assets
         let assets: AssetType[] = [];
-        if (balances !== undefined)
+        if (balances !== undefined) {
             assets = Object.keys(balances).map((a) => a as AssetType);
-        else
+        } else {
             assets = Object.keys(markets).map((a) => a as AssetType);
+        }
 
         // aggregate supply market data
         const suppliedMarkets: { [assetType: string]: SupplyMarket } = {};
-        for (const asset in assets) {
+        for (const asset of assets) {
             // use balances for account
-            if (balances !== undefined && compare(balances![asset].supplyBalanceUnderlying)) {
+            if (balances !== undefined &&  balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
                     balanceUnderlying: balances[asset].supplyBalanceUnderlying,
@@ -627,9 +639,9 @@ export namespace TezosLendingPlatform {
 
         // aggregate supply market data
         const borrowedMarkets: { [assetType: string]: BorrowMarket } = {};
-        for (const asset in assets) {
+        for (const asset of assets) {
             // use balances for account
-            if (balances !== undefined && compare(balances[asset].loanBalanceUnderlying)) {
+            if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].loanBalanceUnderlying)) {
                 borrowedMarkets[asset] = {
                     rate: markets[asset].borrow.rate,
                     balanceUnderlying: balances[asset].loanBalanceUnderlying,
