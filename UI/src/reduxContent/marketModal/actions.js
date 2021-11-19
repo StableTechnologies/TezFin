@@ -45,7 +45,6 @@ export const borrowMarketModalAction = (account, market) => async (dispatch) => 
  * @param  mintPair underlying asset and amount to be supplied
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
- * @param  fee
  */
 export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash)=> async (dispatch) => {
   const mint = TezosLendingPlatform.MintOpGroup(mintPair, protocolAddresses, publicKeyHash);
