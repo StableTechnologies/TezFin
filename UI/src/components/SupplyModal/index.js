@@ -34,7 +34,7 @@ const SupplyModal = (props) => {
     setConfirmModal(false);
   };
 
-  const supplyToken = async() => {
+  const supplyToken = () => {
     const underlying = valueofRow.assetType.toLowerCase();
     const mintPair = { underlying, amount };
     dispatch(supplyTokenAction(mintPair, protocolAddresses, publicKeyHash));

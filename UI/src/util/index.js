@@ -93,11 +93,9 @@ export const confirmOps = async ( operations ) => {
   const response = await client.requestOperation({
     operationDetails: ops,
   });
-  console.log(response, 'response');
   return response;
   }
   catch (error) {
-    console.log(error, 'error');
     throw error;
   }
 }

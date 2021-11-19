@@ -51,7 +51,6 @@ export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash)=> 
   const mint = TezosLendingPlatform.MintOpGroup(mintPair, protocolAddresses, publicKeyHash);
   dispatch({ type: MINT_TOKEN, payload: mint });
   const res = await confirmOps(mint, publicKeyHash);
-  console.log(res, 'resres')
 }
 
 /**
