@@ -13,6 +13,9 @@ export const useStyles = makeStyles({
     "& .MuiTableCell-root": {
       borderBottom: '1px solid #E0E0E0',
       padding: '.5rem',
+      '@media(min-width: 1200px)': {
+        paddingLeft: '1.5rem',
+      },
       '@media(max-width: 501px)': {
         padding: '.5rem',
       },
@@ -57,6 +60,12 @@ export const useStyles = makeStyles({
     width: '2rem',
     height: '2rem',
     marginBottom: '-10px',
+    '@media (min-width: 769px) and (max-width: 1024px)': {
+      width: '1.5rem',
+      height: '1.5rem',
+      marginBottom: '-6px',
+      fontSize: '0.75rem',
+    },
     '@media(max-width: 501px)': {
       width: '1rem',
       height: '1rem',

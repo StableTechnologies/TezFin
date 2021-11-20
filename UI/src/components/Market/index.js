@@ -20,7 +20,7 @@ import DisableCollateralModal from '../DisableCollateralModal';
 
 const Market = (props) => {
   const classes = useStyles();
-  const { headingOne, headingTwo, headingThree, headingFour, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt } = props;
+  const { headingOne, headingTwo, headingThree, headingFour, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt, borrowingMkt } = props;
 
   const [valueofRow, setValueOfRow] = useState();
   const [openMktModal, setMktModal] = useState(false);
@@ -52,7 +52,7 @@ const Market = (props) => {
           {(supplyMkt || supplyingMkt) &&
             <SupplyModal open = {openMktModal} close = {closeModal} valueofRow = {valueofRow} enableToken = {enableToken} />
           }
-          {borrowMkt &&
+          {(borrowMkt || borrowingMkt) &&
             <BorrowModal open = {openMktModal} close = {closeModal} valueofRow = {valueofRow} />
           }
           <DisableCollateralModal open = {disableCollModal} close = {closeModal} valueofRow = {valueofRow} />
