@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 
 import tezHeader from '../../assets/tezHeader.svg';
-import { shorten, getWallet } from '../../util';
+import { shorten, getWallet, getActiveAccount } from '../../util';
 import { addWalletAction } from '../../reduxContent/addWallet/actions';
 
 import { useStyles } from "./style";
@@ -17,18 +17,26 @@ const Nav = () => {
 
   const [tezAccount, setTezAccount] = useState('');
 
-  // const { address } = JSON.parse(localStorage.getItem('account'));
   const { address } = useSelector(state => state.addWallet.account);
   const { server } = useSelector(state => state.nodes.tezosNode);
   const { comptroller, protocolAddresses } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
 
-  const addWallet = async() => {
+  const addWallet = async () => {
     try {
       let { clients } = await getWallet();
-      dispatch(addWalletAction(clients, server, protocolAddresses, comptroller, markets));
+      const address = clients.tezos.account;
+      dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
     } catch (error) {}
   };
+
+  useEffect(() => {
+    const isWallet = async () => {
+      const  address  = await getActiveAccount();
+      dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
+    }
+    isWallet();
+  }, [dispatch]);
 
   useEffect(() => {
     setTezAccount(address);

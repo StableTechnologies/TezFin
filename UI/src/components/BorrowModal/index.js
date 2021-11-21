@@ -14,7 +14,6 @@ const BorrowModal = (props) =>{
 
   const { open, close, valueofRow } = props;
 
-  // const account  = JSON.parse(localStorage.getItem('account'));
   const { account } = useSelector(state => state.addWallet);
   const { server } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);

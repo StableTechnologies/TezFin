@@ -8,6 +8,8 @@ import { TezosLanguageUtil } from "conseiljs";
 //   }-network-config.json`);
 const config = require('../library/dev-network-config.json');
 
+const client = new DAppClient({ name: "TEZFIN" });
+
 
 /**
  * This function is used to truncate a blockchain address for presentation by replacing the middle digits with an ellipsis.
@@ -22,7 +24,7 @@ const config = require('../library/dev-network-config.json');
 };
 
 export const connectTezAccount = async () => {
-  const client = new DAppClient({ name: "TEZFIN" });
+  // const client = new DAppClient({ name: "TEZFIN" });
   // const network =
     // config.tezos.conseilServer.network === "mainnet" ? "mainnet" : "granadanet";
     const network = "granadanet";
@@ -40,7 +42,6 @@ export const connectTezAccount = async () => {
  */
 export const getWallet = async () => {
   const { client, account: tezAccount } = await connectTezAccount();
-
   const mutex = new Mutex()
   const clients = {
     tezos: new Tezos(
@@ -56,9 +57,17 @@ export const getWallet = async () => {
   return { clients };
 };
 
-export const getAssetsDetails = () => {
-  const assets = config.assets;
-  return assets
+/**
+ * This function checks if the user is already connected to a wallet.
+ *
+ * @returns address
+ */
+export const getActiveAccount = async() => {
+  const activeAccount = await client.getActiveAccount();
+  if (activeAccount) {
+    const address = activeAccount.address
+    return address;
+  }
 }
 
 /**
@@ -69,7 +78,7 @@ export const getAssetsDetails = () => {
  * @return operation response
  */
 export const confirmOps = async ( operations ) => {
-  const client = new DAppClient({ name: "TEZFIN" });
+  // const client = new DAppClient({ name: "TEZFIN" });
 
   try {
     let ops = [];

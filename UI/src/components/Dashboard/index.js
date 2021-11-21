@@ -13,7 +13,6 @@ const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  // const account  = JSON.parse(localStorage.getItem('account'));
   const { account } = useSelector(state => state.addWallet);
   const { markets } = useSelector(state => state.market);
   const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector(state => state.market);
