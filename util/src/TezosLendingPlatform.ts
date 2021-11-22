@@ -1,8 +1,9 @@
-import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Tzip7ReferenceTokenHelper, MultiAssetTokenHelper, UpdateOperator, Transaction, TezosConseilClient, ConseilServerInfo, ConseilQuery } from 'conseiljs';
-import { FToken } from './FToken';
+import { ConseilQuery, ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosNodeReader, TezosNodeWriter, Transaction, Tzip7ReferenceTokenHelper, UpdateOperator } from 'conseiljs';
+
 import { Comptroller } from './Comptroller';
-import log from 'loglevel';
+import { FToken } from './FToken';
 import bigInt from 'big-integer';
+import log from 'loglevel';
 
 export namespace TezosLendingPlatform {
     /*
@@ -42,11 +43,11 @@ export namespace TezosLendingPlatform {
      * @param governance Governance contract address
     */
     export interface ProtocolAddresses {
-        fTokens: { [underlying: string]: string};
-        fTokensReverse: { [address: string]: AssetType};
+        fTokens: { [underlying: string]: string };
+        fTokensReverse: { [address: string]: AssetType };
         underlying: { [assetType: string]: UnderlyingAsset };
         comptroller: string;
-        interestRateModel: { [underlying: string]: string};
+        interestRateModel: { [underlying: string]: string };
         governance: string;
         priceFeed: string;
     }
@@ -101,7 +102,7 @@ export namespace TezosLendingPlatform {
         },
         governance: "KT1UUZNzmqobhGXYvsbWUjnAAeWK3de2JG2q",
         priceFeed: "KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe"
-   };
+    };
 
     /*
      * @description TODO: convert mantissa to number
@@ -238,9 +239,9 @@ export namespace TezosLendingPlatform {
         let markets: MarketMap = {};
         await Promise.all(Object.keys(protocolAddresses.fTokens).map(async (asset) => {
             const fTokenAddress = protocolAddresses.fTokens[asset];
-
+            const fTokenType = assetTypeToStandard(protocolAddresses.fTokensReverse[fTokenAddress])
             try {
-                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server);
+                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server, fTokenType);
                 markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset]);
             } catch (e) {
                 log.error(`Failed in GetMarkets for ${asset} at ${protocolAddresses.fTokens[asset]} and ${JSON.stringify(protocolAddresses.underlying[asset])} with ${e}`);
@@ -284,10 +285,8 @@ export namespace TezosLendingPlatform {
     export async function GetAccount(address: string, markets: MarketMap, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<Account> {
         // check which markets are collaterals
         const collaterals = await Comptroller.GetCollaterals(address, comptroller, protocolAddresses, server);
-
         // get balance in each underlying
         const underlyingBalances = await GetUnderlyingBalances(address, markets, server);
-
         // get balance in each market
         const marketBalances = await GetFtokenBalances(address, markets, server);
 
@@ -333,7 +332,7 @@ export namespace TezosLendingPlatform {
     export async function GetFtokenBalances(address: string, markets: MarketMap, server: string): Promise<FToken.BalanceMap> {
         let balances: FToken.BalanceMap = {};
         await Promise.all(Object.keys(markets).map(async (asset) => {
-            balances[asset] = await FToken.GetBalance(address, asset as AssetType, markets[asset].storage.borrow.borrowIndex, markets[asset].storage.balancesMapId,  server);
+            balances[asset] = await FToken.GetBalance(address, asset as AssetType, markets[asset].storage.borrow.borrowIndex, markets[asset].storage.balancesMapId, server);
         }));
         return balances;
     }
@@ -374,7 +373,7 @@ export namespace TezosLendingPlatform {
             const balance = await TezosNodeReader.getSpendableBalanceForAccount(server, address);
             console.log('GetUnderlyingBalanceXTZ', address, balance)
             return bigInt(balance);
-        } catch(e) {
+        } catch (e) {
             log.error(`Unable to read XTZ balance for ${address}\n${e}`);
             return bigInt(-1); // TODO: should default return values be undefined?
         }
@@ -391,14 +390,14 @@ export namespace TezosLendingPlatform {
             try {
                 const fa12Storage = await Tzip7ReferenceTokenHelper.getSimpleStorage(server, markets[asset].asset.underlying.address!);
                 mapId = fa12Storage.mapid;
-            } catch(e) {
+            } catch (e) {
                 log.error(`Unable to read contract storage for FA12 fToken ${markets[asset].asset.underlying.address!}\n${e}`);
             }
         }
         try {
-            const balance = await Tzip7ReferenceTokenHelper.getAccountBalance(server, mapId!, address);
+            const balance = await Tzip7ReferenceTokenHelper.getAccountBalance(server, mapId!, address, `$.args[1].int`);
             return bigInt(balance);
-        } catch(e) {
+        } catch (e) {
             log.error(`Unable to read contract storage for FA12 fToken ${markets[asset].asset.underlying.address!}\n${e}`);
             return bigInt(-1); // TODO: should default return values be undefined?
         }
@@ -415,14 +414,14 @@ export namespace TezosLendingPlatform {
             try {
                 const fa2Storage = await MultiAssetTokenHelper.getSimpleStorage(server, markets[asset].asset.underlying.address!);
                 mapId = fa2Storage.ledger;
-            } catch(e) {
+            } catch (e) {
                 log.error(`Unable to read contract storage for FA2 ${asset} fToken ${markets[asset].asset.underlying.address!}`);
             }
         }
         try {
             const balance = await MultiAssetTokenHelper.getAccountBalance(server, mapId!, address, markets[asset].asset.underlying.tokenId!);
             return bigInt(balance);
-        } catch(e) {
+        } catch (e) {
             log.error(`Unable to read account balance of ${address} from fToken ${markets[asset].asset.underlying.address!} in map ${mapId}\n${e}`);
             return bigInt(-1); // TODO: should default return values be undefined?
         }
@@ -560,7 +559,7 @@ export namespace TezosLendingPlatform {
         const suppliedMarkets: { [assetType: string]: SupplyMarket } = {};
         for (const asset of assets) {
             // use balances for account
-            if (balances !== undefined &&  balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
+            if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
                     balanceUnderlying: balances[asset].supplyBalanceUnderlying,
@@ -609,7 +608,7 @@ export namespace TezosLendingPlatform {
         //     }
         // }
         // return unsuppliedMarkets;
-   }
+    }
 
     /*
      * @description
@@ -678,7 +677,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function getUnborrowedMarkets(account: Account | undefined, markets: MarketMap): { [assetType: string]: BorrowMarket } {
-        return parseBorrowMarkets(account?.marketBalances, markets, (bi: bigInt.BigInteger) => { return bi.eq(0);});
+        return parseBorrowMarkets(account?.marketBalances, markets, (bi: bigInt.BigInteger) => { return bi.eq(0); });
         // const unborrowedMarkets: { [assetType: string]: BorrowMarket } = {};
         // for (const asset in account.marketBalances) {
         //     const balance = account.marketBalances[asset];
