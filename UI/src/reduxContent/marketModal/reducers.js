@@ -4,7 +4,9 @@ import {
   MINT_TOKEN,
   WITHDRAW_TOKEN,
   BORROW_TOKEN,
-  REPAY_BORROW_TOKEN
+  REPAY_BORROW_TOKEN,
+  COLLATERALIZE_TOKEN,
+  DISABLE_COLLATERALIZE_TOKEN
 } from './types';
 
 const initState = {
@@ -15,6 +17,8 @@ const initState = {
   withdrawToken: {},
   borrowToken: {},
   repayBorrowToken: {},
+  collateralizeToken: {},
+  disableCollateralizeToken: {},
 }
 
 const marketModalReducer = (state = initState, action) => {
@@ -54,6 +58,18 @@ const marketModalReducer = (state = initState, action) => {
         ...state,
         isFetching: false,
         repayBorrowToken: action.payload
+      }
+    case COLLATERALIZE_TOKEN:
+      return {
+        ...state,
+        isFetching: false,
+        collateralizeToken: action.payload
+      }
+    case DISABLE_COLLATERALIZE_TOKEN:
+      return {
+        ...state,
+        isFetching: false,
+        disableCollateralizeToken: action.payload
       }
     default:
       return state;
