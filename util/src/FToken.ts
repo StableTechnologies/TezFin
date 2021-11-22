@@ -1,8 +1,9 @@
-import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Transaction, TezosParameterFormat, ConseilQuery, ConseilQueryBuilder, ConseilOperator, TezosConseilClient, ConseilServerInfo, TezosMessageUtils } from 'conseiljs';
-import { TezosLendingPlatform } from './TezosLendingPlatform';
+import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, KeyStore, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
+
 import { JSONPath } from 'jsonpath-plus';
-import log from 'loglevel';
+import { TezosLendingPlatform } from './TezosLendingPlatform';
 import bigInt from 'big-integer';
+import log from 'loglevel';
 
 export namespace FToken {
     /*
@@ -38,49 +39,126 @@ export namespace FToken {
         reserveFactorMaxMantissa: bigInt.BigInteger;
         totalReserves: bigInt.BigInteger;
     }
-
     /*
      * @description
      *
      * @param
      * @param
      */
-    export async function GetStorage(fTokenAddress: string, server: string): Promise<Storage> {
-        const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
-        const balancesMapId = JSONPath({path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0];
-        const adminJsonPrase = JSONPath({path: '$.args[0].args[1].args[3].prim', json: storageResult })[0];
-        const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
-        // TODO: implement numSuppliers and numBorrowers
-        // get numSuppliers
-        // const suppliersQuery = makeSuppliersQuery(balancesMapId);
-        // get numBorrowers
-        // const borrowersQuery = makeBorrowersQuery(balancesMapId);
-        return {
-            accrualBlockNumber: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-            accrualIntPeriodRelevance: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[1].int', json: storageResult })[0],
-            administrator: JSONPath({path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
-            balancesMapId: balancesMapId,
-            supply: {
-                totalSupply: bigInt(JSONPath({path: '$.args[0].args[5].int', json: storageResult })[0]),
-                supplyRatePerBlock: bigInt(JSONPath({path: '$.args[0].args[2].args[2].int', json: storageResult })[0])
-            },
-            borrow: {
-                totalBorrows: JSONPath({path: '$.args[0].args[3].int', json: storageResult })[0],
-                borrowIndex: bigInt(JSONPath({path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
-                borrowRateMaxMantissa: bigInt(JSONPath({path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0]),
-                borrowRatePerBlock: bigInt(JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0])
-            },
-            comptrollerAddress: JSONPath({path: '$.args[0].args[0].args[3].string', json: storageResult })[0],
-            expScale: bigInt(JSONPath({path: '$.args[0].args[0].args[4].int', json: storageResult })[0]),
-            halfExpScale: bigInt(JSONPath({path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
-            initialExchangeRateMantissa: bigInt(JSONPath({path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0]),
-            interestRateModel: JSONPath({path: '$.args[0].args[1].args[1].string', json: storageResult })[0],
-            isAccrualInterestValid: JSONPath({path: '$.args[0].args[1].args[2].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
-            pendingAdministrator: pendingAdministrator,
-            reserveFactorMantissa: bigInt(JSONPath({path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
-            reserveFactorMaxMantissa: bigInt(JSONPath({path: '$.args[0].args[2].args[1].int', json: storageResult })[0]),
-            totalReserves: bigInt(JSONPath({path: '$.args[0].args[4].int', json: storageResult })[0])
-        };
+    export async function GetStorage(fTokenAddress: string, server: string, type: TezosLendingPlatform.TokenStandard): Promise<Storage> {
+        switch (type) {
+            case TezosLendingPlatform.TokenStandard.FA12: {
+                const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
+                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0];
+                const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[3].prim', json: storageResult })[0];
+                const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
+                // TODO: implement numSuppliers and numBorrowers
+                // get numSuppliers
+                // const suppliersQuery = makeSuppliersQuery(balancesMapId);
+                // get numBorrowers
+                // const borrowersQuery = makeBorrowersQuery(balancesMapId);
+                return {
+                    accrualBlockNumber: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+                    accrualIntPeriodRelevance: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[1].int', json: storageResult })[0],
+                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
+                    balancesMapId: balancesMapId,
+                    supply: {
+                        totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
+                        supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[2].int', json: storageResult })[0])
+                    },
+                    borrow: {
+                        totalBorrows: JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0],
+                        borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
+                        borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0]),
+                        borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[2].int', json: storageResult })[0])
+                    },
+                    comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[2].string', json: storageResult })[0],
+                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0]),
+                    halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0]),
+                    initialExchangeRateMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[2].int', json: storageResult })[0]),
+                    interestRateModel: JSONPath({ path: '$.args[0].args[1].args[1].string', json: storageResult })[0],
+                    isAccrualInterestValid: JSONPath({ path: '$.args[0].args[1].args[2].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
+                    pendingAdministrator: pendingAdministrator,
+                    reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
+                    reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0]),
+                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
+                };
+            }
+            case TezosLendingPlatform.TokenStandard.FA2: {
+                const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
+                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0];
+                const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[2].prim', json: storageResult })[0];
+                const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
+                // TODO: implement numSuppliers and numBorrowers
+                // get numSuppliers
+                // const suppliersQuery = makeSuppliersQuery(balancesMapId);
+                // get numBorrowers
+                // const borrowersQuery = makeBorrowersQuery(balancesMapId);
+                return {
+                    accrualBlockNumber: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+                    accrualIntPeriodRelevance: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[1].int', json: storageResult })[0],
+                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+                    balancesMapId: balancesMapId,
+                    supply: {
+                        totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
+                        supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0])
+                    },
+                    borrow: {
+                        totalBorrows: JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0],
+                        borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0]),
+                        borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
+                        borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
+                    },
+                    comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[1].args[2].string', json: storageResult })[0],
+                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
+                    halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
+                    initialExchangeRateMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0]),
+                    interestRateModel: JSONPath({ path: '$.args[0].args[1].args[0].args[2].string', json: storageResult })[0],
+                    isAccrualInterestValid: JSONPath({ path: '$.args[0].args[1].args[1].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
+                    pendingAdministrator: pendingAdministrator,
+                    reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0]),
+                    reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
+                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
+                };
+            }
+            case TezosLendingPlatform.TokenStandard.XTZ: {
+                const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
+                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0];
+                const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[3].prim', json: storageResult })[0];
+                const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
+                // TODO: implement numSuppliers and numBorrowers
+                // get numSuppliers
+                // const suppliersQuery = makeSuppliersQuery(balancesMapId);
+                // get numBorrowers
+                // const borrowersQuery = makeBorrowersQuery(balancesMapId);
+                return {
+                    accrualBlockNumber: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+                    accrualIntPeriodRelevance: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[1].int', json: storageResult })[0],
+                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
+                    balancesMapId: balancesMapId,
+                    supply: {
+                        totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
+                        supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[2].int', json: storageResult })[0])
+                    },
+                    borrow: {
+                        totalBorrows: JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0],
+                        borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
+                        borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0]),
+                        borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0])
+                    },
+                    comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[3].string', json: storageResult })[0],
+                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0]),
+                    halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
+                    initialExchangeRateMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0]),
+                    interestRateModel: JSONPath({ path: '$.args[0].args[1].args[1].string', json: storageResult })[0],
+                    isAccrualInterestValid: JSONPath({ path: '$.args[0].args[1].args[2].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
+                    pendingAdministrator: pendingAdministrator,
+                    reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
+                    reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0]),
+                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
+                };
+            }
+        }
     }
 
     /*
@@ -111,7 +189,7 @@ export namespace FToken {
         return borrowersQuery;
     }
 
-    const blocksPerYear = 2*60*24*365;
+    const blocksPerYear = 2 * 60 * 24 * 365;
 
     /*
      * @description 
@@ -213,10 +291,10 @@ export namespace FToken {
      *
      * @parameters
      */
-     export function parseBalanceResult(json, currentIndex: bigInt.BigInteger, assetType: TezosLendingPlatform.AssetType): Balance {
-        const borrowIndex = JSONPath({path: '$.args[0].args[0].int', json: json })[0];
-        const borrowPrincipal = JSONPath({path: '$.args[0].args[1].int', json: json })[0];
-        const supplyPrincipal = JSONPath({path: '$.args[2].int', json: json })[0];
+    export function parseBalanceResult(json, currentIndex: bigInt.BigInteger, assetType: TezosLendingPlatform.AssetType): Balance {
+        const borrowIndex = JSONPath({ path: '$.args[0].args[0].int', json: json })[0];
+        const borrowPrincipal = JSONPath({ path: '$.args[0].args[1].int', json: json })[0];
+        const supplyPrincipal = JSONPath({ path: '$.args[2].int', json: json })[0];
         // TODO: parse approvals
         // return 0 balance if uninitialized in contract
         return {
@@ -224,7 +302,7 @@ export namespace FToken {
             supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex(supplyPrincipal, bigInt(1_000_000), currentIndex),
             loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex(borrowPrincipal, borrowIndex, currentIndex)
         }
-     }
+    }
 
     /*
      * @description Return the operation for invoking the accrueInterest entrypoint of the given fToken address
@@ -259,7 +337,7 @@ export namespace FToken {
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
-   }
+    }
 
     /*
      * Mint entrypoint parameters
@@ -322,7 +400,7 @@ export namespace FToken {
      *
      * @param
      */
-    export function RedeemOperation(redeem: RedeemPair, counter: number, fTokenAddress: string, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function RedeemOperation(redeem: RedeemPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'redeem';
         const parameters = RedeemPairMichelson(redeem);
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
@@ -354,7 +432,7 @@ export namespace FToken {
      *
      * @param
      */
-    export function BorrowOperation(borrow: BorrowPair, counter: number, fTokenAddress: string, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function BorrowOperation(borrow: BorrowPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'borrow';
         const parameters = BorrowPairMichelson(borrow);
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
@@ -384,7 +462,7 @@ export namespace FToken {
      *
      * @param
      */
-    export function RepayBorrowOperation(repayBorrow: RepayBorrowPair, counter: number, fTokenAddress: string, pkh: string, fee: number,  gas: number = 800_000, freight: number = 20_000): Transaction {
+    export function RepayBorrowOperation(repayBorrow: RepayBorrowPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'repayBorrow';
         const parameters = RepayBorrowPairMichelson(repayBorrow);
         const xtzAmount = repayBorrow.underlying == TezosLendingPlatform.AssetType.XTZ ? repayBorrow.amount : 0;
@@ -401,7 +479,7 @@ export namespace FToken {
     export interface AccountStatus {
         balance: number;
         accountBorrows: { principal: number; interestIndex: number; }[];
-        approvals: { [ address: string]: number };
+        approvals: { [address: string]: number };
     }
 
     /*
