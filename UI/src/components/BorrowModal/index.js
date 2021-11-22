@@ -14,7 +14,6 @@ const BorrowModal = (props) =>{
 
   const { open, close, valueofRow } = props;
 
-  // const account  = JSON.parse(localStorage.getItem('account'));
   const { account } = useSelector(state => state.addWallet);
   const { server } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
@@ -54,10 +53,14 @@ const BorrowModal = (props) =>{
     handleOpenConfirm();
   }
 
-    useEffect(() => {
+  useEffect(() => {
       dispatch(borrowMarketModalAction(account, markets[valueofRow['assetType']]));
-      valueofRow.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
   }, [dispatch, open]);
+
+  if(borrowMarketModal.borrowBalanceUsd) {
+    valueofRow.borrowBalanceUsd = borrowMarketModal.borrowBalanceUsd.toString();
+    valueofRow.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
+  }
 
   return (
     <>

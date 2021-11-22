@@ -12,7 +12,6 @@ const SupplyModal = (props) => {
   const dispatch = useDispatch();
   const { open, close, valueofRow, onClick, supply, enableToken, mint, withdraw } = props;
 
-  // const account  = JSON.parse(localStorage.getItem('account'));
   const { account } = useSelector(state => state.addWallet);
   const { server } = useSelector(state => state.nodes.tezosNode);
   const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
@@ -55,7 +54,6 @@ const SupplyModal = (props) => {
 
   useEffect(() => {
     dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
-    valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
   }, [dispatch, open]);
 
   useEffect(() => {
@@ -64,6 +62,10 @@ const SupplyModal = (props) => {
 
   const modalHeaderText = enableToken ? '' : `To supply and use ${valueofRow.banner} as collateral, you will need to enable the token first.`;
 
+  if(supplyMarketModal.borrowLimitUsd) {
+    valueofRow.borrowLimit = supplyMarketModal.borrowLimitUsd.toString();
+    valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
+  }
   return (
     <>
     <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText={tokenText}/>

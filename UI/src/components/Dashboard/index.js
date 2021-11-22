@@ -13,18 +13,18 @@ const Dashboard =() => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  // const account  = JSON.parse(localStorage.getItem('account'));
   const { account } = useSelector(state => state.addWallet);
   const { markets } = useSelector(state => state.market);
   const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector(state => state.market);
 
   useEffect(() => {
+    dispatch(unSuppliedMarketAction(account, markets));
+    dispatch(unBorrowedMarketAction(account, markets));
+
     if (!account.address || !markets) { return; }
 
     dispatch(suppliedMarketAction(account, markets));
-    dispatch(unSuppliedMarketAction(account, markets));
     dispatch(borrowedMarketAction(account, markets));
-    dispatch(unBorrowedMarketAction(account, markets));
   }, [dispatch, account, markets])
 
 //   console.log(`dashboard markets ${JSON.stringify(markets)}`)
@@ -39,20 +39,24 @@ const Dashboard =() => {
         {/* <Grid md={12}>
         </Grid> */}
       <Grid item xs={12} md={6} className={classes.paddingRight}>
-        <>
-          <Typography className={classes.tableTitle}> supplying </Typography>
-          <Market
-            tableData = {suppliedMarkets}
-            headingOne = "Token"
-            headingTwo = "APY/Earned"
-            headingThree = "Balance"
-            headingFour = "Collateral"
-            toggle
-            supplyingMkt
-            />
-        </>
-        {/* <Typography className={classes.tableTitle}> Supply Markets </Typography> */}
-        <Typography className={classes.tableTitleTwo}> All Supply Markets </Typography>
+        {(suppliedMarkets.length > 0) &&
+          <>
+            <Typography className={classes.tableTitle}> supplying </Typography>
+            <Market
+              tableData = {suppliedMarkets}
+              headingOne = "Token"
+              headingTwo = "APY/Earned"
+              headingThree = "Balance"
+              headingFour = "Collateral"
+              toggle
+              supplyingMkt
+              />
+          </>
+        }
+        {(suppliedMarkets.length > 0) ?
+          <Typography className={classes.tableTitleTwo}> All Supply Markets </Typography> :
+          <Typography className={classes.tableTitle}> Supply Markets </Typography>
+        }
         <Market
           tableData = {unSuppliedMarkets}
           headingOne = "Token"
@@ -64,7 +68,23 @@ const Dashboard =() => {
         />
       </Grid>
       <Grid item xs={12} md={6} className={classes.paddingLeft}>
-        <Typography className={classes.tableTitle}> Borrow Markets </Typography>
+      {(borrowedMarkets.length > 0) &&
+        <>
+          <Typography className={classes.tableTitle}> Borrowing </Typography>
+          <Market
+            tableData = {borrowedMarkets}
+            headingOne = "Token"
+            headingTwo = "APY"
+            headingThree = "Balance"
+            headingFour = "Borrow limit used"
+            borrowingMkt
+            />
+        </>
+        }
+        {(borrowedMarkets.length > 0) ?
+          <Typography className={classes.tableTitleTwo}> All Borrow Markets </Typography> :
+          <Typography className={classes.tableTitle}> Borrow Markets </Typography>
+        }
         <Market
           tableData = {unBorrowedMarkets}
           headingOne = "Token"

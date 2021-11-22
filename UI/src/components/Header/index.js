@@ -25,7 +25,6 @@ const Header = () => {
   const { supplyComposition } = useSelector(state => state.supplyComposition);
   const { borrowComposition } = useSelector(state => state.borrowComposition);
   const account = useSelector(state => state.addWallet.account);
-  // const account  = JSON.parse(localStorage.getItem('account'));
 
   useEffect(() => {
     if(account) {

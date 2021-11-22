@@ -5,6 +5,8 @@ import {
   WITHDRAW_TOKEN,
   BORROW_TOKEN,
   REPAY_BORROW_TOKEN,
+  COLLATERALIZE_TOKEN,
+  DISABLE_COLLATERALIZE_TOKEN
 } from './types.js';
 
 import { Comptroller, TezosLendingPlatform } from 'tezoslendingplatformjs';
@@ -45,7 +47,6 @@ export const borrowMarketModalAction = (account, market) => async (dispatch) => 
  * @param  mintPair underlying asset and amount to be supplied
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
- * @param  fee
  */
 export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash)=> async (dispatch) => {
   const mint = TezosLendingPlatform.MintOpGroup(mintPair, protocolAddresses, publicKeyHash);
@@ -101,5 +102,39 @@ export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publi
   const repayBorrow = TezosLendingPlatform.RepayBorrowOpGroup(repayBorrowPair, protocolAddresses, publicKeyHash);
   dispatch({ type: REPAY_BORROW_TOKEN, payload: repayBorrow });
   confirmOps(repayBorrow);
+}
+
+/**
+ * This function is used for collateralizing tokens for the underlying asset.
+ *
+ * @param
+ * @param
+ * @param
+ */
+export const collateralizeTokenAction = (enterMarkets, collaterals, protocolAddresses, pkh) => async (dispatch) => {
+  // enterMarkets = Comptroller.EnterMarketsPair
+
+  // const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
+
+  const collateralizeToken = TezosLendingPlatform.EnterMarketsOpGroup(enterMarkets, collaterals, protocolAddresses, pkh);
+  dispatch({ type: COLLATERALIZE_TOKEN, payload: collateralizeToken });
+  confirmOps(collateralizeToken);
+}
+
+/**
+ * This function is used for disabling collateralize tokens for the underlying asset.
+ *
+ * @param
+ * @param
+ * @param
+ */
+export const disableCollateralizeTokenAction = (exitMarket, collaterals, protocolAddresses, pkh) => async (dispatch) => {
+  // exitMarket = Comptroller.ExitMarketPair
+
+  // const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
+
+  const disableCollateralizeToken = TezosLendingPlatform.ExitMarketOpGroup(exitMarket, collaterals, protocolAddresses, pkh);
+  dispatch({ type: DISABLE_COLLATERALIZE_TOKEN, payload: disableCollateralizeToken });
+  confirmOps(disableCollateralizeToken);
 }
 

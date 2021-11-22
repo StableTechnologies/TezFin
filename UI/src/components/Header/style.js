@@ -51,6 +51,9 @@ export const useStyles = makeStyles({
     lineHeight: '1.875rem',
     color: '#191919',
     padding: '2.6875rem 6.25rem 1.5rem',
+    '@media(max-width: 1024px)': {
+      paddingLeft: '4rem',
+    },
     '@media(max-width: 768px)': {
       padding: '2.6875rem 4rem 1.5rem',
     },
@@ -63,6 +66,9 @@ export const useStyles = makeStyles({
   },
   padding100: {
     paddingLeft: '6.25rem',
+    '@media(max-width: 1024px)': {
+    paddingLeft: '4rem',
+    },
     '@media(max-width: 768px)': {
     paddingLeft: '4rem',
     },
@@ -97,7 +103,7 @@ export const useStyles = makeStyles({
     width: '75%',
     paddingTop: '7px',
     '@media(max-width: 1024px)': {
-      width: '100%',
+      width: '80%',
     },
     '@media(max-width: 768px)': {
       width: '75%',
