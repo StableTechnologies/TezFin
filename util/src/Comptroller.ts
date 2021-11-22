@@ -1,9 +1,10 @@
-import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Transaction, TezosMessageUtils, TezosParameterFormat, ConseilQuery, ConseilQueryBuilder, ConseilOperator, TezosConseilClient, ConseilServerInfo } from 'conseiljs';
-import { JSONPath } from 'jsonpath-plus';
+import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, KeyStore, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
+
 import { FToken } from './FToken';
+import { JSONPath } from 'jsonpath-plus';
 import { TezosLendingPlatform } from './TezosLendingPlatform';
-import log from 'loglevel';
 import bigInt from 'big-integer';
+import log from 'loglevel';
 
 export namespace Comptroller {
     /*
@@ -56,7 +57,7 @@ export namespace Comptroller {
     export async function GetStorage(address: string, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage | undefined> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         // get marketsMapId
-        const marketsMapId = JSONPath({path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
+        const marketsMapId = JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
         // get all market values for fTokens from protocolAddresses
         const markets: MarketMap = {};
 
@@ -73,24 +74,24 @@ export namespace Comptroller {
 
         // parse results
         try {
-        return {
-            accountLiquidityMapId: JSONPath({path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-            collateralsMapId: JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
-            loansMapId: JSONPath({path: '$.args[0].args[1].args[1].int', json: storageResult })[0],
-            administrator: JSONPath({path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
-            closeFactorMantissa: JSONPath({path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
-            expScale: JSONPath({path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
-            halfExpScale: JSONPath({path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
-            liquidationIncentiveMantissa: JSONPath({path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
-            liquidityPeriodRelevance: JSONPath({path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
-            marketsMapId: marketsMapId,
-            oracleAddress: JSONPath({path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
-            pendingAdministrator: JSONPath({path: '$.args[0].args[3].prim', json: storageResult })[0],
-            pricePeriodRelevance: JSONPath({path: '$.args[0].args[4].int', json: storageResult })[0],
-            transferPaused: JSONPath({path: '$.args[0].args[5].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
-            markets: markets
-        };
-        } catch(e) {
+            return {
+                accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+                collateralsMapId: JSONPath({ path: '$.args[0].args[0]..args[1].args[1].int', json: storageResult })[0],
+                loansMapId: JSONPath({ path: '$.args[0].args[1].args[1].int', json: storageResult })[0],
+                administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                expScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
+                halfExpScale: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
+                liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                liquidityPeriodRelevance: JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
+                marketsMapId: marketsMapId,
+                oracleAddress: JSONPath({ path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
+                pendingAdministrator: JSONPath({ path: '$.args[0].args[3].prim', json: storageResult })[0],
+                pricePeriodRelevance: JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0],
+                transferPaused: JSONPath({ path: '$.args[0].args[5].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
+                markets: markets
+            };
+        } catch (e) {
             log.error(`Unable to parse storage JSON for Comptroller at ${address}`);
             return undefined;
         }
@@ -108,7 +109,7 @@ export namespace Comptroller {
         marketsQuery = ConseilQueryBuilder.addFields(marketsQuery, 'key', 'value');
         marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'big_map_id', ConseilOperator.EQ, [marketsMapId]);
         // key is in marketAddresses
-        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'key', ConseilOperator.EQ, [ `0x${TezosMessageUtils.writeAddress(marketAddress)}`]);
+        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'key', ConseilOperator.EQ, [`0x${TezosMessageUtils.writeAddress(marketAddress)}`]);
         marketsQuery = ConseilQueryBuilder.setLimit(marketsQuery, 1000);
         return marketsQuery;
     }
@@ -120,16 +121,16 @@ export namespace Comptroller {
      */
     function parseMarketResult(result): Market {
         // need to add constants for this
-        const assetType: TezosLendingPlatform.AssetType =  JSONPath({path: '$.args[1].args[1].string', json: result })[0] as TezosLendingPlatform.AssetType;
+        const assetType: TezosLendingPlatform.AssetType = JSONPath({ path: '$.args[1].args[1].string', json: result })[0] as TezosLendingPlatform.AssetType;
         return {
             assetType: assetType,
-            borrowCap: JSONPath({path: '$.args[0].args[0].args[0].int', json: result })[0],
-            borrowPaused: JSONPath({path: '$.args[0].args[0].args[1].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-            collateralFactor: JSONPath({path: '$.args[0].args[1].int', json: result })[0],
-            isListed: JSONPath({path: '$.args[0].args[2].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-            mintPaused: JSONPath({path: '$.args[1].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-            price: bigInt(JSONPath({path: '$.args[2].int', json: result })[0]),
-            updateLevel: JSONPath({path: '$.args[3].int', json: result })[0],
+            borrowCap: JSONPath({ path: '$.args[0].args[0].args[0].int', json: result })[0],
+            borrowPaused: JSONPath({ path: '$.args[0].args[0].args[1].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
+            collateralFactor: JSONPath({ path: '$.args[0].args[1].int', json: result })[0],
+            isListed: JSONPath({ path: '$.args[0].args[2].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
+            mintPaused: JSONPath({ path: '$.args[1].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
+            price: bigInt(JSONPath({ path: '$.args[2].int', json: result })[0]),
+            updateLevel: JSONPath({ path: '$.args[3].int', json: result })[0],
         } as Market;
     }
 
@@ -199,7 +200,7 @@ export namespace Comptroller {
      *
      * @param
      */
-    export async function UpdateAssetPrice(updateAssetPrice: UpdateAssetPricePair, server: string, comptrollerAddress: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function UpdateAssetPrice(updateAssetPrice: UpdateAssetPricePair, server: string, comptrollerAddress: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         const entrypoint = 'updateAccountLiquidity';
         const parameters = UpdateAccountLiquidityMicheline(updateAssetPrice);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
@@ -249,7 +250,7 @@ export namespace Comptroller {
      *
      * @param
      */
-    export async function UpdateAccountLiquidity(updateAccountLiquidity: UpdateAccountLiquidityPair, server: string, comptrollerAddress: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function UpdateAccountLiquidity(updateAccountLiquidity: UpdateAccountLiquidityPair, server: string, comptrollerAddress: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         const entrypoint = 'updateAccountLiquidity';
         const parameters = UpdateAccountLiquidityMicheline(updateAccountLiquidity);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
@@ -290,10 +291,10 @@ export namespace Comptroller {
      * @param gas
      * @param freight
      */
-    export async function DataRelevance(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function DataRelevance(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses,counter, keystore.publicKeyHash, gas, freight);
+        let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
@@ -334,7 +335,7 @@ export namespace Comptroller {
      *
      * @param
      */
-    export async function EnterMarkets(enterMarkets: EnterMarketsPair, comptrollerAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function EnterMarkets(enterMarkets: EnterMarketsPair, comptrollerAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         const entryPoint = 'enterMarkets';
         const parameters = EnterMarketsPairMicheline(enterMarkets);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entryPoint, parameters, TezosParameterFormat.Micheline);
@@ -375,7 +376,7 @@ export namespace Comptroller {
      *
      * @param
      */
-    export async function ExitMarket(exitMarket: ExitMarketPair, comptrollerAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number,  gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function ExitMarket(exitMarket: ExitMarketPair, comptrollerAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         const entryPoint = 'exitMarket';
         const parameters = ExitMarketPairMicheline(exitMarket);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entryPoint, parameters, TezosParameterFormat.Micheline);
