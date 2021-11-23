@@ -64,8 +64,8 @@ export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash)=> 
  * @param  publicKeyHash address of the connected account.
  * @param  keystore
  */
-export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server, publicKeyHash, keystore)=> async (dispatch) => {
-  const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
+export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server, publicKeyHash, address)=> async (dispatch) => {
+  const collaterals = await Comptroller.GetCollaterals(address, comptroller, protocolAddresses, server);
 
   const withdraw = TezosLendingPlatform.RedeemOpGroup(redeemPair, collaterals, protocolAddresses, publicKeyHash);
   dispatch({ type: WITHDRAW_TOKEN, payload: withdraw });
