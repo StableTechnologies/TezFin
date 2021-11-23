@@ -54,7 +54,7 @@ export namespace Comptroller {
      * @param server The Tezos node to communicate with
      * @param address
      */
-    export async function GetStorage(address: string, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage | undefined> {
+export async function GetStorage(address: string, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         // get marketsMapId
         const marketsMapId = JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
@@ -93,7 +93,7 @@ export namespace Comptroller {
             };
         } catch (e) {
             log.error(`Unable to parse storage JSON for Comptroller at ${address}`);
-            return undefined;
+            throw e;
         }
     }
 

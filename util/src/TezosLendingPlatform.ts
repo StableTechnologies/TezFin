@@ -1,9 +1,10 @@
-import { ConseilQuery, ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosNodeReader, TezosNodeWriter, Transaction, Tzip7ReferenceTokenHelper, UpdateOperator } from 'conseiljs';
+import { ConseilQuery, ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, Transaction, Tzip7ReferenceTokenHelper, UpdateOperator } from 'conseiljs';
 
 import { Comptroller } from './Comptroller';
 import { FToken } from './FToken';
 import bigInt from 'big-integer';
 import log from 'loglevel';
+import {JSONPath} from 'jsonpath-plus';
 
 export namespace TezosLendingPlatform {
     /*
@@ -82,13 +83,15 @@ export namespace TezosLendingPlatform {
             "ETH": {
                 assetType: AssetType.ETH,
                 address: "KT1LLL2RWrc4xi23umbq1564ej88RG6LcAoR",
-                balancesMapId: 135623
+                balancesMapId: 135623,
+                balancesPath: "$.args[1].int"
             },
             "BTC": {
                 assetType: AssetType.BTC,
                 address: "KT1SM4x48cbemJaipLqRGZgbwfWukZEdz4jw",
                 tokenId: 0,
-                balancesMapId: 135627
+                balancesMapId: 135627,
+                balancesPath: "$.int"
             },
             "XTZ": {
                 assetType: AssetType.XTZ
@@ -124,6 +127,7 @@ export namespace TezosLendingPlatform {
         assetType: AssetType;
         address?: string;
         balancesMapId?: number;
+        balancesPath?: string;
         tokenId?: number;
     }
 
@@ -347,16 +351,11 @@ export namespace TezosLendingPlatform {
 
         await Promise.all(Object.keys(markets).map(async (asset) => {
             switch (assetTypeToStandard(asset as AssetType)) {
-                case TokenStandard.XTZ:
+                case TokenStandard.XTZ: // native asset
                     balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
                     break;
-                case TokenStandard.FA12:
-                    balances[asset] = await GetUnderlyingBalanceFA12(asset as AssetType, markets, address, server);
-                    break;
-                case TokenStandard.FA2:
-                    balances[asset] = await GetUnderlyingBalanceFA2(asset as AssetType, markets, address, server);
-                    break;
-                default:
+                default: // contract-based assets
+                    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
                     break;
             }
         }));
@@ -371,7 +370,6 @@ export namespace TezosLendingPlatform {
     export async function GetUnderlyingBalanceXTZ(address: string, server: string): Promise<bigInt.BigInteger> {
         try {
             const balance = await TezosNodeReader.getSpendableBalanceForAccount(server, address);
-            console.log('GetUnderlyingBalanceXTZ', address, balance)
             return bigInt(balance);
         } catch (e) {
             log.error(`Unable to read XTZ balance for ${address}\n${e}`);
@@ -382,48 +380,31 @@ export namespace TezosLendingPlatform {
     /*
      * @description
      *
-     * @param
+     * @param asset
+     * @param markets Map of protocol markets
+     * @param address Account address
+     * @param server Tezos node
      */
-    export async function GetUnderlyingBalanceFA12(asset: AssetType, markets: MarketMap, address: string, server: string): Promise<bigInt.BigInteger> {
-        let mapId = markets[asset].asset.underlying.balancesMapId;
-        if (mapId === undefined) { // need to get balancesMapId from underlying asset contract's storage
+    export async function GetUnderlyingBalanceToken(underlying: UnderlyingAsset, address: string, server: string): Promise<bigInt.BigInteger> {
+        if (underlying.balancesMapId === undefined) { // need to get balancesMapId from underlying asset contract's storage
             try {
-                const fa12Storage = await Tzip7ReferenceTokenHelper.getSimpleStorage(server, markets[asset].asset.underlying.address!);
-                mapId = fa12Storage.mapid;
+                log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`)
+                const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(address, 'address'), 'hex'));
+                const mapResult = await TezosNodeReader.getValueForBigMapKey(server, underlying.balancesMapId!, packedKey);
+                underlying.balancesMapId = JSONPath({ path: underlying.balancesPath!, json: mapResult });
             } catch (e) {
-                log.error(`Unable to read contract storage for FA12 fToken ${markets[asset].asset.underlying.address!}\n${e}`);
+                log.error(`Unable to read contract storage for ${underlying.assetType} at ${underlying.address!}\n${e}`);
+                throw e;
             }
         }
         try {
-            const balance = await Tzip7ReferenceTokenHelper.getAccountBalance(server, mapId!, address, `$.args[1].int`);
+            const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(address, 'address'), 'hex'));
+            const mapResult = await TezosNodeReader.getValueForBigMapKey(server, underlying.balancesMapId!, packedKey);
+            const balance = JSONPath({ path: underlying.balancesPath!, json: mapResult });
             return bigInt(balance);
         } catch (e) {
-            log.error(`Unable to read contract storage for FA12 fToken ${markets[asset].asset.underlying.address!}\n${e}`);
-            return bigInt(-1); // TODO: should default return values be undefined?
-        }
-    }
-
-    /*
-     * @description
-     *
-     * @param
-     */
-    export async function GetUnderlyingBalanceFA2(asset: AssetType, markets: MarketMap, address: string, server: string): Promise<bigInt.BigInteger> {
-        let mapId = markets[asset].asset.underlying.balancesMapId;
-        if (mapId === undefined) { // need to get balancesMapId from underlying asset contract's storage
-            try {
-                const fa2Storage = await MultiAssetTokenHelper.getSimpleStorage(server, markets[asset].asset.underlying.address!);
-                mapId = fa2Storage.ledger;
-            } catch (e) {
-                log.error(`Unable to read contract storage for FA2 ${asset} fToken ${markets[asset].asset.underlying.address!}`);
-            }
-        }
-        try {
-            const balance = await MultiAssetTokenHelper.getAccountBalance(server, mapId!, address, markets[asset].asset.underlying.tokenId!);
-            return bigInt(balance);
-        } catch (e) {
-            log.error(`Unable to read account balance of ${address} from fToken ${markets[asset].asset.underlying.address!} in map ${mapId}\n${e}`);
-            return bigInt(-1); // TODO: should default return values be undefined?
+            log.error(`Unable to read balance from storage for underlying ${underlying.assetType} at ${underlying.address!}\n${e}`);
+            throw e;
         }
     }
 
