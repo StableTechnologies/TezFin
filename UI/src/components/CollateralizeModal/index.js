@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { collateralizeTokenAction, supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
 import ConfirmModal from '../ConfirmModal';
 
 import MarketModal from '../MarketModal';
@@ -8,8 +9,14 @@ import { useStyles } from './style';
 
 const CollateralizeModal = (props) =>{
   const classes = useStyles();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const {open, close, valueofRow, onClick} = props;
+
+  const { account } = useSelector(state => state.addWallet);
+  const { markets } = useSelector(state => state.market);
+  const { protocolAddresses } = useSelector(state => state.nodes);
+  const { supplyMarketModal } = useSelector(state => state.marketModal);
+  const publicKeyHash = account.address;
 
   const [openConfirmModal, setConfirmModal] =useState(false);
   const [tokenText, setTokenText] =useState('');
@@ -23,11 +30,17 @@ const CollateralizeModal = (props) =>{
   };
 
   const collateralizeToken = () => {
-    valueofRow.collateral = true
+    // TODO: pass in appropriate parameters into collateralizeTokenAction
+    dispatch(collateralizeTokenAction());
     close()
     setTokenText('collateral')
     handleOpenConfirm();
+    valueofRow.collateral = true;
   }
+
+  useEffect(() => {
+    dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
+  }, [dispatch, open]);
 
   return (
     <>

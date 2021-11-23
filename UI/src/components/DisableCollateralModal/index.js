@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { disableCollateralizeTokenAction, supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
 import ConfirmModal from '../ConfirmModal';
 
 import MarketModal from '../MarketModal';
@@ -8,8 +9,14 @@ import { useStyles } from './style';
 
 const DisableCollateralModal = (props) =>{
   const classes = useStyles();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const {open, close, valueofRow, onClick} = props;
+
+  const { account } = useSelector(state => state.addWallet);
+  const { markets } = useSelector(state => state.market);
+  const { protocolAddresses } = useSelector(state => state.nodes);
+  const { supplyMarketModal } = useSelector(state => state.marketModal);
+  const publicKeyHash = account.address;
 
   const [openConfirmModal, setConfirmModal] =useState(false);
   const [tokenText, setTokenText] =useState('');
@@ -23,13 +30,17 @@ const DisableCollateralModal = (props) =>{
   };
 
   const disableToken = () => {
-    valueofRow.collateral = false;
+    // TODO: pass in appropriate parameters into disableCollateralizeTokenAction
+    dispatch(disableCollateralizeTokenAction());
     close()
-    setTokenText('disable')
+    setTokenText('disable');
     handleOpenConfirm();
-    // update store using thunk to delete
+    valueofRow.collateral = false;
   }
 
+ useEffect(() => {
+    dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
+  }, [dispatch, open]);
 
   return (
     <>
