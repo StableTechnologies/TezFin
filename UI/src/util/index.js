@@ -58,6 +58,13 @@ export const getWallet = async () => {
 };
 
 /**
+ * This function let's a user disconnects from an account.
+ */
+ export const disactivateAccount = async() => {
+  await client.clearActiveAccount();
+}
+
+/**
  * This function checks if the user is already connected to a wallet.
  *
  * @returns address
