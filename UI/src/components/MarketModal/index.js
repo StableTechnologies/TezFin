@@ -22,7 +22,7 @@ const MarketModal = (props) => {
   const classes = useStyles();
 
   const {
-    open, close, valueofRow, handleClickTabOne,handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
+    open, close, tokenDetails, handleClickTabOne,handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
     amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount, collateralize,
     extraPadding, progressBarColor
   } = props;
@@ -47,8 +47,8 @@ const MarketModal = (props) => {
         <CloseButton onClick={close} />
         <DialogTitle>
           <div>
-            <img src={valueofRow.logo} alt="logo" className={classes.img}/>
-            <Typography className={classes.imgTitle}> {valueofRow.banner} </Typography>
+            <img src={tokenDetails.logo} alt="logo" className={classes.img}/>
+            <Typography className={classes.imgTitle}> {tokenDetails.banner} </Typography>
           </div>
         </DialogTitle>
         {(!visibility || collateralize) &&
@@ -84,12 +84,12 @@ const MarketModal = (props) => {
               <Grid container justifyContent="space-between">
                 <Grid item sm={8}>
                   <div>
-                    <img src={valueofRow.logo} alt="logo" className={classes.img}/>
+                    <img src={tokenDetails.logo} alt="logo" className={classes.img}/>
                     <Typography className={classes.imgTitle}> {APYText} </Typography>
                   </div>
                 </Grid>
                 <Grid item sm={2}></Grid>
-                <Grid item sm={2}> {valueofRow.rate || "0"}% </Grid>
+                <Grid item sm={2}> {tokenDetails.rate || "0"}% </Grid>
               </Grid>
             </DialogContent>
           </>
@@ -98,21 +98,21 @@ const MarketModal = (props) => {
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ? "": classes.visibility}`}> {Limit} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ? "" : classes.visibility}> ${(valueofRow.borrowLimit || valueofRow.borrowBalanceUsd) || "0.00"}</Grid>
+            <Grid item sm={2} className={visibility ? "" : classes.visibility}> ${(tokenDetails.borrowLimit || tokenDetails.borrowBalanceUsd) || "0.00"}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7} className={`${classes.faintFont} ${visibility ? "" : classes.visibility}`}> {LimitUsed} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={visibility ? "" : classes.visibility}> {valueofRow.borrowLimitUsed || "0"}% </Grid>
+            <Grid item sm={2} className={visibility ? "" : classes.visibility}> {tokenDetails.borrowLimitUsed || "0"}% </Grid>
           </Grid>
         </DialogContent>
         <DialogContent>
           <Grid container>
             <Grid item sm={12}>
               <Box className={`${classes.progressBar} ${visibility ? "" : classes.visibility}`}>
-                <CustomizedProgressBars backgroundColor={progressBarColor} value={valueofRow.borrowLimitUsed} />
+                <CustomizedProgressBars backgroundColor={progressBarColor} value={tokenDetails.borrowLimitUsed} />
               </Box>
             </Grid>
           </Grid>
@@ -144,7 +144,7 @@ const MarketModal = (props) => {
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7}> {amountText} </Grid>
             <Grid item sm={3}></Grid>
-            <Grid item sm={2} className={classes.whiteSpace}> {valueofRow.balance || 0} {valueofRow.title} </Grid>
+            <Grid item sm={2} className={classes.whiteSpace}> {tokenDetails.balance || 0} {tokenDetails.title} </Grid>
           </Grid>
         </DialogContent>
       </Dialog>

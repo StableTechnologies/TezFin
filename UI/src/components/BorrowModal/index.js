@@ -12,7 +12,7 @@ const BorrowModal = (props) =>{
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { open, close, valueofRow } = props;
+  const { open, close, tokenDetails } = props;
 
   const { account } = useSelector(state => state.addWallet);
   const { server } = useSelector(state => state.nodes.tezosNode);
@@ -34,7 +34,7 @@ const BorrowModal = (props) =>{
   };
 
   const borrowToken = () => {
-    const underlying = valueofRow.assetType.toLowerCase()
+    const underlying = tokenDetails.assetType.toLowerCase()
     const borrowPair =  {underlying, amount: amount}
     dispatch( borrowTokenAction(borrowPair, comptroller, protocolAddresses, server, publicKeyHash, KeyStore));
     close();
@@ -44,7 +44,7 @@ const BorrowModal = (props) =>{
   }
 
   const repayBorrowToken = () => {
-    const underlying = valueofRow.assetType.toLowerCase()
+    const underlying = tokenDetails.assetType.toLowerCase()
     const repayBorrowPair =  {underlying, amount: amount}
     dispatch( repayBorrowTokenAction(repayBorrowPair, protocolAddresses, publicKeyHash));
     close();
@@ -54,17 +54,17 @@ const BorrowModal = (props) =>{
   }
 
   useEffect(() => {
-      dispatch(borrowMarketModalAction(account, markets[valueofRow['assetType']]));
+      dispatch(borrowMarketModalAction(account, markets[tokenDetails['assetType']]));
   }, [dispatch, open]);
 
   if(borrowMarketModal.borrowBalanceUsd) {
-    valueofRow.borrowBalanceUsd = borrowMarketModal.borrowBalanceUsd.toString();
-    valueofRow.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
+    tokenDetails.borrowBalanceUsd = borrowMarketModal.borrowBalanceUsd.toString();
+    tokenDetails.borrowLimitUsed = borrowMarketModal.borrowLimitUsed / 10000;
   }
 
   return (
     <>
-      <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText= {tokenText}/>
+      <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
       <MarketModal
          APYText = "Borrow APY"
          Limit = "Borrow Balance"
@@ -72,7 +72,7 @@ const BorrowModal = (props) =>{
          amountText = "Currently Borrowing"
          open = {open}
          close = {close}
-         valueofRow = {valueofRow}
+         tokenDetails = {tokenDetails}
          handleClickTabOne = {borrowToken}
          handleClickTabTwo = {repayBorrowToken}
          labelOne = "Borrow"

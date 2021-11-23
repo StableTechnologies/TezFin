@@ -22,7 +22,7 @@ const Market = (props) => {
   const classes = useStyles();
   const { headingOne, headingTwo, headingThree, headingFour, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt, borrowingMkt } = props;
 
-  const [valueofRow, setValueOfRow] = useState();
+  const [tokenDetails, setValueOfRow] = useState();
   const [openMktModal, setMktModal] = useState(false);
   const [collModal, setCollModal] = useState(false);
   const [disableCollModal, setDisableCollModal] = useState(false);
@@ -47,16 +47,16 @@ const Market = (props) => {
 
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
-      {valueofRow &&
+      {tokenDetails &&
         <>
           {(supplyMkt || supplyingMkt) &&
-            <SupplyModal open = {openMktModal} close = {closeModal} valueofRow = {valueofRow} enableToken = {enableToken} />
+            <SupplyModal open = {openMktModal} close = {closeModal} tokenDetails = {tokenDetails} enableToken = {enableToken} />
           }
           {(borrowMkt || borrowingMkt) &&
-            <BorrowModal open = {openMktModal} close = {closeModal} valueofRow = {valueofRow} />
+            <BorrowModal open = {openMktModal} close = {closeModal} tokenDetails = {tokenDetails} />
           }
-          <DisableCollateralModal open = {disableCollModal} close = {closeModal} valueofRow = {valueofRow} />
-          <CollateralizeModal open = {collModal} close = {closeModal} valueofRow = {valueofRow} />
+          <DisableCollateralModal open = {disableCollModal} close = {closeModal} tokenDetails = {tokenDetails} />
+          <CollateralizeModal open = {collModal} close = {closeModal} tokenDetails = {tokenDetails} />
         </>
       }
       <Table>

@@ -11,7 +11,7 @@ import ConfirmModal from '../ConfirmModal';
 const SupplyModal = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { open, close, valueofRow, onClick, supply, enableToken, mint, withdraw } = props;
+  const { open, close, tokenDetails, onClick, supply, enableToken, mint, withdraw } = props;
 
   const { account } = useSelector(state => state.addWallet);
   const { server } = useSelector(state => state.nodes.tezosNode);
@@ -33,7 +33,7 @@ const SupplyModal = (props) => {
   };
 
   const supplyToken = () => {
-    const underlying = valueofRow.assetType.toLowerCase();
+    const underlying = tokenDetails.assetType.toLowerCase();
     const mintPair = { underlying, amount };
     dispatch(supplyTokenAction(mintPair, protocolAddresses, publicKeyHash));
     close();
@@ -43,7 +43,7 @@ const SupplyModal = (props) => {
   }
 
   const withdrawToken = () => {
-    const underlying = valueofRow.assetType.toLowerCase();
+    const underlying = tokenDetails.assetType.toLowerCase();
     const redeemPair = { underlying, amount };
 
     dispatch(withdrawTokenAction(redeemPair, comptroller, protocolAddresses, server, publicKeyHash, KeyStore));
@@ -54,7 +54,7 @@ const SupplyModal = (props) => {
   }
 
   useEffect(() => {
-    dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
+    dispatch(supplyMarketModalAction(account, markets[tokenDetails['assetType']]));
   }, [dispatch, open]);
 
   useEffect(() => {
@@ -62,24 +62,24 @@ const SupplyModal = (props) => {
   }, [close]);
 
 
-  const modalHeaderText = enableToken ? '' : `To supply and use ${valueofRow.banner} as collateral, you will need to enable the token first.`;
+  const modalHeaderText = enableToken ? '' : `To supply and use ${tokenDetails.banner} as collateral, you will need to enable the token first.`;
 
   if(supplyMarketModal.borrowLimitUsd) {
-    valueofRow.borrowLimit = supplyMarketModal.borrowLimitUsd.toString();
-    valueofRow.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
+    tokenDetails.borrowLimit = supplyMarketModal.borrowLimitUsd.toString();
+    tokenDetails.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
   }
   return (
     <>
-    <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText={tokenText}/>
+    <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText}/>
     <MarketModal
         headerText = {modalHeaderText}
-        APYText = {`${valueofRow.title} Variable APY Rate`}
+        APYText = {`${tokenDetails.title} Variable APY Rate`}
         Limit = "Borrow Limit"
         LimitUsed = "Borrow Limit Used"
         amountText = "Wallet Balance"
         open = {open}
         close = {close}
-        valueofRow = {valueofRow}
+        tokenDetails = {tokenDetails}
         // onClick = {enableToken ? supply : onClick}
         onClick = {onClick}
         // handleClickTabOne = {enableToken ? supplyToken : onClick}
@@ -90,7 +90,7 @@ const SupplyModal = (props) => {
         // buttonOne ={enableToken ? "Supply" : "Enable Token"}
         buttonOne ="Supply"
         buttonTwo = "Withdraw"
-        // buttonTwo = {valueofRow.balance ? "Withdraw" : "No balance to withdraw"}
+        // buttonTwo = {tokenDetails.balance ? "Withdraw" : "No balance to withdraw"}
         btnSub = {classes.btnSub}
         inkBarStyle = {classes.inkBarStyle}
         // visibility={enableToken}

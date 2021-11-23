@@ -10,7 +10,7 @@ import { useStyles } from './style';
 const DisableCollateralModal = (props) =>{
   const classes = useStyles();
   const dispatch = useDispatch();
-  const {open, close, valueofRow, onClick} = props;
+  const {open, close, tokenDetails, onClick} = props;
 
   const { account } = useSelector(state => state.addWallet);
   const { markets } = useSelector(state => state.market);
@@ -35,25 +35,25 @@ const DisableCollateralModal = (props) =>{
     close()
     setTokenText('disable');
     handleOpenConfirm();
-    valueofRow.collateral = false;
+    tokenDetails.collateral = false;
   }
 
  useEffect(() => {
-    dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
+    dispatch(supplyMarketModalAction(account, markets[tokenDetails['assetType']]));
   }, [dispatch, open]);
 
   return (
     <>
-      <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText= {tokenText}/>
+      <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
       <MarketModal
          headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
-         APYText = {valueofRow.title +" "+ "Variable APY Rate"}
+         APYText = {tokenDetails.title +" "+ "Variable APY Rate"}
          Limit = "Borrow Limit"
          LimitUsed = "Borrow Limit Used"
          amountText = "Wallet Balance"
          open = {open}
          close = {close}
-         valueofRow = {valueofRow}
+         tokenDetails = {tokenDetails}
          onClick = {onClick}
          handleClickTabOne = {disableToken}
          buttonOne = "Disable Token"

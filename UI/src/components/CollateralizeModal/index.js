@@ -10,7 +10,7 @@ import { useStyles } from './style';
 const CollateralizeModal = (props) =>{
   const classes = useStyles();
   const dispatch = useDispatch();
-  const {open, close, valueofRow, onClick} = props;
+  const {open, close, tokenDetails, onClick} = props;
 
   const { account } = useSelector(state => state.addWallet);
   const { markets } = useSelector(state => state.market);
@@ -35,25 +35,25 @@ const CollateralizeModal = (props) =>{
     close()
     setTokenText('collateral')
     handleOpenConfirm();
-    valueofRow.collateral = true;
+    tokenDetails.collateral = true;
   }
 
   useEffect(() => {
-    dispatch(supplyMarketModalAction(account, markets[valueofRow['assetType']]));
+    dispatch(supplyMarketModalAction(account, markets[tokenDetails['assetType']]));
   }, [dispatch, open]);
 
   return (
     <>
-      <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={valueofRow.title} tokenText= {tokenText}/>
+      <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
       <MarketModal
           headerText = "Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
-          APYText = {valueofRow.title +" "+ "Variable APY Rate"}
+          APYText = {tokenDetails.title +" "+ "Variable APY Rate"}
           Limit = "Borrow Limit"
           LimitUsed = "Borrow Limit Used"
           amountText = "Wallet Balance"
           open = {open}
           close = {close}
-          valueofRow = {valueofRow}
+          tokenDetails = {tokenDetails}
           handleClickTabOne = {collateralizeToken}
           buttonOne = "Use as Collateral"
           btnSub = {classes.btnSub}

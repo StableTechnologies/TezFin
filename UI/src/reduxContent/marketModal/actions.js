@@ -108,7 +108,7 @@ export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publi
  *
  * @param asset
  * @param protocolAddresses
- * @param publicKeyHash
+ * @param publicKeyHash address of the connected account.
  */
 export const collateralizeTokenAction = (enterMarketsPair, collaterals, protocolAddresses, publicKeyHash) => async (dispatch) => {
   // TODO: clearly define each parameters
@@ -123,7 +123,7 @@ export const collateralizeTokenAction = (enterMarketsPair, collaterals, protocol
  *
  * @param asset
  * @param protocolAddresses
- * @param publicKeyHash
+ * @param publicKeyHash address of the connected account.
  */
 export const disableCollateralizeTokenAction = (enterMarketsPair, collaterals, protocolAddresses, publicKeyHash) => async (dispatch) => {
   // TODO: clearly define each parameters
