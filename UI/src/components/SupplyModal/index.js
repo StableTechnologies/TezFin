@@ -10,11 +10,10 @@ import ConfirmModal from '../ConfirmModal';
 const SupplyModal = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { open, close, tokenDetails, onClick, supply, enableToken, mint, withdraw } = props;
+  const { open, close, tokenDetails, onClick, enableToken } = props;
 
   const { account } = useSelector(state => state.addWallet);
-  const { server } = useSelector(state => state.nodes.tezosNode);
-  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
+  const { protocolAddresses } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
   const { supplyMarketModal } = useSelector(state => state.marketModal);
   const publicKeyHash = account.address;
@@ -45,7 +44,7 @@ const SupplyModal = (props) => {
     const underlying = tokenDetails.assetType.toLowerCase();
     const redeemPair = { underlying, amount };
 
-    dispatch(withdrawTokenAction(redeemPair, comptroller, protocolAddresses, server, publicKeyHash, account.address));
+    dispatch(withdrawTokenAction(redeemPair, protocolAddresses, publicKeyHash));
     close();
     setAmount('');
     setTokenText('withdraw');

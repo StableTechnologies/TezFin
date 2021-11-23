@@ -58,14 +58,11 @@ export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash)=> 
  * This function is used for redeeming tokens for the underlying asset..
  *
  * @param  redeemPair underlying asset and amount to be redeemed
- * @param  comptroller Comptroller storage.
  * @param  protocolAddresses Addresses of the protocol contracts
- * @param  server server address.
  * @param  publicKeyHash address of the connected account.
- * @param  keystore
  */
-export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, server, publicKeyHash, address)=> async (dispatch) => {
-  const collaterals = await Comptroller.GetCollaterals(address, comptroller, protocolAddresses, server);
+export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash)=> async (dispatch) => {
+  const collaterals = redeemPair.underlying;
 
   const withdraw = TezosLendingPlatform.RedeemOpGroup(redeemPair, collaterals, protocolAddresses, publicKeyHash);
   dispatch({ type: WITHDRAW_TOKEN, payload: withdraw });
@@ -76,14 +73,11 @@ export const withdrawTokenAction = (redeemPair, comptroller, protocolAddresses, 
  * This function is used for borrowing tokens for the underlying asset..
  *
  * @param  borrowPair underlying asset and amount to be borrowed
- * @param  comptroller Comptroller storage.
  * @param  protocolAddresses Addresses of the protocol contracts
- * @param  server server address
  * @param  publicKeyHash address of the connected account.
- * @param  keystore
  */
-export const borrowTokenAction = (borrowPair, comptroller, protocolAddresses, server, publicKeyHash, keystore)=> async (dispatch) => {
-  const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
+export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash)=> async (dispatch) => {
+  const collaterals = borrowPair.underlying;
   const borrow = TezosLendingPlatform.BorrowOpGroup(borrowPair, collaterals, protocolAddresses, publicKeyHash);
   dispatch({ type: BORROW_TOKEN, payload: borrow });
   confirmOps(borrow);

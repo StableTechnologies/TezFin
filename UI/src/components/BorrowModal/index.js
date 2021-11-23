@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { KeyStore} from 'conseiljs';
 
 import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
 import ConfirmModal from '../ConfirmModal';
@@ -15,8 +14,7 @@ const BorrowModal = (props) =>{
   const { open, close, tokenDetails } = props;
 
   const { account } = useSelector(state => state.addWallet);
-  const { server } = useSelector(state => state.nodes.tezosNode);
-  const { protocolAddresses, comptroller } = useSelector(state => state.nodes);
+  const { protocolAddresses } = useSelector(state => state.nodes);
   const { markets } = useSelector(state => state.market);
   const { borrowMarketModal } = useSelector(state => state.marketModal);
   const publicKeyHash = account.address;
@@ -36,7 +34,7 @@ const BorrowModal = (props) =>{
   const borrowToken = () => {
     const underlying = tokenDetails.assetType.toLowerCase()
     const borrowPair =  {underlying, amount: amount}
-    dispatch( borrowTokenAction(borrowPair, comptroller, protocolAddresses, server, publicKeyHash, KeyStore));
+    dispatch( borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash));
     close();
     setAmount('')
     setTokenText('borrow')
