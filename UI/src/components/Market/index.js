@@ -22,7 +22,7 @@ const Market = (props) => {
   const classes = useStyles();
   const { headingOne, headingTwo, headingThree, headingFour, toggle, tableData, supplyMkt, borrowMkt, supplyingMkt, borrowingMkt } = props;
 
-  const [tokenDetails, setValueOfRow] = useState();
+  const [tokenDetails, setTokenDetails] = useState();
   const [openMktModal, setMktModal] = useState(false);
   const [collModal, setCollModal] = useState(false);
   const [disableCollModal, setDisableCollModal] = useState(false);
@@ -35,7 +35,7 @@ const Market = (props) => {
   };
 
   const handleClickMktModal = (item, event) => {
-    setValueOfRow(item);
+    setTokenDetails(item);
     if (event.target.type === "checkbox") {
       if(item.collateral === true) { setDisableCollModal(true) }
       if(item.collateral === false) {setCollModal(true) }
