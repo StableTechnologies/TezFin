@@ -1,10 +1,10 @@
-import { ConseilQuery, ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, Transaction, Tzip7ReferenceTokenHelper, UpdateOperator } from 'conseiljs';
+import { ConseilQuery, ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction, Tzip7ReferenceTokenHelper, UpdateOperator } from 'conseiljs';
 
 import { Comptroller } from './Comptroller';
 import { FToken } from './FToken';
+import { JSONPath } from 'jsonpath-plus';
 import bigInt from 'big-integer';
 import log from 'loglevel';
-import { JSONPath } from 'jsonpath-plus';
 
 export namespace TezosLendingPlatform {
     /*
@@ -394,10 +394,9 @@ export namespace TezosLendingPlatform {
             try {
                 log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`);
                 const storage = TezosNodeReader.getContractStorage(server, underlying.address!);
-
-                if (underlying.assetType === AssetType.FA12) { // TODO: this is not a good heuristic
+                if (assetTypeToStandard(underlying.assetType) === TokenStandard.FA12) { // TODO: this is not a good heuristic
                     underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
-                } else if (underlying.assetType === AssetType.FA2) {
+                } else if (assetTypeToStandard(underlying.assetType) === TokenStandard.FA2) {
                     underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
                 }
             } catch (e) {
@@ -406,9 +405,13 @@ export namespace TezosLendingPlatform {
             }
         }
         try {
-            const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(address, 'address'), 'hex'));
+            let packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(address, 'address'), 'hex'));
+            if (assetTypeToStandard(underlying.assetType) === TokenStandard.FA2) {
+                const accountHex = `0x${TezosMessageUtils.writeAddress(address)}`;
+                packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(`(Pair ${accountHex} ${underlying.tokenId})`, '', TezosParameterFormat.Michelson), 'hex'));
+            }
             const mapResult = await TezosNodeReader.getValueForBigMapKey(server, underlying.balancesMapId!, packedKey);
-            const balance = JSONPath({ path: underlying.balancesPath!, json: mapResult });
+            const balance = JSONPath({ path: underlying.balancesPath!, json: mapResult })[0];
             return bigInt(balance);
         } catch (e) {
             log.error(`Unable to read balance from storage for underlying ${underlying.assetType} at ${underlying.address!}\n${e}`);
@@ -780,6 +783,7 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export function MintOpGroup(mint: FToken.MintPair, protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+        mint.underlying = mint.underlying.toUpperCase() as AssetType;
         let ops: Transaction[] = [];
         // accrue interest operation
         ops = ops.concat(FToken.AccrueInterestOpGroup([mint.underlying], protocolAddresses, 0, pkh, gas, freight));
