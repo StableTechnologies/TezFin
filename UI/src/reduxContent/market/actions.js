@@ -72,22 +72,24 @@ export const unSuppliedMarketAction = (account, markets)=> async (dispatch) => {
   });
 
   unSuppliedTokens.map((unSuppliedToken)=>{
-    Object.entries((unSuppliedMarkets)).map((unSuppliedMarket)=>{
-      if(unSuppliedToken.assetType.toLowerCase() === unSuppliedMarket[0].toLowerCase()) {
-        unSuppliedToken.collateral = unSuppliedMarket[1].collateral
-        unSuppliedToken.walletUsd = unSuppliedMarket[1].balanceUsd
-        unSuppliedToken.walletUnderlying = unSuppliedMarket[1].balanceUnderlying
-        unSuppliedToken.rate = unSuppliedMarket[1].rate
-      };
-      return unSuppliedTokens;
-    });
-    Object.entries((balances)).map((balance)=>{
-      if(unSuppliedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
-        unSuppliedToken.balance = balance[1].toString();
-      }
-      return balances;
-    });
-    return unSuppliedMarkets;
+    if(unSuppliedMarkets.length > 0){
+      Object.entries((unSuppliedMarkets)).map((unSuppliedMarket)=>{
+        if(unSuppliedToken.assetType.toLowerCase() === unSuppliedMarket[0].toLowerCase()) {
+          unSuppliedToken.collateral = unSuppliedMarket[1].collateral
+          unSuppliedToken.walletUsd = unSuppliedMarket[1].balanceUsd
+          unSuppliedToken.walletUnderlying = unSuppliedMarket[1].balanceUnderlying
+          unSuppliedToken.rate = unSuppliedMarket[1].rate
+        };
+        return unSuppliedMarkets;
+      });
+      Object.entries((balances)).map((balance)=>{
+        if(unSuppliedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
+          unSuppliedToken.balance = balance[1].toString();
+        }
+        return balances;
+      });
+    }
+    return unSuppliedTokens;
   });
   dispatch({ type: GET_UNSUPPLIED_MARKET_DATA, payload: unSuppliedTokens });
 }
@@ -143,23 +145,25 @@ export const unBorrowedMarketAction = (account, markets)=> async (dispatch) => {
   const balances = account.underlyingBalances;
 
   unBorrowedTokens.map((unBorrowedToken)=>{
-    Object.entries((unBorrowedMarkets)).map((unBorrowedMarket)=>{
-    if(unBorrowedToken.assetType.toLowerCase() === unBorrowedMarket[0].toLowerCase()) {
-      unBorrowedToken.walletUsd = unBorrowedMarket[1].balanceUsd
-      unBorrowedToken.walletUnderlying = unBorrowedMarket[1].balanceUnderlying
-      unBorrowedToken.liquidityUsd = unBorrowedMarket[1].liquidityUsd
-      unBorrowedToken.liquidityUnderlying = unBorrowedMarket[1].liquidityUnderlying
-      unBorrowedToken.rate = unBorrowedMarket[1].rate
-    }
-    return unBorrowedTokens;
-  });
-  Object.entries((balances)).map((balance)=>{
-    if(unBorrowedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
-      unBorrowedToken.balance = balance[1].toString();
-    }
-    return balances;
-  });
-    return unBorrowedMarkets;
+    if(unBorrowedMarkets.length > 0){
+      Object.entries((unBorrowedMarkets)).map((unBorrowedMarket)=>{
+      if(unBorrowedToken.assetType.toLowerCase() === unBorrowedMarket[0].toLowerCase()) {
+        unBorrowedToken.walletUsd = unBorrowedMarket[1].balanceUsd
+        unBorrowedToken.walletUnderlying = unBorrowedMarket[1].balanceUnderlying
+        unBorrowedToken.liquidityUsd = unBorrowedMarket[1].liquidityUsd
+        unBorrowedToken.liquidityUnderlying = unBorrowedMarket[1].liquidityUnderlying
+        unBorrowedToken.rate = unBorrowedMarket[1].rate
+      }
+      return unBorrowedMarkets;
+    });
+    Object.entries((balances)).map((balance)=>{
+      if(unBorrowedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
+        unBorrowedToken.balance = balance[1].toString();
+      }
+      return balances;
+    });
+  }
+  return unBorrowedTokens;
   })
-  dispatch({ type: GET_UNBORROWED_MARKET_DATA, payload: unBorrowedTokens });
+    dispatch({ type: GET_UNBORROWED_MARKET_DATA, payload: unBorrowedTokens });
 }
