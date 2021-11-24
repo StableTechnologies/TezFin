@@ -63,24 +63,31 @@ export const suppliedMarketAction = (account, markets)=> async (dispatch) => {
  * @returns unSuppliedMarket
  */
 export const unSuppliedMarketAction = (account, markets)=> async (dispatch) => {
-  const unSuppliedMarket = TezosLendingPlatform.getUnsuppliedMarkets(account, markets);
+  const unSuppliedMarkets = TezosLendingPlatform.getUnsuppliedMarkets(account, markets);
   const unSuppliedTokens =  JSON.parse(JSON.stringify(tokens));
+  const balances = account.underlyingBalances;
 
   unSuppliedTokens.map((x) => {
     return x.collateral = false;
   });
 
-  Object.entries((unSuppliedMarket)).map((x)=>{
-    unSuppliedTokens.map((y)=>{
-      if(y.assetType.toLowerCase() === x[0].toLowerCase()) {
-        y.collateral = x[1].collateral
-        y.walletUsd = x[1].balanceUsd
-        y.walletUnderlying = x[1].balanceUnderlying
-        y.rate = x[1].rate
+  unSuppliedTokens.map((unSuppliedToken)=>{
+    Object.entries((unSuppliedMarkets)).map((unSuppliedMarket)=>{
+      if(unSuppliedToken.assetType.toLowerCase() === unSuppliedMarket[0].toLowerCase()) {
+        unSuppliedToken.collateral = unSuppliedMarket[1].collateral
+        unSuppliedToken.walletUsd = unSuppliedMarket[1].balanceUsd
+        unSuppliedToken.walletUnderlying = unSuppliedMarket[1].balanceUnderlying
+        unSuppliedToken.rate = unSuppliedMarket[1].rate
       };
       return unSuppliedTokens;
     });
-    return unSuppliedMarket;
+    Object.entries((balances)).map((balance)=>{
+      if(unSuppliedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
+        unSuppliedToken.balance = balance[1].toString();
+      }
+      return balances;
+    });
+    return unSuppliedMarkets;
   });
   dispatch({ type: GET_UNSUPPLIED_MARKET_DATA, payload: unSuppliedTokens });
 }
@@ -95,6 +102,8 @@ export const unSuppliedMarketAction = (account, markets)=> async (dispatch) => {
 export const borrowedMarketAction = (account, markets)=> async (dispatch) => {
   const borrowedMarket = TezosLendingPlatform.getBorrowedMarkets(account, markets);
   const borrowedTokens =  JSON.parse(JSON.stringify(tokens));
+   // TODO:
+  // balances should read the "currently borrowing" of each token
   const balances = account.underlyingBalances;
 
   Object.entries((borrowedMarket)).map((y)=>{
@@ -127,21 +136,30 @@ export const borrowedMarketAction = (account, markets)=> async (dispatch) => {
  * @returns unBorrowedMarket
  */
 export const unBorrowedMarketAction = (account, markets)=> async (dispatch) => {
-  const unBorrowedMarket = TezosLendingPlatform.getUnborrowedMarkets(account, markets);
+  const unBorrowedMarkets = TezosLendingPlatform.getUnborrowedMarkets(account, markets);
   const unBorrowedTokens =  JSON.parse(JSON.stringify(tokens));
+  // TODO:
+  // balances should read the "currently borrowing" of each token here.
+  const balances = account.underlyingBalances;
 
-  Object.entries((unBorrowedMarket)).map((x)=>{
-    unBorrowedTokens.map((y)=>{
-      if(y.assetType.toLowerCase() === x[0].toLowerCase()) {
-        y.walletUsd = x[1].balanceUsd
-        y.walletUnderlying = x[1].balanceUnderlying
-        y.liquidityUsd = x[1].liquidityUsd
-        y.liquidityUnderlying = x[1].liquidityUnderlying
-        y.rate = x[1].rate
-      }
-      return unBorrowedTokens;
-    });
-    return unBorrowedMarket;
+  unBorrowedTokens.map((unBorrowedToken)=>{
+    Object.entries((unBorrowedMarkets)).map((unBorrowedMarket)=>{
+    if(unBorrowedToken.assetType.toLowerCase() === unBorrowedMarket[0].toLowerCase()) {
+      unBorrowedToken.walletUsd = unBorrowedMarket[1].balanceUsd
+      unBorrowedToken.walletUnderlying = unBorrowedMarket[1].balanceUnderlying
+      unBorrowedToken.liquidityUsd = unBorrowedMarket[1].liquidityUsd
+      unBorrowedToken.liquidityUnderlying = unBorrowedMarket[1].liquidityUnderlying
+      unBorrowedToken.rate = unBorrowedMarket[1].rate
+    }
+    return unBorrowedTokens;
+  });
+  Object.entries((balances)).map((balance)=>{
+    if(unBorrowedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
+      unBorrowedToken.balance = balance[1].toString();
+    }
+    return balances;
+  });
+    return unBorrowedMarkets;
   })
   dispatch({ type: GET_UNBORROWED_MARKET_DATA, payload: unBorrowedTokens });
 }
