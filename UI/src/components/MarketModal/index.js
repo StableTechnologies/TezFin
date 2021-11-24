@@ -143,7 +143,6 @@ const MarketModal = (props) => {
         <DialogContent>
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={7}> {amountText} </Grid>
-            {/* <Grid item sm={3}></Grid> */}
             <Grid item sm={5} className={classes.whiteSpace}> {tokenDetails.balance || 0} {tokenDetails.title} </Grid>
           </Grid>
         </DialogContent>
