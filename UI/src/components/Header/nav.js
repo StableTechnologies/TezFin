@@ -32,8 +32,10 @@ const Nav = () => {
 
   useEffect(() => {
     const isWallet = async () => {
-      const  address  = await getActiveAccount();
-      dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
+      const address = await getActiveAccount();
+      if (address) {
+        dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
+      }
     }
     isWallet();
   }, [dispatch]);

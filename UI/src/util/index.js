@@ -69,12 +69,10 @@ export const getWallet = async () => {
  *
  * @returns address
  */
-export const getActiveAccount = async() => {
+export const getActiveAccount = async () => {
   const activeAccount = await client.getActiveAccount();
-  if (activeAccount) {
-    const address = activeAccount.address
-    return address;
-  }
+  
+  return activeAccount ? activeAccount.address : undefined;
 }
 
 /**
