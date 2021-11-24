@@ -77,10 +77,10 @@ const Market = (props) => {
               </TableCell>
               <TableCell> { data.rate ? data.rate + "%" : "" } </TableCell>
               <TableCell>
-                <Typography> $ {(data.walletUnderlying > 0) ? data.walletUnderlying.toString() : "0.00"}  </Typography>
-                {supplyMkt &&
-                  <Typography className = {classes.faintFont}> {data.walletUsd ? data.walletUsd.toString() : "0"} XTZ </Typography>
-                }
+                {/* {supplyMkt && */}
+                  <Typography> {data.walletUsd ? data.walletUsd.toString() : "0"} {data.title} </Typography>
+                {/* } */}
+                <Typography className = {classes.faintFont}> $ {(data.walletUnderlying > 0) ? data.walletUnderlying.toString() : "0.00"}  </Typography>
               </TableCell>
               <TableCell className = {classes.toggle}>
               { toggle ?

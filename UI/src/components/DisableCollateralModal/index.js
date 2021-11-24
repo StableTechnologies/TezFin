@@ -30,7 +30,7 @@ const DisableCollateralModal = (props) =>{
   };
 
   const disableToken = () => {
-    const assetType = tokenDetails.assetType.toLowerCase();
+    const assetType = tokenDetails.assetType;
     dispatch(disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash));
     close()
     setTokenText('disable');

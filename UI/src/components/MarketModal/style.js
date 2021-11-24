@@ -87,6 +87,7 @@ export const useStyles = makeStyles({
   },
   whiteSpace: {
     whiteSpace: 'nowrap',
+    textAlign: 'end'
   },
   close: {
     position: 'absolute',

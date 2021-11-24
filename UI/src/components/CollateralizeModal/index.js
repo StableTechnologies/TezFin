@@ -30,7 +30,7 @@ const CollateralizeModal = (props) =>{
   };
 
   const collateralizeToken = () => {
-    const assetType = tokenDetails.assetType.toLowerCase();
+    const assetType = tokenDetails.assetType;
     dispatch(collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash));
     close()
     setTokenText('collateral')
