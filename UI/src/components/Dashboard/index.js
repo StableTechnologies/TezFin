@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 
-import {marketAction, borrowedMarketAction, unBorrowedMarketAction, unSuppliedMarketAction, suppliedMarketAction} from '../../reduxContent/market/actions';
+import { borrowedMarketAction, unBorrowedMarketAction, unSuppliedMarketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
 
 import Market from '../Market';
 import { useStyles } from './style';
@@ -26,12 +26,6 @@ const Dashboard =() => {
     dispatch(suppliedMarketAction(account, markets));
     dispatch(borrowedMarketAction(account, markets));
   }, [dispatch, account, markets])
-
-//   console.log(`dashboard markets ${JSON.stringify(markets)}`)
-//   console.log(`dashboard suppliedMarkets ${JSON.stringify(suppliedMarkets)}`)
-//   console.log(`dashboard borrowedMarkets ${JSON.stringify(borrowedMarkets)}`)
-//   console.log(`dashboard unSuppliedMarkets ${JSON.stringify(unSuppliedMarkets)}`)
-//   console.log(`dashboard unBorrowedMarkets ${JSON.stringify(unBorrowedMarkets)}`)
 
   return (
     <Grid container className={classes.dashboard}>
