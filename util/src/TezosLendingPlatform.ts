@@ -4,7 +4,7 @@ import { Comptroller } from './Comptroller';
 import { FToken } from './FToken';
 import bigInt from 'big-integer';
 import log from 'loglevel';
-import {JSONPath} from 'jsonpath-plus';
+import { JSONPath } from 'jsonpath-plus';
 
 export namespace TezosLendingPlatform {
     /*
@@ -28,10 +28,13 @@ export namespace TezosLendingPlatform {
     export function assetTypeToStandard(asset: AssetType) {
         if ([AssetType.FA12, AssetType.ETH].includes(asset)) {
             return TokenStandard.FA12;
-        } else if ([AssetType.FA2, AssetType.BTC].includes(asset)) {
+        }
+
+        if ([AssetType.FA2, AssetType.BTC].includes(asset)) {
             return TokenStandard.FA2;
-        } else
-            return TokenStandard.XTZ;
+        }
+
+        return TokenStandard.XTZ;
     }
 
     /*
@@ -278,7 +281,7 @@ export namespace TezosLendingPlatform {
     }
 
     /*
-     * @description Returns the accout corresponding to address.
+     * @description Returns the account corresponding to address.
      *
      * @param address Address of the requested account
      * @param markets List of fToken markets
@@ -316,6 +319,7 @@ export namespace TezosLendingPlatform {
 
         // calculate aggregate account rate
         const rate = calculateAccountRate(totalCollateralUsd, marketBalances, markets);
+
         return {
             address: address,
             underlyingBalances: underlyingBalances,
@@ -388,10 +392,14 @@ export namespace TezosLendingPlatform {
     export async function GetUnderlyingBalanceToken(underlying: UnderlyingAsset, address: string, server: string): Promise<bigInt.BigInteger> {
         if (underlying.balancesMapId === undefined) { // need to get balancesMapId from underlying asset contract's storage
             try {
-                log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`)
-                const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(address, 'address'), 'hex'));
-                const mapResult = await TezosNodeReader.getValueForBigMapKey(server, underlying.balancesMapId!, packedKey);
-                underlying.balancesMapId = JSONPath({ path: underlying.balancesPath!, json: mapResult });
+                log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`);
+                const storage = TezosNodeReader.getContractStorage(server, underlying.address!);
+
+                if (underlying.assetType === AssetType.FA12) { // TODO: this is not a good heuristic
+                    underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
+                } else if (underlying.assetType === AssetType.FA2) {
+                    underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
+                }
             } catch (e) {
                 log.error(`Unable to read contract storage for ${underlying.assetType} at ${underlying.address!}\n${e}`);
                 throw e;
@@ -404,7 +412,7 @@ export namespace TezosLendingPlatform {
             return bigInt(balance);
         } catch (e) {
             log.error(`Unable to read balance from storage for underlying ${underlying.assetType} at ${underlying.address!}\n${e}`);
-            throw e;
+            return bigInt(0);
         }
     }
 
@@ -576,6 +584,7 @@ export namespace TezosLendingPlatform {
      */
     export function getUnsuppliedMarkets(account: Account | undefined, markets: MarketMap): { [assetType: string]: SupplyMarket } {
         return parseSupplyMarkets(account?.marketBalances, markets, (bi: bigInt.BigInteger) => { return bi.eq(bigInt(0)); });
+
         // const unsuppliedMarkets: { [assetType: string]: SupplyMarket } = {};
         // for (const asset in account.marketBalances) {
         //     const balance = account.marketBalances[asset];
