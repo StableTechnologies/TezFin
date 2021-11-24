@@ -73,7 +73,6 @@ export const useStyles = makeStyles({
     marginBottom: '2.25rem',
   },
   limit: {
-    margintTop: '36px',
     marginBottom: '23px',
   },
   btnMain: {
