@@ -1,10 +1,11 @@
 {
-  "tezos": {
+  "infra": {
     "tezosNode": "https://tezos-prod.cryptonomic-infra.tech:443",
     "conseilServer": {
         "url": "https://conseil-prod.cryptonomic-infra.tech:443",
         "apiKey": "",
         "network": "mainnet"
     }
-  }
+  },
+  "dappName": "TezFin"
 }

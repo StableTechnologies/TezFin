@@ -1,15 +1,13 @@
-// import { BigNumber } from "bignumber.js";
-import { DAppClient, TezosOperationType } from "@airgap/beacon-sdk";
-import { Mutex } from "async-mutex";
-import Tezos from "../library/tezos";
-import { TezosLanguageUtil } from "conseiljs";
+import { DAppClient, TezosOperationType } from '@airgap/beacon-sdk';
+import { Mutex } from 'async-mutex';
+import { KeyStoreCurve, KeyStoreType, TezosNodeReader, TezosNodeWriter } from 'conseiljs'
 
-// const config = require(`../library/${process.env.REACT_APP_ENV || "prod"
-//   }-network-config.json`);
+import Tezos from "../library/tezos";
+
+// const config = require(`../library/${process.env.REACT_APP_ENV || "prod"}-network-config.json`);
 const config = require('../library/dev-network-config.json');
 
-const client = new DAppClient({ name: "TEZFIN" });
-
+const client = new DAppClient({ name: config.dappName });
 
 /**
  * This function is used to truncate a blockchain address for presentation by replacing the middle digits with an ellipsis.
@@ -19,20 +17,16 @@ const client = new DAppClient({ name: "TEZFIN" });
  * @param {string} str Address to format.
  * @returns
  */
- export const shorten = (first, last, str) => {
-  return str.substring(0, first) + "..." + str.substring(str.length - last);
+export const shorten = (first, last, str) => {
+    return str.substring(0, first) + "..." + str.substring(str.length - last);
 };
 
 export const connectTezAccount = async () => {
-  // const client = new DAppClient({ name: "TEZFIN" });
-  // const network =
-    // config.tezos.conseilServer.network === "mainnet" ? "mainnet" : "granadanet";
-    const network = "granadanet";
-  const resp = await client.requestPermissions({
-    network: { type: network },
-  });
-  const account = await client.getActiveAccount();
-  return { client, account: account["address"] };
+    const network = config.tezos.conseilServer.network;
+    const resp = await client.requestPermissions({ network: { type: network } });
+    const account = await client.getActiveAccount();
+
+    return { client, account: account["address"] };
 };
 
 /**
@@ -60,8 +54,8 @@ export const getWallet = async () => {
 /**
  * This function let's a user disconnects from an account.
  */
- export const disactivateAccount = async() => {
-  await client.clearActiveAccount();
+export const deactivateAccount = async() => {
+    await client.clearActiveAccount();
 }
 
 /**
@@ -71,7 +65,7 @@ export const getWallet = async () => {
  */
 export const getActiveAccount = async () => {
   const activeAccount = await client.getActiveAccount();
-  
+
   return activeAccount ? activeAccount.address : undefined;
 }
 
@@ -82,34 +76,27 @@ export const getActiveAccount = async () => {
  *
  * @return operation response
  */
-export const confirmOps = async ( operations ) => {
-  // const client = new DAppClient({ name: "TEZFIN" });
+export const confirmOps = async (operations) => {
+    try {
+        const address = operations[0].source;
+        let curve = KeyStoreCurve.ED25519;
+        if (address.startsWith('tz2')) { curve = KeyStoreCurve.SECP256K1; }
+        else if (address.startsWith('tz3')) { curve = KeyStoreCurve.SECP256R1; }
 
-  try {
-    let ops = [];
-    operations.forEach((x) => {
-      ops.push({
-        kind: x.kind,
-        amount: 1,
-        destination: x.destination,
-        source: x.source,
-        parameters: {
-          entrypoint: x.entrypoint,
-          value: 1,
-        // value: JSON.parse(
-        //   TezosLanguageUtil.translateParameterMichelsonToMicheline(
-        //       x.value
-        //   )
-        // ),
-      },
-    });
-  });
-  const response = await client.requestOperation({
-    operationDetails: ops,
-  });
-  return response;
-  }
-  catch (error) {
-    throw error;
-  }
+        const keyStore = {
+            publicKey: '', // this precludes reveal operation inclusion
+            secretKey: '',
+            publicKeyHash: address,
+            curve,
+            storeType: KeyStoreType.Mnemonic
+        };
+
+        const counter = await TezosNodeReader.getCounterForAccount(config.infra.tezosNode, address);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(config.infra.tezosNode, keyStore, counter, operations);
+
+        return await client.requestOperation({ operationDetails: opGroup });
+    } catch (error) {
+        console.error('confirmOps', error);
+        throw error;
+    }
 }
