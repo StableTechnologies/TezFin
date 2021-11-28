@@ -62,6 +62,7 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
     });
     return suppliedMarket;
   });
+  console.log("supplied", suppliedMarket);
   dispatch({
     type: GET_SUPPLIED_MARKET_DATA,
     payload: Object.values(suppliedMarket),

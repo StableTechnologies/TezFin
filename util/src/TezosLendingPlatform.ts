@@ -340,6 +340,7 @@ export namespace TezosLendingPlatform {
     export async function GetFtokenBalances(address: string, markets: MarketMap, server: string): Promise<FToken.BalanceMap> {
         let balances: FToken.BalanceMap = {};
         await Promise.all(Object.keys(markets).map(async (asset) => {
+            console.log(markets[asset])
             balances[asset] = await FToken.GetBalance(address, asset as AssetType, markets[asset].storage.borrow.borrowIndex, markets[asset].storage.balancesMapId, server);
         }));
         return balances;
