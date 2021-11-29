@@ -3,13 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
+
+import { borrowedMarketAction, suppliedMarketAction, unBorrowedMarketAction, unSuppliedMarketAction } from '../../reduxContent/market/actions';
 import Market from '../Market';
-import {
-    borrowedMarketAction,
-    suppliedMarketAction,
-    unBorrowedMarketAction,
-    unSuppliedMarketAction
-} from '../../reduxContent/market/actions';
+import BorrowedTokenTable from '../Market/BorrowedTokenTable';
 import { useStyles } from './style';
 
 const Dashboard = () => {
@@ -18,9 +15,7 @@ const Dashboard = () => {
 
     const { account } = useSelector((state) => state.addWallet);
     const { markets } = useSelector((state) => state.market);
-    const {
-        suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets
-    } = useSelector((state) => state.market);
+    const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector((state) => state.market);
 
     console.log('dashboard supplied', suppliedMarkets);
     console.log('dashboard unsupplied', unSuppliedMarkets);
@@ -41,8 +36,6 @@ const Dashboard = () => {
 
     return (
         <Grid container className={classes.dashboard}>
-            {/* <Grid md={12}>
-        </Grid> */}
             <Grid item xs={12} md={6} className={classes.paddingRight}>
                 {suppliedMarkets.length > 0 && (
                     <>
@@ -81,14 +74,7 @@ const Dashboard = () => {
                 {borrowedMarkets.length > 0 && (
                     <>
                         <Typography className={classes.tableTitle}> Borrowing </Typography>
-                        <Market
-                            tableData={borrowedMarkets}
-                            headingOne="Token"
-                            headingTwo="APY"
-                            headingThree="Balance"
-                            headingFour="Borrow limit used"
-                            borrowingMkt
-                        />
+                        <BorrowedTokenTable tableData={borrowedMarkets} />
                     </>
                 )}
                 {borrowedMarkets.length > 0 ? (
