@@ -8,7 +8,6 @@ import {
 
 import { JSONPath } from 'jsonpath-plus';
 import { TezosOperationType } from '@airgap/beacon-sdk';
-import { constants } from './util';
 
 export default class Tezos {
     constructor(tezos, account, priceContract, feeContract, rpc, conseilServer, mutex) {
@@ -28,7 +27,7 @@ export default class Tezos {
     * @param address tezos address for the account
     */
     async tokenBalance(tokenContract, address) {
-        if (tokenContract.type === constants.tokenTypes.FA2) {
+        if (tokenContract.type === 'FA2') {
             const accountHex = `0x${TezosMessageUtils.writeAddress(address)}`;
             const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(`(Pair ${accountHex} ${tokenContract.tokenID})`, '', TezosParameterFormat.Michelson), 'hex'));
 
@@ -52,6 +51,7 @@ export default class Tezos {
         let key = TezosMessageUtils.encodeBigMapKey(
             Buffer.from(TezosMessageUtils.writePackedData(address, 'address'), 'hex')
         );
+
         if (tokenContract.mapID === 31) {
             key = Buffer.from(
                 TezosMessageUtils.writePackedData(
@@ -81,15 +81,11 @@ export default class Tezos {
             ) { throw err; }
         }
         if (tokenContract.mapID === 31 && tokenData !== undefined) {
-            tokenData = JSON.parse(
-                TezosLanguageUtil.hexToMicheline(
-                    JSONPath({ path: '$.bytes', json: tokenData })[0].slice(2)
-                ).code
-            );
+            tokenData = JSON.parse(TezosLanguageUtil.hexToMicheline(JSONPath({ path: '$.bytes', json: tokenData })[0].slice(2)).code);
         }
-        const balance = tokenData === undefined
-            ? '0'
-            : JSONPath({ path: '$.args[0].int', json: tokenData })[0];
+
+        const balance = tokenData === undefined ? '0' : JSONPath({ path: '$.args[0].int', json: tokenData })[0];
+
         return balance;
     }
 
@@ -125,7 +121,7 @@ export default class Tezos {
             const result = await this.tezos.requestOperation({
                 operationDetails: ops
             });
-            console.log('bbb', result);
+
             const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
 
             const confirm = await TezosConseilClient.awaitOperationConfirmation(this.conseilServer, this.conseilServer.network, groupid, 5);
