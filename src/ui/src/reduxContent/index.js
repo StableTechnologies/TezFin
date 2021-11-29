@@ -8,12 +8,12 @@ import addWalletReducer from './addWallet/reducers';
 import marketModalReducer from './marketModal/reducers';
 
 const rootReducer = combineReducers({
-  nodes: nodesReducer,
-  market: marketReducer,
-  supplyComposition: supplyCompositionReducer,
-  borrowComposition: borrowCompositionReducer,
-  marketModal: marketModalReducer,
-  addWallet: addWalletReducer,
+    nodes: nodesReducer,
+    market: marketReducer,
+    supplyComposition: supplyCompositionReducer,
+    borrowComposition: borrowCompositionReducer,
+    marketModal: marketModalReducer,
+    addWallet: addWalletReducer
 });
 
 export default rootReducer;

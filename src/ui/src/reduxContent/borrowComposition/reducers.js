@@ -1,21 +1,21 @@
-import {GET_BORROW_COMPOSITION_DATA} from './types';
+import { GET_BORROW_COMPOSITION_DATA } from './types';
 
 const initState = {
-  isFetching: true,
-  borrowComposition: {},
-}
+    isFetching: true,
+    borrowComposition: {}
+};
 
-const borrowCompositionReducer = (state=initState, action) => {
-  switch(action.type) {
+const borrowCompositionReducer = (state = initState, action) => {
+    switch (action.type) {
     case GET_BORROW_COMPOSITION_DATA:
-      return {
-        ...state,
-        isFetching: false,
-        borrowComposition: action.payload
-      }
+        return {
+            ...state,
+            isFetching: false,
+            borrowComposition: action.payload
+        };
     default:
-      return state;
-  }
-}
+        return state;
+    }
+};
 
 export default borrowCompositionReducer;

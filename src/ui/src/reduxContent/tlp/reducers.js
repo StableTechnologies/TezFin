@@ -1,31 +1,31 @@
 import { ACCOUNT, MARKETS, COMPTROLLER } from './types.js';
 
 const initState = {
-  comptroller: {},
-  markets: {},
-  account: {},
-}
+    comptroller: {},
+    markets: {},
+    account: {}
+};
 
 const tlpReducer = (state = initState, action) => {
-  switch(action.type) {
+    switch (action.type) {
     case COMPTROLLER:
-      return {
-        ...state,
-        comptroller: action.payload
-      }
+        return {
+            ...state,
+            comptroller: action.payload
+        };
     case MARKETS:
-      return {
-        ...state,
-        markets: action.payload
-      }
+        return {
+            ...state,
+            markets: action.payload
+        };
     case ACCOUNT:
-      return {
-        ...state,
-        account: action.payload
-      }
+        return {
+            ...state,
+            account: action.payload
+        };
     default:
-      return state;
-  }
-}
+        return state;
+    }
+};
 
 export default tlpReducer;

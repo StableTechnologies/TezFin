@@ -1,21 +1,21 @@
-import {GET_SUPPLY_COMPOSITION_DATA} from './types';
+import { GET_SUPPLY_COMPOSITION_DATA } from './types';
 
 const initState = {
-  isFetching: true,
-  supplyComposition: {},
-}
+    isFetching: true,
+    supplyComposition: {}
+};
 
-const supplyCompositionReducer = (state=initState, action) => {
-  switch(action.type) {
+const supplyCompositionReducer = (state = initState, action) => {
+    switch (action.type) {
     case GET_SUPPLY_COMPOSITION_DATA:
-      return {
-        ...state,
-        isFetching: false,
-        supplyComposition: action.payload
-      }
+        return {
+            ...state,
+            isFetching: false,
+            supplyComposition: action.payload
+        };
     default:
-      return state;
-  }
-}
+        return state;
+    }
+};
 
 export default supplyCompositionReducer;

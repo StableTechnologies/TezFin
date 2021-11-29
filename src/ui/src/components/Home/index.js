@@ -1,22 +1,21 @@
 import React, { useEffect } from 'react';
-import useStyles, {classes1, Button,} from "./style";
 
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 
-import tezfinLogo from '../../assets/tezfin-logo.svg';
 import { useHistory } from 'react-router';
-
+import tezfinLogo from '../../assets/tezfin-logo.svg';
+import useStyles, { classes1, Button } from './style';
 
 const Home = () => {
-  const classes = useStyles();
-  const history = useHistory();
+    const classes = useStyles();
+    const history = useHistory();
 
-  history.push("/dashboard")
+    history.push('/dashboard');
 
-  return (
-    <> </>
+    return (
+        <> </>
     // <Grid container className={classes.homeCon}>
     //   <Grid md={12}></Grid>
     //   <Grid item md={9}>
@@ -35,7 +34,7 @@ const Home = () => {
     //     <Divider />
     //   </Grid>
     // </Grid>
-  )
-}
+    );
+};
 
-export default Home
+export default Home;

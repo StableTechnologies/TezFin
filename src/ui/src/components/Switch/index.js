@@ -60,30 +60,32 @@ const BasicSwitchThumb = styled('span')(`
 `);
 
 function BasicSwitch(props) {
-  const { getInputProps, checked, disabled, focusVisible } = useSwitch(props);
+    const {
+        getInputProps, checked, disabled, focusVisible
+    } = useSwitch(props);
 
-  const stateClasses = {
-    'Switch-checked': checked,
-    'Switch-disabled': disabled,
-    'Switch-focusVisible': focusVisible,
-  };
+    const stateClasses = {
+        'Switch-checked': checked,
+        'Switch-disabled': disabled,
+        'Switch-focusVisible': focusVisible
+    };
 
-  return (
-    <BasicSwitchRoot className={clsx(stateClasses)}>
-      <BasicSwitchThumb className={clsx(stateClasses)} />
-      <BasicSwitchInput {...getInputProps()} aria-label="Demo switch" />
-    </BasicSwitchRoot>
-  );
+    return (
+        <BasicSwitchRoot className={clsx(stateClasses)}>
+            <BasicSwitchThumb className={clsx(stateClasses)} />
+            <BasicSwitchInput {...getInputProps()} aria-label="Demo switch" />
+        </BasicSwitchRoot>
+    );
 }
 export default function Switch(props) {
-  const { data } = props;
+    const { data } = props;
 
-  return (
-    <div>
-      <BasicSwitch
-        checked={data.collateral}
-        inputProps={{ 'aria-label': 'controlled' }}
-      />
-    </div>
-  );
+    return (
+        <div>
+            <BasicSwitch
+                checked={data.collateral}
+                inputProps={{ 'aria-label': 'controlled' }}
+            />
+        </div>
+    );
 }

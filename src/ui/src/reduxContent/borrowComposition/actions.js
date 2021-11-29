@@ -1,6 +1,5 @@
-import {GET_BORROW_COMPOSITION_DATA} from './types.js';
-
-import {TezosLendingPlatform} from 'tezoslendingplatformjs';
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
+import { GET_BORROW_COMPOSITION_DATA } from './types.js';
 
 /**
  * This function is used to get the borrowComposition data of an account
@@ -8,8 +7,7 @@ import {TezosLendingPlatform} from 'tezoslendingplatformjs';
  * @param   account
  * @returns borrowComposition
  */
-export const borrowCompositionAction = (account)=> async (dispatch) => {
-  const borrowComposition = TezosLendingPlatform.borrowComposition(account);
-  dispatch({ type: GET_BORROW_COMPOSITION_DATA, payload: borrowComposition });
-}
-
+export const borrowCompositionAction = (account) => async (dispatch) => {
+    const borrowComposition = TezosLendingPlatform.borrowComposition(account);
+    dispatch({ type: GET_BORROW_COMPOSITION_DATA, payload: borrowComposition });
+};
