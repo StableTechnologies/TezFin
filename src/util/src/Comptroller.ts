@@ -1,10 +1,10 @@
-import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, KeyStore, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
-
-import { FToken } from './FToken';
+import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
 import { JSONPath } from 'jsonpath-plus';
-import { TezosLendingPlatform } from './TezosLendingPlatform';
 import bigInt from 'big-integer';
 import log from 'loglevel';
+
+import { AssetType } from './enum'
+import { ProtocolAddresses } from './types';
 
 export namespace Comptroller {
     /*
@@ -13,7 +13,7 @@ export namespace Comptroller {
      * @param
      */
     export interface Market {
-        assetType: TezosLendingPlatform.AssetType;
+        assetType: AssetType;
         borrowCap: bigInt.BigInteger;
         borrowPaused: boolean;
         collateralFactor: number;
@@ -54,7 +54,7 @@ export namespace Comptroller {
      * @param server The Tezos node to communicate with
      * @param address
      */
-export async function GetStorage(address: string, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage> {
+export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         // get marketsMapId
         const marketsMapId = JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
@@ -121,7 +121,7 @@ export async function GetStorage(address: string, protocolAddresses: TezosLendin
      */
     function parseMarketResult(result): Market {
         // need to add constants for this
-        const assetType: TezosLendingPlatform.AssetType = JSONPath({ path: '$.args[1].args[1].string', json: result })[0] as TezosLendingPlatform.AssetType;
+        const assetType: AssetType = JSONPath({ path: '$.args[1].args[1].string', json: result })[0] as AssetType;
         return {
             assetType: assetType,
             borrowCap: JSONPath({ path: '$.args[0].args[0].args[0].int', json: result })[0],
@@ -142,14 +142,14 @@ export async function GetStorage(address: string, protocolAddresses: TezosLendin
      * @param protocolAddresses
      * @param server Tezos node
      */
-    export async function GetCollaterals(address: string, comptroller: Storage, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string): Promise<TezosLendingPlatform.AssetType[]> {
+    export async function GetCollaterals(address: string, comptroller: Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<AssetType[]> {
         const packedAccountKey = TezosMessageUtils.encodeBigMapKey(
             Buffer.from(TezosMessageUtils.writePackedData(`0x${TezosMessageUtils.writeAddress(address)}`, '', TezosParameterFormat.Michelson), 'hex')
         );
 
         try {
             const collateralsResult = await TezosNodeReader.getValueForBigMapKey(server, comptroller.collateralsMapId, packedAccountKey);
-            const fTokenAddresses: TezosLendingPlatform.AssetType[] = collateralsResult.map((json) => json['string']);
+            const fTokenAddresses: AssetType[] = collateralsResult.map((json) => json['string']);
             return fTokenAddresses.map((fTokenAddress) => protocolAddresses.fTokensReverse[fTokenAddress]);
         } catch (err) {
             log.error(`${address} has no collateralized assets`);
@@ -172,6 +172,7 @@ export async function GetStorage(address: string, protocolAddresses: TezosLendin
      * @param
      */
     export function UpdateAssetPriceMicheline(updateAssetPrice: UpdateAssetPricePair): string {
+        console.log('jjj', updateAssetPrice)
         return `{ "bytes": "${TezosMessageUtils.writeAddress(updateAssetPrice.address)}" }`
     }
 
@@ -267,8 +268,9 @@ export async function GetStorage(address: string, protocolAddresses: TezosLendin
      * @param gas
      * @param freight
      */
-    export function DataRelevanceOpGroup(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function DataRelevanceOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
+        console.log('lll', collaterals)
         // updateAssetPrice for every collateralized market
         for (const collateral of collaterals) {
             const updateAssetPrice: Comptroller.UpdateAssetPricePair = { address: protocolAddresses.fTokens[collateral] };
@@ -291,7 +293,7 @@ export async function GetStorage(address: string, protocolAddresses: TezosLendin
      * @param gas
      * @param freight
      */
-    export async function DataRelevance(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function DataRelevance(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);

@@ -1,9 +1,9 @@
-import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, KeyStore, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
-
+import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
 import { JSONPath } from 'jsonpath-plus';
-import { TezosLendingPlatform } from './TezosLendingPlatform';
 import bigInt from 'big-integer';
-import log from 'loglevel';
+
+import { AssetType, TokenStandard } from './enum';
+import { ProtocolAddresses } from './types';
 
 export namespace FToken {
     /*
@@ -45,9 +45,9 @@ export namespace FToken {
      * @param
      * @param
      */
-    export async function GetStorage(fTokenAddress: string, server: string, type: TezosLendingPlatform.TokenStandard): Promise<Storage> {
+    export async function GetStorage(fTokenAddress: string, server: string, type: TokenStandard): Promise<Storage> {
         switch (type) {
-            case TezosLendingPlatform.TokenStandard.FA12: {
+            case TokenStandard.FA12: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
                 const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[3].prim', json: storageResult })[0];
@@ -84,7 +84,7 @@ export namespace FToken {
                     totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
                 };
             }
-            case TezosLendingPlatform.TokenStandard.FA2: {
+            case TokenStandard.FA2: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
                 const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[2].prim', json: storageResult })[0];
@@ -121,7 +121,7 @@ export namespace FToken {
                     totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
                 };
             }
-            case TezosLendingPlatform.TokenStandard.XTZ: {
+            case TokenStandard.XTZ: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
                 const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[3].prim', json: storageResult })[0];
@@ -189,8 +189,6 @@ export namespace FToken {
         return borrowersQuery;
     }
 
-    const blocksPerYear = 2 * 60 * 24 * 365;
-
     /*
      * @description 
      *
@@ -216,7 +214,7 @@ export namespace FToken {
      */
     export function GetSupplyRate(storage: Storage): number {
         // dailyInterestPaid adjusted by blocksPerYear
-        return 4;
+        return 3;
     }
 
     /*
@@ -225,7 +223,7 @@ export namespace FToken {
      * @param storage
      */
     export function GetBorrowRate(storage: Storage): number {
-        return 3;
+        return 5;
     }
 
     /*
@@ -239,7 +237,7 @@ export namespace FToken {
      * @param collateral True if market is collateralized, false otherwise
      */
     export interface Balance {
-        assetType: TezosLendingPlatform.AssetType;
+        assetType: AssetType;
         approvals?: { [address: string]: bigInt.BigInteger };
         supplyBalanceUnderlying: bigInt.BigInteger;
         supplyBalanceUsd?: bigInt.BigInteger;
@@ -255,12 +253,12 @@ export namespace FToken {
      *
      * @param
      */
-    export async function GetBalance(account: string, assetType: TezosLendingPlatform.AssetType, currentIndex: bigInt.BigInteger, balancesMapId: number, server: string): Promise<Balance> {
+    export async function GetBalance(account: string, assetType: AssetType, currentIndex: bigInt.BigInteger, balancesMapId: number, server: string): Promise<Balance> {
         try {
-            const balanceResult = await makeBalanceQuery(account, balancesMapId, server);
+            const balanceResult = await queryBalance(account, balancesMapId, server);
             return parseBalanceResult(balanceResult, currentIndex, assetType);
         } catch (e) {
-            return parseBalanceResult('0', currentIndex, assetType);
+            return parseBalanceResult({}, currentIndex, assetType);
         }
     }
 
@@ -270,20 +268,17 @@ export namespace FToken {
      * @param
      */
     export function normalizeToIndex(amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
-        return bigInt(0); // amount.multiply(currentIndex.divide(prevIndex));
+        return amount; // TODO: .multiply(currentIndex.divide(prevIndex));
     }
 
     /*
-     * @description TODO
-     *
-     * @param
+     * @description Queries a big_map for a value associated with an address-type key.
      */
-    export async function makeBalanceQuery(account: string, balancesMapId: number, server: string): Promise<string> {
-        console.log('makeBalanceQuery', balancesMapId)
+    async function queryBalance(account: string, balancesMapId: number, server: string): Promise<any> {
         const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(account, 'address'), 'hex'));
         const mapResult = await TezosNodeReader.getValueForBigMapKey(server, balancesMapId, packedKey);
 
-        return mapResult || '0';
+        return mapResult || {};
     }
 
     /*
@@ -291,16 +286,17 @@ export namespace FToken {
      *
      * @parameters
      */
-    export function parseBalanceResult(json, currentIndex: bigInt.BigInteger, assetType: TezosLendingPlatform.AssetType): Balance {
-        const borrowIndex = JSONPath({ path: '$.args[0].args[0].int', json: json })[0];
-        const borrowPrincipal = JSONPath({ path: '$.args[0].args[1].int', json: json })[0];
-        const supplyPrincipal = JSONPath({ path: '$.args[2].int', json: json })[0];
+    export function parseBalanceResult(balanceInfo: any, currentIndex: bigInt.BigInteger, assetType: AssetType): Balance {
+        const borrowIndex = JSONPath({ path: '$.args[0].args[0].int', json: balanceInfo })[0] || 0;
+        const borrowPrincipal = JSONPath({ path: '$.args[0].args[1].int', json: balanceInfo })[0] || 0;
+        const supplyPrincipal = JSONPath({ path: '$.args[2].int', json: balanceInfo })[0] || 0;
+
         // TODO: parse approvals
         // return 0 balance if uninitialized in contract
         return {
             assetType: assetType,
-            supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex(supplyPrincipal, bigInt(1_000_000), currentIndex),
-            loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex(borrowPrincipal, borrowIndex, currentIndex)
+            supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex(bigInt(supplyPrincipal), bigInt(1_000_000), currentIndex),
+            loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex(bigInt(borrowPrincipal), borrowIndex, currentIndex)
         }
     }
 
@@ -314,7 +310,7 @@ export namespace FToken {
      * @param gas
      * @param freight
      */
-    export function AccrueInterestOpGroup(collaterals: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function AccrueInterestOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         const entrypoint = 'accrueInterest';
         const parameters = 'Unit'
         let ops: Transaction[] = [];
@@ -329,7 +325,7 @@ export namespace FToken {
      *
      * @param
      */
-    export async function AccrueInterest(markets: TezosLendingPlatform.AssetType[], protocolAddresses: TezosLendingPlatform.ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function AccrueInterest(markets: AssetType[], protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let ops: Transaction[] = AccrueInterestOpGroup(markets, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);
@@ -345,7 +341,7 @@ export namespace FToken {
      * @param amount The amount to fTokens to mint
      */
     export interface MintPair {
-        underlying: TezosLendingPlatform.AssetType;
+        underlying: AssetType;
         amount: number;
     }
 
@@ -362,7 +358,7 @@ export namespace FToken {
      * Returns the operation for invoking the mint entrypoint of the given fToken address
      *
      * @param mint Invocation parameters
-     * @param counter Current account coutner
+     * @param counter Current account counter
      * @param fTokenAddress The relevant FToken contract address
      * @param keyStore
      * @param fee
@@ -372,7 +368,8 @@ export namespace FToken {
     export function MintOperation(mint: MintPair, counter: number, fTokenAddress: string, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'mint';
         const parameters = MintPairMichelson(mint);
-        const xtzAmount = mint.underlying == TezosLendingPlatform.AssetType.XTZ ? mint.amount : 0;
+        const xtzAmount = mint.underlying == AssetType.XTZ ? mint.amount : 0;
+
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, xtzAmount, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
     }
 
@@ -382,7 +379,7 @@ export namespace FToken {
      * @param amount The amount of fTokens to redeem
      */
     export interface RedeemPair {
-        underlying: TezosLendingPlatform.AssetType;
+        underlying: AssetType;
         amount: number;
     }
 
@@ -406,14 +403,13 @@ export namespace FToken {
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
     }
 
-
     /*
      * Description
      *
      * @param
      */
     export interface BorrowPair {
-        underlying: TezosLendingPlatform.AssetType;
+        underlying: AssetType;
         amount: number;
     }
 
@@ -424,7 +420,6 @@ export namespace FToken {
      */
     export function BorrowPairMichelson(borrow: BorrowPair): string {
         return `${borrow.amount}`;
-
     }
 
     /*
@@ -444,7 +439,7 @@ export namespace FToken {
      * @param
      */
     export interface RepayBorrowPair {
-        underlying: TezosLendingPlatform.AssetType;
+        underlying: AssetType;
         amount: number;
     }
 
@@ -465,29 +460,8 @@ export namespace FToken {
     export function RepayBorrowOperation(repayBorrow: RepayBorrowPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 800_000, freight: number = 20_000): Transaction {
         const entrypoint = 'repayBorrow';
         const parameters = RepayBorrowPairMichelson(repayBorrow);
-        const xtzAmount = repayBorrow.underlying == TezosLendingPlatform.AssetType.XTZ ? repayBorrow.amount : 0;
+        const xtzAmount = repayBorrow.underlying == AssetType.XTZ ? repayBorrow.amount : 0;
+
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, xtzAmount, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
-    }
-
-    /*
-     * Represents an account's fToken state
-     *
-     * @param balance
-     * @param accountBorrows
-     * @param approvals
-     */
-    export interface AccountStatus {
-        balance: number;
-        accountBorrows: { principal: number; interestIndex: number; }[];
-        approvals: { [address: string]: number };
-    }
-
-    /*
-     * Get an account's current position in a market
-     *
-     * @param
-     */
-    export async function getAccountStatus(fTokenAddress: string, accountAddress: string): Promise<AccountStatus> {
-        return {} as AccountStatus;
     }
 }

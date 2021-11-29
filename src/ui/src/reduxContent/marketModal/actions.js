@@ -63,13 +63,13 @@ export const borrowMarketModalAction =
  */
 export const supplyTokenAction =
   (mintPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
-    console.log(mintPair, protocolAddresses, publicKeyHash);
+    console.log('aa1', mintPair, protocolAddresses, publicKeyHash);
     const mint = TezosLendingPlatform.MintOpGroup(
       mintPair,
       protocolAddresses,
       publicKeyHash
     );
-    console.log(mint);
+    console.log('aa2', mint);
     dispatch({ type: MINT_TOKEN, payload: mint });
     const res = await confirmOps(mint, publicKeyHash);
   };
@@ -104,6 +104,7 @@ export const withdrawTokenAction =
  */
 export const borrowTokenAction =
   (borrowPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+      console.log('borrowTokenAction', borrowPair, protocolAddresses, publicKeyHash)
     const collaterals = borrowPair.underlying;
     const borrow = TezosLendingPlatform.BorrowOpGroup(
       borrowPair,

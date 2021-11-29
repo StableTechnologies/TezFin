@@ -40,7 +40,6 @@ const Header = () => {
       <Grid container>
         <Grid item xs={12} className={classes.netAPY}>
           <Typography>
-
             Net APY: 0.00%
             {/* <span className={classes.questionCircle}>
               <img src={questionCircle} alt={questionCircle} />
@@ -61,7 +60,7 @@ const Header = () => {
           progressBarColor={classes.supplyBarColor} // add class
         />
         <Composition
-          title = "Borrow  Limit"
+          title = "Borrow Limit"
           data = {borrowComposition}
           dataIcon = {borrowingIcon}
           dataTitle = "Borrowing"

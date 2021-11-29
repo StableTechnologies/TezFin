@@ -1,7 +1,4 @@
 import {
-  ConseilDataClient,
-  ConseilOperator,
-  ConseilSortDirection,
   TezosConseilClient,
   TezosLanguageUtil,
   TezosMessageUtils,
@@ -157,16 +154,10 @@ export default class Tezos {
       const result = await this.tezos.requestOperation({
         operationDetails: ops,
       });
-      console.log(result);
-      const groupid = result["transactionHash"]
-        .replace(/"/g, "")
-        .replace(/\n/, ""); // clean up RPC output
-      const confirm = await TezosConseilClient.awaitOperationConfirmation(
-        this.conseilServer,
-        this.conseilServer.network,
-        groupid,
-        2
-      );
+      console.log('bbb', result);
+      const groupid = result["transactionHash"].replace(/"/g, "").replace(/\n/, ""); // clean up RPC output
+
+      const confirm = await TezosConseilClient.awaitOperationConfirmation(this.conseilServer, this.conseilServer.network, groupid, 5);
       return confirm;
     } catch (err) {
       console.error(err);

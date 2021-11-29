@@ -119,7 +119,7 @@ const Market = (props) => {
                   {/* {supplyMkt && */}
                   <Typography>
                     {" "}
-                    {data.balance ? data.balance : "0"} {data.title}{" "}
+                    {data.balanceUnderlying ? data.balanceUnderlying.toString() : data.balance || '0'} {data.title}{" "}
                   </Typography>
                   {/* } */}
                   <Typography className={classes.faintFont}>

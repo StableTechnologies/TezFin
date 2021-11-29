@@ -18,27 +18,20 @@ const Dashboard = () => {
 
   const { account } = useSelector((state) => state.addWallet);
   const { markets } = useSelector((state) => state.market);
-  const {
-    suppliedMarkets,
-    unSuppliedMarkets,
-    borrowedMarkets,
-    unBorrowedMarkets,
-  } = useSelector((state) => state.market);
+  const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector((state) => state.market);
 
-  console.log(
-    "herere",
-    suppliedMarkets,
-    unSuppliedMarkets,
-    borrowedMarkets,
-    unBorrowedMarkets
-  );
+  console.log('dashboard supplied', suppliedMarkets);
+  console.log('dashboard unsupplied', unSuppliedMarkets);
+  console.log('dashboard borrowed', borrowedMarkets);
+  console.log('dashboard unborrowed', unBorrowedMarkets);
+
   useEffect(() => {
+    if (!markets) { return; }
+
     dispatch(unSuppliedMarketAction(account, markets));
     dispatch(unBorrowedMarketAction(account, markets));
 
-    if (!account.address || !markets) {
-      return;
-    }
+    if (!account.address) { return; }
 
     dispatch(suppliedMarketAction(account, markets));
     dispatch(borrowedMarketAction(account, markets));
@@ -51,7 +44,7 @@ const Dashboard = () => {
       <Grid item xs={12} md={6} className={classes.paddingRight}>
         {suppliedMarkets.length > 0 && (
           <>
-            <Typography className={classes.tableTitle}> supplying </Typography>
+            <Typography className={classes.tableTitle}> Supplying </Typography>
             <Market
               tableData={suppliedMarkets}
               headingOne="Token"
@@ -65,13 +58,11 @@ const Dashboard = () => {
         )}
         {suppliedMarkets.length > 0 ? (
           <Typography className={classes.tableTitleTwo}>
-            {" "}
-            All Supply Markets{" "}
+            All Supply Markets
           </Typography>
         ) : (
           <Typography className={classes.tableTitle}>
-            {" "}
-            Supply Markets{" "}
+            Supply Markets
           </Typography>
         )}
         <Market

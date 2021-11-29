@@ -5,18 +5,18 @@ import kUSD from "../../assets/kUSD.svg";
 import USDtz from "../../assets/USDtz.svg";
 import XTZ from "../../assets/XTZ.svg";
 
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
+import { AssetType } from 'tezoslendingplatformjs';
 
 export const tokens = [
-  { title: 'BTCtz', logo: BTCtz, banner: 'BTCtz', assetType: TezosLendingPlatform.AssetType.BTC },
-  { title: 'ETHtz', logo: Ethtz, banner: 'ETH Tez', assetType: TezosLendingPlatform.AssetType.ETH },
-  { title: 'XTZ', logo: XTZ, banner: 'Tez',  assetType: TezosLendingPlatform.AssetType.XTZ },
-//   { title: 'kUSD', logo: kUSD, banner: 'kUSD', assetType: TezosLendingPlatform.AssetType.FA12 },
-//   { title: 'CTez', logo: ctez, banner: 'CTez', assetType: ''},
-  { title: 'USDtz', logo: USDtz, banner: 'USDtz', assetType: ''  },
+  { title: 'BTCtz', logo: BTCtz, banner: 'BTCtz', assetType: AssetType.BTC },
+  { title: 'ETHtz', logo: Ethtz, banner: 'ETH Tez', assetType: AssetType.ETH },
+  { title: 'XTZ', logo: XTZ, banner: 'Tez',  assetType: AssetType.XTZ },
+//   { title: 'kUSD', logo: kUSD, banner: 'kUSD', assetType: '' },
+//   { title: 'CTez', logo: ctez, banner: 'CTez', assetType: '' },
+  { title: 'USDtz', logo: USDtz, banner: 'USDtz', assetType: '' },
 ];
 export const supplying = [
   { title: 'BTCtz', logo: BTCtz, banner: 'BTCtz', assetType: ''},
-  { title: 'XTZ', logo: XTZ, banner: 'Tez', assetType: TezosLendingPlatform.AssetType.XTZ },
+  { title: 'XTZ', logo: XTZ, banner: 'Tez', assetType: AssetType.XTZ },
 ];
 

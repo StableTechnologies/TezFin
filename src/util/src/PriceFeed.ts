@@ -1,6 +1,6 @@
-import { KeyStore, Signer, TezosNodeReader, TezosNodeWriter, TezosContractUtils, Transaction, TezosParameterFormat, ConseilQuery, ConseilQueryBuilder, ConseilOperator, TezosConseilClient, ConseilServerInfo } from 'conseiljs';
-import { TezosLendingPlatform } from './TezosLendingPlatform';
-import { JSONPath } from 'jsonpath-plus';
+import { ConseilQuery, ConseilQueryBuilder, TezosConseilClient, ConseilServerInfo } from 'conseiljs';
+
+import { AssetType } from './enum'; 
 
 export namespace PriceFeed {
     export type PriceMap = { [assetType: string]: number };
@@ -10,7 +10,7 @@ export namespace PriceFeed {
      *
      * @param
      */
-    export async function GetPrice(asset: TezosLendingPlatform.AssetType, pricesMapId: number, server: string, conseilServerInfo: ConseilServerInfo): Promise<number> {
+    export async function GetPrice(asset: AssetType, pricesMapId: number, server: string, conseilServerInfo: ConseilServerInfo): Promise<number> {
         const priceQuery = makePriceQuery(asset, pricesMapId, server);
         const priceResult = await TezosConseilClient.getTezosEntityData(conseilServerInfo, conseilServerInfo.network, 'big_map_contents', priceQuery);
         return 0;
@@ -21,7 +21,7 @@ export namespace PriceFeed {
      *
      * @param
      */
-    export function makePriceQuery(asset: TezosLendingPlatform.AssetType, pricesMapId: number, server: string): ConseilQuery {
+    export function makePriceQuery(asset: AssetType, pricesMapId: number, server: string): ConseilQuery {
         let balanceQuery = ConseilQueryBuilder.blankQuery();
         return balanceQuery;
     }

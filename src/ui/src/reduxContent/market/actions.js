@@ -32,16 +32,13 @@ export const marketAction =
 /**
  * This function is used to get the supplied market data in which an account has supplied.
  *
- * @param  account
- * @param  markets
+ * @param account
+ * @param markets
  * @returns suppliedMarket
  */
 export const suppliedMarketAction = (account, markets) => async (dispatch) => {
-  const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(
-    account,
-    markets
-  );
-  const suppliedTokens = JSON.parse(JSON.stringify(tokens));
+  const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
+  const suppliedTokens = [ ...tokens ];
   const balances = account.underlyingBalances;
 
   Object.entries(suppliedMarket).map((y) => {
@@ -54,6 +51,7 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
       }
       return suppliedTokens;
     });
+
     Object.entries(balances).map((x) => {
       if (x[0].toLowerCase() === y[1].assetType.toLowerCase()) {
         y[1].balance = x[1].toString();
@@ -62,34 +60,25 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
     });
     return suppliedMarket;
   });
-  console.log("supplied", suppliedMarket);
-  dispatch({
-    type: GET_SUPPLIED_MARKET_DATA,
-    payload: Object.values(suppliedMarket),
-  });
+
+  console.log("www", suppliedMarket);
+
+  dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: Object.values(suppliedMarket) });
 };
 
 /**
- * This function is used to get the supply market data in which an account has *NO* suppplied funds.
+ * This function is used to get the supply market data in which an account has *NO* supplied funds.
  *
  * @param account
  * @param markets
  * @returns unSuppliedMarket
  */
-export const unSuppliedMarketAction =
-  (account, markets) => async (dispatch) => {
-    console.log(account, markets);
-    const unSuppliedMarkets = TezosLendingPlatform.getUnsuppliedMarkets(
-      account,
-      markets
-    );
+export const unSuppliedMarketAction = (account, markets) => async (dispatch) => {
+    console.log('unSuppliedMarketAction in', account, markets);
+    const unSuppliedMarkets = TezosLendingPlatform.getUnsuppliedMarkets(account, markets);
     console.log("unsupplied markets", unSuppliedMarkets);
-    let unSuppliedTokens = JSON.parse(JSON.stringify(tokens));
-    const balances = account.underlyingBalances;
-
-    unSuppliedTokens.map((x) => {
-      return (x.collateral = false);
-    });
+    let unSuppliedTokens = [ ...tokens ];
+    const balances = account.underlyingBalances || [];
 
     unSuppliedTokens.map((unSuppliedToken) => {
       if (Object.keys(unSuppliedMarkets).length > 0) {
