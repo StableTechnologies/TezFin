@@ -53,12 +53,12 @@ const Nav = () => {
                 <Grid item sm={4} md={4} lg={4}>
                     <NavLink to="dashboard" className={classes.link} activeClassName={classes.activeLink}> Dashboard </NavLink>
                 </Grid>
-                <Grid item sm={4} md={4} lg={4}>
+                {/*<Grid item sm={4} md={4} lg={4}>
                     <NavLink to="market" className={classes.link} activeClassName={classes.activeLink}> Market </NavLink>
                 </Grid>
                 <Grid item sm={4} md={4} lg={4}>
                     <NavLink to="about" className={classes.link} activeClassName={classes.activeLink}> About </NavLink>
-                </Grid>
+                </Grid>*/}
             </Grid>
             <Grid item lg={2}></Grid>
             <Grid item xs={12} sm={3} md={3} lg={2} className={classes.addWalletCon}>
