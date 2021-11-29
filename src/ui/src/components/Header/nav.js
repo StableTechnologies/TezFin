@@ -50,10 +50,10 @@ const Nav = () => {
                 <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
             </Grid>
             <Grid container item xs={6} sm={6} md={5} lg={5} textAlign="center" className={classes.linkCon}>
-                <Grid item sm={4} md={4} lg={4}>
+                {/*<Grid item sm={4} md={4} lg={4}>
                     <NavLink to="dashboard" className={classes.link} activeClassName={classes.activeLink}> Dashboard </NavLink>
                 </Grid>
-                {/*<Grid item sm={4} md={4} lg={4}>
+                <Grid item sm={4} md={4} lg={4}>
                     <NavLink to="market" className={classes.link} activeClassName={classes.activeLink}> Market </NavLink>
                 </Grid>
                 <Grid item sm={4} md={4} lg={4}>
