@@ -12,18 +12,13 @@ import { tokens } from '../../components/Constants';
 /**
  * This function is used to get the market data .
  *
- * @param  comptroller Comptroller storage.
- * @param  protocolAddresses Addresses of the protocol contracts
- * @param  server server address
+ * @param comptroller Comptroller storage.
+ * @param protocolAddresses Addresses of the protocol contracts
+ * @param server server address
  */
 export const marketAction = (comptroller, protocolAddresses, server) => async (dispatch) => {
     if (comptroller) {
-        const markets = await TezosLendingPlatform.GetMarkets(
-            comptroller,
-            protocolAddresses,
-            server
-        );
-        console.log('market', markets);
+        const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
         dispatch({ type: GET_MARKET_DATA, payload: markets });
     }
 };
@@ -60,8 +55,6 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
         return suppliedMarket;
     });
 
-    console.log('www', suppliedMarket);
-
     dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: Object.values(suppliedMarket) });
 };
 
@@ -73,38 +66,33 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
  * @returns unSuppliedMarket
  */
 export const unSuppliedMarketAction = (account, markets) => async (dispatch) => {
-    console.log('unSuppliedMarketAction in', account, markets);
     const unSuppliedMarkets = TezosLendingPlatform.getUnsuppliedMarkets(account, markets);
-    console.log('unsupplied markets', unSuppliedMarkets);
     const unSuppliedTokens = [...tokens];
     const balances = account.underlyingBalances || [];
 
     unSuppliedTokens.map((unSuppliedToken) => {
         if (Object.keys(unSuppliedMarkets).length > 0) {
             Object.entries(unSuppliedMarkets).map((unSuppliedMarket) => {
-                if (
-                    unSuppliedToken.assetType.toLowerCase()
-            === unSuppliedMarket[0].toLowerCase()
-                ) {
+                if (unSuppliedToken.assetType.toLowerCase() === unSuppliedMarket[0].toLowerCase()) {
                     unSuppliedToken.collateral = unSuppliedMarket[1].collateral;
                     unSuppliedToken.walletUsd = unSuppliedMarket[1].balanceUsd;
                     unSuppliedToken.walletUnderlying = unSuppliedMarket[1].balanceUnderlying;
                     unSuppliedToken.rate = unSuppliedMarket[1].rate;
                 }
+
                 return unSuppliedMarkets;
             });
             Object.entries(balances).map((balance) => {
-                if (
-                    unSuppliedToken.assetType.toLowerCase() === balance[0].toLowerCase()
-                ) {
+                if (unSuppliedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
                     unSuppliedToken.balance = balance[1].toString();
                 }
+
                 return balances;
             });
         }
         return unSuppliedTokens;
     });
-    console.log('unsupplied tokens', unSuppliedTokens);
+
     dispatch({ type: GET_UNSUPPLIED_MARKET_DATA, payload: unSuppliedTokens });
 };
 
@@ -120,8 +108,6 @@ export const borrowedMarketAction = (account, markets) => async (dispatch) => {
     const borrowedTokens = [...tokens];
     const balances = account.underlyingBalances;
 
-    console.log('borrowedMarketAction');
-
     Object.entries(borrowedMarket).map((y) => {
         borrowedTokens.map((x) => {
             if (y[0].toLowerCase() === x.assetType.toLowerCase()) {
@@ -130,14 +116,18 @@ export const borrowedMarketAction = (account, markets) => async (dispatch) => {
                 y[1].title = x.title;
                 y[1].logo = x.logo;
             }
+
             return borrowedTokens;
         });
+
         Object.entries(balances).map((x) => {
             if (x[0].toLowerCase() === y[1].assetType.toLowerCase()) {
                 y[1].balance = x[1].toString();
             }
+
             return balances;
         });
+
         return borrowedMarket;
     });
 
@@ -152,39 +142,34 @@ export const borrowedMarketAction = (account, markets) => async (dispatch) => {
  * @returns unBorrowedMarket
  */
 export const unBorrowedMarketAction = (account, markets) => async (dispatch) => {
-    const unBorrowedMarkets = TezosLendingPlatform.getUnborrowedMarkets(
-        account,
-        markets
-    );
+    const unBorrowedMarkets = TezosLendingPlatform.getUnborrowedMarkets(account, markets);
     const unBorrowedTokens = JSON.parse(JSON.stringify(tokens));
-    // TODO:
-    // balances should read the "currently borrowing" of each token here.
+
     const balances = account.underlyingBalances;
 
     unBorrowedTokens.map((unBorrowedToken) => {
         if (unBorrowedMarkets.length > 0) {
             Object.entries(unBorrowedMarkets).map((unBorrowedMarket) => {
-                if (
-                    unBorrowedToken.assetType.toLowerCase()
-            === unBorrowedMarket[0].toLowerCase()
-                ) {
+                if (unBorrowedToken.assetType.toLowerCase() === unBorrowedMarket[0].toLowerCase()) {
                     unBorrowedToken.walletUsd = unBorrowedMarket[1].balanceUsd;
                     unBorrowedToken.walletUnderlying = unBorrowedMarket[1].balanceUnderlying;
                     unBorrowedToken.liquidityUsd = unBorrowedMarket[1].liquidityUsd;
                     unBorrowedToken.liquidityUnderlying = unBorrowedMarket[1].liquidityUnderlying;
                     unBorrowedToken.rate = unBorrowedMarket[1].rate;
                 }
+
                 return unBorrowedMarkets;
             });
+
             Object.entries(balances).map((balance) => {
-                if (
-                    unBorrowedToken.assetType.toLowerCase() === balance[0].toLowerCase()
-                ) {
+                if (unBorrowedToken.assetType.toLowerCase() === balance[0].toLowerCase()) {
                     unBorrowedToken.balance = balance[1].toString();
                 }
+
                 return balances;
             });
         }
+
         return unBorrowedTokens;
     });
     dispatch({ type: GET_UNBORROWED_MARKET_DATA, payload: unBorrowedTokens });
