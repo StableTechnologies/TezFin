@@ -79,6 +79,7 @@ export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash) =>
  * @param  publicKeyHash address of the connected account.
  */
 export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+    redeemPair.underlying = redeemPair.underlying.toUpperCase();
     const collaterals = redeemPair.underlying;
 
     const withdraw = TezosLendingPlatform.RedeemOpGroup(
@@ -120,6 +121,10 @@ export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) 
  * @param  publicKeyHash address of the connected account.
  */
 export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+    repayBorrowPair.underlying = repayBorrowPair.underlying.toUpperCase();
+    console.log("repay", repayBorrowPair,
+        protocolAddresses,
+        publicKeyHash)
     const repayBorrow = TezosLendingPlatform.RepayBorrowOpGroup(
         repayBorrowPair,
         protocolAddresses,

@@ -518,7 +518,7 @@ export namespace TezosLendingPlatform {
         mint.underlying = mint.underlying.toUpperCase() as AssetType;
         let ops: Transaction[] = [];
         // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOpGroup([mint.underlying], protocolAddresses, 0, pkh, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // get permissions from underlying asset
         let permissionOp = permissionOperation(mint, false, protocolAddresses, 0, pkh);
         if (permissionOp != undefined)
@@ -559,9 +559,9 @@ export namespace TezosLendingPlatform {
         if (!collaterals.includes(redeem.underlying)) { // need to accrueInterest on the redeemed market as well)
             collaterals.push(redeem.underlying);
         }
-        ops = ops.concat(FToken.AccrueInterestOpGroup(collaterals, protocolAddresses, 0, pkh, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // comptroller data relevance
-        ops = ops.concat(Comptroller.DataRelevanceOpGroup(collaterals, protocolAddresses, 0, pkh));
+        ops = ops.concat(Comptroller.DataRelevanceOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh));
         // redeem operation
         ops.push(FToken.RedeemOperation(redeem, 0, protocolAddresses.fTokens[redeem.underlying], pkh, gas, freight));
         return ops;
@@ -596,10 +596,10 @@ export namespace TezosLendingPlatform {
             collaterals.push(borrow.underlying);
         }
 
-        ops = ops.concat(FToken.AccrueInterestOpGroup(collaterals, protocolAddresses, 0, pkh, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
 
         // comptroller data relevance
-        ops = ops.concat(Comptroller.DataRelevanceOpGroup(collaterals, protocolAddresses, 0, pkh));
+        ops = ops.concat(Comptroller.DataRelevanceOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh));
         // borrow operation
 
         ops.push(FToken.BorrowOperation(borrow, 0, protocolAddresses.fTokens[borrow.underlying], pkh, gas, freight));
@@ -641,7 +641,7 @@ export namespace TezosLendingPlatform {
     export function RepayBorrowOpGroup(repayBorrow: FToken.RepayBorrowPair, protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOpGroup([repayBorrow.underlying], protocolAddresses, 0, pkh, gas, freight));
+        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // get permissions from underlying asset
         let permissionOp = permissionOperation(repayBorrow, false, protocolAddresses, 0, pkh);
         if (permissionOp != undefined)
