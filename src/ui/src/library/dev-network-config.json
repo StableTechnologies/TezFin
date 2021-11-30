@@ -3,10 +3,9 @@
     "tezosNode": "https://tezos-granada.cryptonomic-infra.tech:443",
     "conseilServer": {
       "url": "https://conseil-granada.cryptonomic-infra.tech:443",
-      "apiKey": "",
+      "apiKey": "4bb2f288-c36a-49ea-a50e-e7cbdc495e0e",
       "network": "granadanet"
     }
   },
   "dappName": "Lending Platform"
 }
-

@@ -1,4 +1,3 @@
-import { Comptroller, TezosLendingPlatform } from 'tezoslendingplatformjs';
 import {
     BORROW_TOKEN,
     COLLATERALIZE_TOKEN,
@@ -9,6 +8,7 @@ import {
     REPAY_BORROW_TOKEN,
     WITHDRAW_TOKEN
 } from './types.js';
+import { Comptroller, TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 import { confirmOps } from '../../util/index.js';
 
@@ -29,7 +29,7 @@ export const supplyMarketModalAction = (account, market) => async (dispatch) => 
             type: GET_SUPPLY_MARKET_MODAL_DATA,
             payload: supplyMarketModal
         });
-    } catch (error) {}
+    } catch (error) { }
 };
 
 /**
@@ -49,7 +49,7 @@ export const borrowMarketModalAction = (account, market) => async (dispatch) => 
             type: GET_BORROW_MARKET_MODAL_DATA,
             payload: borrowMarketModal
         });
-    } catch (error) {}
+    } catch (error) { }
 };
 
 /**
@@ -136,9 +136,12 @@ export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publi
  * @param publicKeyHash Address of the connected account.
  */
 export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => async (dispatch) => {
-    const enterMarketsPair = [protocolAddresses.ftokens[asset]];
-    const collaterals = asset;
-
+    const enterMarketsPair = { fTokens: [protocolAddresses.fTokens[asset]] };
+    const collaterals = [asset];
+    console.log("enable", enterMarketsPair,
+        collaterals,
+        protocolAddresses,
+        publicKeyHash)
     const collateralizeToken = TezosLendingPlatform.EnterMarketsOpGroup(
         enterMarketsPair,
         collaterals,
@@ -157,9 +160,13 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
  * @param publicKeyHash Address of the connected account.
  */
 export const disableCollateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => async (dispatch) => {
-    const exitMarketsPair = [protocolAddresses.ftokens[asset]];
-    const collaterals = asset;
+    const exitMarketsPair = { fTokens: [protocolAddresses.fTokens[asset]] };
+    const collaterals = [asset];
 
+    console.log("disable", exitMarketsPair,
+        collaterals,
+        protocolAddresses,
+        publicKeyHash)
     const disableCollateralizeToken = TezosLendingPlatform.ExitMarketOpGroup(
         exitMarketsPair,
         collaterals,
