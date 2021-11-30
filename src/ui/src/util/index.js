@@ -88,7 +88,7 @@ export const confirmOps = async (operations) => {
         } else if (address.startsWith('tz3')) {
             curve = KeyStoreCurve.SECP256R1;
         }
-
+        console.log(operations);
         const keyStore = {
             publicKey: '', // this precludes reveal operation inclusion
             secretKey: '',
@@ -105,7 +105,8 @@ export const confirmOps = async (operations) => {
             config.infra.tezosNode,
             keyStore,
             counter,
-            operations
+            operations,
+            true
         );
 
         return await client.requestOperation({ operationDetails: opGroup });

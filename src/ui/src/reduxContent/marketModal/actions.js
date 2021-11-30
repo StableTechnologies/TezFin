@@ -79,6 +79,7 @@ export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash) =>
  * @param  publicKeyHash address of the connected account.
  */
 export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+    redeemPair.underlying = redeemPair.underlying.toUpperCase();
     const collaterals = redeemPair.underlying;
 
     const withdraw = TezosLendingPlatform.RedeemOpGroup(
@@ -99,8 +100,9 @@ export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash
  * @param  publicKeyHash address of the connected account.
  */
 export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+    borrowPair.underlying = borrowPair.underlying.toUpperCase();
     console.log('borrowTokenAction', borrowPair, protocolAddresses, publicKeyHash);
-    const collaterals = borrowPair.underlying;
+    const collaterals = Object.keys(protocolAddresses.fTokens);
     const borrow = TezosLendingPlatform.BorrowOpGroup(
         borrowPair,
         collaterals,
@@ -119,6 +121,10 @@ export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) 
  * @param  publicKeyHash address of the connected account.
  */
 export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+    repayBorrowPair.underlying = repayBorrowPair.underlying.toUpperCase();
+    console.log("repay", repayBorrowPair,
+        protocolAddresses,
+        publicKeyHash)
     const repayBorrow = TezosLendingPlatform.RepayBorrowOpGroup(
         repayBorrowPair,
         protocolAddresses,
@@ -160,7 +166,7 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
  * @param publicKeyHash Address of the connected account.
  */
 export const disableCollateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => async (dispatch) => {
-    const exitMarketsPair = { fTokens: [protocolAddresses.fTokens[asset]] };
+    const exitMarketsPair = { address: protocolAddresses.fTokens[asset] };
     const collaterals = [asset];
 
     console.log("disable", exitMarketsPair,

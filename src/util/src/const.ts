@@ -1,4 +1,5 @@
 import { AssetType, TokenStandard } from './enum';
+
 import { ProtocolAddresses } from './types';
 
 export const granadanetAddresses: ProtocolAddresses = {
@@ -29,7 +30,7 @@ export const granadanetAddresses: ProtocolAddresses = {
             tokenId: 0,
             balancesMapId: 135627,
             balancesPath: "$.int"
-            
+
         },
         "XTZ": {
             assetType: AssetType.XTZ,
@@ -37,7 +38,7 @@ export const granadanetAddresses: ProtocolAddresses = {
             decimals: 6
         }
     },
-    comptroller: "KT1JWffF2nqDua1ATkpt9o5i8NiSX6EABiMP",
+    comptroller: "KT1XfLzhqDt6qQj22RvdTdbVWFUMLQPUGzut",
     interestRateModel: {
         "XTZ": "KT1BxbwBgSAopMh17bj5UKmgbi78DsptXitc",
         "ETH": "KT1XLYihVvuJKk4VJZVGdnPv4eo9CEEDpfHA",
