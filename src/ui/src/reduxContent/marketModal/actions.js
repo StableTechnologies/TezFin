@@ -99,8 +99,9 @@ export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash
  * @param  publicKeyHash address of the connected account.
  */
 export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+    borrowPair.underlying = borrowPair.underlying.toUpperCase();
     console.log('borrowTokenAction', borrowPair, protocolAddresses, publicKeyHash);
-    const collaterals = borrowPair.underlying;
+    const collaterals = Object.keys(protocolAddresses.fTokens);
     const borrow = TezosLendingPlatform.BorrowOpGroup(
         borrowPair,
         collaterals,
@@ -160,7 +161,7 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
  * @param publicKeyHash Address of the connected account.
  */
 export const disableCollateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => async (dispatch) => {
-    const exitMarketsPair = { fTokens: [protocolAddresses.fTokens[asset]] };
+    const exitMarketsPair = { address: protocolAddresses.fTokens[asset] };
     const collaterals = [asset];
 
     console.log("disable", exitMarketsPair,
