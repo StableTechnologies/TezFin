@@ -575,7 +575,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             price = self.makeExp(sp.nat(0)),
             updateLevel = sp.nat(0),
             borrowCap = sp.nat(0))
-        self.data.marketNameToAddress[params.name] = params.cToken
+        self.data.marketNameToAddress[params.name+"-USD"] = params.cToken
 
 
     """
