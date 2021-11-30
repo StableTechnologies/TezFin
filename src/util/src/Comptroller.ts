@@ -1,10 +1,10 @@
 import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
-import { JSONPath } from 'jsonpath-plus';
-import bigInt from 'big-integer';
-import log from 'loglevel';
 
 import { AssetType } from './enum'
+import { JSONPath } from 'jsonpath-plus';
 import { ProtocolAddresses } from './types';
+import bigInt from 'big-integer';
+import log from 'loglevel';
 
 export namespace Comptroller {
     /*
@@ -54,7 +54,7 @@ export namespace Comptroller {
      * @param server The Tezos node to communicate with
      * @param address
      */
-export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage> {
+    export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         // get marketsMapId
         const marketsMapId = JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
@@ -274,6 +274,7 @@ export async function GetStorage(address: string, protocolAddresses: ProtocolAdd
         // updateAssetPrice for every collateralized market
         for (const collateral of collaterals) {
             const updateAssetPrice: Comptroller.UpdateAssetPricePair = { address: protocolAddresses.fTokens[collateral] };
+            console.log("data relevance", updateAssetPrice, protocolAddresses)
             const updateAssetPriceOp = Comptroller.UpdateAssetPriceOperation(updateAssetPrice, counter, protocolAddresses.comptroller, pkh, gas, freight);
             ops.push(updateAssetPriceOp);
         }

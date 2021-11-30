@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { collateralizeTokenAction, supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
+import { useDispatch, useSelector } from 'react-redux';
+
 import ConfirmModal from '../ConfirmModal';
-
 import MarketModal from '../MarketModal';
-
 import { useStyles } from './style';
 
 const CollateralizeModal = (props) => {
@@ -32,6 +31,7 @@ const CollateralizeModal = (props) => {
 
     const collateralizeToken = () => {
         const { assetType } = tokenDetails;
+        console.log("collateral", assetType, protocolAddresses, publicKeyHash)
         dispatch(collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash));
         close();
         setTokenText('collateral');
@@ -45,20 +45,20 @@ const CollateralizeModal = (props) => {
 
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
+            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
             <MarketModal
-                headerText = "Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
-                APYText = {`${tokenDetails.title} ` + 'Variable APY Rate'}
-                Limit = "Borrow Limit"
-                LimitUsed = "Borrow Limit Used"
-                amountText = "Wallet Balance"
-                open = {open}
-                close = {close}
-                tokenDetails = {tokenDetails}
-                handleClickTabOne = {collateralizeToken}
-                buttonOne = "Use as Collateral"
-                btnSub = {classes.btnSub}
-                extraPadding = {classes.collateralizePadding}
+                headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
+                APYText={`${tokenDetails.title} ` + 'Variable APY Rate'}
+                Limit="Borrow Limit"
+                LimitUsed="Borrow Limit Used"
+                amountText="Wallet Balance"
+                open={open}
+                close={close}
+                tokenDetails={tokenDetails}
+                handleClickTabOne={collateralizeToken}
+                buttonOne="Use as Collateral"
+                btnSub={classes.btnSub}
+                extraPadding={classes.collateralizePadding}
                 collateralize
                 visibility
             />
