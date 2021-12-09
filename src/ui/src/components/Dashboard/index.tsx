@@ -10,11 +10,11 @@ import BorrowedTokenTable from '../Market/BorrowedTokenTable';
 import { useStyles } from './style';
 
 const Dashboard = () => {
-    const classes = useStyles();
+    const classes: any = useStyles();
     const dispatch = useDispatch();
 
-    const { account } = useSelector((state) => state.addWallet);
-    const { markets } = useSelector((state) => state.market);
+    const { account } = useSelector((state: any) => state.addWallet);
+    const { markets } = useSelector((state: any) => state.market);
     const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector((state) => state.market);
 
     console.log('dashboard supplied', suppliedMarkets);
@@ -36,7 +36,7 @@ const Dashboard = () => {
 
     return (
         <Grid container className={classes.dashboard}>
-            <Grid item xs={12} md={6} className={classes.paddingRight}>
+            <Grid item xs={12} md={6} className={classes._paddingRight}>
                 {suppliedMarkets.length > 0 && (
                     <>
                         <Typography className={classes.tableTitle}> Supplying </Typography>
@@ -70,7 +70,7 @@ const Dashboard = () => {
                     supplyMkt
                 />
             </Grid>
-            <Grid item xs={12} md={6} className={classes.paddingLeft}>
+            <Grid item xs={12} md={6} className={classes._paddingLeft}>
                 {borrowedMarkets.length > 0 && (
                     <>
                         <Typography className={classes.tableTitle}> Borrowing </Typography>
