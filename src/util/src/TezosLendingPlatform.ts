@@ -8,6 +8,7 @@ import { JSONPath } from 'jsonpath-plus';
 import bigInt from 'big-integer';
 import log from 'loglevel';
 import { tokenNames } from './const';
+import { InterestRateModel } from 'contracts/InterestRateModel';
 
 export namespace TezosLendingPlatform {
     /*
@@ -24,7 +25,7 @@ export namespace TezosLendingPlatform {
      *
      * @param fToken The fToken contract's storage
      */
-    export function MakeMarket(fToken: FToken.Storage, comptroller: Comptroller.Storage, address: string, underlying: UnderlyingAsset): Market {
+    export function MakeMarket(fToken: FToken.Storage, comptroller: Comptroller.Storage, address: string, underlying: UnderlyingAsset, rateModel: InterestRateModel.Storage): Market {
         const asset: UnderlyingAssetMetadata = {
             name: tokenNames[underlying.assetType],
             underlying: underlying,
@@ -35,16 +36,15 @@ export namespace TezosLendingPlatform {
             // numParticipants: fToken.supply.numSuppliers?,
             numParticipants: 0,
             totalAmount: fToken.supply.totalSupply,
-            rate: FToken.GetSupplyRate(fToken)
+            rate: FToken.GetSupplyRate(fToken, rateModel)
         };
         const borrow: MarketData = {
             // numParticipants: fToken.borrow.numBorrowers,
             numParticipants: 0,
             totalAmount: fToken.borrow.totalBorrows,
-            rate: FToken.GetBorrowRate(fToken)
+            rate: FToken.GetBorrowRate(fToken, rateModel)
         };
-        // TODO: fix fraction
-        // const reserveFactor = 1 / ConvertFromMantissa(fToken.reserveFactorMantissa);
+
         return {
             address: address,
             asset: asset,
@@ -54,10 +54,11 @@ export namespace TezosLendingPlatform {
             borrow: borrow,
             dailyInterestPaid: bigInt('0'), // TODO: parse this
             reserves: fToken.totalReserves,
-            reserveFactor: 0,
+            reserveFactor: 0, // TODO
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
             exchangeRate: FToken.GetExchangeRate(fToken),
-            storage: fToken
+            storage: fToken,
+            rateModel: rateModel
         } as Market;
     }
 
@@ -75,7 +76,8 @@ export namespace TezosLendingPlatform {
             const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
             try {
                 const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server, fTokenType);
-                markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset]);
+                const rateModel = await InterestRateModel.GetStorage(server, protocolAddresses.interestRateModel[asset]);
+                markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel);
             } catch (e) {
                 log.error(`Failed in GetMarkets for ${asset} at ${protocolAddresses.fTokens[asset]} and ${JSON.stringify(protocolAddresses.underlying[asset])} with ${e}`);
                 log.error(`Comptroller state: ${JSON.stringify(comptroller)}`);

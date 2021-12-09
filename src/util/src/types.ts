@@ -1,3 +1,4 @@
+import { InterestRateModel } from "./contracts/InterestRateModel";
 import { AssetType, TokenStandard } from "enum";
 import { FToken } from './FToken';
 
@@ -165,6 +166,7 @@ export interface Market {
     collateralFactor: number;
     exchangeRate: number;
     storage: FToken.Storage;
+    rateModel: InterestRateModel.Storage;
 }
 
 export type MarketMap = { [assetType: string]: Market }

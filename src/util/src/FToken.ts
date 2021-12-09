@@ -1,9 +1,11 @@
 import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
 import { JSONPath } from 'jsonpath-plus';
 import bigInt from 'big-integer';
+import { BigNumber } from 'bignumber.js';
 
 import { AssetType, TokenStandard } from './enum';
 import { ProtocolAddresses } from './types';
+import { InterestRateModel } from './contracts/InterestRateModel';
 
 export namespace FToken {
     /*
@@ -38,7 +40,9 @@ export namespace FToken {
         reserveFactorMantissa: bigInt.BigInteger;
         reserveFactorMaxMantissa: bigInt.BigInteger;
         totalReserves: bigInt.BigInteger;
+        currentCash: bigInt.BigInteger;
     }
+
     /*
      * @description
      *
@@ -81,7 +85,8 @@ export namespace FToken {
                     pendingAdministrator: pendingAdministrator,
                     reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
                     reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0]),
-                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
+                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
+                    currentCash: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0])
                 };
             }
             case TokenStandard.FA2: {
@@ -118,7 +123,8 @@ export namespace FToken {
                     pendingAdministrator: pendingAdministrator,
                     reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0]),
                     reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
-                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
+                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
+                    currentCash: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0])
                 };
             }
             case TokenStandard.XTZ: {
@@ -126,6 +132,7 @@ export namespace FToken {
                 const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[3].prim', json: storageResult })[0];
                 const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
+                const spendableBalance = await TezosNodeReader.getSpendableBalanceForAccount(server, fTokenAddress);
                 // TODO: implement numSuppliers and numBorrowers
                 // get numSuppliers
                 // const suppliersQuery = makeSuppliersQuery(balancesMapId);
@@ -155,7 +162,8 @@ export namespace FToken {
                     pendingAdministrator: pendingAdministrator,
                     reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
                     reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0]),
-                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0])
+                    totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
+                    currentCash: bigInt(spendableBalance)
                 };
             }
         }
@@ -204,26 +212,35 @@ export namespace FToken {
      * @param storage
      */
     export function GetExchangeRate(storage: Storage): number {
-        return 0.95; // TODO: fix bigInt(1).divide(storage.initialExchangeRateMantissa);
+        return 0.95; // TODO: CToken.exchangeRateAdjusted
     }
 
     /*
-     * @description TODO
+     * @description The rate calculation here is based on the getSupplyRate function of the InterestRateModel contract.
      *
      * @param storage
      */
-    export function GetSupplyRate(storage: Storage): number {
-        // dailyInterestPaid adjusted by blocksPerYear
-        return 3;
+    export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
+        const utilizationRate = storage.borrow.totalBorrows.gt(0) ? storage.borrow.totalBorrows.multiply(irStorage.scale).divide(storage.currentCash.plus(storage.borrow.totalBorrows.minus(storage.totalReserves))) : bigInt(0);
+        const borrowRate = utilizationRate.multiply(irStorage.blockMultiplier).divide(irStorage.scale.plus(irStorage.blockRate));
+        const reserveShare = irStorage.scale.minus(storage.reserveFactorMantissa);
+        const poolRateNumerator = borrowRate.multiply(reserveShare).multiply(utilizationRate);
+        const poolRateDenominator = irStorage.scale.multiply(irStorage.scale);
+
+        return new BigNumber(poolRateNumerator.toString()).dividedBy(poolRateDenominator.toString()).toNumber();
     }
 
     /*
-     * @description TODO
+     * @description  The rate calculation here is based on the getBorrowRate function of the InterestRateModel contract.
      *
      * @param storage
      */
-    export function GetBorrowRate(storage: Storage): number {
-        return 5;
+    export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
+        const utilizationRate = storage.borrow.totalBorrows.gt(0) ? storage.borrow.totalBorrows.multiply(irStorage.scale).divide(storage.currentCash.plus(storage.borrow.totalBorrows.minus(storage.totalReserves))) : bigInt(0);
+        const borrowRateNumerator = utilizationRate.multiply(irStorage.blockMultiplier);
+        const borrowRateDenominator = irStorage.scale.plus(irStorage.blockRate);
+
+        return new BigNumber(borrowRateNumerator.toString()).dividedBy(borrowRateDenominator.toString()).toNumber();
     }
 
     /*
