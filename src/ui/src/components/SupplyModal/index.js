@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import MarketModal from '../MarketModal';
-import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
-
-import { useStyles } from './style';
 import ConfirmModal from '../ConfirmModal';
+import MarketModal from '../MarketModal';
+import { useStyles } from './style';
 
 const SupplyModal = (props) => {
     const classes = useStyles();
@@ -68,32 +67,32 @@ const SupplyModal = (props) => {
     }
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText}/>
+            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
             <MarketModal
-                headerText = {modalHeaderText}
-                APYText = {`${tokenDetails.title} Variable APY Rate`}
-                Limit = "Borrow Limit"
-                LimitUsed = "Borrow Limit Used"
-                amountText = "Wallet Balance"
-                open = {open}
-                close = {close}
-                tokenDetails = {tokenDetails}
+                headerText={modalHeaderText}
+                APYText={`${tokenDetails.title} Variable APY Rate`}
+                Limit="Borrow Limit"
+                LimitUsed="Borrow Limit Used"
+                amountText="Wallet Balance"
+                open={open}
+                close={close}
+                tokenDetails={tokenDetails}
                 // onClick = {enableToken ? supply : onClick}
-                onClick = {onClick}
+                onClick={onClick}
                 // handleClickTabOne = {enableToken ? supplyToken : onClick}
-                handleClickTabOne = { supplyToken }
-                handleClickTabTwo = { withdrawToken }
+                handleClickTabOne={supplyToken}
+                handleClickTabTwo={withdrawToken}
                 labelOne="Supply"
                 labelTwo="Withdraw"
                 // buttonOne ={enableToken ? "Supply" : "Enable Token"}
-                buttonOne ="Supply"
-                buttonTwo = "Withdraw"
+                buttonOne="Supply"
+                buttonTwo="Withdraw"
                 // buttonTwo = {tokenDetails.balance ? "Withdraw" : "No balance to withdraw"}
-                btnSub = {classes.btnSub}
-                inkBarStyle = {classes.inkBarStyle}
+                btnSub={classes.btnSub}
+                inkBarStyle={classes.inkBarStyle}
                 // visibility={enableToken}
-                visibility = {true}
-                amount={(e) => { setAmount(e.target.value); }}
+                visibility={true}
+                amount={(e) => { setAmount(e); }}
             />
         </>
     );

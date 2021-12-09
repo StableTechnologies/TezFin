@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import BorrowModal from '../BorrowModal';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -7,9 +8,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
-
+import { decimalify } from '../../util';
+import { decimals } from 'tezoslendingplatformjs';
 import { formatBorrowedTokenData } from '../../library/util';
-import BorrowModal from '../BorrowModal';
 import { useStyles } from './style';
 
 const BorrowedTokenTable = (props) => {
@@ -61,7 +62,7 @@ const BorrowedTokenTable = (props) => {
                             <TableCell> {data.rate}% </TableCell>
                             <TableCell>
                                 <Typography>
-                                    {data.balanceUnderlying ? data.balanceUnderlying.toString() : data.balance || '0'} {data.title}
+                                    {data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}
                                 </Typography>
                                 <Typography className={classes.faintFont}>
                                     ${data.walletUnderlying > 0 ? data.walletUnderlying.toString() : '0.00'}

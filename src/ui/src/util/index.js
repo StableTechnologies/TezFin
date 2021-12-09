@@ -1,4 +1,4 @@
-import { DAppClient, TezosOperationType } from '@airgap/beacon-sdk';
+import { DAppClient, NetworkType } from '@airgap/beacon-sdk';
 import {
     KeyStoreCurve,
     KeyStoreType,
@@ -6,6 +6,7 @@ import {
     TezosNodeWriter
 } from 'conseiljs';
 
+import { BigNumber } from "bignumber.js";
 import { Mutex } from 'async-mutex';
 import Tezos from '../library/tezos';
 
@@ -25,8 +26,8 @@ const client = new DAppClient({ name: config.dappName });
 export const shorten = (first, last, str) => `${str.substring(0, first)}...${str.substring(str.length - last)}`;
 
 export const connectTezAccount = async () => {
-    const { network } = config.infra.conseilServer;
-    const resp = await client.requestPermissions({ network: { type: network } });
+    // const network = config.infra.conseilServer;
+    const resp = await client.requestPermissions({ network: { type: NetworkType.CUSTOM, rpcUrl: "https://granadanet.api.tez.ie" } });
     const account = await client.getActiveAccount();
 
     return { client, account: account.address };
@@ -115,3 +116,23 @@ export const confirmOps = async (operations) => {
         throw error;
     }
 };
+
+/**
+ * This function that takes a number/string and the number of decimals and returns the decimal version of that number as string type.
+ *
+ * @returns decimal version
+ */
+export const decimalify = (number, decimals) => {
+    if (!number) return number;
+    return new BigNumber(number.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(decimals);
+}
+
+/**
+ * This function that takes a decimal number/string and the number of decimals and returns the non decimal version of that number as string type.
+ *
+ * @returns decimal version
+ */
+export const undecimalify = (number, decimals) => {
+    if (!number) return number;
+    return new BigNumber(number.toString()).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(0);
+}

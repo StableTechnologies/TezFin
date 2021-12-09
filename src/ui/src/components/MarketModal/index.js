@@ -1,22 +1,22 @@
+import { Button, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { decimalify, undecimalify } from '../../util';
 
+import Box from '@mui/material/Box';
+import CloseButton from '../CloseButton';
+import CustomizedProgressBars from '../ProgessBar';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { useSelector } from 'react-redux';
-import CustomizedProgressBars from '../ProgessBar';
-
 import Tabulator from '../Tabs';
-import CloseButton from '../CloseButton';
-import { useStyles } from './style';
-
+import TextField from '@mui/material/TextField';
 import Tez from '../../assets/largeXTZ.svg';
+import { decimals } from 'tezoslendingplatformjs';
+import { useSelector } from 'react-redux';
+import { useStyles } from './style';
 
 const MarketModal = (props) => {
     const classes = useStyles();
@@ -46,14 +46,14 @@ const MarketModal = (props) => {
                 <CloseButton onClick={close} />
                 <DialogTitle>
                     <div>
-                        <img src={tokenDetails.logo} alt="logo" className={classes.img}/>
+                        <img src={tokenDetails.logo} alt="logo" className={classes.img} />
                         <Typography className={classes.imgTitle}> {tokenDetails.banner} </Typography>
                     </div>
                 </DialogTitle>
                 {(!visibility || collateralize)
-          && <DialogContent>
-              <img src={Tez} alt="logo" className={classes.tezImg}/>
-          </DialogContent>
+                    && <DialogContent>
+                        <img src={Tez} alt="logo" className={classes.tezImg} />
+                    </DialogContent>
                 }
                 {(visibility && !collateralize)
                     ? <DialogContent className={classes.formFieldCon}>
@@ -63,7 +63,7 @@ const MarketModal = (props) => {
                                 type="text"
                                 placeholder="0"
                                 onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
-                                onChange={(e) => amount(e)}
+                                onChange={(e) => amount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
                                 value={tokenValue}
                                 inputProps={{ className: classes.inputText }}
                                 className={classes.textField}
@@ -82,7 +82,7 @@ const MarketModal = (props) => {
                             <Grid container justifyContent="space-between">
                                 <Grid item sm={8}>
                                     <div>
-                                        <img src={tokenDetails.logo} alt="logo" className={classes.img}/>
+                                        <img src={tokenDetails.logo} alt="logo" className={classes.img} />
                                         <Typography className={classes.imgTitle}> {APYText} </Typography>
                                     </div>
                                 </Grid>
@@ -118,15 +118,15 @@ const MarketModal = (props) => {
                 <DialogActions>
                     <>
                         {collateralize
-                            ? <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne } disableRipple> {buttonOne} </Button>
+                            ? <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>
                             : <>
                                 {(tokenValue && address)
                                     ? <>
                                         {tabValue === 'one'
-                    && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabOne} disableRipple> {buttonOne} </Button>
+                                            && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>
                                         }
                                         {tabValue === 'two'
-                    && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={ handleClickTabTwo } disableRipple> {buttonTwo} </Button>
+                                            && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabTwo} disableRipple> {buttonTwo} </Button>
                                         }
                                     </>
                                     : <Button className={` ${classes.btnMain} ${btnSub} `} disabled>
@@ -141,7 +141,7 @@ const MarketModal = (props) => {
                 <DialogContent>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={7}> {amountText} </Grid>
-                        <Grid item sm={5} className={classes.whiteSpace}> {tokenDetails.balance || 0} {tokenDetails.title} </Grid>
+                        <Grid item sm={5} className={classes.whiteSpace}> {decimalify(tokenDetails.balance, decimals[tokenDetails.title]) || 0} {tokenDetails.title} </Grid>
                     </Grid>
                 </DialogContent>
             </Dialog>
