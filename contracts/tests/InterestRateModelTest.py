@@ -16,13 +16,12 @@ def test():
     multiplierPerBlock = 180000000000 # 0.00000018
     baseRatePerBlock = 840000000000 # 0.00000084
 
-    c1 = IRM.InterestRateModel(multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
+    c1 = IRM.InterestRateModel(scale=expScale, multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
     scenario += c1
 
     view_result = RV.ViewerNat()
     scenario += view_result
 
-    
     scenario.h2("Test getBorrowRate")
     scenario.h3("With zero params, result baseRatePerBlock")
     scenario += c1.getBorrowRate(sp.record(cash=sp.nat(0), 
