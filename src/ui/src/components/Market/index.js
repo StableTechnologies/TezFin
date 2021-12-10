@@ -118,7 +118,7 @@ const Market = (props) => {
                                             {supplyingMkt ? `ꜰ${data.title}` : data.title}{' '}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell> {data.rate ? `${data.rate}%` : ''} </TableCell>
+                                    <TableCell> {data.rate ? `${Number(data.rate).toFixed(6)}%` : ''} </TableCell>
                                     <TableCell>
                                         {/* {supplyMkt && */}
                                         <Typography>

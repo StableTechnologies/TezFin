@@ -312,10 +312,10 @@ export namespace FToken {
      * @returns Annual rate as a percentage.
      */
     function _calcAnnualizedRate(rate, scale, annualPeriods = 1051920) {
-        const _scale = bigInt(scale);
-        const base = new BigNumber(_scale.plus(rate).toString()).div(scale.toString());
+        const base = bigInt(scale).plus(rate);
+        const decimalBase = new BigNumber(base.toString()).div(scale.toString());
         BigNumber.config({ POW_PRECISION: (scale.toString().length - 1) * 2 });
-        return Number(base.pow(annualPeriods).multipliedBy(100).toPrecision(6));
+        return decimalBase.pow(annualPeriods).multipliedBy(100).toNumber();
     }
 
     /*
