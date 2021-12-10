@@ -71,7 +71,7 @@ export namespace FToken {
                         supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[2].int', json: storageResult })[0])
                     },
                     borrow: {
-                        totalBorrows: JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0],
+                        totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
                         borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
                         borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0]),
                         borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[2].int', json: storageResult })[0])
@@ -109,7 +109,7 @@ export namespace FToken {
                         supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0])
                     },
                     borrow: {
-                        totalBorrows: JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0],
+                        totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
                         borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0]),
                         borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
                         borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
@@ -148,7 +148,7 @@ export namespace FToken {
                         supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[2].int', json: storageResult })[0])
                     },
                     borrow: {
-                        totalBorrows: JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0],
+                        totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
                         borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
                         borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0]),
                         borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0])

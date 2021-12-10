@@ -329,7 +329,7 @@ export namespace TezosLendingPlatform {
             // use balances for account
             if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
                 suppliedMarkets[asset] = {
-                    rate: -3, // TODO: markets[asset].supply.rate,
+                    rate: markets[asset].supply.rate,
                     balanceUnderlying: balances[asset].supplyBalanceUnderlying,
                     balanceUsd: balances[asset].supplyBalanceUsd!,
                     collateral: balances[asset].collateral!
@@ -338,7 +338,7 @@ export namespace TezosLendingPlatform {
             } else { // set balances to 0 for no account
                 // TODO: what values to display when no account connected?
                 suppliedMarkets[asset] = {
-                    rate: -4, // TODO: markets[asset].supply.rate,
+                    rate: markets[asset].supply.rate,
                     balanceUnderlying: bigInt(0),
                     balanceUsd: bigInt(0),
                     collateral: false
@@ -395,7 +395,7 @@ export namespace TezosLendingPlatform {
             // use balances for account
             if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].loanBalanceUnderlying)) {
                 borrowedMarkets[asset] = {
-                    rate: -2, // TODO: markets[asset].borrow.rate,
+                    rate: markets[asset].borrow.rate,
                     balanceUnderlying: balances[asset].loanBalanceUnderlying,
                     balanceUsd: balances[asset].loanBalanceUsd!,
                     liquidityUnderlying: markets[asset].cash,
@@ -404,7 +404,7 @@ export namespace TezosLendingPlatform {
             } else { // set balances to 0 for no account
                 // TODO: what values to display when no account connected?
                 borrowedMarkets[asset] = {
-                    rate: -1, // TODO: markets[asset].borrow.rate,
+                    rate: markets[asset].borrow.rate,
                     balanceUnderlying: bigInt(0),
                     balanceUsd: bigInt(0),
                     liquidityUnderlying: markets[asset].cash,
