@@ -5,7 +5,7 @@ import {
     GET_SUPPLIED_MARKET_DATA,
     GET_UNBORROWED_MARKET_DATA,
     GET_UNSUPPLIED_MARKET_DATA
-} from './types.js';
+} from './types';
 
 import { tokens } from '../../components/Constants';
 
