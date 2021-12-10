@@ -122,9 +122,9 @@ export const confirmOps = async (operations) => {
  *
  * @returns decimal version
  */
-export const decimalify = (number, decimals) => {
-    if (!number) return number;
-    return new BigNumber(number.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(decimals);
+ export const decimalify = (val, decimals) => {
+    if (!val) return val;
+    return new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(decimals);
 }
 
 /**
@@ -132,7 +132,7 @@ export const decimalify = (number, decimals) => {
  *
  * @returns decimal version
  */
-export const undecimalify = (number, decimals) => {
-    if (!number) return number;
-    return new BigNumber(number.toString()).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(0);
+export const undecimalify = (val, decimals) => {
+    if (!val) return val;
+    return new BigNumber(val.toString()).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(0);
 }

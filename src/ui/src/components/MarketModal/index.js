@@ -4,7 +4,7 @@ import { decimalify, undecimalify } from '../../util';
 
 import Box from '@mui/material/Box';
 import CloseButton from '../CloseButton';
-import CustomizedProgressBars from '../ProgessBar';
+import CustomizedProgressBars from '../ProgressBar';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
