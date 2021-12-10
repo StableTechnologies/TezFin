@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 
+import BorrowModal from '../BorrowModal';
+import CollateralizeModal from '../CollateralizeModal';
+import DisableCollateralModal from '../DisableCollateralModal';
+import SupplyModal from '../SupplyModal';
+import Switch from '../Switch';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Typography } from '@mui/material';
 import Tez from '../../assets/largeXTZ.svg';
-import Switch from '../Switch';
-import SupplyModal from '../SupplyModal';
-import DisableCollateralModal from '../DisableCollateralModal';
-import CollateralizeModal from '../CollateralizeModal';
-import BorrowModal from '../BorrowModal';
+import { Typography } from '@mui/material';
+import { decimalify } from '../../util';
+import { decimals } from 'tezoslendingplatformjs';
 import { useStyles } from './style';
 
 const Market = (props) => {
@@ -29,6 +31,7 @@ const Market = (props) => {
         supplyingMkt,
         borrowingMkt
     } = props;
+    console.log("props", props, "decimals", decimals);
 
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);
@@ -98,53 +101,55 @@ const Market = (props) => {
                 </TableHead>
                 <TableBody>
                     {tableData
-            && tableData.map((data) => (
-                <TableRow
-                    key={data.title}
-                    onClick={(event) => handleClickMktModal(data, event)}
-                >
-                    <TableCell>
-                        <img
-                            src={supplyingMkt ? Tez : data.logo}
-                            alt={`${data.title}-Icon`}
-                            className={classes.img}
-                        />
-                        <Typography sx={{ display: 'inline' }}>
-                            {' '}
-                            {supplyingMkt ? `ꜰ${data.title}` : data.title}{' '}
-                        </Typography>
-                    </TableCell>
-                    <TableCell> {data.rate ? `${data.rate}%` : ''} </TableCell>
-                    <TableCell>
-                        {/* {supplyMkt && */}
-                        <Typography>
-                            {' '}
-                            {data.balanceUnderlying ? data.balanceUnderlying.toString() : data.balance || '0'} {data.title}{' '}
-                        </Typography>
-                        {/* } */}
-                        <Typography className={classes.faintFont}>
-                            {' '}
-                    ${' '}
-                            {data.walletUnderlying > 0
-                                ? data.walletUnderlying.toString()
-                                : '0.00'}{' '}
-                        </Typography>
-                    </TableCell>
-                    <TableCell className={classes.toggle}>
-                        {toggle ? (
-                            <Switch data={data} />
-                        ) : (
-                            <Typography>
-                                {' '}
-                      ${' '}
-                                {data.liquidityUsd > 0
-                                    ? data.liquidityUsd.toString()
-                                    : '0.00'}{' '}
-                            </Typography>
-                        )}
-                    </TableCell>
-                </TableRow>
-            ))}
+                        && tableData.map((data) => {
+                            console.log(data.title, decimals[data.title]); return (
+                                <TableRow
+                                    key={data.title}
+                                    onClick={(event) => handleClickMktModal(data, event)}
+                                >
+                                    <TableCell>
+                                        <img
+                                            src={supplyingMkt ? Tez : data.logo}
+                                            alt={`${data.title}-Icon`}
+                                            className={classes.img}
+                                        />
+                                        <Typography sx={{ display: 'inline' }}>
+                                            {' '}
+                                            {supplyingMkt ? `ꜰ${data.title}` : data.title}{' '}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell> {data.rate ? `${data.rate}%` : ''} </TableCell>
+                                    <TableCell>
+                                        {/* {supplyMkt && */}
+                                        <Typography>
+                                            {' '}
+                                            {data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}{' '}
+                                        </Typography>
+                                        {/* } */}
+                                        <Typography className={classes.faintFont}>
+                                            {' '}
+                                            ${' '}
+                                            {data.walletUnderlying > 0
+                                                ? data.walletUnderlying.toString()
+                                                : '0.00'}{' '}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell className={classes.toggle}>
+                                        {toggle ? (
+                                            <Switch data={data} />
+                                        ) : (
+                                            <Typography>
+                                                {' '}
+                                                ${' '}
+                                                {data.liquidityUsd > 0
+                                                    ? data.liquidityUsd.toString()
+                                                    : '0.00'}{' '}
+                                            </Typography>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        })}
                 </TableBody>
             </Table>
         </TableContainer>

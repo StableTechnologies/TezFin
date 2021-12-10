@@ -2,6 +2,16 @@ import { AssetType, TokenStandard } from './enum';
 
 import { ProtocolAddresses } from './types';
 
+export const decimals = {
+    "XTZ": 6,
+    "ETH": 18,
+    "BTC": 8,
+    "USD": 6,
+    "ETHtz": 18,
+    "BTCtz": 8,
+    "USDtz": 6,
+}
+
 export const granadanetAddresses: ProtocolAddresses = {
     fTokens: {
         "XTZ": "KT1ASC5RdufbWnFYmjuRrceXedRBSUJogdTb",

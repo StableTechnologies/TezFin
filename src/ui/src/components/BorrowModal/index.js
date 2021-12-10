@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
 import ConfirmModal from '../ConfirmModal';
-
 import MarketModal from '../MarketModal';
 import { useStyles } from './style';
 
@@ -61,26 +60,26 @@ const BorrowModal = (props) => {
 
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
+            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
             <MarketModal
-                APYText = "Borrow APY"
-                Limit = "Borrow Balance"
-                LimitUsed = "Borrow Limit Used"
-                amountText = "Currently Borrowing"
-                open = {open}
-                close = {close}
-                tokenDetails = {tokenDetails}
-                handleClickTabOne = {borrowToken}
-                handleClickTabTwo = {repayBorrowToken}
-                labelOne = "Borrow"
-                labelTwo = "Repay"
-                buttonOne = "Borrow"
-                buttonTwo = "Repay"
-                btnSub = {classes.btnSub}
-                inkBarStyle = {classes.inkBarStyle}
-                visibility = {true}
-                amount={(e) => { setAmount(e.target.value); }}
-                progressBarColor = {classes.root}
+                APYText="Borrow APY"
+                Limit="Borrow Balance"
+                LimitUsed="Borrow Limit Used"
+                amountText="Currently Borrowing"
+                open={open}
+                close={close}
+                tokenDetails={tokenDetails}
+                handleClickTabOne={borrowToken}
+                handleClickTabTwo={repayBorrowToken}
+                labelOne="Borrow"
+                labelTwo="Repay"
+                buttonOne="Borrow"
+                buttonTwo="Repay"
+                btnSub={classes.btnSub}
+                inkBarStyle={classes.inkBarStyle}
+                visibility={true}
+                amount={(e) => { setAmount(e); }}
+                progressBarColor={classes.root}
             />
         </>
     );
