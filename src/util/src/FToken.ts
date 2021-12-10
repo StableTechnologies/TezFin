@@ -221,13 +221,9 @@ export namespace FToken {
      * @param storage
      */
     export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
-        const utilizationRate = storage.borrow.totalBorrows.gt(0) ? storage.borrow.totalBorrows.multiply(irStorage.scale).divide(storage.currentCash.plus(storage.borrow.totalBorrows.minus(storage.totalReserves))) : bigInt(0);
-        const borrowRate = utilizationRate.multiply(irStorage.blockMultiplier).divide(irStorage.scale.plus(irStorage.blockRate));
-        const reserveShare = irStorage.scale.minus(storage.reserveFactorMantissa);
-        const poolRateNumerator = borrowRate.multiply(reserveShare).multiply(utilizationRate);
-        const poolRateDenominator = irStorage.scale.multiply(irStorage.scale);
+        const _blockRate = _calcSupplyRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate, storage.reserveFactorMantissa);
 
-        return new BigNumber(poolRateNumerator.toString()).dividedBy(poolRateDenominator.toString()).toNumber();
+        return _calcAnnualizedRate(_blockRate, irStorage.scale);
     }
 
     /*
@@ -236,11 +232,93 @@ export namespace FToken {
      * @param storage
      */
     export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
-        const utilizationRate = storage.borrow.totalBorrows.gt(0) ? storage.borrow.totalBorrows.multiply(irStorage.scale).divide(storage.currentCash.plus(storage.borrow.totalBorrows.minus(storage.totalReserves))) : bigInt(0);
-        const borrowRateNumerator = utilizationRate.multiply(irStorage.blockMultiplier);
-        const borrowRateDenominator = irStorage.scale.plus(irStorage.blockRate);
+        const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
 
-        return new BigNumber(borrowRateNumerator.toString()).dividedBy(borrowRateDenominator.toString()).toNumber();
+
+        return _calcAnnualizedRate(_blockRate, irStorage.scale);
+    }
+
+    /**
+     * 
+     * @param loans Total amount of borrowed assets of a given collateral token.
+     * @param balance Underlying balance of the collateral token.
+     * @param reserves Reserves of the collateral token.
+     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
+     * @param blockMultiplier Rate line slope, order of magnitude of scale.
+     * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
+     * @returns 
+     */
+    function _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate) {
+        const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
+
+        const _blockMultiplier = bigInt(blockMultiplier);
+        const _blockBaseRate = bigInt(blockBaseRate);
+        const _scale = bigInt(scale);
+
+        const r = utilizationRate.multiply(_blockMultiplier).divide(_scale).plus(_blockBaseRate);
+
+        return r;
+    }
+
+    /**
+     * 
+     * @param loans Total amount of borrowed assets of a given collateral token.
+     * @param balance Underlying balance of the collateral token.
+     * @param reserves Reserves of the collateral token.
+     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
+     * @returns 
+     */
+    function _calcUtilizationRate(loans, balance, reserves, scale) {
+        const _loans = bigInt(loans);
+
+        if (_loans.eq(0)) { return bigInt.zero; }
+
+        const _balance = bigInt(balance);
+        const _reserves = bigInt(reserves);
+        const _scale = bigInt(scale);
+
+        const r = _loans.multiply(_scale).divide(_balance.plus(_loans).subtract(_reserves));
+
+        return r;
+    }
+
+    /**
+     * 
+     * @param loans Total amount of borrowed assets of a given collateral token.
+     * @param balance Underlying balance of the collateral token.
+     * @param reserves Reserves of the collateral token.
+     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
+     * @param blockMultiplier Rate line slope, order of magnitude of scale.
+     * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
+     * @param reserveFactor Reserve share order of magnitude of scale.
+     * @returns 
+     */
+    function _calcSupplyRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate, reserveFactor) {
+        const _scale = bigInt(scale)
+
+        const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
+        const borrowRate = _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate)
+        const poolShare = _scale.minus(reserveFactor);
+        
+        const poolRateNumerator = borrowRate.multiply(poolShare).multiply(utilizationRate);
+        const poolRateDenominator = _scale.multiply(_scale);
+
+        return poolRateNumerator.divide(poolRateDenominator);
+    }
+
+    /**
+     * 
+     * @param rate Periodic (per-block) interest rate.
+     * @param annualPeriods 365.25*24*60*2.
+     * @returns Annual rate as a percentage.
+     */
+    function _calcAnnualizedRate(rate, scale, annualPeriods = 1051920) {
+        const _rate = bigInt(rate);
+        const _scale = bigInt(scale);
+
+        const r = _scale.plus(rate).pow(annualPeriods);
+
+        return new BigNumber(r.toString()).dividedBy(_scale.toString()).multipliedBy(100).toNumber();
     }
 
     /*
