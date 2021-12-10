@@ -234,7 +234,6 @@ export namespace FToken {
     export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
         const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
 
-
         return _calcAnnualizedRate(_blockRate, irStorage.scale);
     }
 
@@ -313,12 +312,10 @@ export namespace FToken {
      * @returns Annual rate as a percentage.
      */
     function _calcAnnualizedRate(rate, scale, annualPeriods = 1051920) {
-        const _rate = bigInt(rate);
         const _scale = bigInt(scale);
-
-        const r = _scale.plus(rate).pow(annualPeriods);
-
-        return new BigNumber(r.toString()).dividedBy(_scale.toString()).multipliedBy(100).toNumber();
+        const base = new BigNumber(_scale.plus(rate).toString()).div(scale.toString());
+        BigNumber.config({ POW_PRECISION: (scale.toString().length - 1) * 2 });
+        return Number(base.pow(annualPeriods).multipliedBy(100).toPrecision(6));
     }
 
     /*
