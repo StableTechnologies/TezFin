@@ -6,3 +6,5 @@ export * from './FToken';
 export * from './Governance';
 export * from './Comptroller';
 export * from './TezosLendingPlatform';
+
+export * from './contracts/InterestRateModel';

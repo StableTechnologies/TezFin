@@ -8,7 +8,7 @@ import { JSONPath } from 'jsonpath-plus';
 import bigInt from 'big-integer';
 import log from 'loglevel';
 import { tokenNames } from './const';
-import { InterestRateModel } from 'contracts/InterestRateModel';
+import { InterestRateModel } from './contracts/InterestRateModel';
 
 export namespace TezosLendingPlatform {
     /*
