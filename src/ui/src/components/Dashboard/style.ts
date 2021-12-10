@@ -15,10 +15,10 @@ export const useStyles = makeStyles({
         }
     },
     '@media(min-width: 1024px)': {
-        paddingLeft: {
+        _paddingLeft: {
             paddingLeft: '1.875rem'
         },
-        paddingRight: {
+        _paddingRight: {
             paddingRight: '1.875rem'
         }
     },
