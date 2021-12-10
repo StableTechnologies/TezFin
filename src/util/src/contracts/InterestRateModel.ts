@@ -16,7 +16,7 @@ export namespace InterestRateModel {
         return {
             blockRate: bigInt(JSONPath({ path: '$.args[0].int', json: storageResult })[0]),
             blockMultiplier: bigInt(JSONPath({ path: '$.args[1].int', json: storageResult })[0]),
-            scale: bigInt(JSONPath({ path: '$.args[1].int', json: storageResult })[0])
+            scale: bigInt(JSONPath({ path: '$.args[2].int', json: storageResult })[0])
         };
     }
 }
