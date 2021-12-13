@@ -15,7 +15,7 @@ const Dashboard = () => {
 
     const { account } = useSelector((state: any) => state.addWallet);
     const { markets } = useSelector((state: any) => state.market);
-    const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector((state) => state.market);
+    const { suppliedMarkets, unSuppliedMarkets, borrowedMarkets, unBorrowedMarkets } = useSelector((state: any) => state.market);
 
     console.log('dashboard supplied', suppliedMarkets);
     console.log('dashboard unsupplied', unSuppliedMarkets);
