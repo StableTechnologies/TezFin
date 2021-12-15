@@ -1,4 +1,5 @@
 .DS_Store
-
+postdeploy/build
+postdeploy/node_modules
 node_modules
 build

@@ -1,0 +1,84 @@
+{
+    "loglevel": "debug",
+    "keystore":{
+        "mnemonic": [
+            "pottery",
+            "crime",
+            "pole",
+            "nephew",
+            "spring",
+            "ordinary",
+            "fetch",
+            "buyer",
+            "job",
+            "accuse",
+            "napkin",
+            "skirt",
+            "tongue",
+            "diet",
+            "kite"
+        ],
+        "secret": "4ec2bbb7e0abcd30ec7ded61c8d54743dae73b49",
+        "amount": "10699254265",
+        "pkh": "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5",
+        "password": "70bEfS8BuX",
+        "email": "vymyofcw.pgnyxtgo@tezos.example.org"
+    },
+    "tezosNode": "https://tezos-granada.cryptonomic-infra.tech:443",
+    "conseilServer": {
+        "url": "https://conseil-granada.cryptonomic-infra.tech:443",
+        "apiKey": "",
+        "network": "granadanet"
+    },
+    "networkBlockTime": 31,
+    "delay": 7,
+    "revealAccount": false,
+    "protocolAddressesPath": "../tlp/TezFinBuild/deploy_result/deploy.json",
+    "tx": {
+        "amount": 0,
+        "fee": 1000000,
+        "gas": 500000,
+        "freight": 50000
+    },
+    "tokenMint": [
+        "ETH",
+        "BTC"
+    ],
+    "mint": [
+        "ETH",
+        "BTC"
+    ],
+    "mintAmount": 100,
+    "redeem": [
+        "ETH",
+        "BTC"
+    ],
+    "redeemAmount": 20,
+    "borrow": [
+        "BTC"
+    ],
+    "borrowAmount": 50,
+    "repayBorrow": [
+        "BTC"
+    ],
+    "repayBorrowAmount": 10,
+    "enterMarkets": [
+        "ETH",
+        "BTC"
+    ],
+    "exitMarket": [
+        "ETH"
+    ],
+    "supportMarket": [
+    ],
+    "disableMarket": [
+    ],
+    "unpauseMarkets": [
+    ],
+    "setPrices": {
+        "assets": [
+        ],
+        "price": 10
+    }
+}
+
