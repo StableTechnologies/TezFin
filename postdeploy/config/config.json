@@ -1,34 +1,34 @@
 {
     "loglevel": "debug",
-    "keystore":{
-        "mnemonic": [
-            "pottery",
-            "crime",
-            "pole",
-            "nephew",
-            "spring",
-            "ordinary",
-            "fetch",
-            "buyer",
-            "job",
-            "accuse",
-            "napkin",
-            "skirt",
-            "tongue",
-            "diet",
-            "kite"
-        ],
-        "secret": "4ec2bbb7e0abcd30ec7ded61c8d54743dae73b49",
-        "amount": "10699254265",
-        "pkh": "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5",
-        "password": "70bEfS8BuX",
-        "email": "vymyofcw.pgnyxtgo@tezos.example.org"
-    },
-    "tezosNode": "https://tezos-hangzhou.cryptonomic-infra.tech:443",
+    "tezosNode": "https://tezos-hangzhou.cryptonomic-infra.tech:443/",
     "conseilServer": {
         "url": "https://conseil-hangzhou.cryptonomic-infra.tech:443",
-        "apiKey": "",
-        "network": "hangzhou"
+        "apiKey": "328ac16b-5497-4e73-a97d-45af0e83425c",
+        "network": "hangzhounet"
+    },
+    "keystore": {
+        "pkh": "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE",
+        "mnemonic": [
+            "egg",
+            "zoo",
+            "cigar",
+            "oppose",
+            "shrimp",
+            "chair",
+            "wood",
+            "practice",
+            "trash",
+            "rice",
+            "spell",
+            "unhappy",
+            "disorder",
+            "zebra",
+            "kite"
+        ],
+        "email": "zdnmiequ.ulruuquy@teztnets.xyz",
+        "password": "dlfsJnRlHy",
+        "amount": "22841330521",
+        "activation_code": "77c3e768abfdb7e389f7ccd890c091ba42b84a88"
     },
     "networkBlockTime": 31,
     "delay": 7,
@@ -48,7 +48,7 @@
         "ETH",
         "BTC"
     ],
-    "mintAmount": 100,
+    "mintAmount": 10,
     "redeem": [
         "ETH",
         "BTC"
@@ -70,15 +70,18 @@
         "ETH"
     ],
     "supportMarket": [
+        "ETH",
+        "BTC",
+        "XTZ"
     ],
-    "disableMarket": [
-    ],
+    "disableMarket": [],
     "unpauseMarkets": [
+        "ETH",
+        "BTC",
+        "XTZ"
     ],
     "setPrices": {
-        "assets": [
-        ],
+        "assets": [],
         "price": 10
     }
 }
-

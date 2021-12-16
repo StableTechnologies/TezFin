@@ -69,6 +69,7 @@ export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash) =>
     console.log('aa2', mint);
     dispatch({ type: MINT_TOKEN, payload: mint });
     const res = await confirmOps(mint, publicKeyHash);
+    console.log("herere", res)
 };
 
 /**

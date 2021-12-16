@@ -1,13 +1,15 @@
-import { KeyStore, registerFetch, registerLogger, Signer, TezosConseilClient, TezosMessageUtils, TezosNodeWriter, Tzip7ReferenceTokenHelper, MultiAssetTokenHelper, TezosNodeReader, TezosContractUtils, TezosParameterFormat, ConseilServerInfo} from 'conseiljs';
-import { TezosLendingPlatform, FToken, Comptroller, Governance } from './tlp';
-import { CryptoUtils, KeyStoreUtils, SoftSigner} from 'conseiljs-softsigner';
-import fs from 'fs';
-import log, {LogLevelDesc} from 'loglevel';
-import fetch from 'node-fetch';
-import * as config from '../config/config.json';
-import * as DeployHelper from './deploy';
 import * as ComptrollerHelper from './comptroller';
+import * as DeployHelper from './deploy';
 import * as FTokenHelper from './ftoken';
+import * as config from '../config/config.json';
+
+import { Comptroller, FToken, Governance, TezosLendingPlatform } from './tlp';
+import { ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper, registerFetch, registerLogger } from 'conseiljs';
+import { CryptoUtils, KeyStoreUtils, SoftSigner } from 'conseiljs-softsigner';
+import log, { LogLevelDesc } from 'loglevel';
+
+import fetch from 'node-fetch';
+import fs from 'fs';
 
 let keystore: KeyStore | undefined = undefined;
 let signer: Signer | undefined = undefined;
@@ -30,7 +32,7 @@ async function initKeystore() {
 
     if (config.revealAccount) {
         log.info(`Activating account.`);
-        const activateNodeResult = await TezosNodeWriter.sendIdentityActivationOperation(config.tezosNode, signer, keystore, config.keystore.secret);
+        const activateNodeResult = await TezosNodeWriter.sendIdentityActivationOperation(config.tezosNode, signer, keystore, config.keystore.activation_code);
         statOperation(activateNodeResult);
         log.info(`Revealing Account.`);
         const revealNodeResult = await TezosNodeWriter.sendKeyRevealOperation(config.tezosNode, signer, keystore);
@@ -41,7 +43,7 @@ async function initKeystore() {
 async function demo1() {
     // supply
     for (const mint of config.mint)
-       await FTokenHelper.mint(mint as TezosLendingPlatform.AssetType, keystore!, signer!, protocolAddresses!);
+        await FTokenHelper.mint(mint as TezosLendingPlatform.AssetType, keystore!, signer!, protocolAddresses!);
     // collateralize
     if (config.enterMarkets.length > 0)
         await ComptrollerHelper.enterMarkets(config.enterMarkets as TezosLendingPlatform.AssetType[], keystore!, signer!, protocolAddresses!);

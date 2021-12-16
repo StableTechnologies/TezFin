@@ -1,12 +1,13 @@
-import { DAppClient, NetworkType } from '@airgap/beacon-sdk';
 import {
     KeyStoreCurve,
     KeyStoreType,
+    TezosConseilClient,
     TezosNodeReader,
     TezosNodeWriter
 } from 'conseiljs';
 
 import { BigNumber } from "bignumber.js";
+import { DAppClient } from '@airgap/beacon-sdk';
 import { Mutex } from 'async-mutex';
 import Tezos from '../library/tezos';
 
@@ -27,7 +28,7 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
 
 export const connectTezAccount = async () => {
     const network = config.infra.conseilServer.network;
-    const resp = await client.requestPermissions({ network: { type: network, rpcUrl: "https://granadanet.api.tez.ie" } });
+    const resp = await client.requestPermissions({ network: { type: network } });
     const account = await client.getActiveAccount();
 
     return { client, account: account.address };
@@ -109,8 +110,11 @@ export const confirmOps = async (operations) => {
             operations,
             true
         );
+        const result = await client.requestOperation({ operationDetails: opGroup });
+        const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
 
-        return await client.requestOperation({ operationDetails: opGroup });
+        const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
+        return confirm;
     } catch (error) {
         console.error('confirmOps', error);
         throw error;
@@ -122,7 +126,7 @@ export const confirmOps = async (operations) => {
  *
  * @returns decimal version
  */
- export const decimalify = (val, decimals) => {
+export const decimalify = (val, decimals) => {
     if (!val) return val;
     return new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(decimals);
 }

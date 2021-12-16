@@ -2,9 +2,9 @@ import { ConseilQuery, ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signe
 
 import { Comptroller } from './Comptroller';
 import { FToken } from './FToken';
+import { JSONPath } from 'jsonpath-plus';
 import bigInt from 'big-integer';
 import log from 'loglevel';
-import {JSONPath} from 'jsonpath-plus';
 
 export namespace TezosLendingPlatform {
     /*
@@ -70,39 +70,39 @@ export namespace TezosLendingPlatform {
      */
     export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
-            "XTZ": "KT1ASC5RdufbWnFYmjuRrceXedRBSUJogdTb",
-            "ETH": "KT1UoXhx4WR7iVH3iJqSC5Md9SsNYcuFag94",
-            "BTC": "KT1V6CQpfxS5pRjkUzoPx5Qmi7dSBnxdWshd"
+            "XTZ": "KT1Gbc2VCqF7W5TQiGszSM49nckf9igYmj3M",
+            "ETH": "KT1VGLyMmt11c4adNArXYH9dPaB7LLXoz8K5",
+            "BTC": "KT1Mr7BTETa2qtEJ2Y7by1pMAfHZhzWfH2Bk"
         },
         fTokensReverse: {
-            "KT1ASC5RdufbWnFYmjuRrceXedRBSUJogdTb": AssetType.XTZ,
-            "KT1UoXhx4WR7iVH3iJqSC5Md9SsNYcuFag94": AssetType.ETH,
-            "KT1V6CQpfxS5pRjkUzoPx5Qmi7dSBnxdWshd": AssetType.BTC
+            "KT1Gbc2VCqF7W5TQiGszSM49nckf9igYmj3M": AssetType.XTZ,
+            "KT1VGLyMmt11c4adNArXYH9dPaB7LLXoz8K5": AssetType.ETH,
+            "KT1Mr7BTETa2qtEJ2Y7by1pMAfHZhzWfH2Bk": AssetType.BTC
         },
         underlying: {
             "ETH": {
                 assetType: AssetType.ETH,
-                address: "KT1LLL2RWrc4xi23umbq1564ej88RG6LcAoR",
-                balancesMapId: 135623
+                address: "KT1TVRtzyN7QysJquDBD6e36Etzj3w7jxReQ",
+                balancesMapId: 39991
             },
             "BTC": {
                 assetType: AssetType.BTC,
-                address: "KT1SM4x48cbemJaipLqRGZgbwfWukZEdz4jw",
+                address: "KT1JqmwY3JJoHN7uh75pALrAx6sSpRbEZc9R",
                 tokenId: 0,
-                balancesMapId: 135627
+                balancesMapId: 39994
             },
             "XTZ": {
                 assetType: AssetType.XTZ
             }
         },
-        comptroller: "KT1JWffF2nqDua1ATkpt9o5i8NiSX6EABiMP",
+        comptroller: "KT1AD8rvgSHoM8SrNRzCVxLpDM6eKFgNH3kU",
         interestRateModel: {
-            "XTZ": "KT1BxbwBgSAopMh17bj5UKmgbi78DsptXitc",
-            "ETH": "KT1XLYihVvuJKk4VJZVGdnPv4eo9CEEDpfHA",
-            "BTC": "KT1TYqwzPHMwreTPGBYXVnQFgi1hDH1Fa4ge"
+            "XTZ": "KT1NRFY1vtLGh2buux35uQpabyJRsqYjSAVB",
+            "ETH": "KT1R1vM6rVnR532w95E7cGAYY3rSNz8hq8fi",
+            "BTC": "KT1BkEsTJDGpKugb86zdFyVm3EvuT2aeoyz6"
         },
-        governance: "KT1UUZNzmqobhGXYvsbWUjnAAeWK3de2JG2q",
-        priceFeed: "KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe"
+        governance: "KT1A7VB84jAoQyqBxy5rghfvDkPaQi6XRTyp",
+        priceFeed: "KT1PMQZxQTrFPJn3pEaj9rvGfJA9Hvx7Z1CL"
     };
 
     /*
