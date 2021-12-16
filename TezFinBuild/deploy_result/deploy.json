@@ -1,15 +1,15 @@
 {
-  "OriginatorAddress": "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5",
-  "Governance": "KT1UUZNzmqobhGXYvsbWUjnAAeWK3de2JG2q",
-  "PriceOracle": "KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe",
-  "Comptroller": "KT1XfLzhqDt6qQj22RvdTdbVWFUMLQPUGzut",
-  "CFA12_IRM": "KT1XLYihVvuJKk4VJZVGdnPv4eo9CEEDpfHA",
+  "OriginatorAddress": "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE",
+  "Governance": "KT1A7VB84jAoQyqBxy5rghfvDkPaQi6XRTyp",
+  "PriceOracle": "KT1PMQZxQTrFPJn3pEaj9rvGfJA9Hvx7Z1CL",
+  "Comptroller": "KT1AD8rvgSHoM8SrNRzCVxLpDM6eKFgNH3kU",
+  "CFA12_IRM": "KT1R1vM6rVnR532w95E7cGAYY3rSNz8hq8fi",
   "CToken_IRM": "KT1RcLfeKnPnkhupeFfsUVU9ZGvZuZLyfTHw",
-  "CXTZ_IRM": "KT1BxbwBgSAopMh17bj5UKmgbi78DsptXitc",
-  "CFA2_IRM": "KT1TYqwzPHMwreTPGBYXVnQFgi1hDH1Fa4ge",
-  "FA2": "KT1SM4x48cbemJaipLqRGZgbwfWukZEdz4jw",
-  "CFA2": "KT1V6CQpfxS5pRjkUzoPx5Qmi7dSBnxdWshd",
-  "FA12": "KT1LLL2RWrc4xi23umbq1564ej88RG6LcAoR",
-  "CFA12": "KT1UoXhx4WR7iVH3iJqSC5Md9SsNYcuFag94",
-  "CXTZ": "KT1ASC5RdufbWnFYmjuRrceXedRBSUJogdTb"
+  "CXTZ_IRM": "KT1NRFY1vtLGh2buux35uQpabyJRsqYjSAVB",
+  "CFA2_IRM": "KT1BkEsTJDGpKugb86zdFyVm3EvuT2aeoyz6",
+  "FA2": "KT1JqmwY3JJoHN7uh75pALrAx6sSpRbEZc9R",
+  "CFA2": "KT1Mr7BTETa2qtEJ2Y7by1pMAfHZhzWfH2Bk",
+  "FA12": "KT1TVRtzyN7QysJquDBD6e36Etzj3w7jxReQ",
+  "CFA12": "KT1VGLyMmt11c4adNArXYH9dPaB7LLXoz8K5",
+  "CXTZ": "KT1Gbc2VCqF7W5TQiGszSM49nckf9igYmj3M"
 }
