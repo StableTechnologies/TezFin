@@ -24,16 +24,16 @@
         "password": "70bEfS8BuX",
         "email": "vymyofcw.pgnyxtgo@tezos.example.org"
     },
-    "tezosNode": "https://tezos-granada.cryptonomic-infra.tech:443",
+    "tezosNode": "https://tezos-hangzhou.cryptonomic-infra.tech:443",
     "conseilServer": {
-        "url": "https://conseil-granada.cryptonomic-infra.tech:443",
+        "url": "https://conseil-hangzhou.cryptonomic-infra.tech:443",
         "apiKey": "",
-        "network": "granadanet"
+        "network": "hangzhou"
     },
     "networkBlockTime": 31,
     "delay": 7,
     "revealAccount": false,
-    "protocolAddressesPath": "../tlp/TezFinBuild/deploy_result/deploy.json",
+    "protocolAddressesPath": "../TezFinBuild/deploy_result/deploy.json",
     "tx": {
         "amount": 0,
         "fee": 1000000,
