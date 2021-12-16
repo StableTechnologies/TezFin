@@ -40,7 +40,6 @@ export const granadanetAddresses: ProtocolAddresses = {
             tokenId: 0,
             balancesMapId: 135627,
             balancesPath: "$.int"
-
         },
         "XTZ": {
             assetType: AssetType.XTZ,

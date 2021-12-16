@@ -72,7 +72,10 @@ export interface SupplyMarketModal {
 export interface BorrowMarketModal {
     rate: number;
     borrowBalanceUsd: bigInt.BigInteger;
-    borrowLimitUsed: number
+    borrowLimitUsed: number;
+    borrowBalance: bigInt.BigInteger;
+    underlying: string;
+    underlyingDecimals: number;
 }
 
 /*

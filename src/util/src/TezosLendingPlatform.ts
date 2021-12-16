@@ -106,8 +106,9 @@ export namespace TezosLendingPlatform {
         // get prices from oracle
         // calculate usd balances and collaterals
         for (const asset in marketBalances) {
-            marketBalances[asset].supplyBalanceUsd = comptroller.markets[asset].price.multiply(marketBalances[asset].supplyBalanceUnderlying);
-            marketBalances[asset].loanBalanceUsd = comptroller.markets[asset].price.multiply(marketBalances[asset].loanBalanceUnderlying);
+            const scale = bigInt(10).pow(protocolAddresses.underlying[asset].decimals);
+            marketBalances[asset].supplyBalanceUsd = comptroller.markets[asset].price.multiply(marketBalances[asset].supplyBalanceUnderlying).divide(scale);
+            marketBalances[asset].loanBalanceUsd = comptroller.markets[asset].price.multiply(marketBalances[asset].loanBalanceUnderlying).divide(scale);
             marketBalances[asset].collateral = collaterals.includes(asset as AssetType);
         }
 
@@ -431,19 +432,6 @@ export namespace TezosLendingPlatform {
      */
     export function getUnborrowedMarkets(account: Account | undefined, markets: MarketMap): { [assetType: string]: BorrowMarket } {
         return parseBorrowMarkets(account?.marketBalances, markets, (bi: bigInt.BigInteger) => { return bi.eq(0); });
-        // const unborrowedMarkets: { [assetType: string]: BorrowMarket } = {};
-        // for (const asset in account.marketBalances) {
-        //     const balance = account.marketBalances[asset];
-        //     if (balance.loanBalanceUnderlying.eq(bigInt(0)))
-        //         unborrowedMarkets[asset] = {
-        //             rate: markets[asset].borrow.rate,
-        //             balanceUnderlying: balance.loanBalanceUnderlying,
-        //             balanceUsd: balance.loanBalanceUsd!,
-        //             liquidityUnderlying: markets[asset].cash,
-        //             liquidityUsd: markets[asset].cashUsd
-        //         };
-        // }
-        // return unborrowedMarkets;
     }
 
     /*
@@ -467,8 +455,11 @@ export namespace TezosLendingPlatform {
     export function getBorrowMarketModal(account: Account, market: Market): BorrowMarketModal {
         return {
             rate: market.borrow.rate,
-            borrowBalanceUsd: account.totalLoanUsd,
-            borrowLimitUsed: account.health
+            borrowBalanceUsd: account.marketBalances[market.asset.name].loanBalanceUsd,
+            borrowLimitUsed: account.health,
+            borrowBalance: account.marketBalances[market.asset.name].loanBalanceUnderlying,
+            underlying: market.asset.name,
+            underlyingDecimals: market.asset.underlying.decimals
         } as BorrowMarketModal;
     }
 

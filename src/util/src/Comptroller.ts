@@ -120,7 +120,6 @@ export namespace Comptroller {
      * @param
      */
     function parseMarketResult(result): Market {
-        // need to add constants for this
         const assetType: AssetType = JSONPath({ path: '$.args[1].args[1].string', json: result })[0] as AssetType;
         return {
             assetType: assetType,

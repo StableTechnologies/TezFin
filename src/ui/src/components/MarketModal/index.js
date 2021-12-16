@@ -87,7 +87,7 @@ const MarketModal = (props) => {
                                     </div>
                                 </Grid>
                                 <Grid item sm={2}></Grid>
-                                <Grid item sm={2}> {tokenDetails.rate || '0'}% </Grid>
+                                <Grid item sm={2}> {tokenDetails.rate.toFixed(2) || '0'}% </Grid>
                             </Grid>
                         </DialogContent>
                     </>
