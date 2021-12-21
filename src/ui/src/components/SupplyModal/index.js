@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { BigNumber } from 'bignumber.js';
 
 import ConfirmModal from '../ConfirmModal';
 import MarketModal from '../MarketModal';
@@ -62,9 +63,11 @@ const SupplyModal = (props) => {
     const modalHeaderText = enableToken ? '' : `To supply and use ${tokenDetails.banner} as collateral, you will need to enable the token first.`;
 
     if (supplyMarketModal.borrowLimitUsd) {
-        tokenDetails.borrowLimit = supplyMarketModal.borrowLimitUsd.toString();
-        tokenDetails.borrowLimitUsed = supplyMarketModal.borrowLimitUsed / 10000;
+      const scale = new BigNumber('1000000000000000000');
+      tokenDetails.borrowLimit = new BigNumber(supplyMarketModal.borrowLimitUsd.toString()).dividedBy(scale).toFixed(2);
+      tokenDetails.borrowLimitUsed = (supplyMarketModal.borrowLimitUsed / 10000).toFixed(2);
     }
+
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
@@ -77,20 +80,15 @@ const SupplyModal = (props) => {
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}
-                // onClick = {enableToken ? supply : onClick}
                 onClick={onClick}
-                // handleClickTabOne = {enableToken ? supplyToken : onClick}
                 handleClickTabOne={supplyToken}
                 handleClickTabTwo={withdrawToken}
                 labelOne="Supply"
                 labelTwo="Withdraw"
-                // buttonOne ={enableToken ? "Supply" : "Enable Token"}
                 buttonOne="Supply"
                 buttonTwo="Withdraw"
-                // buttonTwo = {tokenDetails.balance ? "Withdraw" : "No balance to withdraw"}
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
-                // visibility={enableToken}
                 visibility={true}
                 amount={(e) => { setAmount(e); }}
             />

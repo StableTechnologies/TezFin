@@ -74,7 +74,7 @@ const BorrowedTokenTable = (props) => {
                                     {data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}
                                 </Typography>
                                 <Typography className={classes.faintFont}>
-                                    ${data.walletUnderlying > 0 ? data.walletUnderlying.toString() : '0.00'}
+                                    ${data.balanceUsd > 0 ? data.balanceUsd.toString() : '0.00'}
                                 </Typography>
                             </TableCell>
                             <TableCell>

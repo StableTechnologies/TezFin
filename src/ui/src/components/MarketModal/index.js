@@ -89,7 +89,8 @@ const MarketModal = (props) => {
                                         <Typography className={classes.imgTitle}> {APYText} </Typography>
                                     </div>
                                 </Grid>
-                                <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.supplyRate || '0'}% </Grid>
+                                {/* <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.supplyRate || '0'}% </Grid> */}
+                                <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.rate || '0'}% </Grid>
                             </Grid>
                         </DialogContent>
                     </>

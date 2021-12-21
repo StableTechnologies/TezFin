@@ -65,7 +65,7 @@ const BorrowModal = (props) => {
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
             <MarketModal
                 APYText="Borrow APY"
-                Limit="Borrow Balance"
+                Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"
                 amountText="Currently Borrowing"
                 open={open}
