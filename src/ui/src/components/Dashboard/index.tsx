@@ -8,7 +8,7 @@ import BorrowedTokenTable from './BorrowedTokenTable';
 import SuppliedTokenTable from './SuppliedTokenTable';
 import AllMarketTokenTable from './AllMarketTokenTable';
 
-import { borrowedMarketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
+import { borrowedMarketAction, allMarketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
 
 import { useStyles } from './style';
 
@@ -18,7 +18,7 @@ const Dashboard = () => {
 
     const { account } = useSelector((state: any) => state.addWallet);
     const { markets } = useSelector((state: any) => state.market);
-    const { suppliedMarkets, borrowedMarkets } = useSelector((state: any) => state.market);
+    const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state: any) => state.market);
 
     console.log('dashboard supplied', suppliedMarkets);
     console.log('dashboard borrowed', borrowedMarkets);
@@ -27,6 +27,7 @@ const Dashboard = () => {
     useEffect(() => {
         if (!markets) { return; }
       // TODO CALL ALLMARKETS HERE
+      dispatch(allMarketAction(account, markets));
 
         if (!account.address) { return; }
 
@@ -46,7 +47,7 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} >
             <Typography className={classes.tableTitleTwo}> All Markets </Typography>
-            <AllMarketTokenTable />
+            <AllMarketTokenTable tableData={allMarkets} />
           </Grid>
         </Grid>
     );

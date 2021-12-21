@@ -13,6 +13,7 @@ import { decimals } from 'tezoslendingplatformjs';
 // import { formatMarketState } from '../../library/util';
 
 import { useStyles } from './style';
+import AllMarketModal from '../AllMarketModal';
 
 const AllMarketTokenTable = (props) => {
   const classes = useStyles();
@@ -32,6 +33,12 @@ const AllMarketTokenTable = (props) => {
 
 	return (
 			<TableContainer className={`${classes.root} ${classes.tableCon}`}>
+         {tokenDetails && (
+            <AllMarketModal
+              open={openMktModal}
+              close={closeModal}
+              tokenDetails={tokenDetails}
+            />)}
 				<Table>
 					<TableHead>
 						<TableRow>
@@ -52,28 +59,31 @@ const AllMarketTokenTable = (props) => {
 								</TableCell>
 								<TableCell>
 									<Typography>
-										{data.supply.totalAmount}
+										{data.marketSize || 0} {" "} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
 										{/* TODO: ADD USD EQUIVALENT */}
+                    ${"0.00"}
 									</Typography>
 								</TableCell>
 								<TableCell>
 									<Typography>
-										{data.borrow.totalAmount}
+										{data.totalBorrowed || 0} {" "} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
 										{/* TODO: ADD USD EQUIVALENT  */}
+                    ${"0.00"}
 									</Typography>
 								</TableCell>
-								<TableCell> {Number(data.supply.rate).toFixed(6)}% </TableCell>
-								<TableCell> {Number(data.borrow.rate).toFixed(6)}% </TableCell>
+								<TableCell> {Number(data.supplyRate).toFixed(6)}% </TableCell>
+								<TableCell> {Number(data.borrowRate).toFixed(6)}% </TableCell>
 								<TableCell>
 									<Typography>
-										{data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}
+										{data.walletBalance ? decimalify(data.walletBalance.toString(), decimals[data.title]) : decimalify(data.walletBalance, decimals[data.title]) || '0'} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
-										${data.walletUnderlying > 0 ? data.walletUnderlying.toString() : '0.00'}
+											{/* TODO: ADD USD EQUIVALENT  */}
+                      ${"0.00"}
 									</Typography>
 								</TableCell>
 							</TableRow>

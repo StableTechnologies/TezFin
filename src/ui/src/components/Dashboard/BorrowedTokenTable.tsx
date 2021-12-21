@@ -51,6 +51,11 @@ const BorrowedTokenTable = (props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
+                    {(displayData.length === 0) &&
+                        <TableRow>
+                          <TableCell colSpan={6}> You are not borrowing assets at this time. </TableCell>
+                        </TableRow>
+                    }
                     {displayData && displayData.map((data) => (
                         <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                             <TableCell>

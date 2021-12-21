@@ -47,7 +47,10 @@ const MarketModal = (props) => {
                 <DialogTitle>
                     <div>
                         <img src={tokenDetails.logo} alt="logo" className={classes.img} />
-                        <Typography className={classes.imgTitle}> {tokenDetails.banner} </Typography>
+                        <Typography className={classes.imgTitle}>
+										    {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
+                         {" "} {tokenDetails.banner}
+                        </Typography>
                     </div>
                 </DialogTitle>
                 {(!visibility || collateralize)
@@ -80,14 +83,13 @@ const MarketModal = (props) => {
                         <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
                         <DialogContent className={classes.apyRate}>
                             <Grid container justifyContent="space-between">
-                                <Grid item sm={8}>
+                                <Grid item sm={7}>
                                     <div>
                                         <img src={tokenDetails.logo} alt="logo" className={classes.img} />
                                         <Typography className={classes.imgTitle}> {APYText} </Typography>
                                     </div>
                                 </Grid>
-                                <Grid item sm={2}></Grid>
-                                <Grid item sm={2}> {tokenDetails.rate.toFixed(2) || '0'}% </Grid>
+                                <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.supplyRate || '0'}% </Grid>
                             </Grid>
                         </DialogContent>
                     </>
@@ -95,15 +97,13 @@ const MarketModal = (props) => {
                 <DialogContent className={classes.limit}>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={7} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
-                        <Grid item sm={3}></Grid>
-                        <Grid item sm={2} className={visibility ? '' : classes.visibility}> ${(tokenDetails.borrowLimit || tokenDetails.borrowBalanceUsd) || '0.00'}</Grid>
+                        <Grid item sm={5} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> ${(tokenDetails.borrowLimit || tokenDetails.borrowBalanceUsd) || '0.00'}</Grid>
                     </Grid>
                 </DialogContent>
                 <DialogContent>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={7} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
-                        <Grid item sm={3}></Grid>
-                        <Grid item sm={2} className={visibility ? '' : classes.visibility}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
+                        <Grid item sm={5} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogContent>
@@ -138,12 +138,6 @@ const MarketModal = (props) => {
                         }
                     </>
                 </DialogActions>
-                <DialogContent>
-                    <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={7}> {amountText} </Grid>
-                        <Grid item sm={5} className={classes.whiteSpace}> {decimalify(tokenDetails.balance, decimals[tokenDetails.title]) || 0} {tokenDetails.title} </Grid>
-                    </Grid>
-                </DialogContent>
             </Dialog>
         </React.Fragment>
     );

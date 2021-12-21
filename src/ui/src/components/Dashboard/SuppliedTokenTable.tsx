@@ -56,6 +56,11 @@ const SuppliedTokenTable = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
+          {(tableData.length === 0) &&
+            <TableRow>
+              <TableCell colSpan={6}> You are not supplying assets at this time. </TableCell>
+            </TableRow>
+          }
           {tableData && tableData.map((data) => (
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
@@ -67,10 +72,10 @@ const SuppliedTokenTable = (props) => {
               <TableCell> {Number(data.rate).toFixed(6)}% </TableCell>
               <TableCell>
                 <Typography>
-                  {data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}
+                  {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying, decimals[data.title]) : '0.00'} {data.title}
                 </Typography>
                 <Typography className={classes.faintFont}>
-                  ${data.walletUnderlying > 0 ? data.walletUnderlying.toString() : '0.00'}
+                  ${data.balanceUsd > 0 ? data.balanceUsd.toString() : '0.00'}
                 </Typography>
               </TableCell>
               <TableCell>
