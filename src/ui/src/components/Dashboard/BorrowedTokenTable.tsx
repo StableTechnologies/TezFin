@@ -11,7 +11,7 @@ import { Typography } from '@mui/material';
 import { decimalify } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 import { formatBorrowedTokenData } from '../../library/util';
-import { useStyles } from './style';
+import { useStyles } from '../Market/style';
 
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
@@ -31,7 +31,7 @@ const BorrowedTokenTable = (props) => {
 
     const displayData = formatBorrowedTokenData(tableData);
 
-    if (displayData.length === 0) { return (<></>); }
+    // if (displayData.length === 0) { return (<></>); }
 
     return (
         <TableContainer className={`${classes.root} ${classes.tableCon}`}>
@@ -45,9 +45,9 @@ const BorrowedTokenTable = (props) => {
                 <TableHead>
                     <TableRow>
                         <TableCell> Token </TableCell>
-                        <TableCell> Rate </TableCell>
+                        <TableCell> APY </TableCell>
                         <TableCell> Balance </TableCell>
-                        <TableCell> Borrow limit used </TableCell>
+                        <TableCell> Limit used </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -56,7 +56,7 @@ const BorrowedTokenTable = (props) => {
                             <TableCell>
                                 <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
                                 <Typography sx={{ display: 'inline' }}>
-                                    {data.title}
+                                   {" "} {data.title}
                                 </Typography>
                             </TableCell>
                             <TableCell> {Number(data.rate).toFixed(6)}% </TableCell>
@@ -68,7 +68,7 @@ const BorrowedTokenTable = (props) => {
                                     ${data.walletUnderlying > 0 ? data.walletUnderlying.toString() : '0.00'}
                                 </Typography>
                             </TableCell>
-                            <TableCell className={classes.toggle}>
+                            <TableCell>
                                 <Typography>
                                     ${data.liquidityUsd > 0 ? data.liquidityUsd.toString() : '0.00'}
                                 </Typography>
