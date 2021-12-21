@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
+import Link from '@mui/material/Link';
 
 import Switch from '../Switch';
 import SupplyModal from '../SupplyModal';
@@ -58,7 +59,9 @@ const SuppliedTokenTable = (props) => {
         <TableBody>
           {(tableData.length === 0) &&
             <TableRow>
-              <TableCell colSpan={6}> You are not supplying assets at this time. </TableCell>
+              <TableCell colSpan={6} className={classes.emptyStateText}> You are not supplying assets at this time.
+                <Link href="#" className={classes.emptyStateLink}> How to supply assets </Link>
+              </TableCell>
             </TableRow>
           }
           {tableData && tableData.map((data) => (

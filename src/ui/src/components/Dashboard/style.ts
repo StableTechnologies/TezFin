@@ -110,5 +110,21 @@ export const useStyles = makeStyles({
         fontWeight: '500',
         lineHeight: '26px',
         letterSpacing: '0.05em'
+    },
+    emptyStateText: {
+      color: '#000',
+      fontSize: '1rem',
+      fontWeight: '300',
+      lineHeight: '30px',
+      letterSpacing: '0.005em'
+    },
+    emptyStateLink: {
+      color: '#191919',
+      fontSize: '0.75rem',
+      fontWeight: '400',
+      lineHeight: '18px',
+      letterSpacing: '0.0175em',
+      display: 'block',
+      textDecorationColor: '#191919',
     }
 });
