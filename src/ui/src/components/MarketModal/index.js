@@ -24,7 +24,7 @@ const MarketModal = (props) => {
     const {
         open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, Limit, LimitUsed,
         amountText, buttonOne, buttonTwo, btnSub, inkBarStyle, visibility, headerText, amount, collateralize,
-        extraPadding, progressBarColor
+        extraPadding, progressBarColor, CurrentStateText
     } = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -81,6 +81,14 @@ const MarketModal = (props) => {
                 {collateralize ? ''
                     : <>
                         <Tabulator inkBarStyle={inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
+                        <DialogContent className={classes.CurrentState}>
+                            <Grid container justifyContent="space-between">
+                                <Grid item sm={7}>
+                                  <Typography className={classes.imgTitle}> {CurrentStateText} </Typography>
+                                </Grid>
+                                <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.CurrentStateValue || '0'} {" "} {tokenDetails.title} </Grid>
+                            </Grid>
+                        </DialogContent>
                         <DialogContent className={classes.apyRate}>
                             <Grid container justifyContent="space-between">
                                 <Grid item sm={7}>

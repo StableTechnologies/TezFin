@@ -66,8 +66,14 @@ export const useStyles = makeStyles({
             height: '3rem'
         }
     },
-    apyRate: {
-        padding: '2.25rem 2.5rem 2.25rem 1.875rem !important',
+    CurrentState: {
+        padding: '1.5625rem 2.5rem 1.5625rem 1.875rem !important',
+        border: '2px solid #E0E0E0',
+        borderBottom: '0',
+        textAlign: 'left',
+      },
+      apyRate: {
+        padding: '1.5625rem 2.5rem 1.5625rem 1.875rem !important',
         border: '2px solid #E0E0E0',
         textAlign: 'left',
         marginBottom: '2.25rem'

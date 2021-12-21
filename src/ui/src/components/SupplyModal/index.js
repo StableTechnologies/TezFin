@@ -76,7 +76,7 @@ const SupplyModal = (props) => {
                 APYText={`${tokenDetails.title} Variable APY Rate`}
                 Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"
-                amountText="Wallet Balance"
+                CurrentStateText="Currently Supplying"
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}

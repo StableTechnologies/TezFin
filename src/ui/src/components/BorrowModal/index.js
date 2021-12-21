@@ -67,7 +67,7 @@ const BorrowModal = (props) => {
                 APYText="Borrow APY"
                 Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"
-                amountText="Currently Borrowing"
+                CurrentStateText="Currently Borrowing"
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}

@@ -46,9 +46,10 @@ const AllMarketModal = (props) => {
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
             <MarketModal
                 APYText="Borrow APY"
-                Limit="Borrow Balance"
+                Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"
-                amountText="Currently Borrowing"
+                // CurrentStateText= {tabValue === 'one' ? "Currently Borrowing" : "Currently Supplying"}
+                CurrentStateText= "Currently Supplying"
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}
