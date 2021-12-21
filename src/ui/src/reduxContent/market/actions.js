@@ -1,4 +1,3 @@
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import {
     GET_BORROWED_MARKET_DATA,
     GET_MARKET_DATA,
@@ -7,6 +6,7 @@ import {
     GET_UNSUPPLIED_MARKET_DATA
 } from './types';
 
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { tokens } from '../../components/Constants';
 
 /**
@@ -94,6 +94,31 @@ export const unSuppliedMarketAction = (account, markets) => async (dispatch) => 
     });
 
     dispatch({ type: GET_UNSUPPLIED_MARKET_DATA, payload: unSuppliedTokens });
+};
+
+/**
+ * This function is used to get the global market details.
+ *
+ * @param account
+ * @param markets
+ * @returns market details
+ */
+export const getMarketAction = (account, markets) => async (dispatch) => {
+    const marketTokens = [...tokens];
+    const balances = account.underlyingBalances || [];
+
+    marketTokens.map((token) => {
+        if (Object.keys(markets).length > 0 && markets.hasOwnProperty(token.assetType)) {
+            token.supply = markets[token.assetType].supply;
+            token.borrow = markets[token.assetType].borrow;
+            if (Object.keys(balances).length > 0 && balances.hasOwnProperty(token.assetType)) {
+                token.balance = balances[token.assetType].toString();
+            }
+        }
+        return marketTokens;
+    });
+
+    //dispatch({ type: GET_UNSUPPLIED_MARKET_DATA, payload: unSuppliedTokens });
 };
 
 /**
