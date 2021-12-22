@@ -115,11 +115,15 @@ export const useStyles = makeStyles({
     faintFont: {
         color: '#828282'
     },
+    modalText: {
+        fontSize: '1.125rem',
+        fontWeight: '300',
+        lineHeight: '30px',
+    },
     visibility: {
         visibility: 'hidden'
     },
     formFieldCon: {
-    // padding: '66px 143px 85px !important',
         padding: '66px 0px 85px !important'
     },
     form: {

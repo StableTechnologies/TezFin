@@ -84,7 +84,7 @@ const MarketModal = (props) => {
                         <DialogContent className={classes.CurrentState}>
                             <Grid container justifyContent="space-between">
                                 <Grid item sm={7}>
-                                  <Typography className={classes.imgTitle}> {CurrentStateText} </Typography>
+                                  <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {CurrentStateText} </Typography>
                                 </Grid>
                                 <Grid item sm={5} className={classes.whiteSpace} >
                                   {decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title])} {" "} {tokenDetails.title}
@@ -93,27 +93,27 @@ const MarketModal = (props) => {
                         </DialogContent>
                         <DialogContent className={classes.apyRate}>
                             <Grid container justifyContent="space-between">
-                                <Grid item sm={7}>
+                                <Grid item sm={9}>
                                     <div>
                                         <img src={tokenDetails.logo} alt="logo" className={classes.img} />
-                                        <Typography className={classes.imgTitle}> {APYText} </Typography>
+                                        <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {APYText} </Typography>
                                     </div>
                                 </Grid>
                                 {/* <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.supplyRate || '0'}% </Grid> */}
-                                <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.rate || '0'}% </Grid>
+                                <Grid item sm={3} className={classes.whiteSpace} > {tokenDetails.rate || '0'}% </Grid>
                             </Grid>
                         </DialogContent>
                     </>
                 }
                 <DialogContent className={classes.limit}>
                     <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={5} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
+                        <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
                         <Grid item sm={7} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> ${(tokenDetails.borrowLimit || tokenDetails.borrowBalanceUsd) || '0.00'}</Grid>
                     </Grid>
                 </DialogContent>
                 <DialogContent>
                     <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={6} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
+                        <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
                         <Grid item sm={6} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
                     </Grid>
                 </DialogContent>
