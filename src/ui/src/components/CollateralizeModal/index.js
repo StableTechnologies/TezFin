@@ -36,7 +36,6 @@ const CollateralizeModal = (props) => {
         close();
         setTokenText('collateral');
         handleOpenConfirm();
-        tokenDetails.collateral = true;
     };
 
     useEffect(() => {

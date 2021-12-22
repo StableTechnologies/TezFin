@@ -36,7 +36,6 @@ const DisableCollateralModal = (props) => {
         close();
         setTokenText('disable');
         handleOpenConfirm();
-        tokenDetails.collateral = false;
     };
 
     useEffect(() => {

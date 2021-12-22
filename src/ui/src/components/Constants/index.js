@@ -22,11 +22,3 @@ export const tokens = [
         title: 'USDtz', logo: USDtz, banner: 'USDtz', assetType: ''
     }
 ];
-export const supplying = [
-    {
-        title: 'BTCtz', logo: BTCtz, banner: 'BTCtz', assetType: ''
-    },
-    {
-        title: 'XTZ', logo: XTZ, banner: 'Tez', assetType: AssetType.XTZ
-    }
-];
