@@ -45,25 +45,29 @@ const AllMarketModal = (props) => {
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
             <MarketModal
-                APYText="Borrow APY"
+                APYText={`${tokenDetails.title} Variable APY Rate`}
+                APYTextTwo="Borrow APY"
                 Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"
-                // CurrentStateText= {tabValue === 'one' ? "Currently Borrowing" : "Currently Supplying"}
                 CurrentStateText= "Currently Supplying"
+                CurrentStateTextTwo= "Currently Borrowing"
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}
-                // handleClickTabOne={borrowToken}
-                // handleClickTabTwo={repayBorrowToken}
+                // handleClickTabOne={supplyToken}
+                // handleClickTabTwo={borrowToken}
                 labelOne="Supply"
                 labelTwo="Borrow"
                 buttonOne="Supply"
                 buttonTwo="Borrow"
                 btnSub={classes.btnSub}
+                btnSubTwo={classes.btnSubTwo}
                 inkBarStyle={classes.inkBarStyle}
-                visibility={true}
+                inkBarStyleTwo={classes.inkBarStyleTwo}
                 amount={(e) => { setAmount(e); }}
                 progressBarColor={classes.root}
+                visibility={true}
+                mainModal={true}
             />
         </>
     );
