@@ -37,8 +37,14 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
     const borrowedMarket = TezosLendingPlatform.getBorrowedMarkets(account, markets);
     marketTokens.map((token) => {
         if (Object.keys(markets).length > 0 && markets.hasOwnProperty(token.assetType)) {
-            token.supply = { totalSupply: markets[token.assetType].supply.totalAmount.toString(), ...suppliedMarket[token.assetType] };
-            token.borrow = { totalBorrow: markets[token.assetType].borrow.totalAmount.toString(), ...borrowedMarket[token.assetType] };
+            token.supply = { ...suppliedMarket[token.assetType] };
+            token.borrow = { ...borrowedMarket[token.assetType] };
+            token.marketSize = markets[token.assetType].supply.totalAmount.toString();
+			      token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
+            token.supplyRate = markets[token.assetType].supply.rate.toString();
+			      token.borrowRate = markets[token.assetType].borrow.rate.toString();
+            // token.supply = { totalSupply: markets[token.assetType].supply.totalAmount.toString(), ...suppliedMarket[token.assetType] };
+            // token.borrow = { totalBorrow: markets[token.assetType].borrow.totalAmount.toString(), ...borrowedMarket[token.assetType] };
             token.usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 token.walletBalance = walletBalance[token.assetType].toString();
@@ -46,7 +52,6 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
         }
         return marketTokens;
     });
-    console.log("hererer", marketTokens)
     dispatch({ type: GET_ALL_MARKET_DATA, payload: marketTokens });
 };
 

@@ -20,10 +20,6 @@ const Dashboard = () => {
     const { markets } = useSelector((state: any) => state.market);
     const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state: any) => state.market);
 
-    console.log('dashboard supplied', suppliedMarkets);
-    console.log('dashboard borrowed', borrowedMarkets);
-    console.log('markets', markets);
-
     useEffect(() => {
         if (!markets) { return; }
       // TODO CALL ALLMARKETS HERE
