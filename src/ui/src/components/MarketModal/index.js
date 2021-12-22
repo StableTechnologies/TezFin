@@ -86,7 +86,9 @@ const MarketModal = (props) => {
                                 <Grid item sm={7}>
                                   <Typography className={classes.imgTitle}> {CurrentStateText} </Typography>
                                 </Grid>
-                                <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.CurrentStateValue || '0'} {" "} {tokenDetails.title} </Grid>
+                                <Grid item sm={5} className={classes.whiteSpace} >
+                                  {decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title])} {" "} {tokenDetails.title}
+                                </Grid>
                             </Grid>
                         </DialogContent>
                         <DialogContent className={classes.apyRate}>
@@ -105,21 +107,21 @@ const MarketModal = (props) => {
                 }
                 <DialogContent className={classes.limit}>
                     <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={7} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
-                        <Grid item sm={5} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> ${(tokenDetails.borrowLimit || tokenDetails.borrowBalanceUsd) || '0.00'}</Grid>
+                        <Grid item sm={5} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
+                        <Grid item sm={7} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> ${(tokenDetails.borrowLimit || tokenDetails.borrowBalanceUsd) || '0.00'}</Grid>
                     </Grid>
                 </DialogContent>
                 <DialogContent>
                     <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={7} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
-                        <Grid item sm={5} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
+                        <Grid item sm={6} className={`${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
+                        <Grid item sm={6} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogContent>
+                <DialogContent className={classes.progressBarCon}>
                     <Grid container>
                         <Grid item sm={12}>
                             <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars backgroundColor={progressBarColor} value={tokenDetails.borrowLimitUsed} />
+                                <CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} />
                             </Box>
                         </Grid>
                     </Grid>

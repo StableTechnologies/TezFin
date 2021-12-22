@@ -3,15 +3,17 @@ import bigInt from 'big-integer';
 /**
  * Format data for display in the "supplied" table.
  */
-export function formatSuppliedTokenData() {
-    return '';
+export function formatSuppliedTokenData(data) {
+  const filtered = data.filter(i => bigInt(i.balanceUnderlying).gt(0));
+
+  return filtered;
 }
 
 /**
  * Format data for display in the "borrowed" table.
  */
 export function formatBorrowedTokenData(data) {
-    console.log('formatBorrowedTokenData', JSON.stringify(data));
+    // console.log('formatBorrowedTokenData', JSON.stringify(data));
 
     const filtered = data.filter(i => bigInt(i.balanceUnderlying).gt(0));
 
@@ -55,9 +57,3 @@ export function formatBorrowedTokenData(data) {
     // },
 }
 
-/**
- * Format data for display in the "market" table.
- */
-export function formatMarketState() {
-    return '';
-}

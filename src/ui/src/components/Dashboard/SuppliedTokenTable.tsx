@@ -11,6 +11,9 @@ import Link from '@mui/material/Link';
 
 import Switch from '../Switch';
 import SupplyModal from '../SupplyModal';
+import CollateralizeModal from '../CollateralizeModal';
+import DisableCollateralModal from '../DisableCollateralModal';
+import Tez from '../../assets/largeXTZ.svg';
 
 import { decimalify } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
@@ -24,28 +27,51 @@ const SuppliedTokenTable = (props) => {
 
   const [tokenDetails, setTokenDetails] = useState();
   const [openSupplyModal, setSupplyModal] = useState(false);
+  const [collModal, setCollModal] = useState(false);
+  const [disableCollModal, setDisableCollModal] = useState(false);
 
   const closeModal = () => {
     setSupplyModal(false);
+    setDisableCollModal(false);
+    setCollModal(false);
   };
 
   const handleClickMktModal = (item, event) => {
     setTokenDetails(item);
-    setSupplyModal(true);
-  };
+    if (event.target.type === 'checkbox') {
+        if (item.collateral === true) {
+            setDisableCollModal(true);
+        }
+        if (item.collateral === false) {
+            setCollModal(true);
+        }
+    } else {
+      setSupplyModal(true);
+    }
+};
 
-    // const displayData = formatSuppliedTokenData(tableData);
-
-    // if (displayData.length === 0) { return (<></>); }
+  const displayData = formatSuppliedTokenData(tableData);
 
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
       {tokenDetails && (
-        <SupplyModal
-          open={openSupplyModal}
-          close={closeModal}
-          tokenDetails={tokenDetails}
+        <>
+          <SupplyModal
+            open={openSupplyModal}
+            close={closeModal}
+            tokenDetails={tokenDetails}
+          />
+          <DisableCollateralModal
+            open={disableCollModal}
+            close={closeModal}
+            tokenDetails={tokenDetails}
         />
+        <CollateralizeModal
+            open={collModal}
+            close={closeModal}
+            tokenDetails={tokenDetails}
+        />
+        </>
       )}
       <Table>
         <TableHead>
@@ -57,19 +83,19 @@ const SuppliedTokenTable = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {(tableData.length === 0) &&
+          {(displayData.length === 0) &&
             <TableRow>
               <TableCell colSpan={6} className={classes.emptyStateText}> You are not supplying assets at this time.
                 <Link href="#" className={classes.emptyStateLink}> How to supply assets </Link>
               </TableCell>
             </TableRow>
           }
-          {tableData && tableData.map((data) => (
+          {displayData && displayData.map((data) => (
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
-                <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
+                <img src={Tez} alt={`${data.title}-Icon`} className={classes.img} />
                 <Typography sx={{ display: 'inline' }}>
-                  {" "} {data.title}
+                  {" "} ꜰ{data.title}
                 </Typography>
               </TableCell>
               <TableCell> {Number(data.rate).toFixed(6)}% </TableCell>

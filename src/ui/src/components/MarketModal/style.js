@@ -31,7 +31,7 @@ export const useStyles = makeStyles({
         },
         '& .MuiDialogActions-root': {
             padding: '0',
-            margin: '2.3125rem 2.875rem 1.625rem'
+            margin: '2.9375rem 2.875rem 2.75rem'
         },
         '& .MuiOutlinedInput-notchedOutline': {
             border: '0'
@@ -73,13 +73,17 @@ export const useStyles = makeStyles({
         textAlign: 'left',
       },
       apyRate: {
-        padding: '1.5625rem 2.5rem 1.5625rem 1.875rem !important',
-        border: '2px solid #E0E0E0',
+        padding: '1.5625rem 1.5rem 1.5625rem 0.875rem !important',
+        borderTop: '2px solid #E0E0E0',
+        borderBottom: '2px solid #E0E0E0',
         textAlign: 'left',
-        marginBottom: '2.25rem'
+        margin: '0 1rem 1.875rem'
     },
     limit: {
-        marginBottom: '23px'
+        marginBottom: '1.25rem'
+    },
+    progressBarCon: {
+        marginTop: '1.25rem'
     },
     btnMain: {
         borderRadius: '.5rem',
@@ -147,7 +151,7 @@ export const useStyles = makeStyles({
     },
     inputBtn: {
         fontSize: '1rem',
-        fontWeight: 600,
+        fontWeight: '300',
         lineHeight: '1.875rem',
         letterSpacing: '0.005em',
         textAlign: 'left',
