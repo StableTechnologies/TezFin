@@ -54,7 +54,7 @@ export const granadanetAddresses: ProtocolAddresses = {
         "BTC": "KT1BkEsTJDGpKugb86zdFyVm3EvuT2aeoyz6"
     },
     governance: "KT1A7VB84jAoQyqBxy5rghfvDkPaQi6XRTyp",
-    priceFeed: "KT1PMQZxQTrFPJn3pEaj9rvGfJA9Hvx7Z1CL"
+    oracleMap: 18599
 };
 
 export const tokenNames: { [assetType: string]: string } = {

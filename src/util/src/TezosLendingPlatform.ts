@@ -4,11 +4,12 @@ import { KeyStore, MultiAssetTokenHelper, Signer, TezosContractUtils, TezosMessa
 
 import { Comptroller } from './Comptroller';
 import { FToken } from './FToken';
+import { InterestRateModel } from './contracts/InterestRateModel';
 import { JSONPath } from 'jsonpath-plus';
+import { PriceFeed } from './PriceFeed';
 import bigInt from 'big-integer';
 import log from 'loglevel';
 import { tokenNames } from './const';
-import { InterestRateModel } from './contracts/InterestRateModel';
 
 export namespace TezosLendingPlatform {
     /*
@@ -25,7 +26,7 @@ export namespace TezosLendingPlatform {
      *
      * @param fToken The fToken contract's storage
      */
-    export function MakeMarket(fToken: FToken.Storage, comptroller: Comptroller.Storage, address: string, underlying: UnderlyingAsset, rateModel: InterestRateModel.Storage): Market {
+    export function MakeMarket(fToken: FToken.Storage, comptroller: Comptroller.Storage, address: string, underlying: UnderlyingAsset, rateModel: InterestRateModel.Storage, price: bigInt.BigInteger): Market {
         const asset: UnderlyingAssetMetadata = {
             name: tokenNames[underlying.assetType],
             underlying: underlying,
@@ -46,6 +47,7 @@ export namespace TezosLendingPlatform {
         };
 
         return {
+            currentPrice: price,
             address: address,
             asset: asset,
             cash: FToken.GetCash(fToken),
@@ -77,7 +79,8 @@ export namespace TezosLendingPlatform {
             try {
                 const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server, fTokenType);
                 const rateModel = await InterestRateModel.GetStorage(server, protocolAddresses.interestRateModel[asset]);
-                markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel);
+                const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracleMap, server)
+                markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel, oraclePrice);
             } catch (e) {
                 log.error(`Failed in GetMarkets for ${asset} at ${protocolAddresses.fTokens[asset]} and ${JSON.stringify(protocolAddresses.underlying[asset])} with ${e}`);
                 log.error(`Comptroller state: ${JSON.stringify(comptroller)}`);
