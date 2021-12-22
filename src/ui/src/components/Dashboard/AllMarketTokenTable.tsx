@@ -59,7 +59,7 @@ const AllMarketTokenTable = (props) => {
 								</TableCell>
 								<TableCell>
 									<Typography>
-										{data.marketSize || 0} {" "} {data.title}
+                                        {data.marketSize ? decimalify(data.marketSize.toString(), decimals[data.title]) : 0} {" "} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
 										{/* TODO: ADD USD EQUIVALENT */}
@@ -68,7 +68,7 @@ const AllMarketTokenTable = (props) => {
 								</TableCell>
 								<TableCell>
 									<Typography>
-										{data.totalBorrowed || 0} {" "} {data.title}
+                                    {data.totalBorrowed ? decimalify(data.totalBorrowed.toString(), decimals[data.title]) : 0} {" "} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
 										{/* TODO: ADD USD EQUIVALENT  */}

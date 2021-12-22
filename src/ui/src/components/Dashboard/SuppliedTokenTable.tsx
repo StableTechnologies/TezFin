@@ -78,7 +78,7 @@ const SuppliedTokenTable = (props) => {
                   {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying, decimals[data.title]) : '0.00'} {data.title}
                 </Typography>
                 <Typography className={classes.faintFont}>
-                  ${data.balanceUsd > 0 ? data.balanceUsd.toString() : '0.00'}
+                  ${data.balanceUsd ? decimalify(data.balanceUsd.toString(), decimals[data.title] + 18, 2) : '0.00'}
                 </Typography>
               </TableCell>
               <TableCell>

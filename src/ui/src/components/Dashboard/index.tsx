@@ -46,7 +46,7 @@ const Dashboard = () => {
             <BorrowedTokenTable tableData={borrowedMarkets} />
           </Grid>
           <Grid item xs={12} >
-            <Typography className={classes.tableTitleTwo}> All Markets </Typography>
+            <Typography className={classes.tableTitle}> Markets </Typography>
             <AllMarketTokenTable tableData={allMarkets} />
           </Grid>
         </Grid>
