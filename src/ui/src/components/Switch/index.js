@@ -42,7 +42,7 @@ const BasicSwitchThumb = styled('span')(`
   height: 12px;
   top: 2px;
   left: 2px;
-  border-radius: 16px;
+  border-radius: 50%;
   background-color: #FFF;
   position: relative;
   transition: all 200ms ease;
@@ -53,7 +53,7 @@ const BasicSwitchThumb = styled('span')(`
   }
 
   &.Switch-checked {
-    left: 27px;
+    left: 26px;
     top: 2px;
     background-color: #FFF;
   }
