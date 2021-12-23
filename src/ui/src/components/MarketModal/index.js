@@ -118,7 +118,6 @@ const MarketModal = (props) => {
 																}
 														</div>
 												</Grid>
-												{/* <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.supplyRate || '0'}% </Grid> */}
 												{mainModal ?
 												<Grid item sm={3} className={classes.whiteSpace} >
 													{(tabValue === 'one') && tokenDetails.supplyRate}

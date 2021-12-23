@@ -60,6 +60,7 @@ const AllMarketTokenTable = (props) => {
 								<TableCell>
 									<Typography>
 										{data.marketSize ? decimalify(data.marketSize.toString(), decimals[data.title]) : 0} {" "} {data.title}
+										{/* {data.supply ? decimalify(data.supply.totalSupply.toString(), decimals[data.title]) : 0} {" "} {data.title} */}
 									</Typography>
 									<Typography className={classes.faintFont}>
 										{/* TODO: ADD USD EQUIVALENT */}
