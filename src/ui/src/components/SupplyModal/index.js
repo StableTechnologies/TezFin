@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supplyMarketModalAction, supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { BigNumber } from 'bignumber.js';
+import bigInt from 'big-integer';
 
 import ConfirmModal from '../ConfirmModal';
 import MarketModal from '../MarketModal';
@@ -53,20 +54,20 @@ const SupplyModal = (props) => {
     };
 
     useEffect(() => {
-        dispatch(supplyMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
-
-    useEffect(() => {
         setAmount('');
     }, [close]);
 
     const modalHeaderText = enableToken ? '' : `To supply and use ${tokenDetails.banner} as collateral, you will need to enable the token first.`;
 
-    if (supplyMarketModal.borrowLimitUsd) {
-      const scale = new BigNumber('1000000000000000000');
-      tokenDetails.borrowLimit = new BigNumber(supplyMarketModal.borrowLimitUsd.toString()).dividedBy(scale).toFixed(2);
-      tokenDetails.borrowLimitUsed = (supplyMarketModal.borrowLimitUsed / 10000).toFixed(2);
-    }
+    // const scale = new BigNumber('1000000000000000000');
+    // tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+    // tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
+
+    // if (supplyMarketModal.borrowLimitUsd) {
+    //   const scale = new BigNumber('1000000000000000000');
+    //   tokenDetails.borrowLimit = new BigNumber(supplyMarketModal.borrowLimitUsd.toString()).dividedBy(scale).toFixed(2);
+    //   tokenDetails.borrowLimitUsed = (supplyMarketModal.borrowLimitUsed / 10000).toFixed(2);
+    // }
 
     return (
         <>
