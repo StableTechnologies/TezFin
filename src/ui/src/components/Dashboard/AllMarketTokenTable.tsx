@@ -58,32 +58,28 @@ const AllMarketTokenTable = (props) => {
 								</TableCell>
 								<TableCell>
 									<Typography>
-										{data.marketSize ? decimalify(data.marketSize.toString(), decimals[data.title]) : 0} {" "} {data.title}
-										{/* {data.supply ? decimalify(data.supply.totalSupply.toString(), decimals[data.title]) : 0} {" "} {data.title} */}
+										{(data.marketSize > 0) ? decimalify(data.marketSize.toString(), decimals[data.title]) : 0} {" "} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
-										{/* TODO: ADD USD EQUIVALENT */}
-                    ${"0.00"}
+										${(data.marketSize > 0) ? decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
 									</Typography>
 								</TableCell>
 								<TableCell>
 									<Typography>
-                    {data.totalBorrowed ? decimalify(data.totalBorrowed.toString(), decimals[data.title]) : 0} {" "} {data.title}
+                    {(data.totalBorrowed > 0) ? decimalify(data.totalBorrowed.toString(), decimals[data.title]) : 0} {" "} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
-										{/* TODO: ADD USD EQUIVALENT  */}
-                    ${"0.00"}
+										${(data.totalBorrowed > 0) ? decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
 									</Typography>
 								</TableCell>
-								<TableCell> {Number(data.supplyRate).toFixed(6)}% </TableCell>
-								<TableCell> {Number(data.borrowRate).toFixed(6)}% </TableCell>
+								<TableCell> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(6) : "0"}% </TableCell>
+								<TableCell> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(6) : "0"}% </TableCell>
 								<TableCell>
 									<Typography>
-										{data.walletBalance ? decimalify(data.walletBalance.toString(), decimals[data.title]) : decimalify(data.walletBalance, decimals[data.title]) || '0'} {data.title}
+										{(data.walletBalance > 0) ? decimalify(data.walletBalance.toString(), decimals[data.title]) : decimalify(data.walletBalance, decimals[data.title]) || '0'} {data.title}
 									</Typography>
 									<Typography className={classes.faintFont}>
-											{/* TODO: ADD USD EQUIVALENT  */}
-                      ${"0.00"}
+                    ${(data.walletBalance > 0) ? decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
 									</Typography>
 								</TableCell>
 							</TableRow>
