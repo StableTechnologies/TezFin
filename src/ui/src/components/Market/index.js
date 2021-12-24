@@ -31,7 +31,6 @@ const Market = (props) => {
         supplyingMkt,
         borrowingMkt
     } = props;
-    // console.log("props", props, "decimals", decimals);
 
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);

@@ -33,8 +33,6 @@ const BorrowedTokenTable = (props) => {
 
     const displayData = formatBorrowedTokenData(tableData);
 
-    // if (displayData.length === 0) { return (<></>); }
-
     return (
         <TableContainer className={`${classes.root} ${classes.tableCon}`}>
             {tokenDetails && (

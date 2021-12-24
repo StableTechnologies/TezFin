@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collateralizeTokenAction, supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
+import { collateralizeTokenAction } from '../../reduxContent/marketModal/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
@@ -16,7 +16,6 @@ const CollateralizeModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { markets } = useSelector((state) => state.market);
     const { protocolAddresses } = useSelector((state) => state.nodes);
-    const { supplyMarketModal } = useSelector((state) => state.marketModal);
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
@@ -37,10 +36,6 @@ const CollateralizeModal = (props) => {
         setTokenText('collateral');
         handleOpenConfirm();
     };
-
-    useEffect(() => {
-        dispatch(supplyMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
 
     return (
         <>

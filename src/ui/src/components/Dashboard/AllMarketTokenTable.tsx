@@ -10,7 +10,6 @@ import { Typography } from '@mui/material';
 
 import { decimalify } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
-// import { formatMarketState } from '../../library/util';
 
 import { useStyles } from './style';
 import AllMarketModal from '../AllMarketModal';

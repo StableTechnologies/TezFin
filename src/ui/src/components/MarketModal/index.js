@@ -40,9 +40,9 @@ const MarketModal = (props) => {
 		setTabValue(newValue);
 	};
 
-    const scale = new BigNumber('1000000000000000000');
-    tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
-    tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
+  const scale = new BigNumber('1000000000000000000');
+  tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+  tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
 
 	useEffect(() => {
 		setTokenValue('');
@@ -140,7 +140,7 @@ const MarketModal = (props) => {
 					<DialogContent className={classes.limit}>
 						<Grid container textAlign="justify" justifyContent="space-between">
 							<Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
-							<Grid item sm={7} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> ${(tokenDetails.borrowLimit || tokenDetails.borrowBalanceUsd) || '0.00'}</Grid>
+							<Grid item sm={7} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
 						</Grid>
 					</DialogContent>
 					<DialogContent>

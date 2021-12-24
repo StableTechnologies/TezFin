@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
+import { borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { BigNumber } from 'bignumber.js';
 
 import ConfirmModal from '../ConfirmModal';
 import MarketModal from '../MarketModal';
@@ -49,16 +48,6 @@ const BorrowModal = (props) => {
         setTokenText('repay');
         handleOpenConfirm();
     };
-
-    useEffect(() => {
-        dispatch(borrowMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
-
-    // if (borrowMarketModal.borrowBalanceUsd) {
-    //     const scale = new BigNumber('1000000000000000000');
-    //     tokenDetails.borrowBalanceUsd = new BigNumber(borrowMarketModal.borrowBalanceUsd.toString()).dividedBy(scale).toFixed(2);
-    //     tokenDetails.borrowLimitUsed = (borrowMarketModal.borrowLimitUsed / 10000).toFixed(2);
-    // }
 
     return (
         <>

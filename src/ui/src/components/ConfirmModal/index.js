@@ -14,9 +14,7 @@ import confirm from '../../assets/confirm.gif';
 import useStyles from './style';
 
 const ConfirmModal = (props) => {
-    const {
-        open, close, enableTokenText, supplyTokenText, token, tokenText
-    } = props;
+    const { open, close, token, tokenText } = props;
 
     const classes = useStyles();
 

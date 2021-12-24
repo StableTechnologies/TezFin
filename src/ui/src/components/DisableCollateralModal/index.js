@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { disableCollateralizeTokenAction, supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
+import { disableCollateralizeTokenAction } from '../../reduxContent/marketModal/actions';
 import ConfirmModal from '../ConfirmModal';
 
 import MarketModal from '../MarketModal';
@@ -17,7 +17,6 @@ const DisableCollateralModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { markets } = useSelector((state) => state.market);
     const { protocolAddresses } = useSelector((state) => state.nodes);
-    const { supplyMarketModal } = useSelector((state) => state.marketModal);
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
@@ -37,10 +36,6 @@ const DisableCollateralModal = (props) => {
         setTokenText('disable');
         handleOpenConfirm();
     };
-
-    useEffect(() => {
-        dispatch(supplyMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
 
     return (
         <>
