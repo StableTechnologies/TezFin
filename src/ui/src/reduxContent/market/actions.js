@@ -43,9 +43,7 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
 			      token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
             token.supplyRate = markets[token.assetType].supply.rate.toString();
 			      token.borrowRate = markets[token.assetType].borrow.rate.toString();
-            // token.supply = { totalSupply: markets[token.assetType].supply.totalAmount.toString(), ...suppliedMarket[token.assetType] };
-            // token.borrow = { totalBorrow: markets[token.assetType].borrow.totalAmount.toString(), ...borrowedMarket[token.assetType] };
-            token.usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
+            // token.usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 token.walletBalance = walletBalance[token.assetType].toString();
             }

@@ -38,7 +38,7 @@ const Nav = () => {
             }
         };
         isWallet();
-    }, [dispatch]);
+    }, [dispatch, address, server, protocolAddresses, comptroller, markets]);
 
     useEffect(() => {
         setTezAccount(address);

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
+import { supplyTokenAction, borrowTokenAction } from '../../reduxContent/marketModal/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { BigNumber } from 'bignumber.js';
+import bigInt from 'big-integer';
+
 
 import ConfirmModal from '../ConfirmModal';
 import MarketModal from '../MarketModal';
@@ -16,7 +18,6 @@ const AllMarketModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses } = useSelector((state) => state.nodes);
     const { markets } = useSelector((state) => state.market);
-    const { borrowMarketModal } = useSelector((state) => state.marketModal);
     const publicKeyHash = account.address;
 
     const [amount, setAmount] = useState('');
@@ -24,22 +25,34 @@ const AllMarketModal = (props) => {
     const [tokenText, setTokenText] = useState('');
 
     const handleOpenConfirm = () => {
-        setConfirmModal(true);
+      setConfirmModal(true);
     };
     const handleCloseConfirm = () => {
-        setConfirmModal(false);
+      setConfirmModal(false);
     };
 
+    const supplyToken = () => {
+      const underlying = tokenDetails.assetType.toLowerCase();
+      const mintPair = { underlying, amount };
+      dispatch(supplyTokenAction(mintPair, protocolAddresses, publicKeyHash));
+      close();
+      setAmount('');
+      setTokenText('supply');
+      handleOpenConfirm();
+    };
+    const borrowToken = () => {
+      const underlying = tokenDetails.assetType.toLowerCase();
+      const borrowPair = { underlying, amount };
+      dispatch(borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash));
+      close();
+      setAmount('');
+      setTokenText('borrow');
+      handleOpenConfirm();
+    };
 
-    useEffect(() => {
-        dispatch(borrowMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
-
-    if (borrowMarketModal.borrowBalanceUsd) {
-        const scale = new BigNumber('1000000000000000000');
-        tokenDetails.borrowBalanceUsd = new BigNumber(borrowMarketModal.borrowBalanceUsd.toString()).dividedBy(scale).toFixed(2);
-        tokenDetails.borrowLimitUsed = (borrowMarketModal.borrowLimitUsed / 10000).toFixed(2);
-    }
+    // const scale = new BigNumber('1000000000000000000');
+    // tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+    // tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
 
     return (
         <>
@@ -54,8 +67,8 @@ const AllMarketModal = (props) => {
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}
-                // handleClickTabOne={supplyToken}
-                // handleClickTabTwo={borrowToken}
+                handleClickTabOne={supplyToken}
+                handleClickTabTwo={borrowToken}
                 labelOne="Supply"
                 labelTwo="Borrow"
                 buttonOne="Supply"

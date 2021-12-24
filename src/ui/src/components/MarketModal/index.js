@@ -1,5 +1,8 @@
 import { Button, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { BigNumber } from 'bignumber.js';
+import bigInt from 'big-integer';
+
 import { decimalify, undecimalify } from '../../util';
 
 import Box from '@mui/material/Box';
@@ -30,11 +33,16 @@ const MarketModal = (props) => {
 	const [tabValue, setTabValue] = useState('one');
 	const [tokenValue, setTokenValue] = useState('');
 
+  const { account } = useSelector((state) => state.addWallet);
 	const { address } = useSelector((state) => state.addWallet.account);
 
 	const handleTabChange = (event, newValue) => {
 		setTabValue(newValue);
 	};
+
+    const scale = new BigNumber('1000000000000000000');
+    tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+    tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
 
 	useEffect(() => {
 		setTokenValue('');
@@ -118,7 +126,6 @@ const MarketModal = (props) => {
 																}
 														</div>
 												</Grid>
-												{/* <Grid item sm={5} className={classes.whiteSpace} > {tokenDetails.supplyRate || '0'}% </Grid> */}
 												{mainModal ?
 												<Grid item sm={3} className={classes.whiteSpace} >
 													{(tabValue === 'one') && tokenDetails.supplyRate}

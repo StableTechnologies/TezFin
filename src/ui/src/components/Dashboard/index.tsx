@@ -21,14 +21,14 @@ const Dashboard = () => {
     const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state: any) => state.market);
 
     useEffect(() => {
-        if (!markets) { return; }
-      // TODO CALL ALLMARKETS HERE
+      if (!markets) { return; }
       dispatch(allMarketAction(account, markets));
 
-        if (!account.address) { return; }
 
-        dispatch(suppliedMarketAction(account, markets));
-        dispatch(borrowedMarketAction(account, markets));
+      if (!account.address) { return; }
+
+      dispatch(suppliedMarketAction(account, markets));
+      dispatch(borrowedMarketAction(account, markets));
     }, [dispatch, account, markets]);
 
     return (

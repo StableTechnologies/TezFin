@@ -54,11 +54,11 @@ const BorrowModal = (props) => {
         dispatch(borrowMarketModalAction(account, markets[tokenDetails.assetType]));
     }, [dispatch, open]);
 
-    if (borrowMarketModal.borrowBalanceUsd) {
-        const scale = new BigNumber('1000000000000000000');
-        tokenDetails.borrowBalanceUsd = new BigNumber(borrowMarketModal.borrowBalanceUsd.toString()).dividedBy(scale).toFixed(2);
-        tokenDetails.borrowLimitUsed = (borrowMarketModal.borrowLimitUsed / 10000).toFixed(2);
-    }
+    // if (borrowMarketModal.borrowBalanceUsd) {
+    //     const scale = new BigNumber('1000000000000000000');
+    //     tokenDetails.borrowBalanceUsd = new BigNumber(borrowMarketModal.borrowBalanceUsd.toString()).dividedBy(scale).toFixed(2);
+    //     tokenDetails.borrowLimitUsed = (borrowMarketModal.borrowLimitUsed / 10000).toFixed(2);
+    // }
 
     return (
         <>
