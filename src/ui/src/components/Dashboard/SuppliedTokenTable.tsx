@@ -98,7 +98,7 @@ const SuppliedTokenTable = (props) => {
                   {" "} ꜰ{data.title}
                 </Typography>
               </TableCell>
-              <TableCell> {Number(data.rate).toFixed(6)}% </TableCell>
+              <TableCell> {Number(data.rate).toFixed(2)}% </TableCell>
               <TableCell>
                 <Typography>
                   {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying, decimals[data.title]) : '0.00'} {data.title}

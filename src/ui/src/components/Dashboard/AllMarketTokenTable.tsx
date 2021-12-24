@@ -72,8 +72,8 @@ const AllMarketTokenTable = (props) => {
 										${(data.totalBorrowed > 0) ? decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
 									</Typography>
 								</TableCell>
-								<TableCell> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(6) : "0"}% </TableCell>
-								<TableCell> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(6) : "0"}% </TableCell>
+								<TableCell> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(2) : "0"}% </TableCell>
+								<TableCell> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(2) : "0"}% </TableCell>
 								<TableCell>
 									<Typography>
 										{(data.walletBalance > 0) ? decimalify(data.walletBalance.toString(), decimals[data.title]) : decimalify(data.walletBalance, decimals[data.title]) || '0'} {data.title}

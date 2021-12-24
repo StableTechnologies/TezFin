@@ -102,8 +102,8 @@ const MarketModal = (props) => {
 									</Grid>
 									{mainModal ?
 										<Grid item sm={5} className={classes.whiteSpace} >
-											{(tabValue === 'one') && decimalify(tokenDetails.marketSize, decimals[tokenDetails.title])}
-											{(tabValue === 'two') && decimalify(tokenDetails.totalBorrowed, decimals[tokenDetails.title])}
+											{(tabValue === 'one') && (decimalify(tokenDetails.marketSize, decimals[tokenDetails.title]) || "0")}
+											{(tabValue === 'two') && (decimalify(tokenDetails.totalBorrowed, decimals[tokenDetails.title]) || "0")}
 											{" "} {tokenDetails.title}
 										</Grid> :
 										<Grid item sm={5} className={classes.whiteSpace} >
@@ -128,10 +128,11 @@ const MarketModal = (props) => {
 												</Grid>
 												{mainModal ?
 												<Grid item sm={3} className={classes.whiteSpace} >
-													{(tabValue === 'one') && tokenDetails.supplyRate}
-													{(tabValue === 'two') && tokenDetails.borrowRate}%
+													{(tabValue === 'one') && (tokenDetails.supplyRate ? Number(tokenDetails.supplyRate).toFixed(2) : "0")}
+													{(tabValue === 'two') && (tokenDetails.borrowRate ? Number(tokenDetails.borrowRate).toFixed(2) : "0")}
+                          {"%"}
 												</Grid> :
-												<Grid item sm={3} className={classes.whiteSpace} > {tokenDetails.rate || "0"}% </Grid>
+												<Grid item sm={3} className={classes.whiteSpace} > {Number(tokenDetails.rate).toFixed(2) || "0"} {"%"} </Grid>
 												}
 										</Grid>
 								</DialogContent>
@@ -146,7 +147,7 @@ const MarketModal = (props) => {
 					<DialogContent>
 						<Grid container textAlign="justify" justifyContent="space-between">
 							<Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
-							<Grid item sm={6} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
+							<Grid item sm={6} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'} {"%"} </Grid>
 						</Grid>
 					</DialogContent>
 					<DialogContent className={classes.progressBarCon}>

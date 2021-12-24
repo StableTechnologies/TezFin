@@ -66,7 +66,7 @@ const BorrowedTokenTable = (props) => {
                                    {" "} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell> {Number(data.rate).toFixed(6)}% </TableCell>
+                            <TableCell> {Number(data.rate).toFixed(2)}% </TableCell>
                             <TableCell>
                                 <Typography>
                                     {data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}
