@@ -9,7 +9,7 @@ IRMInterface = sp.io.import_script_from_url("file:contracts/interfaces/InterestR
 class InterestRateModel(IRMInterface.InterestRateModelInterface):
     def __init__(self, multiplierPerBlock_, baseRatePerBlock_,scale_, **extra_storage):
         self.init(
-            scale=scale_, #must match token decimals, for example 1e18 for eth, 1e8 for btc
+            scale=scale_, #must match order of reserveFactorMantissa
             multiplierPerBlock=multiplierPerBlock_, # The multiplier of utilization rate that gives the slope of the interest rate
             baseRatePerBlock=baseRatePerBlock_, # The base interest rate which is the y-intercept when utilization rate is 0
             **extra_storage
