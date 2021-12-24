@@ -31,16 +31,6 @@ const Nav = () => {
     };
 
     useEffect(() => {
-        const isWallet = async () => {
-            const address = await getActiveAccount();
-            if (address) {
-                dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
-            }
-        };
-        isWallet();
-    }, [dispatch, address, server, protocolAddresses, comptroller, markets]);
-
-    useEffect(() => {
         setTezAccount(address);
     }, [addWallet]);
 
