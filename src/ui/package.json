@@ -30,16 +30,74 @@
   "devDependencies": {
     "@types/node": "^16.11.10",
     "@types/node-fetch": "^3.0.3",
+    "@typescript-eslint/parser": "5.4.0",
+    "eslint": "7.18.0",
+    "eslint-config-airbnb-base": "15.0.0",
     "loglevel": "^1.7.1",
     "node-fetch": "^3.0.0",
     "typescript": "^4.5.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
     "build": "tsc && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "eslint --fix src"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "env": {
+      "mocha": true,
+      "node": true
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.ts",
+          "**/*.js"
+        ],
+        "excludedFiles": []
+      }
+    ],
+    "extends": "airbnb-base",
+    "rules": {
+      "comma-dangle": [
+        2,
+        "never"
+      ],
+      "curly": [
+        2,
+        "all"
+      ],
+      "indent": [
+        1,
+        4
+      ],
+      "max-len": [
+        2,
+        {
+          "code": 240,
+          "ignoreTrailingComments": true
+        }
+      ],
+      "no-tabs": [
+        2
+      ],
+      "quotes": [
+        2,
+        "single"
+      ],
+      "array-element-newline": [
+        2,
+        {
+          "multiline": true,
+          "minItems": 5
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [
