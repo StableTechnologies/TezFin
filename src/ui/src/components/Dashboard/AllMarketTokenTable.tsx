@@ -42,11 +42,11 @@ const AllMarketTokenTable = (props) => {
 					<TableHead>
 						<TableRow>
 							<TableCell> Token </TableCell>
-							<TableCell> Market Size </TableCell>
-							<TableCell> Total Borrowed </TableCell>
-							<TableCell> Supply APY </TableCell>
-							<TableCell> Borrow APY </TableCell>
-							<TableCell> Wallet </TableCell>
+							<TableCell align="right"> Market Size </TableCell>
+							<TableCell align="right"> Total Borrowed </TableCell>
+							<TableCell align="right"> Supply APY </TableCell>
+							<TableCell align="right"> Borrow APY </TableCell>
+							<TableCell align="right"> Wallet </TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -54,33 +54,33 @@ const AllMarketTokenTable = (props) => {
 							<TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
 								<TableCell>
 									<img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
-									<Typography sx={{ display: 'inline' }}> {" "} {data.title} </Typography>
+									<Typography className={classes.tokenName}> {" "} {data.title} </Typography>
 								</TableCell>
-								<TableCell>
-									<Typography>
+								<TableCell align="right">
+									<span>
 										{(data.marketSize > 0) ? decimalify(data.marketSize.toString(), decimals[data.title]) : 0} {" "} {data.title}
-									</Typography>
-									<Typography className={classes.faintFont}>
+									</span> <br/>
+									<span className={classes.faintFont}>
 										${(data.marketSize > 0) ? decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
-									</Typography>
+									</span>
 								</TableCell>
-								<TableCell>
-									<Typography>
+								<TableCell align="right">
+									<span>
                     {(data.totalBorrowed > 0) ? decimalify(data.totalBorrowed.toString(), decimals[data.title]) : 0} {" "} {data.title}
-									</Typography>
-									<Typography className={classes.faintFont}>
+									</span> <br/>
+									<span className={classes.faintFont}>
 										${(data.totalBorrowed > 0) ? decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
-									</Typography>
+									</span>
 								</TableCell>
-								<TableCell> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(2) : "0"}% </TableCell>
-								<TableCell> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(2) : "0"}% </TableCell>
-								<TableCell>
-									<Typography>
+								<TableCell align="right"> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(2) : "0"}% </TableCell>
+								<TableCell align="right"> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(2) : "0"}% </TableCell>
+								<TableCell align="right">
+									<span>
 										{(data.walletBalance > 0) ? decimalify(data.walletBalance.toString(), decimals[data.title]) : decimalify(data.walletBalance, decimals[data.title]) || '0'} {data.title}
-									</Typography>
-									<Typography className={classes.faintFont}>
+									</span> <br/>
+									<span className={classes.faintFont}>
                     ${(data.walletBalance > 0) ? decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
-									</Typography>
+									</span>
 								</TableCell>
 							</TableRow>
 						))}

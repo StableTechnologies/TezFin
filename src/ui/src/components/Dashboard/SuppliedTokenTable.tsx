@@ -14,6 +14,7 @@ import SupplyModal from '../SupplyModal';
 import CollateralizeModal from '../CollateralizeModal';
 import DisableCollateralModal from '../DisableCollateralModal';
 import Tez from '../../assets/largeXTZ.svg';
+import questionCircleIcon from '../../assets/questionCircle.svg'
 
 import { decimalify } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
@@ -66,27 +67,31 @@ const SuppliedTokenTable = (props) => {
             close={closeModal}
             tokenDetails={tokenDetails}
         />
-        <CollateralizeModal
-            open={collModal}
-            close={closeModal}
-            tokenDetails={tokenDetails}
-        />
+          <CollateralizeModal
+              open={collModal}
+              close={closeModal}
+              tokenDetails={tokenDetails}
+          />
         </>
       )}
       <Table>
         <TableHead>
           <TableRow>
             <TableCell> Token </TableCell>
-            <TableCell> APY/Earned </TableCell>
-            <TableCell> Balance </TableCell>
-            <TableCell> Collateral </TableCell>
+            <TableCell align="right"> APY/Earned </TableCell>
+            <TableCell align="right"> Balance </TableCell>
+            <TableCell align="right" className={classes.collateralPadding}>
+              Collateral {" "}
+              <img src={questionCircleIcon} alt={"questionIcon"} className={classes.questionCircleIcon} />
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(displayData.length === 0) &&
             <TableRow>
-              <TableCell colSpan={6} className={classes.emptyStateText}> You are not supplying assets at this time.
-                <Link href="#" className={classes.emptyStateLink}> How to supply assets </Link>
+              <TableCell colSpan={6}>
+                <Typography className={classes.emptyStateText} textAlign="left"> You are not supplying assets at this time. </Typography>
+                <Link href="#" className={classes.emptyStateLink} textAlign="left"> How to supply assets </Link>
               </TableCell>
             </TableRow>
           }
@@ -94,20 +99,20 @@ const SuppliedTokenTable = (props) => {
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
                 <img src={Tez} alt={`${data.title}-Icon`} className={classes.img} />
-                <Typography sx={{ display: 'inline' }}>
+                <Typography className={classes.tokenName}>
                   {" "} ꜰ{data.title}
                 </Typography>
               </TableCell>
-              <TableCell> {Number(data.rate).toFixed(2)}% </TableCell>
-              <TableCell>
-                <Typography>
+              <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
+              <TableCell align="right">
+                <span>
                   {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying, decimals[data.title]) : '0.00'} {data.title}
-                </Typography>
-                <Typography className={classes.faintFont}>
+                </span> <br/>
+                <span className={classes.faintFont}>
                   ${data.balanceUsd ? decimalify(data.balanceUsd.toString(), decimals[data.title] + 18, 2) : '0.00'}
-                </Typography>
+                </span>
               </TableCell>
-              <TableCell>
+              <TableCell align="right" className={classes.switchPadding}>
                 <Switch data={data} />
               </TableCell>
             </TableRow>

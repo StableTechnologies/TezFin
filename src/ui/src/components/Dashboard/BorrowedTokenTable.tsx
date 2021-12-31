@@ -45,16 +45,17 @@ const BorrowedTokenTable = (props) => {
                 <TableHead>
                     <TableRow>
                         <TableCell> Token </TableCell>
-                        <TableCell> APY </TableCell>
-                        <TableCell> Balance </TableCell>
-                        <TableCell> Limit used </TableCell>
+                        <TableCell align="right"> APY </TableCell>
+                        <TableCell align="right"> Balance </TableCell>
+                        <TableCell align="right"> Limit used </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {(displayData.length === 0) &&
                         <TableRow>
-                          <TableCell colSpan={6}> You are not borrowing assets at this time.
-                            <Link href="#" className={classes.emptyStateLink}> How to borrow assets </Link>
+                          <TableCell colSpan={6}>
+                            <Typography className={classes.emptyStateText} textAlign="left"> You are not borrowing assets at this time. </Typography>
+                            <Link href="#" className={classes.emptyStateLink} textAlign="left"> How to borrow assets </Link>
                           </TableCell>
                         </TableRow>
                     }
@@ -62,23 +63,23 @@ const BorrowedTokenTable = (props) => {
                         <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                             <TableCell>
                                 <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
-                                <Typography sx={{ display: 'inline' }}>
+                                <Typography className={classes.tokenName}>
                                    {" "} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell> {Number(data.rate).toFixed(2)}% </TableCell>
-                            <TableCell>
-                                <Typography>
+                            <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
+                            <TableCell align="right">
+                                <span>
                                     {data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}
-                                </Typography>
-                                <Typography className={classes.faintFont}>
+                                </span> <br/>
+                                <span className={classes.faintFont}>
                                     ${data.balanceUsd ? decimalify(data.balanceUsd.toString(), decimals[data.title] + 18, 2) : '0.00'}
-                                </Typography>
+                                </span>
                             </TableCell>
-                            <TableCell>
-                                <Typography>
+                            <TableCell align="right">
+                                <span>
                                     ${data.liquidityUsd > 0 ? data.liquidityUsd.toString() : '0.00'}
-                                </Typography>
+                                </span>
                             </TableCell>
                         </TableRow>
                     ))}
