@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collateralizeTokenAction } from '../../reduxContent/marketModal/actions';
+import { collateralizeTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
@@ -28,13 +28,16 @@ const CollateralizeModal = (props) => {
         setConfirmModal(false);
     };
 
-    const collateralizeToken = () => {
+    const collateralizeToken = async() => {
         const { assetType } = tokenDetails;
         console.log("collateral", assetType, protocolAddresses, publicKeyHash)
-        dispatch(collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash));
         close();
         setTokenText('collateral');
         handleOpenConfirm();
+        const response = await collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
+        if(response) {
+          setConfirmModal(false);
+        }
     };
 
     return (

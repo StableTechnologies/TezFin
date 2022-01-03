@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supplyTokenAction, borrowTokenAction } from '../../reduxContent/marketModal/actions';
+import { supplyTokenAction, borrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
@@ -28,23 +28,29 @@ const AllMarketModal = (props) => {
       setConfirmModal(false);
     };
 
-    const supplyToken = () => {
+    const supplyToken = async() => {
       const underlying = tokenDetails.assetType.toLowerCase();
       const mintPair = { underlying, amount };
-      dispatch(supplyTokenAction(mintPair, protocolAddresses, publicKeyHash));
       close();
       setAmount('');
       setTokenText('supply');
       handleOpenConfirm();
+      const response = await supplyTokenAction(mintPair, protocolAddresses, publicKeyHash);
+      if(response) {
+        setConfirmModal(false);
+      }
     };
-    const borrowToken = () => {
+    const borrowToken = async() => {
       const underlying = tokenDetails.assetType.toLowerCase();
       const borrowPair = { underlying, amount };
-      dispatch(borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash));
       close();
       setAmount('');
       setTokenText('borrow');
       handleOpenConfirm();
+      const response = await borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash);
+      if(response) {
+        setConfirmModal(false);
+      }
     };
 
     return (

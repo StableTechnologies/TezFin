@@ -1,14 +1,6 @@
-import {
-    BORROW_TOKEN,
-    COLLATERALIZE_TOKEN,
-    DISABLE_COLLATERALIZE_TOKEN,
-    MINT_TOKEN,
-    REPAY_BORROW_TOKEN,
-    WITHDRAW_TOKEN
-} from './types.js';
-import { Comptroller, TezosLendingPlatform } from 'tezoslendingplatformjs';
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
-import { confirmOps } from '../../util/index.js';
+import { confirmOps } from './index.js';
 
 /**
  * This function is used to supply tokens to the market.
@@ -17,14 +9,13 @@ import { confirmOps } from '../../util/index.js';
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash) => {
     const mint = TezosLendingPlatform.MintOpGroup(
         mintPair,
         protocolAddresses,
         publicKeyHash
     );
-    dispatch({ type: MINT_TOKEN, payload: mint });
-    const res = await confirmOps(mint, publicKeyHash);
+   return confirmOps(mint, publicKeyHash);
 };
 
 /**
@@ -34,7 +25,7 @@ export const supplyTokenAction = (mintPair, protocolAddresses, publicKeyHash) =>
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash) => {
     redeemPair.underlying = redeemPair.underlying.toUpperCase();
     const collaterals = redeemPair.underlying;
 
@@ -44,8 +35,7 @@ export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash
         protocolAddresses,
         publicKeyHash
     );
-    dispatch({ type: WITHDRAW_TOKEN, payload: withdraw });
-    confirmOps(withdraw);
+   return confirmOps(withdraw);
 };
 
 /**
@@ -55,7 +45,7 @@ export const withdrawTokenAction = (redeemPair, protocolAddresses, publicKeyHash
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) => {
     borrowPair.underlying = borrowPair.underlying.toUpperCase();
     const collaterals = Object.keys(protocolAddresses.fTokens);
     const borrow = TezosLendingPlatform.BorrowOpGroup(
@@ -64,8 +54,7 @@ export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) 
         protocolAddresses,
         publicKeyHash
     );
-    dispatch({ type: BORROW_TOKEN, payload: borrow });
-    confirmOps(borrow);
+   return confirmOps(borrow);
 };
 
 /**
@@ -75,15 +64,14 @@ export const borrowTokenAction = (borrowPair, protocolAddresses, publicKeyHash) 
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publicKeyHash) => async (dispatch) => {
+export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publicKeyHash) => {
     repayBorrowPair.underlying = repayBorrowPair.underlying.toUpperCase();
     const repayBorrow = TezosLendingPlatform.RepayBorrowOpGroup(
         repayBorrowPair,
         protocolAddresses,
         publicKeyHash
     );
-    dispatch({ type: REPAY_BORROW_TOKEN, payload: repayBorrow });
-    confirmOps(repayBorrow);
+   return confirmOps(repayBorrow);
 };
 
 /**
@@ -93,7 +81,7 @@ export const repayBorrowTokenAction = (repayBorrowPair, protocolAddresses, publi
  * @param protocolAddresses Addresses of the protocol contracts.
  * @param publicKeyHash Address of the connected account.
  */
-export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => async (dispatch) => {
+export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => {
     const enterMarketsPair = { fTokens: [protocolAddresses.fTokens[asset]] };
     const collaterals = [asset];
     const collateralizeToken = TezosLendingPlatform.EnterMarketsOpGroup(
@@ -102,8 +90,7 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
         protocolAddresses,
         publicKeyHash
     );
-    dispatch({ type: COLLATERALIZE_TOKEN, payload: collateralizeToken });
-    confirmOps(collateralizeToken);
+   return confirmOps(collateralizeToken);
 };
 
 /**
@@ -113,7 +100,7 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
  * @param protocolAddresses Addresses of the protocol contracts.
  * @param publicKeyHash Address of the connected account.
  */
-export const disableCollateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => async (dispatch) => {
+export const disableCollateralizeTokenAction = (asset, protocolAddresses, publicKeyHash) => {
     const exitMarketsPair = { address: protocolAddresses.fTokens[asset] };
     const collaterals = [asset];
     const disableCollateralizeToken = TezosLendingPlatform.ExitMarketOpGroup(
@@ -122,9 +109,6 @@ export const disableCollateralizeTokenAction = (asset, protocolAddresses, public
         protocolAddresses,
         publicKeyHash
     );
-    dispatch({
-        type: DISABLE_COLLATERALIZE_TOKEN,
-        payload: disableCollateralizeToken
-    });
-    confirmOps(disableCollateralizeToken);
+
+   return confirmOps(disableCollateralizeToken);
 };

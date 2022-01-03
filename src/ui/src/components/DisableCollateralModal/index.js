@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { disableCollateralizeTokenAction } from '../../reduxContent/marketModal/actions';
+import { disableCollateralizeTokenAction } from '../../util/modalActions';
 import ConfirmModal from '../ConfirmModal';
 
 import MarketModal from '../MarketModal';
@@ -29,12 +29,15 @@ const DisableCollateralModal = (props) => {
         setConfirmModal(false);
     };
 
-    const disableToken = () => {
+    const disableToken = async() => {
         const { assetType } = tokenDetails;
-        dispatch(disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash));
         close();
         setTokenText('disable');
         handleOpenConfirm();
+        const response = await disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
+        if(response) {
+          setConfirmModal(false);
+        }
     };
 
     return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
+import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
@@ -15,7 +15,6 @@ const BorrowModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses } = useSelector((state) => state.nodes);
     const { markets } = useSelector((state) => state.market);
-    const { borrowMarketModal } = useSelector((state) => state.marketModal);
     const publicKeyHash = account.address;
 
     const [amount, setAmount] = useState('');
@@ -29,24 +28,30 @@ const BorrowModal = (props) => {
         setConfirmModal(false);
     };
 
-    const borrowToken = () => {
+    const borrowToken = async() => {
         const underlying = tokenDetails.assetType.toLowerCase();
         const borrowPair = { underlying, amount };
-        dispatch(borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash));
         close();
         setAmount('');
         setTokenText('borrow');
         handleOpenConfirm();
+        const response = await borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash);
+        if(response) {
+          setConfirmModal(false);
+        }
     };
 
-    const repayBorrowToken = () => {
+    const repayBorrowToken = async() => {
         const underlying = tokenDetails.assetType.toLowerCase();
         const repayBorrowPair = { underlying, amount };
-        dispatch(repayBorrowTokenAction(repayBorrowPair, protocolAddresses, publicKeyHash));
         close();
         setAmount('');
         setTokenText('repay');
         handleOpenConfirm();
+        const response = await repayBorrowTokenAction(repayBorrowPair, protocolAddresses, publicKeyHash);
+        if(response) {
+          setConfirmModal(false);
+        }
     };
 
     return (

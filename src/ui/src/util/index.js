@@ -90,7 +90,7 @@ export const confirmOps = async (operations) => {
         } else if (address.startsWith('tz3')) {
             curve = KeyStoreCurve.SECP256R1;
         }
-        console.log(operations);
+
         const keyStore = {
             publicKey: '', // this precludes reveal operation inclusion
             secretKey: '',
@@ -110,13 +110,14 @@ export const confirmOps = async (operations) => {
             operations,
             true
         );
-        const result = await client.requestOperation({ operationDetails: opGroup });
-        const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
 
+        const result = await client.requestOperation({ operationDetails: opGroup });
+
+        const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
         const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
+
         return confirm;
     } catch (error) {
-        console.error('confirmOps', error);
         throw error;
     }
 };

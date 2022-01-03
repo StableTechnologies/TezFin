@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supplyTokenAction, withdrawTokenAction } from '../../reduxContent/marketModal/actions';
+import { supplyTokenAction, withdrawTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
@@ -16,7 +16,6 @@ const SupplyModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses } = useSelector((state) => state.nodes);
     const { markets } = useSelector((state) => state.market);
-    const { supplyMarketModal } = useSelector((state) => state.marketModal);
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
@@ -30,25 +29,30 @@ const SupplyModal = (props) => {
         setConfirmModal(false);
     };
 
-    const supplyToken = () => {
+    const supplyToken = async() => {
         const underlying = tokenDetails.assetType.toLowerCase();
         const mintPair = { underlying, amount };
-        dispatch(supplyTokenAction(mintPair, protocolAddresses, publicKeyHash));
         close();
         setAmount('');
         setTokenText('supply');
         handleOpenConfirm();
+        const response = await supplyTokenAction(mintPair, protocolAddresses, publicKeyHash);
+        if(response) {
+          setConfirmModal(false);
+        }
     };
 
-    const withdrawToken = () => {
+    const withdrawToken = async() => {
         const underlying = tokenDetails.assetType.toLowerCase();
         const redeemPair = { underlying, amount };
-
-        dispatch(withdrawTokenAction(redeemPair, protocolAddresses, publicKeyHash));
         close();
         setAmount('');
         setTokenText('withdraw');
         handleOpenConfirm();
+        const response = await withdrawTokenAction(redeemPair, protocolAddresses, publicKeyHash);
+        if(response) {
+          setConfirmModal(false);
+        }
     };
 
     useEffect(() => {
