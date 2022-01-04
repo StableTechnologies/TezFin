@@ -21,7 +21,7 @@ import { decimals } from 'tezoslendingplatformjs';
 import { useSelector } from 'react-redux';
 import { useStyles } from './style';
 
-const MarketModal = (props) => {
+const DashboardModal = (props) => {
 	const classes = useStyles();
 
 	const {
@@ -189,4 +189,4 @@ const MarketModal = (props) => {
 	);
 };
 
-export default MarketModal;
+export default DashboardModal;

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { disableCollateralizeTokenAction } from '../../util/modalActions';
 import ConfirmModal from '../ConfirmModal';
 
-import MarketModal from '../MarketModal';
+import DashboardModal from '../DashboardModal';
 
 import { useStyles } from './style';
 
@@ -43,7 +43,7 @@ const DisableCollateralModal = (props) => {
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
-            <MarketModal
+            <DashboardModal
                 headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
                 APYText = {`${tokenDetails.title} ` + 'Variable APY Rate'}
                 Limit = "Borrow Limit"

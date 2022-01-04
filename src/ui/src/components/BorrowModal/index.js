@@ -3,7 +3,7 @@ import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActio
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
-import MarketModal from '../MarketModal';
+import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 
 const BorrowModal = (props) => {
@@ -57,7 +57,7 @@ const BorrowModal = (props) => {
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
-            <MarketModal
+            <DashboardModal
                 APYText="Borrow APY"
                 Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"

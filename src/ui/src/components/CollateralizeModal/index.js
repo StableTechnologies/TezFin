@@ -3,7 +3,7 @@ import { collateralizeTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
-import MarketModal from '../MarketModal';
+import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 
 const CollateralizeModal = (props) => {
@@ -43,7 +43,7 @@ const CollateralizeModal = (props) => {
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
-            <MarketModal
+            <DashboardModal
                 headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
                 APYText={`${tokenDetails.title} ` + 'Variable APY Rate'}
                 Limit="Borrow Limit"

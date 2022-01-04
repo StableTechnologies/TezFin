@@ -3,7 +3,7 @@ import { supplyTokenAction, withdrawTokenAction } from '../../util/modalActions'
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
-import MarketModal from '../MarketModal';
+import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 
 const SupplyModal = (props) => {
@@ -62,7 +62,7 @@ const SupplyModal = (props) => {
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
-            <MarketModal
+            <DashboardModal
                 APYText={`${tokenDetails.title} Variable APY Rate`}
                 Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"
