@@ -10,6 +10,7 @@ import './App.css';
 import Header from './components/Header';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
+import Footer from './components/Footer';
 
 import Grid from '@mui/material/Grid';
 import { useEffect } from 'react';
@@ -63,6 +64,7 @@ const App = () => {
                     {/* <Route exact path="/"> <Home /> </Route> */}
                     <Route exact path="/"> <Home /> </Route>
                 </Switch>
+                <Footer />
             </Grid>
         </Router>
     );
