@@ -15,38 +15,33 @@ const Composition = (props) => {
 
     return (
         <Grid item xs={12} md={6} className={gridClass}>
-            <Typography> {title} </Typography>
+            <Typography className={classes.compositionTitle}> {title} </Typography>
             <Box className={classes.progressBar}>
-                <CustomizedProgressBars backgroundColor={progressBarColor}/>
+                <CustomizedProgressBars backgroundColor={progressBarColor} height="16px"/>
             </Box>
             <Box sx={{ paddingTop: '55px' }} className={boxClass}>
-                <Grid container>
-                    <Grid container item xs={12} sm={5} lg={3} className={classes.borderRight}>
-                        <Grid item>
-                            <img src={dataIcon} alt="borrowing-icon" />
-                        </Grid>
-                        <Grid item>
-                            <Box sx={{ paddingLeft: '1rem' }}>
-                                <Typography className={classes.statsTitle}> {dataTitle} </Typography>
-                                <Typography className={classes.statsValue}>${'0.00'}</Typography>
-                                {/* <Typography className={classes.statsValue}>${data.totalUsdValue || "0.00"}</Typography> */}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                    <Grid item sm={1}></Grid>
-                    <Grid container item sm={6} lg={4}>
-                        <Grid item>
-                            <img src={dataLimitIcon} alt="borrowLimit-Icon" />
-                        </Grid>
-                        <Grid item>
-                            <Box sx={{ paddingLeft: '1rem' }}>
-                                <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
-                                <Typography className={classes.statsValue}>${'0.00'}</Typography>
-                                {/* <Typography className={classes.statsValue}>${(data.collateral || data.Limit) || "0.00"}</Typography> */}
-                            </Box>
-                        </Grid>
-                    </Grid>
+              <Grid container>
+                <Grid container item xs={12} sm={6} className={classes.boxOne}>
+                  <Grid item paddingRight='1rem'>
+                      <img src={dataIcon} alt="borrowing-icon" />
+                  </Grid>
+                  <Grid item>
+                    <Typography className={classes.statsTitle}> {dataTitle} </Typography>
+                    <Typography className={classes.statsValue}>${'0.00'}</Typography>
+                    {/* <Typography className={classes.statsValue}>${data.totalUsdValue || "0.00"}</Typography> */}
+                  </Grid>
                 </Grid>
+                <Grid container item xs={12} sm={6} className={classes.boxTwo}>
+                  <Grid item paddingRight='1rem'>
+                      <img src={dataLimitIcon} alt="borrowLimit-Icon" />
+                  </Grid>
+                  <Grid item>
+                    <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
+                    <Typography className={classes.statsValue}>${'0.00'}</Typography>
+                    {/* <Typography className={classes.statsValue}>${(data.collateral || data.Limit) || "0.00"}</Typography> */}
+                  </Grid>
+                </Grid>
+              </Grid>
             </Box>
         </Grid>
     );

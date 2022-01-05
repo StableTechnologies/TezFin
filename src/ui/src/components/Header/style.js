@@ -73,14 +73,38 @@ export const useStyles = makeStyles({
     padding30: {
         paddingLeft: '1.875rem',
         '@media(max-width: 768px)': {
-            paddingLeft: '4rem'
+            paddingLeft: '4rem',
+            paddingTop: '1.5rem',
         },
         '@media(max-width: 501px)': {
             paddingLeft: '1.875rem'
         }
     },
-    borderRight: {
-        borderRight: '1px solid #BDBDBD'
+    compositionTitle:{
+      fontSize: '1.25rem',
+      fontWeight: '500',
+      lineHeight: '30px'
+    },
+    boxOne: {
+        borderRight: '1px solid #BDBDBD',
+        minWidth: 'fit-content',
+        maxWidth: 'fit-content',
+        paddingRight: '2rem',
+        '@media(min-width: 769px) and (max-width: 1200px)': {
+          paddingRight: '1rem',
+        },
+    },
+    boxTwo: {
+      '@media(min-width: 501px)': {
+          minWidth: 'fit-content',
+          maxWidth: 'fit-content',
+        },
+        '@media(min-width: 1201px)': {
+          paddingLeft: '54px',
+        },
+        '@media(min-width: 501px) and (max-width: 1200px)': {
+          paddingLeft: '27px',
+        },
     },
     statsTitle: {
         color: '#BDBDBD',
@@ -88,15 +112,21 @@ export const useStyles = makeStyles({
         lineHeight: '26px'
     },
     statsValue: {
-        fontSize: '20px',
+        fontSize: '1.25rem',
         lineHeight: '30px',
-        color: '#000'
+        color: '#000',
+        '@media(max-width: 1200px)': {
+          fontSize: '1.125rem',
+        },
+        '@media(max-width: 768px)': {
+          fontSize: '1rem',
+        },
     },
     progressBar: {
-        width: '75%',
+        width: '33rem',
         paddingTop: '7px',
         '@media(max-width: 1024px)': {
-            width: '80%'
+            width: '23.75rem'
         },
         '@media(max-width: 768px)': {
             width: '75%'
@@ -104,7 +134,6 @@ export const useStyles = makeStyles({
     },
     box: {
         paddingTop: '55px',
-        paddingBottom: '25px'
     },
     addWalletCon: {
         paddingTop: '2.25rem',
@@ -169,25 +198,20 @@ export const useStyles = makeStyles({
 const PREFIX = 'Header';
 export const classes1 = {
     root: `${PREFIX}-root`,
-    // title: `${PREFIX}-title`,
     cta: `${PREFIX}-cta`,
     content: `${PREFIX}-content`
 };
 export const HeaderCon = styled('div')(({ theme }) => ({
     [`&.${classes1.root}`]: {
-        // backgroundColor: theme.palette.primary.main,
         backgroundColor: '#F9FAFC',
-        // padding: '1rem 1.5rem',
-        // width: '1544px',
+        paddingBottom: '3.0625rem',
         '@media(min-width: 1024px)': {
             height: '391px'
         }
-        // color:'#fff'
     }
 }));
 export const Title = styled('p')(({ theme }) => ({
     [`&.${classes1.content}`]: {
-        // backgroundColor: 'blue',
         color: '#000',
         fontSize: '52px',
         fontWeight: 'bold',

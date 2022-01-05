@@ -55,7 +55,7 @@ const DashboardModal = (props) => {
 					<DialogTitle>
 						<div>
 							<img src={tokenDetails.logo} alt="logo" className={classes.img} />
-							<Typography className={classes.imgTitle}>
+							<Typography className={`${classes.modalText} ${classes.imgTitle}`}>
 								{tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
 								{" "} {tokenDetails.banner}
 							</Typography>
@@ -101,12 +101,12 @@ const DashboardModal = (props) => {
 										}
 									</Grid>
 									{mainModal ?
-										<Grid item sm={5} className={classes.whiteSpace} >
+										<Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
 											{(tabValue === 'one') && (decimalify(tokenDetails.marketSize, decimals[tokenDetails.title]) || "0")}
 											{(tabValue === 'two') && (decimalify(tokenDetails.totalBorrowed, decimals[tokenDetails.title]) || "0")}
 											{" "} {tokenDetails.title}
 										</Grid> :
-										<Grid item sm={5} className={classes.whiteSpace} >
+										<Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
 											{decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title])} {" "} {tokenDetails.title}
 										</Grid>
 									}
@@ -127,12 +127,12 @@ const DashboardModal = (props) => {
 														</div>
 												</Grid>
 												{mainModal ?
-												<Grid item sm={3} className={classes.whiteSpace} >
+												<Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
 													{(tabValue === 'one') && (tokenDetails.supplyRate ? Number(tokenDetails.supplyRate).toFixed(2) : "0")}
 													{(tabValue === 'two') && (tokenDetails.borrowRate ? Number(tokenDetails.borrowRate).toFixed(2) : "0")}
                           {"%"}
 												</Grid> :
-												<Grid item sm={3} className={classes.whiteSpace} > {Number(tokenDetails.rate).toFixed(2) || "0"} {"%"} </Grid>
+												<Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} > {Number(tokenDetails.rate).toFixed(2) || "0"} {"%"} </Grid>
 												}
 										</Grid>
 								</DialogContent>
@@ -141,20 +141,20 @@ const DashboardModal = (props) => {
 					<DialogContent className={classes.limit}>
 						<Grid container textAlign="justify" justifyContent="space-between">
 							<Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
-							<Grid item sm={7} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
+							<Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
 						</Grid>
 					</DialogContent>
 					<DialogContent>
 						<Grid container textAlign="justify" justifyContent="space-between">
 							<Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
-							<Grid item sm={6} className={`${classes.whiteSpace} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'} {"%"} </Grid>
+							<Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
 						</Grid>
 					</DialogContent>
 					<DialogContent className={classes.progressBarCon}>
 						<Grid container>
 							<Grid item sm={12}>
 									<Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-											<CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} />
+											<CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
 									</Box>
 							</Grid>
 						</Grid>

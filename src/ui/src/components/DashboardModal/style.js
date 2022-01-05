@@ -10,14 +10,11 @@ export const useStyles = makeStyles({
             color: '#000'
         },
         '& .MuiDialogTitle-root': {
-            padding: '1.625rem 1rem 1.2rem'
+            padding: '1.625rem 2.5rem 1.2rem'
         },
         '& .MuiDialogContent-root': {
             overflow: 'hidden',
-            padding: '0 2.5rem .5rem 1.875rem',
-            '@media(min-width: 1024px)': {
-                // padding: '0',
-            }
+            padding: '0 2.5rem .5rem',
         },
         '& .MuiDialogContentText-root': {
             fontWeight: '300',
@@ -67,20 +64,23 @@ export const useStyles = makeStyles({
         }
     },
     CurrentState: {
-        padding: '1.5625rem 2.5rem 1.5625rem 1.875rem !important',
+        padding: '1.5625rem 2.5rem !important',
         border: '2px solid #E0E0E0',
         borderBottom: '0',
         textAlign: 'left',
       },
       apyRate: {
-        padding: '1.5625rem 1.5rem 1.5625rem 0.875rem !important',
+        // padding: '1.5625rem 1.5rem 1.5625rem 0.875rem !important',
+        padding: '1.5625rem 1.5rem !important',
         borderTop: '2px solid #E0E0E0',
         borderBottom: '2px solid #E0E0E0',
         textAlign: 'left',
-        margin: '0 1rem 1.875rem'
+        // margin: '0 1rem 1.875rem',
+        margin: '0 1rem'
     },
     limit: {
-        marginBottom: '1.25rem'
+        marginTop: '1.875rem',
+        marginBottom: '1.25rem',
     },
     progressBarCon: {
         marginTop: '1.25rem'
@@ -94,8 +94,8 @@ export const useStyles = makeStyles({
         lineHeight: '1.875rem',
         textTransform: 'unset'
     },
-    whiteSpace: {
-        whiteSpace: 'nowrap',
+    modalTextRight: {
+      whiteSpace: 'nowrap',
         textAlign: 'end'
     },
     close: {
@@ -116,7 +116,7 @@ export const useStyles = makeStyles({
         color: '#828282'
     },
     modalText: {
-        fontSize: '1.125rem',
+        fontSize: '1.25rem',
         fontWeight: '300',
         lineHeight: '30px',
     },

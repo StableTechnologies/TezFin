@@ -3,8 +3,8 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
-const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-    height: 8,
+const BorderLinearProgress = styled(LinearProgress)(({ theme, height }) => ({
+    height: height,
     [`&.${linearProgressClasses.colorPrimary}`]: {
         backgroundColor: '#EAEAEA'
     },
@@ -14,11 +14,11 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }));
 
 const CustomizedProgressBars = (props) => {
-    const { value, backgroundColor } = props;
+    const { value, backgroundColor, height } = props;
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <BorderLinearProgress variant="determinate" value={value || 0} className={backgroundColor}/>
+            <BorderLinearProgress variant="determinate" value={value || 0} className={backgroundColor} height={height}/>
         </Box>
     );
 };

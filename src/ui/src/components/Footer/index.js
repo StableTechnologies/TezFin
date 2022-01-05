@@ -27,7 +27,6 @@ const Footer = () => {
         </Grid>
         <Grid item xs={8} sm={6} md={4} textAlign="end">
             <NavLink to="dashboard" className={classes.footerLink} activeClassName={classes.activeLink}> Dashboard </NavLink>
-            <NavLink to="market" className={classes.footerLink} activeClassName={classes.activeLink}> Market </NavLink>
             <NavLink to="about" className={classes.footerLink} activeClassName={classes.activeLink}> About </NavLink>
         </Grid>
         <Grid item xs={12} sm={3} md={2} textAlign="end">
