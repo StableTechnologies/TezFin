@@ -90,7 +90,6 @@ export const confirmOps = async (operations) => {
         } else if (address.startsWith('tz3')) {
             curve = KeyStoreCurve.SECP256R1;
         }
-
         const keyStore = {
             publicKey: '', // this precludes reveal operation inclusion
             secretKey: '',
@@ -110,12 +109,9 @@ export const confirmOps = async (operations) => {
             operations,
             true
         );
-
         const result = await client.requestOperation({ operationDetails: opGroup });
-
         const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
         const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
-
         return confirm;
     } catch (error) {
         throw error;

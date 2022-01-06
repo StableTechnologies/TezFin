@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConfirmModal from '../ConfirmModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
+import { marketAction } from '../../reduxContent/market/actions';
 
 const SupplyModal = (props) => {
     const classes = useStyles();
@@ -14,8 +15,8 @@ const SupplyModal = (props) => {
     } = props;
 
     const { account } = useSelector((state) => state.addWallet);
-    const { protocolAddresses } = useSelector((state) => state.nodes);
-    const { markets } = useSelector((state) => state.market);
+    const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
@@ -38,6 +39,7 @@ const SupplyModal = (props) => {
         handleOpenConfirm();
         const response = await supplyTokenAction(mintPair, protocolAddresses, publicKeyHash);
         if(response) {
+          dispatch(marketAction(comptroller, protocolAddresses, server));
           setConfirmModal(false);
         }
     };
@@ -51,6 +53,7 @@ const SupplyModal = (props) => {
         handleOpenConfirm();
         const response = await withdrawTokenAction(redeemPair, protocolAddresses, publicKeyHash);
         if(response) {
+          dispatch(marketAction(comptroller, protocolAddresses, server));
           setConfirmModal(false);
         }
     };

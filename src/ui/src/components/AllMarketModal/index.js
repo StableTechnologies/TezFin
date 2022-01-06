@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConfirmModal from '../ConfirmModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
+import { allMarketAction, marketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
 
 const AllMarketModal = (props) => {
     const classes = useStyles();
@@ -13,8 +14,8 @@ const AllMarketModal = (props) => {
     const { open, close, tokenDetails } = props;
 
     const { account } = useSelector((state) => state.addWallet);
-    const { protocolAddresses } = useSelector((state) => state.nodes);
-    const { markets } = useSelector((state) => state.market);
+    const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
     const [amount, setAmount] = useState('');
@@ -37,9 +38,11 @@ const AllMarketModal = (props) => {
       handleOpenConfirm();
       const response = await supplyTokenAction(mintPair, protocolAddresses, publicKeyHash);
       if(response) {
+        dispatch(marketAction(comptroller, protocolAddresses, server));
         setConfirmModal(false);
       }
     };
+
     const borrowToken = async() => {
       const underlying = tokenDetails.assetType.toLowerCase();
       const borrowPair = { underlying, amount };
@@ -49,6 +52,7 @@ const AllMarketModal = (props) => {
       handleOpenConfirm();
       const response = await borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash);
       if(response) {
+        dispatch(marketAction(comptroller, protocolAddresses, server));
         setConfirmModal(false);
       }
     };

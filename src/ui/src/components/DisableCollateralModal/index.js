@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { marketAction } from '../../reduxContent/market/actions';
 import { disableCollateralizeTokenAction } from '../../util/modalActions';
 import ConfirmModal from '../ConfirmModal';
 
@@ -15,8 +16,8 @@ const DisableCollateralModal = (props) => {
     } = props;
 
     const { account } = useSelector((state) => state.addWallet);
-    const { markets } = useSelector((state) => state.market);
-    const { protocolAddresses } = useSelector((state) => state.nodes);
+    const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
@@ -36,6 +37,7 @@ const DisableCollateralModal = (props) => {
         handleOpenConfirm();
         const response = await disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
         if(response) {
+          dispatch(marketAction(comptroller, protocolAddresses, server));
           setConfirmModal(false);
         }
     };
