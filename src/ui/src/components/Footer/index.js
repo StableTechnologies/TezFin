@@ -35,17 +35,17 @@ const Footer = () => {
             <NavLink to="about" className={classes.footerLink} activeClassName={classes.activeLink}> About </NavLink>
         </Grid>
         <Grid item xs={12} sm={3} md={2} textAlign="end">
-          <Link href="" target="_blank" rel="noopener">
+          <Link href="https://twitter.com/TezosFinance" target="_blank" rel="noopener">
             <IconButton disableRipple>
               <img src={twitter} alt="twitter-icon" className={classes.icon}/>
             </IconButton>
           </Link>
-          <Link href="" target="_blank" rel="noopener">
+          <Link href="https://discord.com/invite/FRw2vgc6" target="_blank" rel="noopener">
             <IconButton disableRipple>
               <img src={discord} alt="discord-icon" className={classes.icon}/>
             </IconButton>
           </Link>
-          <Link href="" target="_blank" rel="noopener">
+          <Link href="https://t.me/TezFin" target="_blank" rel="noopener">
             <IconButton disableRipple>
               <img src={telegram} alt="telegram-icon" className={classes.icon}/>
             </IconButton>
