@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import twitter from '../../assets/twitterIcon.svg';
 import discord from '../../assets/discordIcon.svg';
 import telegram from '../../assets/telegramLogo.svg';
+import copyright from '../../assets/copyright.svg';
 
 import { useStyles } from './style';
 
@@ -23,7 +24,11 @@ const Footer = () => {
     <Grid className={classes.root}>
       <Grid container className={`${classes.footerCon}`}>
         <Grid item xs={4} sm={3} md={6} alignSelf="center">
-          <Typography> &#169; {new Date().getFullYear()} TezFin </Typography>
+          <Typography>
+            <IconButton disableRipple>
+              <img src={copyright} alt="discord-icon" className={classes.copyrightIcon}/>
+            </IconButton> {" "}
+            {new Date().getFullYear()} TezFin </Typography>
         </Grid>
         <Grid item xs={8} sm={6} md={4} textAlign="end">
             <NavLink to="dashboard" className={classes.footerLink} activeClassName={classes.activeLink}> Dashboard </NavLink>

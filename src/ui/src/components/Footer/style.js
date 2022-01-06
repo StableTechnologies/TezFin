@@ -61,4 +61,9 @@ export const useStyles = makeStyles({
     height: '1.25rem',
     marginLeft: '1.6875rem'
   },
+  copyrightIcon: {
+    width: '1.3125rem',
+    height: '1.3125rem',
+    marginTop: '-4px'
+  },
 });
