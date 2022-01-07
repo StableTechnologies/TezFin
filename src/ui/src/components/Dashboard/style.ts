@@ -128,7 +128,7 @@ export const useStyles = makeStyles({
       padding: '0px 4rem 10.125rem'
     },
     '@media(max-width: 501px)': {
-      padding: '0px 1.875rem 10.125rem'
+      padding: '0px 1rem 10.125rem'
     }
   },
   '@media(min-width: 1024px)': {

@@ -27,12 +27,12 @@ export const useStyles = makeStyles({
     lineHeight: '1.875rem',
     letterSpacing: '0.005em',
     borderTop: '1px solid rgba(0, 0, 0, 0.45)',
-    '@media(max-width: 501px)': {
-      paddingLeft: '1.5rem'
-    },
     '@media(max-width: 768px)': {
       paddingRight: '1rem',
-    }
+    },
+    '@media(max-width: 501px)': {
+      paddingLeft: '1rem'
+    },
   },
   footerLink: {
     color: '#000',

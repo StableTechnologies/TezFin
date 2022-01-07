@@ -16,7 +16,6 @@ import questionCircle from '../../assets/questionCircle.svg';
 
 import { supplyCompositionAction } from '../../reduxContent/supplyComposition/actions';
 import { borrowCompositionAction } from '../../reduxContent/borrowComposition/actions';
-import MobileNav from './mobileNav';
 
 const Header = () => {
     const classes = useStyles();
@@ -36,14 +35,11 @@ const Header = () => {
     return (
         <HeaderCon className={classes1.root}>
             <Nav />
-            <MobileNav />
             <Grid container>
                 <Grid item xs={12} className={classes.netAPY}>
-                    <Typography>
-            Net APY: 0.00%
-                        {/* <span className={classes.questionCircle}>
-              <img src={questionCircle} alt={questionCircle} />
-            </span> */}
+                    <Typography className={classes.netAPYText}>
+                      Net APY: 0.00% {" "}
+                      <img src={questionCircle} alt={"questionIcon"} className={classes.netAPYImg} />
                     </Typography>
                 </Grid>
             </Grid>
@@ -55,8 +51,7 @@ const Header = () => {
                     dataTitle = "Supplying"
                     dataLimitIcon = {collateralizedIcon}
                     dataLimitTitle = "Collateralized"
-                    boxClass={classes.box}
-                    gridClass={classes.padding100}
+                    gridClass={classes.compositionOne}
                     progressBarColor={classes.supplyBarColor} // add class
                 />
                 <Composition
@@ -66,7 +61,7 @@ const Header = () => {
                     dataTitle = "Borrowing"
                     dataLimitIcon = {borrowLimitIcon}
                     dataLimitTitle = "Borrow limit"
-                    gridClass={classes.padding30}
+                    gridClass={classes.compositionTwo}
                     progressBarColor={classes.borrowBarColor} // add class
                 />
             </Grid>
