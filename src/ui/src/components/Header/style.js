@@ -108,12 +108,13 @@ export const useStyles = makeStyles({
         },
         '@media(max-width: 501px)': {
           paddingRight: '1rem',
+          marginRight: '1rem',
         },
-    },
+      },
     boxTwo: {
       '@media(min-width: 501px)': {
-          minWidth: 'fit-content',
-          maxWidth: 'fit-content',
+        minWidth: 'fit-content',
+        maxWidth: 'fit-content',
         },
         '@media(min-width: 1201px)': {
           paddingLeft: '54px',
@@ -122,7 +123,8 @@ export const useStyles = makeStyles({
           paddingLeft: '27px',
         },
         '@media(max-width: 501px)': {
-          paddingLeft: '1rem',
+          paddingLeft: '0',
+          flexWrap: 'nowrap',
         },
     },
     boxImg: {
@@ -139,6 +141,8 @@ export const useStyles = makeStyles({
         lineHeight: '26px',
         '@media(max-width: 376px)': {
           fontSize: '0.75rem',
+        },
+        '@media(max-width: 320px)': {
           lineHeight: '13px',
         },
     },

@@ -41,7 +41,7 @@ const DashboardModal = (props) => {
 	};
 
   const scale = new BigNumber('1000000000000000000');
-  if(account.length > 0) {
+  if(account.health) {
     tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
     tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
   }
@@ -117,7 +117,7 @@ const DashboardModal = (props) => {
 								<DialogContent className={classes.apyRate}>
 										<Grid container justifyContent="space-between">
 												<Grid item sm={9}>
-														<div>
+														{/* <div> */}
 																<img src={tokenDetails.logo} alt="logo" className={classes.img} />
 																{mainModal ?
 																	<Typography className={`${classes.modalText} ${classes.imgTitle}`}>
@@ -126,7 +126,7 @@ const DashboardModal = (props) => {
 																	</Typography> :
 																	<Typography className={`${classes.modalText} ${classes.imgTitle}`}> {APYText} </Typography>
 																}
-														</div>
+														{/* </div> */}
 												</Grid>
 												{mainModal ?
 												<Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
@@ -146,7 +146,7 @@ const DashboardModal = (props) => {
 							<Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
 						</Grid>
 					</DialogContent>
-					<DialogContent>
+					<DialogContent className={classes.limitUsed}>
 						<Grid container textAlign="justify" justifyContent="space-between">
 							<Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
 							<Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
@@ -154,7 +154,7 @@ const DashboardModal = (props) => {
 					</DialogContent>
 					<DialogContent className={classes.progressBarCon}>
 						<Grid container>
-							<Grid item sm={12}>
+							<Grid item xs={12}>
 									<Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
 											<CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
 									</Box>
