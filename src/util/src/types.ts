@@ -1,6 +1,7 @@
-import { InterestRateModel } from "./contracts/InterestRateModel";
 import { AssetType, TokenStandard } from "enum";
+
 import { FToken } from './FToken';
+import { InterestRateModel } from "./contracts/InterestRateModel";
 
 /*
     * @description
@@ -94,7 +95,7 @@ export interface ProtocolAddresses {
     comptroller: string;
     interestRateModel: { [underlying: string]: string };
     governance: string;
-    priceFeed: string;
+    oracleMap: number;
 }
 
 /*
@@ -165,6 +166,7 @@ export interface Market {
     borrow: MarketData;
     dailyInterestPaid: bigInt.BigInteger;
     reserves: bigInt.BigInteger;
+    currentPrice: bigInt.BigInteger;
     reserveFactor: number;
     collateralFactor: number;
     exchangeRate: number;

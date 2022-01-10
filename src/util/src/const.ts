@@ -49,12 +49,12 @@ export const granadanetAddresses: ProtocolAddresses = {
     },
     comptroller: "KT1AD8rvgSHoM8SrNRzCVxLpDM6eKFgNH3kU",
     interestRateModel: {
-        "XTZ": "KT1NRFY1vtLGh2buux35uQpabyJRsqYjSAVB",
-        "ETH": "KT1R1vM6rVnR532w95E7cGAYY3rSNz8hq8fi",
-        "BTC": "KT1BkEsTJDGpKugb86zdFyVm3EvuT2aeoyz6"
+        "XTZ": "KT18oFiMG7fm2g2QvMnNeBv9BxbBHhTAy5fq",
+        "ETH": "KT18oFiMG7fm2g2QvMnNeBv9BxbBHhTAy5fq",
+        "BTC": "KT18oFiMG7fm2g2QvMnNeBv9BxbBHhTAy5fq"
     },
     governance: "KT1A7VB84jAoQyqBxy5rghfvDkPaQi6XRTyp",
-    priceFeed: "KT1PMQZxQTrFPJn3pEaj9rvGfJA9Hvx7Z1CL"
+    oracleMap: 18599
 };
 
 export const tokenNames: { [assetType: string]: string } = {

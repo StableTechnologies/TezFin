@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { collateralizeTokenAction, supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
+import { collateralizeTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmModal from '../ConfirmModal';
-import MarketModal from '../MarketModal';
+import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
+import { marketAction } from '../../reduxContent/market/actions';
 
 const CollateralizeModal = (props) => {
     const classes = useStyles();
@@ -14,9 +15,8 @@ const CollateralizeModal = (props) => {
     } = props;
 
     const { account } = useSelector((state) => state.addWallet);
-    const { markets } = useSelector((state) => state.market);
-    const { protocolAddresses } = useSelector((state) => state.nodes);
-    const { supplyMarketModal } = useSelector((state) => state.marketModal);
+    const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
@@ -29,24 +29,23 @@ const CollateralizeModal = (props) => {
         setConfirmModal(false);
     };
 
-    const collateralizeToken = () => {
+    const collateralizeToken = async() => {
         const { assetType } = tokenDetails;
         console.log("collateral", assetType, protocolAddresses, publicKeyHash)
-        dispatch(collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash));
         close();
         setTokenText('collateral');
         handleOpenConfirm();
-        tokenDetails.collateral = true;
+        const response = await collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
+        if(response) {
+          dispatch(marketAction(comptroller, protocolAddresses, server));
+          setConfirmModal(false);
+        }
     };
-
-    useEffect(() => {
-        dispatch(supplyMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
 
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
-            <MarketModal
+            <DashboardModal
                 headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
                 APYText={`${tokenDetails.title} ` + 'Variable APY Rate'}
                 Limit="Borrow Limit"

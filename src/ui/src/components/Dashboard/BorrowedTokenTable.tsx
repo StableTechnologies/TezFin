@@ -7,11 +7,13 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Typography } from '@mui/material';
+import { Link, Typography } from '@mui/material';
 import { decimalify } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 import { formatBorrowedTokenData } from '../../library/util';
+
 import { useStyles } from './style';
+
 
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
@@ -31,8 +33,6 @@ const BorrowedTokenTable = (props) => {
 
     const displayData = formatBorrowedTokenData(tableData);
 
-    if (displayData.length === 0) { return (<></>); }
-
     return (
         <TableContainer className={`${classes.root} ${classes.tableCon}`}>
             {tokenDetails && (
@@ -45,33 +45,41 @@ const BorrowedTokenTable = (props) => {
                 <TableHead>
                     <TableRow>
                         <TableCell> Token </TableCell>
-                        <TableCell> Rate </TableCell>
-                        <TableCell> Balance </TableCell>
-                        <TableCell> Borrow limit used </TableCell>
+                        <TableCell align="right"> APY </TableCell>
+                        <TableCell align="right"> Balance </TableCell>
+                        <TableCell align="right"> Limit used </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
+                    {(displayData.length === 0) &&
+                        <TableRow>
+                          <TableCell colSpan={6}>
+                            <Typography className={classes.emptyStateText} textAlign="left"> You are not borrowing assets at this time. </Typography>
+                            <Link href="#" className={classes.emptyStateLink} textAlign="left"> How to borrow assets </Link>
+                          </TableCell>
+                        </TableRow>
+                    }
                     {displayData && displayData.map((data) => (
                         <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                             <TableCell>
                                 <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
-                                <Typography sx={{ display: 'inline' }}>
-                                    {data.title}
+                                <Typography className={classes.tokenName}>
+                                   {" "} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell> {Number(data.rate).toFixed(6)}% </TableCell>
-                            <TableCell>
-                                <Typography>
+                            <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
+                            <TableCell align="right">
+                                <span>
                                     {data.balanceUnderlying ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : decimalify(data.balance, decimals[data.title]) || '0'} {data.title}
-                                </Typography>
-                                <Typography className={classes.faintFont}>
-                                    ${data.walletUnderlying > 0 ? data.walletUnderlying.toString() : '0.00'}
-                                </Typography>
+                                </span> <br/>
+                                <span className={classes.faintFont}>
+                                    ${data.balanceUsd ? decimalify(data.balanceUsd.toString(), decimals[data.title] + 18, 2) : '0.00'}
+                                </span>
                             </TableCell>
-                            <TableCell className={classes.toggle}>
-                                <Typography>
+                            <TableCell align="right">
+                                <span>
                                     ${data.liquidityUsd > 0 ? data.liquidityUsd.toString() : '0.00'}
-                                </Typography>
+                                </span>
                             </TableCell>
                         </TableRow>
                     ))}

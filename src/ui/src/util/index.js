@@ -90,7 +90,6 @@ export const confirmOps = async (operations) => {
         } else if (address.startsWith('tz3')) {
             curve = KeyStoreCurve.SECP256R1;
         }
-        console.log(operations);
         const keyStore = {
             publicKey: '', // this precludes reveal operation inclusion
             secretKey: '',
@@ -112,11 +111,9 @@ export const confirmOps = async (operations) => {
         );
         const result = await client.requestOperation({ operationDetails: opGroup });
         const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
-
         const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
         return confirm;
     } catch (error) {
-        console.error('confirmOps', error);
         throw error;
     }
 };
@@ -126,9 +123,10 @@ export const confirmOps = async (operations) => {
  *
  * @returns decimal version
  */
-export const decimalify = (val, decimals) => {
-    if (!val) return val;
-    return new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(decimals);
+export const decimalify = (val, decimals, formatDecimals = 4) => {
+    if (!val) { return val; }
+
+    return Number(new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(formatDecimals)).toLocaleString();
 }
 
 /**
@@ -137,6 +135,7 @@ export const decimalify = (val, decimals) => {
  * @returns decimal version
  */
 export const undecimalify = (val, decimals) => {
-    if (!val) return val;
+    if (!val) { return val; }
+
     return new BigNumber(val.toString()).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(0);
 }

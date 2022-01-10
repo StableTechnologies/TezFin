@@ -31,37 +31,15 @@ const Nav = () => {
     };
 
     useEffect(() => {
-        const isWallet = async () => {
-            const address = await getActiveAccount();
-            if (address) {
-                dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
-            }
-        };
-        isWallet();
-    }, [dispatch]);
-
-    useEffect(() => {
         setTezAccount(address);
     }, [addWallet]);
 
     return (
-        <Grid container justify="center" alignItems="center" className={classes.nav}>
-            <Grid item xs={6} sm={3} md={4} lg={3}>
+        <Grid container justify="center" alignItems="center">
+            <Grid item xs={6} lg={6} className={classes.tezHeaderCon}>
                 <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
             </Grid>
-            <Grid container item xs={6} sm={6} md={5} lg={5} textAlign="center" className={classes.linkCon}>
-                {/*<Grid item sm={4} md={4} lg={4}>
-                    <NavLink to="dashboard" className={classes.link} activeClassName={classes.activeLink}> Dashboard </NavLink>
-                </Grid>
-                <Grid item sm={4} md={4} lg={4}>
-                    <NavLink to="market" className={classes.link} activeClassName={classes.activeLink}> Market </NavLink>
-                </Grid>
-                <Grid item sm={4} md={4} lg={4}>
-                    <NavLink to="about" className={classes.link} activeClassName={classes.activeLink}> About </NavLink>
-                </Grid>*/}
-            </Grid>
-            <Grid item lg={2}></Grid>
-            <Grid item xs={12} sm={3} md={3} lg={2} className={classes.addWalletCon}>
+            <Grid item xs={6} lg={6} className={classes.addWalletCon}>
                 <Button
                     className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
                     onClick={addWallet}>

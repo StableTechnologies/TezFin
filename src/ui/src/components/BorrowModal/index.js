@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { borrowMarketModalAction, borrowTokenAction, repayBorrowTokenAction } from '../../reduxContent/marketModal/actions';
+import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { BigNumber } from 'bignumber.js';
 
 import ConfirmModal from '../ConfirmModal';
-import MarketModal from '../MarketModal';
+import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
+import { marketAction } from '../../reduxContent/market/actions';
 
 const BorrowModal = (props) => {
     const classes = useStyles();
@@ -14,9 +14,8 @@ const BorrowModal = (props) => {
     const { open, close, tokenDetails } = props;
 
     const { account } = useSelector((state) => state.addWallet);
-    const { protocolAddresses } = useSelector((state) => state.nodes);
-    const { markets } = useSelector((state) => state.market);
-    const { borrowMarketModal } = useSelector((state) => state.marketModal);
+    const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
     const [amount, setAmount] = useState('');
@@ -30,44 +29,42 @@ const BorrowModal = (props) => {
         setConfirmModal(false);
     };
 
-    const borrowToken = () => {
+    const borrowToken = async() => {
         const underlying = tokenDetails.assetType.toLowerCase();
         const borrowPair = { underlying, amount };
-        dispatch(borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash));
         close();
         setAmount('');
         setTokenText('borrow');
         handleOpenConfirm();
+        const response = await borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash);
+        if(response) {
+          dispatch(marketAction(comptroller, protocolAddresses, server));
+          setConfirmModal(false);
+        }
     };
 
-    const repayBorrowToken = () => {
+    const repayBorrowToken = async() => {
         const underlying = tokenDetails.assetType.toLowerCase();
         const repayBorrowPair = { underlying, amount };
-        dispatch(repayBorrowTokenAction(repayBorrowPair, protocolAddresses, publicKeyHash));
         close();
         setAmount('');
         setTokenText('repay');
         handleOpenConfirm();
+        const response = await repayBorrowTokenAction(repayBorrowPair, protocolAddresses, publicKeyHash);
+        if(response) {
+          dispatch(marketAction(comptroller, protocolAddresses, server));
+          setConfirmModal(false);
+        }
     };
-
-    useEffect(() => {
-        dispatch(borrowMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
-
-    if (borrowMarketModal.borrowBalanceUsd) {
-        const scale = new BigNumber('1000000000000000000');
-        tokenDetails.borrowBalanceUsd = new BigNumber(borrowMarketModal.borrowBalanceUsd.toString()).dividedBy(scale).toFixed(2);
-        tokenDetails.borrowLimitUsed = (borrowMarketModal.borrowLimitUsed / 10000).toFixed(2);
-    }
 
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
-            <MarketModal
+            <DashboardModal
                 APYText="Borrow APY"
-                Limit="Borrow Balance"
+                Limit="Borrow Limit"
                 LimitUsed="Borrow Limit Used"
-                amountText="Currently Borrowing"
+                CurrentStateText="Currently Borrowing"
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}

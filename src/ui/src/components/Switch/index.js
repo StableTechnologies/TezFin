@@ -10,8 +10,7 @@ const BasicSwitchRoot = styled('span')(`
   width: 40px;
   height: 16px;
   background: #E0E0E0;
-  border-radius: 10px;
-  // margin: 10px;
+  border-radius: 16px;
   cursor: pointer;
 
   &.Switch-disabled {
@@ -40,9 +39,9 @@ const BasicSwitchThumb = styled('span')(`
   display: block;
   width: 12px;
   height: 12px;
-  top: 2px;
-  left: 2px;
-  border-radius: 16px;
+  top: 1.8px;
+  left: 3px;
+  border-radius: 50%;
   background-color: #FFF;
   position: relative;
   transition: all 200ms ease;
@@ -53,8 +52,8 @@ const BasicSwitchThumb = styled('span')(`
   }
 
   &.Switch-checked {
-    left: 27px;
-    top: 2px;
+    left: 25px;
+    top: 1.8px;
     background-color: #FFF;
   }
 `);

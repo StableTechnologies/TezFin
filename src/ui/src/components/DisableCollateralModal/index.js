@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { disableCollateralizeTokenAction, supplyMarketModalAction } from '../../reduxContent/marketModal/actions';
+import { marketAction } from '../../reduxContent/market/actions';
+import { disableCollateralizeTokenAction } from '../../util/modalActions';
 import ConfirmModal from '../ConfirmModal';
 
-import MarketModal from '../MarketModal';
+import DashboardModal from '../DashboardModal';
 
 import { useStyles } from './style';
 
@@ -15,9 +16,8 @@ const DisableCollateralModal = (props) => {
     } = props;
 
     const { account } = useSelector((state) => state.addWallet);
-    const { markets } = useSelector((state) => state.market);
-    const { protocolAddresses } = useSelector((state) => state.nodes);
-    const { supplyMarketModal } = useSelector((state) => state.marketModal);
+    const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
@@ -30,23 +30,22 @@ const DisableCollateralModal = (props) => {
         setConfirmModal(false);
     };
 
-    const disableToken = () => {
+    const disableToken = async() => {
         const { assetType } = tokenDetails;
-        dispatch(disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash));
         close();
         setTokenText('disable');
         handleOpenConfirm();
-        tokenDetails.collateral = false;
+        const response = await disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
+        if(response) {
+          dispatch(marketAction(comptroller, protocolAddresses, server));
+          setConfirmModal(false);
+        }
     };
-
-    useEffect(() => {
-        dispatch(supplyMarketModalAction(account, markets[tokenDetails.assetType]));
-    }, [dispatch, open]);
 
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
-            <MarketModal
+            <DashboardModal
                 headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
                 APYText = {`${tokenDetails.title} ` + 'Variable APY Rate'}
                 Limit = "Borrow Limit"

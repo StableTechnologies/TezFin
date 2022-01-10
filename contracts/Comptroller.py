@@ -346,7 +346,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.if self.data.loans.contains(params.account):
             sp.for asset in self.data.loans[params.account].elements():
                 # only get liquidity for assets that aren't in collaterals to avoid double counting
-                sp.if ~ self.data.collaterals.contains(asset):
+                sp.if ~ self.data.collaterals[params.account].contains(asset):
                     # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
                     # updateAssetPrice() should be executed within 5 blocks prior to this call
                     self.getAccountLiquidityForAsset(asset, params.account)
