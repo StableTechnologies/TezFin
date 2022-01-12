@@ -30,7 +30,7 @@ const Header = () => {
             dispatch(supplyCompositionAction(account));
             dispatch(borrowCompositionAction(account));
         }
-    }, [dispatch]);
+    }, [dispatch, account]);
 
     return (
         <HeaderCon className={classes1.root}>

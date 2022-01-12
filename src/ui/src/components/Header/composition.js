@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 
 import CustomizedProgressBars from '../ProgressBar';
 import { useStyles } from './style';
+import { decimalify } from '../../util';
 
 const Composition = (props) => {
     const classes = useStyles();
@@ -37,8 +38,13 @@ const Composition = (props) => {
                   </Grid>
                   <Grid item>
                     <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
-                    <Typography className={classes.statsValue}>${'0.00'}</Typography>
-                    {/* <Typography className={classes.statsValue}>${(data.collateral || data.Limit) || "0.00"}</Typography> */}
+                    <Typography className={classes.statsValue}>
+                      ${
+                        ((data.collateral > 0) || (data.borrowLimit > 0)) ?
+                        decimalify((data.collateral || data.borrowLimit), 24, 2) :
+                        "0.00"
+                      }
+                    </Typography>
                   </Grid>
                 </Grid>
               </Grid>
