@@ -41,7 +41,7 @@ const DashboardModal = (props) => {
 	};
 
   const scale = new BigNumber('1000000000000000000');
-  if(account.length > 0) {
+  if(account.health) {
     tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
     tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
   }
@@ -51,143 +51,141 @@ const DashboardModal = (props) => {
 	}, [close]);
 
 	return (
-			<React.Fragment>
-				<Dialog open={open} className={classes.root}>
-					<CloseButton onClick={close} />
-					<DialogTitle>
-						<div>
-							<img src={tokenDetails.logo} alt="logo" className={classes.img} />
-							<Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-								{tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
-								{" "} {tokenDetails.banner}
-							</Typography>
-						</div>
-					</DialogTitle>
-					{(!visibility || collateralize) &&
-						<DialogContent>
-							<img src={Tez} alt="logo" className={classes.tezImg} />
-						</DialogContent>
-					}
-					{(visibility && !collateralize) ?
-					<DialogContent className={classes.formFieldCon}>
-								<form className={classes.form}>
-									<TextField
-										id="tokenValue"
-										type="text"
-										placeholder="0"
-										onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
-										onChange={(e) => amount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
-										value={tokenValue}
-										inputProps={{ className: classes.inputText }}
-										className={classes.textField}
-									/>
-									<Button className={classes.inputBtn} disableRipple> Use Max </Button>
-								</form>
-						</DialogContent> :
-						<DialogContent className={`${classes.padding0} ${extraPadding}`}>
-							<DialogContentText> {headerText} </DialogContentText>
-						</DialogContent>
-					}
-					{collateralize ? '':
-						<>
-							<Tabulator inkBarStyle={mainModal ? ((tabValue === 'one') ? inkBarStyle : inkBarStyleTwo) : inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
-							<DialogContent className={classes.CurrentState}>
-								<Grid container justifyContent="space-between">
-									<Grid item sm={7}>
-										{mainModal ?
-											<Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-												{tabValue === 'one' && CurrentStateText}
-												{tabValue === 'two' && CurrentStateTextTwo}
-											</Typography> :
-											<Typography className={`${classes.modalText} ${classes.imgTitle}`}> {CurrentStateText} </Typography>
-										}
-									</Grid>
-									{mainModal ?
-										<Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-											{(tabValue === 'one') && (decimalify(tokenDetails.marketSize, decimals[tokenDetails.title]) || "0")}
-											{(tabValue === 'two') && (decimalify(tokenDetails.totalBorrowed, decimals[tokenDetails.title]) || "0")}
-											{" "} {tokenDetails.title}
-										</Grid> :
-										<Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-											{decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title])} {" "} {tokenDetails.title}
-										</Grid>
-									}
-								</Grid>
-							</DialogContent>
-								<DialogContent className={classes.apyRate}>
-										<Grid container justifyContent="space-between">
-												<Grid item sm={9}>
-														<div>
-																<img src={tokenDetails.logo} alt="logo" className={classes.img} />
-																{mainModal ?
-																	<Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-																		{tabValue === 'one' && APYText}
-																		{tabValue === 'two' && APYTextTwo}
-																	</Typography> :
-																	<Typography className={`${classes.modalText} ${classes.imgTitle}`}> {APYText} </Typography>
-																}
-														</div>
-												</Grid>
-												{mainModal ?
-												<Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-													{(tabValue === 'one') && (tokenDetails.supplyRate ? Number(tokenDetails.supplyRate).toFixed(2) : "0")}
-													{(tabValue === 'two') && (tokenDetails.borrowRate ? Number(tokenDetails.borrowRate).toFixed(2) : "0")}
-                          {"%"}
-												</Grid> :
-												<Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} > {Number(tokenDetails.rate).toFixed(2) || "0"} {"%"} </Grid>
-												}
-										</Grid>
-								</DialogContent>
-						</>
-					}
-					<DialogContent className={classes.limit}>
-						<Grid container textAlign="justify" justifyContent="space-between">
-							<Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
-							<Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
-						</Grid>
-					</DialogContent>
-					<DialogContent>
-						<Grid container textAlign="justify" justifyContent="space-between">
-							<Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
-							<Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
-						</Grid>
-					</DialogContent>
-					<DialogContent className={classes.progressBarCon}>
-						<Grid container>
-							<Grid item sm={12}>
-									<Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-											<CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
-									</Box>
-							</Grid>
-						</Grid>
-					</DialogContent>
-					<DialogActions>
-						<>
-							{collateralize ?
-								<Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple>
-									{buttonOne}
-								</Button> :
-								<>
-									{(tokenValue && address) ?
-										<>
-											{tabValue === 'one' &&
-												<Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>
-											}
-											{tabValue === 'two' &&
-												<Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub} `} onClick={handleClickTabTwo} disableRipple> {buttonTwo} </Button>
-											}
-										</> :
-										<Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
-											{tabValue === 'one' && buttonOne}
-											{tabValue === 'two' && buttonTwo}
-										</Button>
-									}
-								</>
-							}
-						</>
-					</DialogActions>
-				</Dialog>
-			</React.Fragment>
+    <React.Fragment>
+      <Dialog open={open} className={classes.root}>
+        <CloseButton onClick={close} />
+        <DialogTitle>
+          <div>
+            <img src={tokenDetails.logo} alt="logo" className={classes.img} />
+            <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+              {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
+              {" "} {tokenDetails.banner}
+            </Typography>
+          </div>
+        </DialogTitle>
+        {(!visibility || collateralize) &&
+          <DialogContent>
+            <img src={Tez} alt="logo" className={classes.tezImg} />
+          </DialogContent>
+        }
+        {(visibility && !collateralize) ?
+        <DialogContent className={classes.formFieldCon}>
+          <form className={classes.form}>
+            <TextField
+              id="tokenValue"
+              type="text"
+              placeholder="0"
+              onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
+              onChange={(e) => amount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
+              value={tokenValue}
+              inputProps={{ className: classes.inputText }}
+              className={classes.textField}
+            />
+            <Button className={classes.inputBtn} disableRipple> Use Max </Button>
+          </form>
+          </DialogContent> :
+          <DialogContent className={`${classes.padding0} ${extraPadding}`}>
+            <DialogContentText> {headerText} </DialogContentText>
+          </DialogContent>
+        }
+        {collateralize ? '':
+          <>
+            <Tabulator inkBarStyle={mainModal ? ((tabValue === 'one') ? inkBarStyle : inkBarStyleTwo) : inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
+            <DialogContent className={classes.CurrentState}>
+              <Grid container justifyContent="space-between">
+                <Grid item sm={7}>
+                  {mainModal ?
+                    <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+                      {tabValue === 'one' && CurrentStateText}
+                      {tabValue === 'two' && CurrentStateTextTwo}
+                    </Typography> :
+                    <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {CurrentStateText} </Typography>
+                  }
+                </Grid>
+                {mainModal ?
+                  <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                    {(tabValue === 'one') && (decimalify(tokenDetails.marketSize, decimals[tokenDetails.title]) || "0")}
+                    {(tabValue === 'two') && (decimalify(tokenDetails.totalBorrowed, decimals[tokenDetails.title]) || "0")}
+                    {" "} {tokenDetails.title}
+                  </Grid> :
+                  <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                    {decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title])} {" "} {tokenDetails.title}
+                  </Grid>
+                }
+              </Grid>
+            </DialogContent>
+              <DialogContent className={classes.apyRate}>
+                  <Grid container justifyContent="space-between">
+                    <Grid item sm={9}>
+                      <img src={tokenDetails.logo} alt="logo" className={classes.img} />
+                      {mainModal ?
+                        <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+                          {tabValue === 'one' && APYText}
+                          {tabValue === 'two' && APYTextTwo}
+                        </Typography> :
+                        <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {APYText} </Typography>
+                      }
+                    </Grid>
+                    {mainModal ?
+                    <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
+                      {(tabValue === 'one') && (tokenDetails.supplyRate ? Number(tokenDetails.supplyRate).toFixed(2) : "0")}
+                      {(tabValue === 'two') && (tokenDetails.borrowRate ? Number(tokenDetails.borrowRate).toFixed(2) : "0")}
+                      {"%"}
+                    </Grid> :
+                    <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} > {Number(tokenDetails.rate).toFixed(2) || "0"} {"%"} </Grid>
+                    }
+                  </Grid>
+              </DialogContent>
+          </>
+        }
+        <DialogContent className={classes.limit}>
+          <Grid container textAlign="justify" justifyContent="space-between">
+            <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
+            <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
+          </Grid>
+        </DialogContent>
+        <DialogContent className={classes.limitUsed}>
+          <Grid container textAlign="justify" justifyContent="space-between">
+            <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
+            <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogContent className={classes.progressBarCon}>
+          <Grid container>
+            <Grid item xs={12}>
+                <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
+                    <CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
+                </Box>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <>
+            {collateralize ?
+              <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple>
+                {buttonOne}
+              </Button> :
+              <>
+                {(tokenValue && address) ?
+                  <>
+                    {tabValue === 'one' &&
+                      <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>
+                    }
+                    {tabValue === 'two' &&
+                      <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub} `} onClick={handleClickTabTwo} disableRipple> {buttonTwo} </Button>
+                    }
+                  </> :
+                  <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
+                    {tabValue === 'one' && buttonOne}
+                    {tabValue === 'two' && buttonTwo}
+                  </Button>
+                }
+              </>
+            }
+          </>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
 	);
 };
 

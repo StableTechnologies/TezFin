@@ -3,18 +3,21 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles({
     root: {
         '& .MuiDialog-paper': {
-            maxWidth: '472px',
-            maxHeight: '700px',
+            // maxWidth: '472px',
+            // maxHeight: '700px',
             textAlign: 'center',
             borderRadius: '0',
             color: '#000'
         },
         '& .MuiDialogTitle-root': {
-            padding: '1.625rem 2.5rem 1.2rem'
+            padding: '1.625rem 2.5rem 0'
         },
         '& .MuiDialogContent-root': {
             overflow: 'hidden',
             padding: '0 2.5rem .5rem',
+            '@media(max-width: 501px)': {
+              padding: '0 0.5rem .5rem',
+            },
         },
         '& .MuiDialogContentText-root': {
             fontWeight: '300',
@@ -28,7 +31,17 @@ export const useStyles = makeStyles({
         },
         '& .MuiDialogActions-root': {
             padding: '0',
-            margin: '2.9375rem 2.875rem 2.75rem'
+            margin: '2.9375rem 2.875rem 2.75rem',
+            '@media(max-width: 768px)': {
+              margin: '30px 2.875rem',
+            },
+            '@media(max-width: 501px)': {
+              margin: '1.875rem',
+            },
+            '@media(max-width: 320px)': {
+              marginLeft: '1rem',
+              marginRight: '1rem',
+            },
         },
         '& .MuiOutlinedInput-notchedOutline': {
             border: '0'
@@ -42,15 +55,11 @@ export const useStyles = makeStyles({
         }
     },
 
-    '@media(min-width: 1024px)': {
-        padding0: {
-            // padding: '0 !important',
-        }
-    },
+
     img: {
         width: '1.5rem',
         height: '1.5rem',
-        margin: '0 .5rem -.4rem 0'
+        margin: '0 .5rem -.3rem 0'
     },
     imgTitle: {
         display: 'inline-block'
@@ -65,25 +74,40 @@ export const useStyles = makeStyles({
     },
     CurrentState: {
         padding: '1.5625rem 2.5rem !important',
-        border: '2px solid #E0E0E0',
+        borderTop: '2px solid #E0E0E0',
         borderBottom: '0',
         textAlign: 'left',
+        '@media(max-width: 768px)': {
+          padding: '1.25rem 2.5rem !important',
+        },
+        '@media(max-width: 501px)': {
+          padding: '1.25rem 0.5rem !important',
+          borderTop: '1px solid #E0E0E0',
+        },
       },
       apyRate: {
-        // padding: '1.5625rem 1.5rem 1.5625rem 0.875rem !important',
         padding: '1.5625rem 1.5rem !important',
         borderTop: '2px solid #E0E0E0',
         borderBottom: '2px solid #E0E0E0',
         textAlign: 'left',
-        // margin: '0 1rem 1.875rem',
-        margin: '0 1rem'
+        margin: '0 1rem',
+        '@media(max-width: 768px)': {
+          padding: '1.25rem 1.5rem !important',
+        },
+        '@media(max-width: 501px)': {
+          padding: '1.25rem 0rem !important',
+          margin: '0 0.5rem',
+        },
     },
     limit: {
-        marginTop: '1.875rem',
-        marginBottom: '1.25rem',
+      paddingTop: '1.875rem !important',
+      paddingBottom: '1.25rem !important',
+    },
+    limitUsed: {
+      paddingBottom: '1.25rem !important',
     },
     progressBarCon: {
-        marginTop: '1.25rem'
+      paddingBottom: '0 !important',
     },
     btnMain: {
         borderRadius: '.5rem',
@@ -119,25 +143,39 @@ export const useStyles = makeStyles({
         fontSize: '1.25rem',
         fontWeight: '300',
         lineHeight: '30px',
+        '@media(max-width: 501px)': {
+          fontSize: '1rem',
+        },
+        '@media(max-width: 376px)': {
+          fontSize: '0.875rem',
+        },
     },
     visibility: {
         visibility: 'hidden'
     },
     formFieldCon: {
-        padding: '66px 0px 85px !important'
-    },
-    form: {
+        padding: '69px 0px 53px !important',
+        '@media(max-width: 768px)': {
+          padding: '35px 0px !important',
+        },
+        '@media(max-width: 501px)': {
+          padding: '0 0px 1.25rem !important',
+        },
+      },
+      form: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-evenly',
         paddingRight: '51px',
-        paddingLeft: '143px'
+        paddingLeft: '143px',
+        '@media(max-width: 501px)': {
+          padding: '0 1rem',
+          justifyContent: 'start',
+        },
     },
     textField: {
         height: '3.5rem',
         width: '186px'
-    // padding: '122px 143px 0',
-    // top: '122px',
     },
     inputText: {
         color: '#000',
@@ -151,7 +189,10 @@ export const useStyles = makeStyles({
         boxSizing: 'border-box',
         '&::placeholder': {
             color: '#BDBDBD'
-        }
+        },
+        '@media(max-width: 501px)': {
+          fontSize: '2rem',
+        },
     },
     inputBtn: {
         fontSize: '1rem',
@@ -163,6 +204,12 @@ export const useStyles = makeStyles({
         '&:hover': {
             color: '#3391F6',
             background: 'transparent'
-        }
+        },
+        '@media(max-width: 501px)': {
+          fontSize: '0.875rem',
+        },
+        '@media(max-width: 320px)': {
+          fontSize: '0.7rem',
+        },
     }
 });
