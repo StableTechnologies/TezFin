@@ -81,7 +81,7 @@ const DashboardModal = (props) => {
               inputProps={{ className: classes.inputText }}
               className={classes.textField}
             />
-            <Button className={classes.inputBtn} disableRipple> Use Max </Button>
+            <Button className={classes.inputBtn} disableRipple> 80% Limit </Button>
           </form>
           </DialogContent> :
           <DialogContent className={`${classes.padding0} ${extraPadding}`}>
