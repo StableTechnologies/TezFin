@@ -7,7 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Link, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { decimalify } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 import { formatBorrowedTokenData } from '../../library/util';
@@ -53,9 +53,8 @@ const BorrowedTokenTable = (props) => {
                 <TableBody>
                     {(displayData.length === 0) &&
                         <TableRow>
-                          <TableCell colSpan={6}>
-                            <Typography className={classes.emptyStateText} textAlign="left"> You are not borrowing assets at this time. </Typography>
-                            <Link href="#" className={classes.emptyStateLink} textAlign="left"> How to borrow assets </Link>
+                          <TableCell colSpan={6} className={classes.emptyStateText}>
+                            You are not borrowing assets at this time.
                           </TableCell>
                         </TableRow>
                     }

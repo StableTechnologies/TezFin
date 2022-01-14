@@ -12,8 +12,8 @@ export const useStyles = makeStyles({
     },
     '& .MuiTable-root': {
       '& .MuiTableRow-root': {
-        height: '3.5rem',
         '& .MuiTableCell-root:first-of-type': {
+          padding: '1.25rem',
           paddingLeft: '.75rem',
           '@media(min-width: 1200px)': {
             paddingLeft: '1.5rem',
@@ -30,7 +30,7 @@ export const useStyles = makeStyles({
     '& .MuiTableCell-root': {
       color: '#000',
       borderBottom: '1px solid #E0E0E0',
-      padding: '.5rem',
+      padding: '.75rem',
       '@media(min-width: 1200px)': {
         paddingLeft: '1.5rem'
       },
@@ -39,6 +39,9 @@ export const useStyles = makeStyles({
       }
     },
     '& .MuiTableHead-root ': {
+      '& .MuiTableRow-root' : {
+        height: '3.5rem',
+      },
       '& .MuiTableCell-root': {
         color: '#BDBDBD',
         fontSize: '.875rem',
@@ -158,16 +161,10 @@ export const useStyles = makeStyles({
     fontSize: '1rem',
     fontWeight: '300',
     lineHeight: '30px',
-    letterSpacing: '0.005em'
-  },
-  emptyStateLink: {
-    color: '#191919',
-    fontSize: '0.75rem',
-    fontWeight: '400',
-    lineHeight: '18px',
-    letterSpacing: '0.0175em',
-    display: 'block',
-    textDecorationColor: '#191919',
+    letterSpacing: '0.005em',
+    '@media(min-width: 768px)': {
+      padding: '21px 35px 21px 30px !important'
+    },
   },
   collateralPadding: {
     '@media(min-width: 968px)': {
