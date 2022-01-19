@@ -81,7 +81,6 @@ const AllMarketModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 inkBarStyleTwo={classes.inkBarStyleTwo}
                 amount={(e) => { setAmount(e); }}
-                progressBarColor={classes.root}
                 visibility={true}
                 mainModal={true}
             />

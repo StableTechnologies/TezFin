@@ -20,6 +20,9 @@ export const useStyles = makeStyles({
             textTransform: 'none',
             fontSize: '1rem',
             fontWeight: '700',
+            '@media(max-width: 320px)': {
+              fontSize: '0.875rem',
+            },
         }
     }
 });

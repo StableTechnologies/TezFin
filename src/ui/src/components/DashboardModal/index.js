@@ -27,7 +27,7 @@ const DashboardModal = (props) => {
 	const {
 		open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
 		LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, amount,
-		collateralize, extraPadding, progressBarColor, CurrentStateText, CurrentStateTextTwo, mainModal
+		collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal
 	} = props;
 
 	const [tabValue, setTabValue] = useState('one');
@@ -154,7 +154,7 @@ const DashboardModal = (props) => {
           <Grid container>
             <Grid item xs={12}>
                 <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                    <CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
+                    <CustomizedProgressBars value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
                 </Box>
             </Grid>
           </Grid>

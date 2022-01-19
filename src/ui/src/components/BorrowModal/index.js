@@ -78,7 +78,6 @@ const BorrowModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 amount={(e) => { setAmount(e); }}
-                progressBarColor={classes.root}
             />
         </>
     );
