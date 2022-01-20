@@ -71,6 +71,7 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
             suppliedMarket[token.assetType].banner = token.banner;
             suppliedMarket[token.assetType].title = token.title;
             suppliedMarket[token.assetType].logo = token.logo;
+            suppliedMarket[token.assetType].usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 suppliedMarket[token.assetType].walletBalance = walletBalance[token.assetType].toString();
             }
@@ -98,6 +99,7 @@ export const borrowedMarketAction = (account, markets) => async (dispatch) => {
             borrowedMarket[token.assetType].banner = token.banner;
             borrowedMarket[token.assetType].title = token.title;
             borrowedMarket[token.assetType].logo = token.logo;
+            borrowedMarket[token.assetType].usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 borrowedMarket[token.assetType].walletBalance = walletBalance[token.assetType].toString();
             }
