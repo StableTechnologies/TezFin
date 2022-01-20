@@ -104,10 +104,10 @@ const SuppliedTokenTable = (props) => {
               <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
               <TableCell align="right">
                 <span>
-                  {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying, decimals[data.title]) : '0.00'} {data.title}
+                  {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : '0.00'} {data.title}
                 </span> <br/>
                 <span className={classes.faintFont}>
-                  ${data.balanceUsd ? decimalify(data.balanceUsd.toString(), decimals[data.title] + 18, 2) : '0.00'}
+									${(data.balanceUnderlying > 0) ? decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
                 </span>
               </TableCell>
               <TableCell align="right" className={classes.switchPadding}>
