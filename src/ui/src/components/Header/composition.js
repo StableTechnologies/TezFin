@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 
 import CustomizedProgressBars from '../ProgressBar';
 import { useStyles } from './style';
-import { decimalify } from '../../util';
+import { decimalify, nFormatter } from '../../util';
 
 const Composition = (props) => {
     const classes = useStyles();
@@ -28,8 +28,9 @@ const Composition = (props) => {
                   </Grid>
                   <Grid item>
                     <Typography className={classes.statsTitle}> {dataTitle} </Typography>
-                    <Typography className={classes.statsValue}>${'0.00'}</Typography>
-                    {/* <Typography className={classes.statsValue}>${data.totalUsdValue || "0.00"}</Typography> */}
+                    <Typography className={classes.statsValue}>
+                      ${(data.totalUsdValue > 0) && nFormatter(decimalify((data.totalUsdValue), 18)) || "0.00"}
+                    </Typography>
                   </Grid>
                 </Grid>
                 <Grid container item xs={6} className={classes.boxTwo}>
@@ -39,9 +40,12 @@ const Composition = (props) => {
                   <Grid item>
                     <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                     <Typography className={classes.statsValue}>
-                      ${
-                        ((data.collateral > 0) || (data.borrowLimit > 0)) ?
-                        decimalify((data.collateral || data.borrowLimit), 24, 2) :
+                      ${(
+                          (data.collateral > 0) && decimalify((data.collateral), 18, 2)||
+                          (data.borrowLimit > 0) && decimalify((data.borrowLimit), 18, 2)
+                          // (data.collateral > 0) && nFormatter(decimalify((data.collateral), 18, 2)) ||
+                          // (data.borrowLimit > 0) && nFormatter(decimalify((data.borrowLimit), 18, 2))
+                        ) ||
                         "0.00"
                       }
                     </Typography>

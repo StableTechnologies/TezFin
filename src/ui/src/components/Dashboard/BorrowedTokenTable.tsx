@@ -8,9 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
-import { decimalify } from '../../util';
+import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
-import { formatBorrowedTokenData } from '../../library/util';
 
 import { useStyles } from './style';
 
@@ -31,7 +30,7 @@ const BorrowedTokenTable = (props) => {
     setMktModal(true);
   };
 
-  const displayData = formatBorrowedTokenData(tableData);
+  const displayData = formatTokenData(tableData);
 
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
@@ -70,15 +69,15 @@ const BorrowedTokenTable = (props) => {
                 <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
                 <TableCell align="right">
                   <span>
-                    {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : "0"} {" "} {data.title}
+                    {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : "0"} {" "} {data.title}
                   </span> <br/>
                   <span className={classes.faintFont}>
-                    ${(data.balanceUnderlying > 0) ? decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
+                    ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                   </span>
                 </TableCell>
                 <TableCell align="right">
                   <span>
-                    ${(data.liquidityUnderlying > 0) ? decimalify((data.liquidityUnderlying * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
+                    ${(data.liquidityUnderlying > 0) ? nFormatter(decimalify((data.liquidityUnderlying * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                   </span>
                 </TableCell>
               </TableRow>

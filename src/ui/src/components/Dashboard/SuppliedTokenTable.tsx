@@ -15,9 +15,8 @@ import DisableCollateralModal from '../DisableCollateralModal';
 import Tez from '../../assets/largeXTZ.svg';
 import questionCircleIcon from '../../assets/questionCircle.svg'
 
-import { decimalify } from '../../util';
+import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
-import { formatSuppliedTokenData } from '../../library/util';
 
 import { useStyles } from './style';
 
@@ -50,7 +49,7 @@ const SuppliedTokenTable = (props) => {
     }
 };
 
-  const displayData = formatSuppliedTokenData(tableData);
+  const displayData = formatTokenData(tableData);
 
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
@@ -104,10 +103,10 @@ const SuppliedTokenTable = (props) => {
               <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
               <TableCell align="right">
                 <span>
-                  {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying.toString(), decimals[data.title]) : '0.00'} {data.title}
+                  {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : '0.00'} {data.title}
                 </span> <br/>
                 <span className={classes.faintFont}>
-									${(data.balanceUnderlying > 0) ? decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
+									${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                 </span>
               </TableCell>
               <TableCell align="right" className={classes.switchPadding}>

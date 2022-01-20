@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
-import { decimalify } from '../../util';
+import { decimalify, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
@@ -58,28 +58,28 @@ const AllMarketTokenTable = (props) => {
               </TableCell>
               <TableCell align="right">
                 <span>
-                  {(data.marketSize > 0) ? decimalify(data.marketSize.toString(), decimals[data.title]) : "0"} {" "} {data.title}
+                  {(data.marketSize > 0) ? nFormatter(decimalify(data.marketSize.toString(), decimals[data.title])) : "0"} {" "} {data.title}
                 </span> <br/>
                 <span className={classes.faintFont}>
-                  ${(data.marketSize > 0) ? decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
+                  ${(data.marketSize > 0) ? nFormatter(decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                 </span>
               </TableCell>
               <TableCell align="right">
                 <span>
-                  {(data.totalBorrowed > 0) ? decimalify(data.totalBorrowed.toString(), decimals[data.title]) : "0"} {" "} {data.title}
+                  {(data.totalBorrowed > 0) ? nFormatter(decimalify(data.totalBorrowed.toString(), decimals[data.title])) : "0"} {" "} {data.title}
                 </span> <br/>
                 <span className={classes.faintFont}>
-                  ${(data.totalBorrowed > 0) ? decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
+                  ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                 </span>
               </TableCell>
               <TableCell align="right"> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(2) : "0"}% </TableCell>
               <TableCell align="right"> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(2) : "0"}% </TableCell>
               <TableCell align="right">
                 <span>
-                  {(data.walletBalance > 0) ? decimalify(data.walletBalance.toString(), decimals[data.title]) : "0"} {data.title}
+                  {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : "0"} {data.title}
                 </span> <br/>
                 <span className={classes.faintFont}>
-                  ${(data.walletBalance > 0) ? decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title]) : "0.00"}
+                  ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                 </span>
               </TableCell>
             </TableRow>

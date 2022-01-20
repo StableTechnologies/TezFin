@@ -31,6 +31,7 @@ export const useStyles = makeStyles({
       color: '#000',
       borderBottom: '1px solid #E0E0E0',
       padding: '.75rem',
+      whiteSpace: 'nowrap',
       '@media(min-width: 1200px)': {
         paddingLeft: '1.5rem'
       },
