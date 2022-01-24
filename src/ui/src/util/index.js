@@ -161,7 +161,6 @@ export const nFormatter = (num, formatDecimals = 4) =>{
     { value: 1E3, symbol: "k" },
     { value: 1E6, symbol: "M" },
     { value: 1E9, symbol: "B" },
-    { value: 1E12, symbol: "T" },
   ];
   var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
   let i;

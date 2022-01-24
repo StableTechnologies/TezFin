@@ -1,4 +1,5 @@
 import React from 'react';
+import { BigNumber } from 'bignumber.js';
 
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
@@ -7,6 +8,7 @@ import Box from '@mui/material/Box';
 import CustomizedProgressBars from '../ProgressBar';
 import { useStyles } from './style';
 import { decimalify, nFormatter } from '../../util';
+import StackedBars from '../StackedBars';
 
 const Composition = (props) => {
     const classes = useStyles();
@@ -14,11 +16,13 @@ const Composition = (props) => {
         title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor
     } = props;
 
+
     return (
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
             <Box className={classes.progressBar}>
-                <CustomizedProgressBars backgroundColor={progressBarColor} height='16px'/>
+                {/* <CustomizedProgressBars backgroundColor={progressBarColor} height='16px'/> */}
+                <StackedBars />
             </Box>
             <Box className={classes.box}>
               <Grid container>
@@ -29,7 +33,7 @@ const Composition = (props) => {
                   <Grid item>
                     <Typography className={classes.statsTitle}> {dataTitle} </Typography>
                     <Typography className={classes.statsValue}>
-                      ${(data.totalUsdValue > 0) && nFormatter(decimalify((data.totalUsdValue), 18)) || "0.00"}
+                      ${(data.totalUsdValue > 0) && nFormatter(decimalify((data.totalUsdValue), 18),2) || "0.00"}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -41,10 +45,8 @@ const Composition = (props) => {
                     <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                     <Typography className={classes.statsValue}>
                       ${(
-                          (data.collateral > 0) && decimalify((data.collateral), 18, 2)||
-                          (data.borrowLimit > 0) && decimalify((data.borrowLimit), 18, 2)
-                          // (data.collateral > 0) && nFormatter(decimalify((data.collateral), 18, 2)) ||
-                          // (data.borrowLimit > 0) && nFormatter(decimalify((data.borrowLimit), 18, 2))
+                          (data.collateral > 0) && nFormatter(decimalify((data.collateral), 18),2) ||
+                          (data.borrowLimit > 0) && nFormatter(decimalify((data.borrowLimit), 18),2)
                         ) ||
                         "0.00"
                       }

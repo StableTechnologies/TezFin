@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { BigNumber } from 'bignumber.js';
 import bigInt from 'big-integer';
 
-import { decimalify, undecimalify } from '../../util';
+import { decimalify, nFormatter, undecimalify } from '../../util';
 
 import Box from '@mui/material/Box';
 import CloseButton from '../CloseButton';
@@ -141,7 +141,7 @@ const DashboardModal = (props) => {
         <DialogContent className={classes.limit}>
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
-            <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
+            <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> ${nFormatter(tokenDetails.borrowLimit, 2) || '0.00'}</Grid>
           </Grid>
         </DialogContent>
         <DialogContent className={classes.limitUsed}>
