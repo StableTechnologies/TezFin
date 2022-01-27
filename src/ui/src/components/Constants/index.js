@@ -22,3 +22,13 @@ export const tokens = [
         title: 'USDtz', logo: USDtz, banner: 'USDtz', assetType: ''
     }
 ];
+export const tokenColor = {
+  XTZ: '#3391F6',
+  ETH: '#2FC396',
+  BTC: '#E9EE08',
+  USD: 'lavender',
+  ETHtz: '#2FC396',
+  BTCtz: '#E9EE08',
+  USDtz: 'lavender',
+};
+
