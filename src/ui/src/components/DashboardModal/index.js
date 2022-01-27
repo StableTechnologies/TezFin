@@ -40,7 +40,7 @@ const DashboardModal = (props) => {
 		setTabValue(newValue);
 	};
 
-  const scale = new BigNumber('1000000000000000000');
+  const scale = new BigNumber('1000000000000000000000000');
   if(account.health) {
     tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
     tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
