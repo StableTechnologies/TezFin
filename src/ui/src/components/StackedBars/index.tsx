@@ -14,14 +14,14 @@ const barData = [
 const StackedBars = (props) => {
   const classes = useStyles();
 
-  const { barData2 } = props;
+  const { composition } = props;
 
   return (
     <>
       <Box className={classes.progressBar}>
-        {barData && barData.map(bar =>
-          <LightTooltip title = {`${bar.width}% ${bar.name}`} placement="bottom">
-            <Box data-size="5" className={classes.progress} style= {{background:`${bar.color}`, width:`${bar.width}%` }}/>
+        {composition.assets && composition.assets.map(bar =>
+          <LightTooltip key={bar.title} title={`${bar.rate}% ${bar.title}`} placement="bottom">
+            <Box data-size="5" className={classes.progress} style= {{background:`${bar.color}`, width:`${bar.rate}%` }}/>
           </LightTooltip>
         )}
       </Box>

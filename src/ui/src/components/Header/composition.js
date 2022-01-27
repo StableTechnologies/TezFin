@@ -13,7 +13,7 @@ import StackedBars from '../StackedBars';
 const Composition = (props) => {
     const classes = useStyles();
     const {
-        title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor
+        title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor, supplyBar
     } = props;
 
 
@@ -21,8 +21,10 @@ const Composition = (props) => {
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
             <Box className={classes.progressBar}>
-                {/* <CustomizedProgressBars backgroundColor={progressBarColor} height='16px'/> */}
-                <StackedBars />
+              {supplyBar ?
+                <StackedBars composition={data} /> :
+                <CustomizedProgressBars backgroundColor={progressBarColor} height='16px'/>
+              }
             </Box>
             <Box className={classes.box}>
               <Grid container>
@@ -33,7 +35,7 @@ const Composition = (props) => {
                   <Grid item>
                     <Typography className={classes.statsTitle}> {dataTitle} </Typography>
                     <Typography className={classes.statsValue}>
-                      ${(data.totalUsdValue > 0) && nFormatter(decimalify((data.totalUsdValue), 18),2) || "0.00"}
+                      ${(data.totalUsdValue > 0) && nFormatter(data.totalUsdValue, 2) || "0.00"}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -45,8 +47,9 @@ const Composition = (props) => {
                     <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                     <Typography className={classes.statsValue}>
                       ${(
+                        // TODO; cal collateral properly
                           (data.collateral > 0) && nFormatter(decimalify((data.collateral), 18),2) ||
-                          (data.borrowLimit > 0) && nFormatter(decimalify((data.borrowLimit), 18),2)
+                          (data.borrowLimit > 0) && nFormatter(data.borrowLimit, 2)
                         ) ||
                         "0.00"
                       }

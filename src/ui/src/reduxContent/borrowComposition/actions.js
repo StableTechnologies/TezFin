@@ -1,4 +1,9 @@
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
+import { TezosLendingPlatform, decimals } from 'tezoslendingplatformjs';
+import { BigNumber } from "bignumber.js";
+import bigInt from 'big-integer';
+import { decimalify } from '../../util';
+import { tokenColor } from '../../components/Constants';
+
 import { GET_BORROW_COMPOSITION_DATA } from './types.js';
 
 /**
@@ -7,7 +12,34 @@ import { GET_BORROW_COMPOSITION_DATA } from './types.js';
  * @param   account
  * @returns borrowComposition
  */
-export const borrowCompositionAction = (account) => async (dispatch) => {
-    const borrowComposition = TezosLendingPlatform.borrowComposition(account);
+export const borrowCompositionAction = (account, borrowedMarkets) => async (dispatch) => {
+    let borrowComposition = {} ;
+    let assets = [];
+
+    if(Object.keys(borrowedMarkets).length > 0) {
+      borrowedMarkets.map(x => {
+        assets.push({
+          title: x.title,
+          usdPrice: x.usdPrice,
+          balanceUnderlying: x.balanceUnderlying,
+          total: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title]),
+        })
+      });
+
+      const totalUsdValue = assets.reduce((a,b) => a + b.total, 0);
+      assets.map(x => {
+        x.rate = (x.total / totalUsdValue) * 100
+      })
+      const scale = new BigNumber('1000000000000000000000000');
+      const borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+
+
+      borrowComposition = {
+        assets: assets,
+        totalUsdValue: totalUsdValue,
+        borrowLimit: borrowLimit,
+      }
+    }
+
     dispatch({ type: GET_BORROW_COMPOSITION_DATA, payload: borrowComposition });
 };

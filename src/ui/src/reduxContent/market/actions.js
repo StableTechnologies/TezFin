@@ -8,6 +8,7 @@ import {
 import { BigNumber } from "bignumber.js";
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { tokens } from '../../components/Constants';
+import { formatTokenData } from '../../util';
 
 /**
  * This function is used to get the market data .
@@ -64,7 +65,6 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
     const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
     const suppliedTokens = [...tokens];
     const walletBalance = account.underlyingBalances || [];
-
     suppliedTokens.map((token) => {
         if (Object.keys(suppliedMarket).length > 0 && suppliedMarket.hasOwnProperty(token.assetType)) {
             suppliedMarket[token.assetType].assetType = token.assetType;
@@ -78,7 +78,7 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
         }
         return suppliedMarket;
     });
-    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: Object.values(suppliedMarket) });
+    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(Object.values(suppliedMarket)) });
 };
 
 /**
@@ -107,5 +107,5 @@ export const borrowedMarketAction = (account, markets) => async (dispatch) => {
         return borrowedMarket;
     });
 
-    dispatch({ type: GET_BORROWED_MARKET_DATA, payload: Object.values(borrowedMarket) });
+    dispatch({ type: GET_BORROWED_MARKET_DATA, payload: formatTokenData(Object.values(borrowedMarket)) });
 };
