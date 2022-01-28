@@ -1,14 +1,15 @@
 import React from 'react';
-import { BigNumber } from 'bignumber.js';
 
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 
-import CustomizedProgressBars from '../ProgressBar';
-import { useStyles } from './style';
-import { decimalify, nFormatter } from '../../util';
+import { ToolTipProgressBars } from '../ProgressBar';
 import StackedBars from '../StackedBars';
+
+import { decimalify, nFormatter } from '../../util';
+import { useStyles } from './style';
+
 
 const Composition = (props) => {
     const classes = useStyles();
@@ -20,10 +21,15 @@ const Composition = (props) => {
     return (
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
-            <Box className={classes.progressBar}>
+            <Box className={classes.progressBar} sx={{position: 'relative'}}>
               {supplyBar ?
                 <StackedBars composition={data} /> :
-                <CustomizedProgressBars backgroundColor={progressBarColor} height='16px'/>
+                <>
+                  <ToolTipProgressBars value={Number(data.rate)} backgroundColor={progressBarColor} height='16px'/>
+                  <Typography className={classes.limitText}>
+                    {data.limitBalance && `$${nFormatter(data.limitBalance,2)} Left`}
+                  </Typography>
+                </>
               }
             </Box>
             <Box className={classes.box}>

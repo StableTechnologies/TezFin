@@ -8,7 +8,8 @@ export const useStyles = makeStyles({
     display: 'flex',
     backgroundColor: '#EAEAEA',
     height: '16px',
-    maxWidth: '100%'
+    width: '100%',
+    maxWidth: '100%',
   },
 
   progress: {
@@ -27,8 +28,6 @@ export const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
     letterSpacing: '0.005em',
     marginTop: '9px !important',
     boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.25)'
-
-    // marginRight: '30px'
   },
   [`& .${tooltipClasses.arrow}`]: {
     color: '#fff',

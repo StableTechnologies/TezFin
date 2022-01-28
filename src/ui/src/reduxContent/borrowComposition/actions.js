@@ -27,17 +27,21 @@ export const borrowCompositionAction = (account, borrowedMarkets) => async (disp
       });
 
       const totalUsdValue = assets.reduce((a,b) => a + b.total, 0);
-      assets.map(x => {
-        x.rate = (x.total / totalUsdValue) * 100
-      })
+      // assets.map(x => {
+      //   x.rate = (x.total / totalUsdValue) * 100
+      // })
       const scale = new BigNumber('1000000000000000000000000');
       const borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
 
+      const rate = ((totalUsdValue / borrowLimit) * 100).toFixed(2);
+      const limitBalance = borrowLimit - totalUsdValue;
 
       borrowComposition = {
         assets: assets,
         totalUsdValue: totalUsdValue,
         borrowLimit: borrowLimit,
+        rate: rate,
+        limitBalance: limitBalance
       }
     }
 

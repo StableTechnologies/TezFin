@@ -173,6 +173,11 @@ export const useStyles = makeStyles({
             width: '95%'
         }
     },
+    limitText: {
+      fontSize: '0.75rem',
+      textAlign: 'center',
+      lineHeight: '18px'
+    },
     addWalletCon: {
         paddingTop: '2.1875rem',
         paddingRight: '2.5rem',
