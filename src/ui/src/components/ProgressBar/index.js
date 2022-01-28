@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import Tooltip from '@mui/material/Tooltip';
-import { Typography } from '@mui/material';
 
 import { tooltipStyles } from './style';
 
@@ -36,7 +35,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ height, value, width }) =
               value={value || 0}
               className={backgroundColor}
               height={height}
-              />
+            />
         </Box>
     );
   };

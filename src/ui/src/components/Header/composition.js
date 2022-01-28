@@ -21,7 +21,7 @@ const Composition = (props) => {
     return (
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
-            <Box className={classes.progressBar} sx={{position: 'relative'}}>
+            <Box className={classes.progressBar}>
               {supplyBar ?
                 <StackedBars composition={data} /> :
                 <>
