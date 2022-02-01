@@ -1,15 +1,17 @@
 {
   "OriginatorAddress": "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE",
-  "Governance": "KT1A7VB84jAoQyqBxy5rghfvDkPaQi6XRTyp",
+  "Governance": "KT1FXgqoeqXYEyUe28od6u8wvoyNvYZYDMK5",
   "PriceOracle": "KT1PMQZxQTrFPJn3pEaj9rvGfJA9Hvx7Z1CL",
-  "Comptroller": "KT1AD8rvgSHoM8SrNRzCVxLpDM6eKFgNH3kU",
-  "CFA12_IRM": "KT1R1vM6rVnR532w95E7cGAYY3rSNz8hq8fi",
-  "CToken_IRM": "KT1RcLfeKnPnkhupeFfsUVU9ZGvZuZLyfTHw",
-  "CXTZ_IRM": "KT1NRFY1vtLGh2buux35uQpabyJRsqYjSAVB",
-  "CFA2_IRM": "KT1BkEsTJDGpKugb86zdFyVm3EvuT2aeoyz6",
-  "FA2": "KT1JqmwY3JJoHN7uh75pALrAx6sSpRbEZc9R",
-  "CFA2": "KT1Mr7BTETa2qtEJ2Y7by1pMAfHZhzWfH2Bk",
-  "FA12": "KT1TVRtzyN7QysJquDBD6e36Etzj3w7jxReQ",
-  "CFA12": "KT1VGLyMmt11c4adNArXYH9dPaB7LLXoz8K5",
-  "CXTZ": "KT1Gbc2VCqF7W5TQiGszSM49nckf9igYmj3M"
+  "TezFinOracle": "KT1Fm2rUTFTEvSFFb1uuM37qvfPgX5jjPseW",
+  "Comptroller": "KT1QfVHeiSQRTHPea4vK6xPSWYoQN6kiybL2",
+  "CFA12_IRM": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
+  "CXTZ_IRM": "KT1PjNsun8w7U56NJq1iBoixoum9P9r5xdDJ",
+  "CFA2_IRM": "KT1N4QRtky7EiuLwyPNQyVjQfD8hKW5QGDK9",
+  "BTCtz": "KT1JqmwY3JJoHN7uh75pALrAx6sSpRbEZc9R",
+  "ETHtz": "KT1TVRtzyN7QysJquDBD6e36Etzj3w7jxReQ",
+  "USDtz": "KT1W7NpbdSs3Kmbb76dcvsNVxRXBxYzWxkGk",
+  "CBTCtz": "KT1SEvLFnXa5xHUWRHp6y1pEersbR7SSGGtQ",
+  "CXTZ": "KT1KaLR4woR7bTyqZGknM5mnZyukDKmyF5cf",
+  "CETHtz": "KT1PKi3L5CgxbGm8qTzrck8zBfrmhui8jVxe",
+  "CUSDtz": "KT1GcriPWWKCaUFp5TzWfNXSeiGLhoztr2f5"
 }

@@ -7,7 +7,7 @@
     "postinstall": "npm run build",
     "build": "rm -rf ./build/ && tsc",
     "test": "npm run build && clear && npm run start",
-    "start": "node ./build/src/index.js > log/log.json"
+    "start": "node ./build/src/index.js"
   },
   "author": "itamarreif",
   "license": "ISC",

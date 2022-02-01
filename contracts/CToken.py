@@ -10,8 +10,6 @@ Exponential = sp.io.import_script_from_url("file:contracts/utils/Exponential.py"
 SweepTokens = sp.io.import_script_from_url("file:contracts/utils/SweepTokens.py")
 OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
 
-UPDATE_ACCRUE_INTEREST_PERIOD = 5 # The number of blocks since the last accrue interest update is valid
-
 class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
     def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
         Exponential.Exponential.__init__(
@@ -36,7 +34,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             administrator = administrator_, # Administrator`s address for this contract
             pendingAdministrator = sp.none, # Pending administrator`s address for this contract
             activeOperations = sp.set(t=sp.TNat), # Set of currently active operations to protect execution flow
-            accrualIntPeriodRelevance = sp.nat(UPDATE_ACCRUE_INTEREST_PERIOD),
             **extra_storage
         )
 

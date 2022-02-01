@@ -79,6 +79,11 @@ export interface BorrowMarketModal {
     underlyingDecimals: number;
 }
 
+export interface OracleMap {
+    id: number;
+    path: string;
+}
+
 /*
     * @description Addresses of the protocol contracts
     *
@@ -95,7 +100,7 @@ export interface ProtocolAddresses {
     comptroller: string;
     interestRateModel: { [underlying: string]: string };
     governance: string;
-    oracleMap: number;
+    oracleMap: { [assetType: string]: OracleMap };
 }
 
 /*

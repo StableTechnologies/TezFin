@@ -7,6 +7,7 @@ export enum AssetType {
     FA12 = "FA12",
     FA2 = "FA2",
     ETH = "ETH",
+    USD = "USD",
     BTC = "BTC"
 }
 
