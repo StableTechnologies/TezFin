@@ -31,7 +31,6 @@ const CollateralizeModal = (props) => {
 
     const collateralizeToken = async() => {
         const { assetType } = tokenDetails;
-        console.log("collateral", assetType, protocolAddresses, publicKeyHash)
         close();
         setTokenText('collateral');
         handleOpenConfirm();

@@ -3,8 +3,7 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles({
     root: {
         '& .MuiDialog-paper': {
-            // maxWidth: '472px',
-            // maxHeight: '700px',
+            maxWidth: '472px',
             textAlign: 'center',
             borderRadius: '0',
             color: '#000'
@@ -25,9 +24,12 @@ export const useStyles = makeStyles({
             lineHeight: '1.875rem',
             letterSpacing: '0.05em',
             '@media(min-width: 1024px)': {
-                margin: '1.25rem 3.125rem',
+              margin: '1.25rem 3.125rem',
                 padding: '0'
-            }
+              },
+              '@media(max-width: 500px)': {
+                fontSize: '.875rem',
+            },
         },
         '& .MuiDialogActions-root': {
             padding: '0',
@@ -149,6 +151,9 @@ export const useStyles = makeStyles({
         '@media(max-width: 376px)': {
           fontSize: '0.875rem',
         },
+        '@media(max-width: 320px)': {
+          fontSize: '0.75rem',
+        },
     },
     visibility: {
         visibility: 'hidden'
@@ -172,10 +177,13 @@ export const useStyles = makeStyles({
           padding: '0 1rem',
           justifyContent: 'start',
         },
-    },
-    textField: {
+      },
+      textField: {
         height: '3.5rem',
-        width: '186px'
+        width: '186px',
+        '@media(max-width: 320px)': {
+          width: '145px',
+        },
     },
     inputText: {
         color: '#000',

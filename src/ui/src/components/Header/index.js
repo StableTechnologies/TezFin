@@ -24,13 +24,15 @@ const Header = () => {
     const { supplyComposition } = useSelector((state) => state.supplyComposition);
     const { borrowComposition } = useSelector((state) => state.borrowComposition);
     const account = useSelector((state) => state.addWallet.account);
+    const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state) => state.market);
+
 
     useEffect(() => {
         if (account) {
-            dispatch(supplyCompositionAction(account));
-            dispatch(borrowCompositionAction(account));
+            dispatch(supplyCompositionAction(account, suppliedMarkets));
+            dispatch(borrowCompositionAction(account, borrowedMarkets));
         }
-    }, [dispatch]);
+    }, [dispatch, account, suppliedMarkets, borrowedMarkets]);
 
     return (
         <HeaderCon className={classes1.root}>
@@ -53,6 +55,7 @@ const Header = () => {
                     dataLimitTitle = "Collateralized"
                     gridClass={classes.compositionOne}
                     progressBarColor={classes.supplyBarColor} // add class
+                    supplyBar
                 />
                 <Composition
                     title = "Borrow Limit"

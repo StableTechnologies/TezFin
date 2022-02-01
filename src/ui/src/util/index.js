@@ -6,6 +6,7 @@ import {
     TezosNodeWriter
 } from 'conseiljs';
 
+import bigInt from 'big-integer';
 import { BigNumber } from "bignumber.js";
 import { DAppClient } from '@airgap/beacon-sdk';
 import { Mutex } from 'async-mutex';
@@ -119,14 +120,14 @@ export const confirmOps = async (operations) => {
 };
 
 /**
- * This function that takes a number/string and the number of decimals and returns the decimal version of that number as string type.
+ * This function that takes a number/string and the number of decimals and returns the decimal version of that number.
  *
  * @returns decimal version
  */
 export const decimalify = (val, decimals, formatDecimals = 4) => {
     if (!val) { return val; }
 
-    return Number(new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(formatDecimals)).toLocaleString();
+    return Number(new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(formatDecimals));
 }
 
 /**
@@ -138,4 +139,35 @@ export const undecimalify = (val, decimals) => {
     if (!val) { return val; }
 
     return new BigNumber(val.toString()).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(0);
+}
+
+/**
+ * Format token data for display in the market table.
+ */
+ export function formatTokenData(data) {
+  const filtered = data.filter(i => bigInt(i.balanceUnderlying).gt(0));
+  return filtered;
+}
+
+/**
+ * This function abbreviates a number and returns it as a string with it's suffix.
+ * @param  num number to be abbreviated.
+ * @param  formatDecimals number to decimal points.
+ * @returns abbreviated number in string format.
+ */
+export const nFormatter = (num, formatDecimals = 4) =>{
+  let suffix = [
+    { value: 1, symbol: "" },
+    { value: 1E3, symbol: "k" },
+    { value: 1E6, symbol: "M" },
+    { value: 1E9, symbol: "B" },
+  ];
+  var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+  let i;
+  for (i = suffix.length - 1; i > 0; i--) {
+    if (num >= suffix[i].value) {
+      break;
+    }
+  }
+  return (num/suffix[i].value).toFixed(formatDecimals).replace(rx, "$1") + suffix[i].symbol;
 }

@@ -4,20 +4,33 @@ import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 
-import CustomizedProgressBars from '../ProgressBar';
+import { ToolTipProgressBars } from '../ProgressBar';
+import StackedBars from '../StackedBars';
+
+import { decimalify, nFormatter } from '../../util';
 import { useStyles } from './style';
+
 
 const Composition = (props) => {
     const classes = useStyles();
     const {
-        title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor
+        title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor, supplyBar
     } = props;
+
 
     return (
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
             <Box className={classes.progressBar}>
-                <CustomizedProgressBars backgroundColor={progressBarColor} height='16px'/>
+              {supplyBar ?
+                <StackedBars composition={data} /> :
+                <>
+                  <ToolTipProgressBars value={Number(data.rate)} backgroundColor={progressBarColor} height='16px'/>
+                  <Typography className={classes.limitText}>
+                    {data.limitBalance && `$${nFormatter(data.limitBalance,2)} Left`}
+                  </Typography>
+                </>
+              }
             </Box>
             <Box className={classes.box}>
               <Grid container>
@@ -27,8 +40,9 @@ const Composition = (props) => {
                   </Grid>
                   <Grid item>
                     <Typography className={classes.statsTitle}> {dataTitle} </Typography>
-                    <Typography className={classes.statsValue}>${'0.00'}</Typography>
-                    {/* <Typography className={classes.statsValue}>${data.totalUsdValue || "0.00"}</Typography> */}
+                    <Typography className={classes.statsValue}>
+                      ${(data.totalUsdValue > 0) && nFormatter(data.totalUsdValue, 2) || "0.00"}
+                    </Typography>
                   </Grid>
                 </Grid>
                 <Grid container item xs={6} className={classes.boxTwo}>
@@ -37,8 +51,14 @@ const Composition = (props) => {
                   </Grid>
                   <Grid item>
                     <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
-                    <Typography className={classes.statsValue}>${'0.00'}</Typography>
-                    {/* <Typography className={classes.statsValue}>${(data.collateral || data.Limit) || "0.00"}</Typography> */}
+                    <Typography className={classes.statsValue}>
+                      ${(
+                          (data.collateral > 0) && nFormatter(decimalify((data.collateral), 24),2) ||
+                          (data.borrowLimit > 0) && nFormatter(data.borrowLimit, 2)
+                        ) ||
+                        "0.00"
+                      }
+                    </Typography>
                   </Grid>
                 </Grid>
               </Grid>

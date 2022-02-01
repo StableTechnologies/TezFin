@@ -7,7 +7,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
-import Link from '@mui/material/Link';
 
 import Switch from '../Switch';
 import SupplyModal from '../SupplyModal';
@@ -16,9 +15,8 @@ import DisableCollateralModal from '../DisableCollateralModal';
 import Tez from '../../assets/largeXTZ.svg';
 import questionCircleIcon from '../../assets/questionCircle.svg'
 
-import { decimalify } from '../../util';
+import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
-import { formatSuppliedTokenData } from '../../library/util';
 
 import { useStyles } from './style';
 
@@ -51,7 +49,7 @@ const SuppliedTokenTable = (props) => {
     }
 };
 
-  const displayData = formatSuppliedTokenData(tableData);
+  const displayData = formatTokenData(tableData);
 
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
@@ -89,9 +87,8 @@ const SuppliedTokenTable = (props) => {
         <TableBody>
           {(displayData.length === 0) &&
             <TableRow>
-              <TableCell colSpan={6}>
-                <Typography className={classes.emptyStateText} textAlign="left"> You are not supplying assets at this time. </Typography>
-                <Link href="#" className={classes.emptyStateLink} textAlign="left"> How to supply assets </Link>
+              <TableCell colSpan={5} className={classes.emptyStateText}>
+                You are not supplying assets at this time.
               </TableCell>
             </TableRow>
           }
@@ -106,10 +103,10 @@ const SuppliedTokenTable = (props) => {
               <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
               <TableCell align="right">
                 <span>
-                  {(data.balanceUnderlying > 0) ? decimalify(data.balanceUnderlying, decimals[data.title]) : '0.00'} {data.title}
+                  {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : '0.00'} {data.title}
                 </span> <br/>
                 <span className={classes.faintFont}>
-                  ${data.balanceUsd ? decimalify(data.balanceUsd.toString(), decimals[data.title] + 18, 2) : '0.00'}
+									${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                 </span>
               </TableCell>
               <TableCell align="right" className={classes.switchPadding}>
