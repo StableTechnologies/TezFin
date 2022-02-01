@@ -17,12 +17,12 @@ export const granadanetAddresses: ProtocolAddresses = {
         "XTZ": "KT1KaLR4woR7bTyqZGknM5mnZyukDKmyF5cf",
         "ETH": "KT1PKi3L5CgxbGm8qTzrck8zBfrmhui8jVxe",
         "BTC": "KT1SEvLFnXa5xHUWRHp6y1pEersbR7SSGGtQ",
-        "USD": "KT1GcriPWWKCaUFp5TzWfNXSeiGLhoztr2f5"
+        "USD": "KT1H9XbR3iJ81R7GghkSqo1Xc3inUieFW588"
     },
     fTokensReverse: {
         "KT1KaLR4woR7bTyqZGknM5mnZyukDKmyF5cf": AssetType.XTZ,
         "KT1PKi3L5CgxbGm8qTzrck8zBfrmhui8jVxe": AssetType.ETH,
-        "KT1GcriPWWKCaUFp5TzWfNXSeiGLhoztr2f5": AssetType.USD,
+        "KT1H9XbR3iJ81R7GghkSqo1Xc3inUieFW588": AssetType.USD,
         "KT1SEvLFnXa5xHUWRHp6y1pEersbR7SSGGtQ": AssetType.BTC
     },
     underlying: {
@@ -39,8 +39,8 @@ export const granadanetAddresses: ProtocolAddresses = {
             tokenStandard: TokenStandard.FA12,
             decimals: 6,
             address: "KT1V7E1Wj9fAiaq7F2d942GzKLWuZrVuqxrx",
-            balancesMapId: 39991,
-            balancesPath: "$.args[1].int"
+            balancesMapId: 110771,
+            balancesPath: "$.args[0].int"
         },
         "BTC": {
             assetType: AssetType.BTC,

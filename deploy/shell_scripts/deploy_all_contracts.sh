@@ -7,21 +7,21 @@ set -e # Any subsequent(*) commands which fail will cause the shell script to ex
 # && echo "CompileTestData.py was successfully compiled" || echo
 # node ./deploy/deploy_script/deploy.js
 
-# ($1 compile ./deploy/compile_targets/CompileTezFinOracle.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
-# && echo "CompileTezFinOracle.py was successfully compiled" || echo
-# node ./deploy/deploy_script/deploy.js
+($1 compile ./deploy/compile_targets/CompileTezFinOracle.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
+&& echo "CompileTezFinOracle.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy.js
 
-# ($1 compile ./deploy/compile_targets/CompileGovernance.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
-# && echo "CompileGovernance.py was successfully compiled" || echo
-# node ./deploy/deploy_script/deploy.js
+($1 compile ./deploy/compile_targets/CompileGovernance.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
+&& echo "CompileGovernance.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy.js
 
 ($1 compile ./deploy/compile_targets/CompileComptroller.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
 && echo "CompileComptroller.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy.js
 
-# ($1 compile ./deploy/compile_targets/CompileIRMs.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
-# && echo "CompileIRMs.py was successfully compiled" || echo
-# node ./deploy/deploy_script/deploy.js
+($1 compile ./deploy/compile_targets/CompileIRMs.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
+&& echo "CompileIRMs.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy.js
 
 ($1 compile ./deploy/compile_targets/CompileCBTCtz.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
 && echo "CompileCBTCtz.py was successfully compiled" || echo

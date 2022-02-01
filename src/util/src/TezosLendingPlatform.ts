@@ -207,7 +207,7 @@ export namespace TezosLendingPlatform {
                 log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`);
                 const storage = TezosNodeReader.getContractStorage(server, underlying.address!);
                 if (underlying.tokenStandard === TokenStandard.FA12) { // TODO: this is not a good heuristic
-                    underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
+                    underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].int', json: storage })[0]);
                 } else if (underlying.tokenStandard === TokenStandard.FA2) {
                     underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
                 }
