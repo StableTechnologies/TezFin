@@ -1,4 +1,4 @@
-# TezFin Contracts
+# TezFin
 
 This project is the implementation of Compound Protocol on Tezos chain using SmartPy language.
 
