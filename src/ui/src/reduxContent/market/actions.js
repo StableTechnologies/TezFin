@@ -7,8 +7,8 @@ import {
 
 import { BigNumber } from "bignumber.js";
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
-import { tokens } from '../../components/Constants';
 import { formatTokenData } from '../../util';
+import { tokens } from '../../components/Constants';
 
 /**
  * This function is used to get the market data .
@@ -20,7 +20,7 @@ import { formatTokenData } from '../../util';
 export const marketAction = (comptroller, protocolAddresses, server) => async (dispatch) => {
     if (comptroller) {
         const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
-        console.log("markets ::: ", markets)
+        console.log("markets ::: ", markets);
         dispatch({ type: GET_MARKET_DATA, payload: markets });
     }
 };

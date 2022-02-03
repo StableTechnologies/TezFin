@@ -50,7 +50,8 @@ def test():
     harbinger.setPrice(asset="ETH-USD",price=13425).run(sender=admin,now=sp.timestamp(16534534))
     harbinger.setPrice(asset="BTC-USD",price=2342354345).run(sender=admin,now=sp.timestamp(16534534))
     harbinger.setPrice(asset="XTZ-USD",price=203434).run(sender=admin,now=sp.timestamp(16534534))
-    # tezfinOracle.setPrice(asset="USD-USD",price=1000000).run(sender=admin,now=sp.timestamp(16534534))
+    tezfinOracle.setPrice(asset="FIN-USD",price=1000000).run(sender=admin,now=sp.timestamp(16534534))
+    tezfinOracle.removeAsset("FIN-USD").run(sender=admin)
     scenario.h2("Consumer Contract")
     consumer = View_consumer(tezfinOracle.address)
     scenario += consumer

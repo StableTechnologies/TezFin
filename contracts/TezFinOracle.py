@@ -30,6 +30,11 @@ class TezFinOracle(OracleInterface.OracleInterface):
     def setPrice(self, asset, price):
         sp.verify(self.is_admin(sp.sender), message = "NOT_ADMIN")
         self.data.overrides[asset] = (sp.now, price)
+
+    @sp.entry_point
+    def removeAsset(self, asset):
+        sp.verify(self.is_admin(sp.sender), message = "NOT_ADMIN")
+        del self.data.overrides[asset]
         
     @sp.entry_point
     def get(self, requestPair):
