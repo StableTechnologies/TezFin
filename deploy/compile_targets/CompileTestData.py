@@ -11,5 +11,6 @@ UTILS.checkDependencies(CFG.FA12)
 UTILS.checkDependencies(CFG.FA2)
 
 # Oracle.compile()
-FA12.compile(CFG.deployResult.OriginatorAddress)
-FA2.compile(CFG.deployResult.OriginatorAddress)
+FA12.compile("ETHtz",CFG.deployResult.OriginatorAddress)
+FA12.compile("USDtz",CFG.deployResult.OriginatorAddress)
+FA2.compile("BTCtz",CFG.deployResult.OriginatorAddress)

@@ -304,10 +304,10 @@ class TestOffchainView(sp.Contract):
             self.f(sp.record(data = data), params)
         self.data.result = sp.some(b.value)
 
-def compile(adminAddress = "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5"):
+def compile(name, adminAddress = "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5"):
     if "templates" not in __name__:
         sp.add_compilation_target(
-            "FA12",
+            name,
             FA12(
                 admin   = sp.address(adminAddress), # TODO: replace with personal address
                 config  = FA12_config(

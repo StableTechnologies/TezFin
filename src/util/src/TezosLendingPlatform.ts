@@ -79,7 +79,7 @@ export namespace TezosLendingPlatform {
             try {
                 const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server, fTokenType);
                 const rateModel = await InterestRateModel.GetStorage(server, protocolAddresses.interestRateModel[asset]);
-                const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracleMap, server)
+                const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracleMap[protocolAddresses.fTokensReverse[fTokenAddress]], server)
                 markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel, oraclePrice);
             } catch (e) {
                 log.error(`Failed in GetMarkets for ${asset} at ${protocolAddresses.fTokens[asset]} and ${JSON.stringify(protocolAddresses.underlying[asset])} with ${e}`);
@@ -207,7 +207,7 @@ export namespace TezosLendingPlatform {
                 log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`);
                 const storage = TezosNodeReader.getContractStorage(server, underlying.address!);
                 if (underlying.tokenStandard === TokenStandard.FA12) { // TODO: this is not a good heuristic
-                    underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
+                    underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].int', json: storage })[0]);
                 } else if (underlying.tokenStandard === TokenStandard.FA2) {
                     underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
                 }

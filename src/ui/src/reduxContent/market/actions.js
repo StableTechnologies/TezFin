@@ -7,8 +7,8 @@ import {
 
 import { BigNumber } from "bignumber.js";
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
-import { tokens } from '../../components/Constants';
 import { formatTokenData } from '../../util';
+import { tokens } from '../../components/Constants';
 
 /**
  * This function is used to get the market data .
@@ -20,6 +20,7 @@ import { formatTokenData } from '../../util';
 export const marketAction = (comptroller, protocolAddresses, server) => async (dispatch) => {
     if (comptroller) {
         const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
+        console.log("markets ::: ", markets);
         dispatch({ type: GET_MARKET_DATA, payload: markets });
     }
 };
@@ -42,11 +43,11 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
             token.borrow = { ...borrowedMarket[token.assetType] };
             token.usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             token.marketSize = markets[token.assetType].supply.totalAmount.toString();
-			      token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
+            token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
             token.supplyRate = markets[token.assetType].supply.rate.toString();
-			      token.borrowRate = markets[token.assetType].borrow.rate.toString();
+            token.borrowRate = markets[token.assetType].borrow.rate.toString();
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
-              token.walletBalance = walletBalance[token.assetType].toString();
+                token.walletBalance = walletBalance[token.assetType].toString();
             }
         }
         return marketTokens;

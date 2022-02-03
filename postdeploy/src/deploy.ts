@@ -11,17 +11,15 @@ export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAdd
         await supportMarket(asset as TezosLendingPlatform.AssetType, keystore, signer, protocolAddresses);
     for (const asset of config.unpauseMarkets)
         await unpauseMarkets(asset as TezosLendingPlatform.AssetType, keystore, signer, protocolAddresses);
-    for (const asset of config.setPrices.assets)
-        await setPrice(asset as TezosLendingPlatform.AssetType, keystore, signer, protocolAddresses);
     // mint underlyings
-    for (const asset of config.tokenMint)
-        await tokenMint(asset, keystore!, signer!, protocolAddresses!);
+    // for (const asset of config.tokenMint)
+    //     await tokenMint(asset, keystore!, signer!, protocolAddresses!);
 }
 
 export async function tokenMint(asset: string, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
     if (TezosLendingPlatform.assetTypeToStandard(asset as TezosLendingPlatform.AssetType) === TezosLendingPlatform.TokenStandard.FA12) {
         log.info(`minting ${10000 * config.mintAmount} ${asset} tokens`);
-        const tokenMintOpId = await Tzip7ReferenceTokenHelper.mint(config.tezosNode, signer, keystore, protocolAddresses.underlying[asset].address!, config.tx.fee, keystore.publicKeyHash, 100000000000000000000000 * config.mintAmount);
+        const tokenMintOpId = await Tzip7ReferenceTokenHelper.mint(config.tezosNode, signer, keystore, protocolAddresses.underlying[asset].address!, config.tx.fee, keystore.publicKeyHash, 100000000000000 * config.mintAmount);
         const tokenMintResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, tokenMintOpId, config.delay, config.networkBlockTime);
         statOperation(tokenMintResult);
     } else if (TezosLendingPlatform.assetTypeToStandard(asset as TezosLendingPlatform.AssetType) === TezosLendingPlatform.TokenStandard.FA2) {
@@ -80,12 +78,5 @@ async function SetPrice(asset: TezosLendingPlatform.AssetType, price: number, pr
     const parameters = `{"prim": "Pair", "args": [{"string": "${asset}"}, {"int": "${price}"}]} `;
     const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, priceOracleAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
-}
-
-async function setPrice(asset: TezosLendingPlatform.AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
-    log.info(`setPrice(${asset})`);
-    const setPriceOpId = await SetPrice(asset as TezosLendingPlatform.AssetType, config.setPrices.price, protocolAddresses.priceFeed, config.tezosNode, signer, keystore, config.tx.fee);
-    const setPriceResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, setPriceOpId, config.delay, config.networkBlockTime);
-    statOperation(setPriceResult);
 }
 

@@ -1,5 +1,5 @@
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { GET_ACCOUNT } from './types.js';
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 /**
  * This function is used to get the account details of a user.

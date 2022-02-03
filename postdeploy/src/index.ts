@@ -127,6 +127,6 @@ function parseProtocolAddress(path: string): TezosLendingPlatform.ProtocolAddres
             "BTC": protocolAddressesJSON.CFA2_IRM
         },
         governance: protocolAddressesJSON.Governance,
-        priceFeed: protocolAddressesJSON.PriceOracle
+        oracleMap: protocolAddressesJSON.TezFinOracle
     };
 }
