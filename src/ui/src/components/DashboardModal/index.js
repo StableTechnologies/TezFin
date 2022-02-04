@@ -27,7 +27,7 @@ const DashboardModal = (props) => {
 	const {
 		open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
 		LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, amount,
-		collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal
+		collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnText, maxAction, maxAmount
 	} = props;
 
 	const [tabValue, setTabValue] = useState('one');
@@ -49,6 +49,10 @@ const DashboardModal = (props) => {
 	useEffect(() => {
 		setTokenValue('');
 	}, [close]);
+
+	useEffect(() => {
+		setTokenValue(maxAmount)
+	}, [maxAmount]);
 
 	return (
     <React.Fragment>
@@ -81,7 +85,23 @@ const DashboardModal = (props) => {
               inputProps={{ className: classes.inputText }}
               className={classes.textField}
             />
-            <Button className={classes.inputBtn} disableRipple> 80% Limit </Button>
+            {mainModal ?
+              <Button
+                className={classes.inputBtn}
+                onClick={() => {maxAction(tabValue);}}
+                disableRipple
+                >
+                {tabValue === 'one' && "Use Max"}
+                {tabValue === 'two' && "80% Limit"}
+              </Button> :
+              <Button
+                className={classes.inputBtn}
+                onClick={() => {maxAction(tabValue);}}
+                disableRipple
+              >
+                {inputBtnText}
+              </Button>
+            }
           </form>
           </DialogContent> :
           <DialogContent className={`${classes.padding0} ${extraPadding}`}>

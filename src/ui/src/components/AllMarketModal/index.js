@@ -6,6 +6,9 @@ import ConfirmModal from '../ConfirmModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { allMarketAction, marketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
+import { decimalify } from '../../util';
+
+import { decimals } from 'tezoslendingplatformjs';
 
 const AllMarketModal = (props) => {
     const classes = useStyles();
@@ -28,6 +31,20 @@ const AllMarketModal = (props) => {
     const handleCloseConfirm = () => {
       setConfirmModal(false);
     };
+
+    const maxAction = (tabValue) => {
+      if(tabValue === 'one') {
+        if(tokenDetails.title.toLowerCase() === "xtz".toLowerCase()){
+          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
+        }
+        else{
+          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
+        }
+      }
+      if(tabValue === 'two') {
+        setAmount('');
+      }
+    }
 
     const supplyToken = async() => {
       const underlying = tokenDetails.assetType.toLowerCase();
@@ -83,6 +100,9 @@ const AllMarketModal = (props) => {
                 amount={(e) => { setAmount(e); }}
                 visibility={true}
                 mainModal={true}
+                inputBtn = "Use Max"
+                maxAction={(tabValue) => maxAction(tabValue)}
+                maxAmount= {amount}
             />
         </>
     );

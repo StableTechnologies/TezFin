@@ -7,6 +7,9 @@ import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
 
+import { decimalify } from '../../util';
+import { decimals } from 'tezoslendingplatformjs';
+
 const SupplyModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -29,6 +32,19 @@ const SupplyModal = (props) => {
     const handleCloseConfirm = () => {
         setConfirmModal(false);
     };
+    const maxAction = (tabValue) => {
+      if(tabValue === 'one') {
+        if(tokenDetails.title.toLowerCase() === "xtz".toLowerCase()){
+          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
+        }
+        else{
+          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
+        }
+      }
+      if(tabValue === 'two') {
+        setAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
+      }
+    }
 
     const supplyToken = async() => {
         const underlying = tokenDetails.assetType.toLowerCase();
@@ -84,6 +100,9 @@ const SupplyModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 amount={(e) => { setAmount(e); }}
+                inputBtnText = "Use Max"
+                maxAction={(tabValue) => maxAction(tabValue)}
+                maxAmount= {amount}
             />
         </>
     );
