@@ -78,6 +78,7 @@ const BorrowModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 amount={(e) => { setAmount(e); }}
+                inputBtnText = "80% Limit"
             />
         </>
     );
