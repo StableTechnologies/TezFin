@@ -28,7 +28,7 @@ const Header = () => {
 
 
     useEffect(() => {
-        if (account) {
+        if (account.length > 0) {
             dispatch(supplyCompositionAction(account, suppliedMarkets));
             dispatch(borrowCompositionAction(account, borrowedMarkets));
         }
