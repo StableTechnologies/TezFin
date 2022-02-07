@@ -6,7 +6,7 @@ import ConfirmModal from '../ConfirmModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { allMarketAction, marketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
-import { decimalify } from '../../util';
+import { decimalify, undecimalify } from '../../util';
 
 import { decimals } from 'tezoslendingplatformjs';
 
@@ -81,7 +81,7 @@ const AllMarketModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-      setAmount(maxAmount);
+      setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
     }, [maxAmount]);
 
     return (
@@ -107,7 +107,7 @@ const AllMarketModal = (props) => {
                 btnSubTwo={classes.btnSubTwo}
                 inkBarStyle={classes.inkBarStyle}
                 inkBarStyleTwo={classes.inkBarStyleTwo}
-                amount={(e) => { setAmount(e); }}
+                setAmount={(e) => { setAmount(e); }}
                 visibility={true}
                 mainModal={true}
                 inputBtn = "Use Max"

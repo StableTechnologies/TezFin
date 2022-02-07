@@ -77,7 +77,7 @@ const BorrowModal = (props) => {
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
-                amount={(e) => { setAmount(e); }}
+                setAmount={(e) => { setAmount(e); }}
                 inputBtnText = "80% Limit"
             />
         </>

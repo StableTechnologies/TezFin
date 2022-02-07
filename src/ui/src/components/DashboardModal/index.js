@@ -26,7 +26,7 @@ const DashboardModal = (props) => {
 
 	const {
 		open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
-		LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, amount,
+		LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
 		collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnText, maxAction, maxAmount
 	} = props;
 
@@ -80,7 +80,7 @@ const DashboardModal = (props) => {
               type="text"
               placeholder="0"
               onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
-              onChange={(e) => amount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
+              onChange={(e) => setAmount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
               value={tokenValue}
               inputProps={{ className: classes.inputText }}
               className={classes.textField}
