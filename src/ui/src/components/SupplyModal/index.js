@@ -24,6 +24,7 @@ const SupplyModal = (props) => {
 
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [amount, setAmount] = useState('');
+    const [maxAmount, setMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
 
     const handleOpenConfirm = () => {
@@ -35,14 +36,14 @@ const SupplyModal = (props) => {
     const maxAction = (tabValue) => {
       if(tabValue === 'one') {
         if(tokenDetails.title.toLowerCase() === "xtz".toLowerCase()){
-          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
+          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
         }
         else{
-          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
+          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
         }
       }
       if(tabValue === 'two') {
-        setAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
+        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
       }
     }
 
@@ -76,7 +77,12 @@ const SupplyModal = (props) => {
 
     useEffect(() => {
         setAmount('');
+        setMaxAmount('');
     }, [close]);
+
+    useEffect(() => {
+        setAmount(maxAmount);
+    }, [maxAmount]);
 
     return (
         <>
@@ -102,7 +108,7 @@ const SupplyModal = (props) => {
                 amount={(e) => { setAmount(e); }}
                 inputBtnText = "Use Max"
                 maxAction={(tabValue) => maxAction(tabValue)}
-                maxAmount= {amount}
+                maxAmount= {maxAmount}
             />
         </>
     );

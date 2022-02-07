@@ -22,6 +22,7 @@ const AllMarketModal = (props) => {
     const publicKeyHash = account.address;
 
     const [amount, setAmount] = useState('');
+    const [maxAmount, setMaxAmount] = useState('');
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
 
@@ -35,14 +36,14 @@ const AllMarketModal = (props) => {
     const maxAction = (tabValue) => {
       if(tabValue === 'one') {
         if(tokenDetails.title.toLowerCase() === "xtz".toLowerCase()){
-          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
+          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
         }
         else{
-          setAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
+          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
         }
       }
       if(tabValue === 'two') {
-        setAmount('');
+        setMaxAmount('');
       }
     }
 
@@ -74,6 +75,15 @@ const AllMarketModal = (props) => {
       }
     };
 
+    useEffect(() => {
+      setAmount('');
+      setMaxAmount('');
+    }, [close]);
+
+    useEffect(() => {
+      setAmount(maxAmount);
+    }, [maxAmount]);
+
     return (
         <>
             <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
@@ -102,7 +112,7 @@ const AllMarketModal = (props) => {
                 mainModal={true}
                 inputBtn = "Use Max"
                 maxAction={(tabValue) => maxAction(tabValue)}
-                maxAmount= {amount}
+                maxAmount= {maxAmount}
             />
         </>
     );
