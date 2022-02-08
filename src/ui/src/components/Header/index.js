@@ -26,9 +26,8 @@ const Header = () => {
     const account = useSelector((state) => state.addWallet.account);
     const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state) => state.market);
 
-
     useEffect(() => {
-        if (account.length > 0) {
+        if (Object.keys(account).length > 0) {
             dispatch(supplyCompositionAction(account, suppliedMarkets));
             dispatch(borrowCompositionAction(account, borrowedMarkets));
         }
