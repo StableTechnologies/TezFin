@@ -27,10 +27,8 @@ const Header = () => {
     const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state) => state.market);
 
     useEffect(() => {
-        if (Object.keys(account).length > 0) {
-            dispatch(supplyCompositionAction(account, suppliedMarkets));
-            dispatch(borrowCompositionAction(account, borrowedMarkets));
-        }
+      dispatch(supplyCompositionAction(account, suppliedMarkets));
+      dispatch(borrowCompositionAction(account, borrowedMarkets));
     }, [dispatch, account, suppliedMarkets, borrowedMarkets]);
 
     return (

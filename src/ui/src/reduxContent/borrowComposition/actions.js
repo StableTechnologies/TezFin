@@ -15,6 +15,7 @@ import { GET_BORROW_COMPOSITION_DATA } from './types.js';
 export const borrowCompositionAction = (account, borrowedMarkets) => async (dispatch) => {
     let borrowComposition = {} ;
     let assets = [];
+    let borrowLimit;
 
     if(Object.keys(borrowedMarkets).length > 0) {
       borrowedMarkets.map(x => {
@@ -28,7 +29,9 @@ export const borrowCompositionAction = (account, borrowedMarkets) => async (disp
 
       const totalUsdValue = assets.reduce((a,b) => a + b.total, 0);
       const scale = new BigNumber('1000000000000000000000000');
-      const borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+      if(account.health) {
+        borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+      }
 
       const rate = ((totalUsdValue / borrowLimit) * 100).toFixed(2);
       const limitBalance = borrowLimit - totalUsdValue;
