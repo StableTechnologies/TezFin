@@ -11,6 +11,13 @@ import { TezosLendingPlatform } from 'tezoslendingplatformjs';
  * @param  markets
  */
 export const addWalletAction = (address, server, protocolAddresses, comptroller, markets) => async (dispatch) => {
-    const account = await TezosLendingPlatform.GetAccount(address, markets, comptroller, protocolAddresses, server);
-    dispatch({ type: GET_ACCOUNT, payload: account });
+      const account = await TezosLendingPlatform.GetAccount(address, markets, comptroller, protocolAddresses, server);
+      dispatch({ type: GET_ACCOUNT, payload: account });
+};
+
+/**
+ * This function is used to update the wallet details after a disconnection.
+ */
+export const disconnectWalletAction = () => async (dispatch) => {
+      dispatch({ type: GET_ACCOUNT, payload: {} });
 };

@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { Button } from '@mui/material';
 
 import BasicSpeedDial from '../SpeedDial/index.tsx';
 
 import tezHeader from '../../assets/tezHeader.svg';
 import { shorten, getWallet, deactivateAccount } from '../../util';
-import { addWalletAction } from '../../reduxContent/addWallet/actions';
+import { addWalletAction, disconnectWalletAction } from '../../reduxContent/addWallet/actions';
 
 import { useStyles } from './style';
 
@@ -22,21 +20,19 @@ const Nav = () => {
     const [open, setOpen] = React.useState(false);
 
     const { address } = useSelector((state) => state.addWallet.account);
-    const { server, conseilServerInfo } = useSelector((state) => state.nodes.tezosNode);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const { comptroller, protocolAddresses } = useSelector((state) => state.nodes);
     const { markets } = useSelector((state) => state.market);
 
     const addWallet = async () => {
-      try {
-          const { clients } = await getWallet();
-          const address = clients.tezos.account;
-          dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
-        } catch (error) {}
+      const { clients } = await getWallet();
+      const address = clients.tezos.account;
+      dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
       };
 
     const disconnectWallet =async() => {
       await deactivateAccount();
-      setTezAccount('');
+      dispatch(disconnectWalletAction());
     }
 
     useEffect(() => {
