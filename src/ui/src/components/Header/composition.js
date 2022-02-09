@@ -53,7 +53,7 @@ const Composition = (props) => {
                     <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                     <Typography className={classes.statsValue}>
                       ${(
-                          (data.collateral > 0) && nFormatter(decimalify((data.collateral), 24),2) ||
+                          (data.collateral > 0) && nFormatter(data.collateral, 2) ||
                           (data.borrowLimit > 0) && nFormatter(data.borrowLimit, 2)
                         ) ||
                         "0.00"
