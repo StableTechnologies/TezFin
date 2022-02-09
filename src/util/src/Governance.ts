@@ -1,4 +1,4 @@
-import { KeyStore, Signer, TezosNodeWriter, TezosContractUtils, TezosMessageUtils, TezosParameterFormat } from 'conseiljs';
+import { KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeWriter, TezosParameterFormat } from 'conseiljs';
 
 import { AssetType } from './enum';
 
@@ -24,13 +24,8 @@ export namespace Governance {
      *
      * @param
      */
-    export function SupportMarketMicheline(supportMarket: SupportMarketPair): string {
-        return `{"prim": "Pair", "args": [
-            { "bytes": "${TezosMessageUtils.writeAddress(supportMarket.comptroller)}" },
-            { "prim": "Pair", "args": [
-                { "bytes": "${TezosMessageUtils.writeAddress(supportMarket.fToken.address)}" },
-                { "string": "${supportMarket.fToken.name}" }]}
-        ]}`;
+    export function SupportMarketMicheline(supportMarket: SupportMarketPair, priceExp: number): string {
+        return `{ "prim": "Pair", "args": [ { "bytes": "${TezosMessageUtils.writeAddress(supportMarket.comptroller)}" }, { "prim": "Pair", "args": [ {"bytes": "${TezosMessageUtils.writeAddress(supportMarket.fToken.address)}"  }, { "prim": "Pair", "args": [ { "string": "${supportMarket.fToken.name}"  }, { "int": "${priceExp}" } ] } ] } ] }`;
     }
 
     /*
@@ -38,9 +33,9 @@ export namespace Governance {
      *
      * @param
      */
-    export async function SupportMarket(supportMarket: SupportMarketPair, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function SupportMarket(supportMarket: SupportMarketPair, priceExp: number, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         const entrypoint = 'supportMarket';
-        const parameters = SupportMarketMicheline(supportMarket);
+        const parameters = SupportMarketMicheline(supportMarket, priceExp);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, governanceAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
         return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
     }
@@ -108,7 +103,7 @@ export namespace Governance {
             { "bytes": "${TezosMessageUtils.writeAddress(setMintPaused.comptrollerAddress)}"},
             { "prim": "Pair", "args": [
                 { "bytes": "${TezosMessageUtils.writeAddress(setMintPaused.tokenState.fTokenAddress)}"} ,
-                { "prim": "${setMintPaused.tokenState.state ? "True" : "False" }"}
+                { "prim": "${setMintPaused.tokenState.state ? "True" : "False"}"}
             ]}
         ]}`;
     }

@@ -71,16 +71,16 @@ export namespace TezosLendingPlatform {
      */
     export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
-            "XTZ": "KT1KaLR4woR7bTyqZGknM5mnZyukDKmyF5cf",
-            "ETH": "KT1PKi3L5CgxbGm8qTzrck8zBfrmhui8jVxe",
-            "BTC": "KT1SEvLFnXa5xHUWRHp6y1pEersbR7SSGGtQ",
-            "USD": "KT1GcriPWWKCaUFp5TzWfNXSeiGLhoztr2f5"
+            "BTC": "KT1XQuJmEa9n9xRK5rPBSwRD31vh1pqXBd2r",
+            "XTZ": "KT1XoC1kqi97ZrHBvy5VrgzKNUmH7LhWbWWi",
+            "ETH": "KT1QAHeKPUXkcKQ25TXCYo2XS3VHs3JCZ1qS",
+            "USD": "KT1DeE8DtjW3xu6KTNLm5YTwg7GzZYbogaj3"
         },
         fTokensReverse: {
-            "KT1KaLR4woR7bTyqZGknM5mnZyukDKmyF5cf": AssetType.XTZ,
-            "KT1PKi3L5CgxbGm8qTzrck8zBfrmhui8jVxe": AssetType.ETH,
-            "KT1GcriPWWKCaUFp5TzWfNXSeiGLhoztr2f5": AssetType.USD,
-            "KT1SEvLFnXa5xHUWRHp6y1pEersbR7SSGGtQ": AssetType.BTC
+            "KT1XoC1kqi97ZrHBvy5VrgzKNUmH7LhWbWWi": AssetType.XTZ,
+            "KT1QAHeKPUXkcKQ25TXCYo2XS3VHs3JCZ1qS": AssetType.ETH,
+            "KT1DeE8DtjW3xu6KTNLm5YTwg7GzZYbogaj3": AssetType.USD,
+            "KT1XQuJmEa9n9xRK5rPBSwRD31vh1pqXBd2r": AssetType.BTC
         },
         underlying: {
             "ETH": {
@@ -106,14 +106,14 @@ export namespace TezosLendingPlatform {
                 assetType: AssetType.XTZ,
             }
         },
-        comptroller: "KT1QfVHeiSQRTHPea4vK6xPSWYoQN6kiybL2",
+        comptroller: "KT1MndSifWNCajEiayw84oK5MxS9AfRpmLc2",
         interestRateModel: {
             "XTZ": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
             "ETH": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
             "BTC": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
             "USD": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH"
         },
-        governance: "KT1FXgqoeqXYEyUe28od6u8wvoyNvYZYDMK5",
+        governance: "KT1HC1SDb3dYhiBFkKiHfQ6DQdBKZyRpjJUo",
         oracleMap: 18599
     };
 
