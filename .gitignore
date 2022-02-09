@@ -4,3 +4,5 @@ postdeploy/log
 postdeploy/node_modules
 node_modules
 build
+.test/
+TezFinBuild/compiled_contracts/

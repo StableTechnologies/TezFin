@@ -1076,8 +1076,8 @@ def environment_config():
 ##
 ## This specific main uses the relative new feature of non-default tests
 ## for the browser version.
-def compile(adminAddress = "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5"):
+def compile(name="FA2", adminAddress = "tz1NfX9Fd8ctBuCkHkUbMsnu4efUongYwWx5"):
     if "templates" not in __name__:
-        sp.add_compilation_target("FA2", FA2(config = environment_config(),
+        sp.add_compilation_target(name, FA2(config = environment_config(),
                                 metadata = sp.utils.metadata_of_url("https://example.com"),
                                 admin = sp.address(adminAddress))) # TODO: replace with personal address

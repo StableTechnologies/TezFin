@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConfirmModal from '../ConfirmModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
-import { allMarketAction, marketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
+import { marketAction } from '../../reduxContent/market/actions';
+import { decimalify, undecimalify } from '../../util';
+
+import { decimals } from 'tezoslendingplatformjs';
 
 const AllMarketModal = (props) => {
     const classes = useStyles();
@@ -19,8 +22,10 @@ const AllMarketModal = (props) => {
     const publicKeyHash = account.address;
 
     const [amount, setAmount] = useState('');
+    const [maxAmount, setMaxAmount] = useState('');
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
+    const [response, setResponse] = useState('');
 
     const handleOpenConfirm = () => {
       setConfirmModal(true);
@@ -29,33 +34,45 @@ const AllMarketModal = (props) => {
       setConfirmModal(false);
     };
 
-    const supplyToken = async() => {
-      const underlying = tokenDetails.assetType.toLowerCase();
-      const mintPair = { underlying, amount };
-      close();
-      setAmount('');
-      setTokenText('supply');
-      handleOpenConfirm();
-      const response = await supplyTokenAction(mintPair, protocolAddresses, publicKeyHash);
-      if(response) {
-        dispatch(marketAction(comptroller, protocolAddresses, server));
-        setConfirmModal(false);
+    const maxAction = (tabValue) => {
+      if(tabValue === 'one') {
+        if(tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()){
+          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
+        }
+        else{
+          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
+        }
+      }
+      if(tabValue === 'two') {
+        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
       }
     };
 
+    const supplyToken = async() => {
+      const response = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
+    };
+
     const borrowToken = async() => {
-      const underlying = tokenDetails.assetType.toLowerCase();
-      const borrowPair = { underlying, amount };
-      close();
-      setAmount('');
-      setTokenText('borrow');
-      handleOpenConfirm();
-      const response = await borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash);
+      const response = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
+    };
+
+    useEffect(() => {
       if(response) {
         dispatch(marketAction(comptroller, protocolAddresses, server));
         setConfirmModal(false);
       }
-    };
+    }, [response]);
+
+    useEffect(() => {
+      setAmount('');
+      setMaxAmount('');
+    }, [close]);
+
+    useEffect(() => {
+      setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
+    }, [maxAmount]);
 
     return (
         <>
@@ -80,10 +97,13 @@ const AllMarketModal = (props) => {
                 btnSubTwo={classes.btnSubTwo}
                 inkBarStyle={classes.inkBarStyle}
                 inkBarStyleTwo={classes.inkBarStyleTwo}
-                amount={(e) => { setAmount(e); }}
-                progressBarColor={classes.root}
+                setAmount={(e) => { setAmount(e); }}
                 visibility={true}
                 mainModal={true}
+                inputBtnTextOne = "Use Max"
+                inputBtnTextTwo = "80% Limit"
+                maxAction={(tabValue) => maxAction(tabValue)}
+                maxAmount= {maxAmount}
             />
         </>
     );

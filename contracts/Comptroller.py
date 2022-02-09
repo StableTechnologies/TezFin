@@ -18,6 +18,7 @@ TMarket = sp.TRecord(isListed = sp.TBool,  # Whether or not this market is liste
      borrowPaused = sp.TBool,
      name = sp.TString, # Asset name for price oracle
      price = Exponential.TExp, # The price of the asset
+     priceExp = sp.TNat, # The price of the asset
      updateLevel = sp.TNat, # Block level of last price update
      borrowCap = sp.TNat # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
     )
@@ -28,8 +29,6 @@ TLiquidity = sp.TRecord(
         valid = sp.TBool # Liquidity is valid only for one user action
     )
 
-UPDATE_PRICE_PERIOD = 5 # The number of blocks since the last update until the price is considered valid
-UPDATE_LIQUIDITY_PERIOD = 5 # The number of blocks since the last update until the liquidity is considered valid
 DEFAULT_COLLATERAL_FACTOR = int(9e17) # 90 %
 
 class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
@@ -56,8 +55,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             ),
             closeFactorMantissa = closeFactorMantissa_,
             liquidationIncentiveMantissa = liquidationIncentiveMantissa_,
-            pricePeriodRelevance = sp.nat(UPDATE_PRICE_PERIOD),
-            liquidityPeriodRelevance = sp.nat(UPDATE_LIQUIDITY_PERIOD),
             **extra_storage
         )
 
@@ -263,12 +260,12 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         assetName = sp.compute(sp.fst(params))
         pricePair = sp.compute(sp.snd(params))
         asset = self.data.marketNameToAddress[assetName]
-        self.data.markets[asset].price = self.toExp(sp.snd(pricePair))
+        self.data.markets[asset].price = self.makeExp(sp.snd(pricePair)*self.data.markets[asset].priceExp)
         self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):
         updatePeriod = sp.compute(self.sub_nat_nat(sp.level, self.data.markets[asset].updateLevel))
-        sp.verify(updatePeriod < self.data.pricePeriodRelevance, EC.CMPT_UPDATE_PRICE)
+        sp.verify(updatePeriod == 0, EC.CMPT_UPDATE_PRICE)
         return self.data.markets[asset].price
 
 
@@ -385,36 +382,13 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.checkPriceErrors(asset)
         priceIndex = self.mul_exp_exp(self.data.markets[asset].price, self.data.markets[asset].collateralFactor)
         tokensToDenom = sp.compute(self.mul_exp_exp(priceIndex, exchangeRate))
-        self.data.calculation.sumCollateral += self.mulScalarTruncate(tokensToDenom, params.cTokenBalance)
+        # incase of only borrow don't consider supply as collateral
+        sp.if self.data.collaterals[params.account].contains(asset):
+            self.data.calculation.sumCollateral += self.mulScalarTruncate(tokensToDenom, params.cTokenBalance)
         self.data.calculation.sumBorrowPlusEffects += self.mulScalarTruncate(self.data.markets[asset].price, params.borrowBalance)
         sp.if sp.some(asset) == self.data.calculation.cTokenModify:
             self.data.calculation.sumCollateral += self.mulScalarTruncate(tokensToDenom, self.data.calculation.redeemTokens)
             self.data.calculation.sumBorrowPlusEffects += self.mulScalarTruncate(self.data.markets[asset].price, self.data.calculation.borrowAmount)
-
-
-    # Admin functions
-    """
-        # Set the number of blocks since the last update until the price is considered valid
-
-        blockNumber: TNat
-    """
-    @sp.entry_point
-    def setPricePeriodRelevance(self, blockNumber):
-        self.verifyAdministrator()
-        sp.set_type(blockNumber, sp.TNat)
-        self.data.pricePeriodRelevance = blockNumber
-
-
-    """
-        # Set the number of blocks since the last update until the liquidity is considered valid
-
-        blockNumber: TNat
-    """
-    @sp.entry_point
-    def setLiquidityPeriodRelevance(self, blockNumber):
-        self.verifyAdministrator()
-        sp.set_type(blockNumber, sp.TNat)
-        self.data.liquidityPeriodRelevance = blockNumber
 
 
     """
@@ -564,7 +538,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify = True)
     def supportMarket(self, params):
-        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, name=sp.TString))
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, name=sp.TString, priceExp=sp.TNat))
         self.verifyAdministrator()
         self.verifyMarketNotListed(params.cToken)
         self.data.markets[params.cToken] = sp.record(isListed = sp.bool(True),
@@ -573,6 +547,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             borrowPaused = sp.bool(True),
             name = params.name,
             price = self.makeExp(sp.nat(0)),
+            priceExp = params.priceExp,
             updateLevel = sp.nat(0),
             borrowCap = sp.nat(0))
         self.data.marketNameToAddress[params.name+"-USD"] = params.cToken
@@ -630,7 +605,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(self.data.account_liquidity.contains(account), EC.CMPT_LIQUIDITY_ABSENT)
         sp.verify(self.data.account_liquidity[account].valid, EC.CMPT_LIQUIDITY_INVALID)
         updatePeriod = sp.compute(self.sub_nat_nat(sp.level, self.data.account_liquidity[account].updateLevel))
-        sp.verify(updatePeriod < self.data.liquidityPeriodRelevance, EC.CMPT_LIQUIDITY_OLD)
+        sp.verify(updatePeriod == 0, EC.CMPT_LIQUIDITY_OLD)
 
     def invalidateLiquidity(self, account):
         sp.if self.data.account_liquidity.contains(account):

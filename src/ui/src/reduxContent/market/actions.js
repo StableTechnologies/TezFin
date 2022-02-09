@@ -7,6 +7,7 @@ import {
 
 import { BigNumber } from "bignumber.js";
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
+import { formatTokenData } from '../../util';
 import { tokens } from '../../components/Constants';
 
 /**
@@ -19,6 +20,7 @@ import { tokens } from '../../components/Constants';
 export const marketAction = (comptroller, protocolAddresses, server) => async (dispatch) => {
     if (comptroller) {
         const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
+        console.log("markets ::: ", markets);
         dispatch({ type: GET_MARKET_DATA, payload: markets });
     }
 };
@@ -41,11 +43,11 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
             token.borrow = { ...borrowedMarket[token.assetType] };
             token.usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             token.marketSize = markets[token.assetType].supply.totalAmount.toString();
-			      token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
+            token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
             token.supplyRate = markets[token.assetType].supply.rate.toString();
-			      token.borrowRate = markets[token.assetType].borrow.rate.toString();
+            token.borrowRate = markets[token.assetType].borrow.rate.toString();
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
-              token.walletBalance = walletBalance[token.assetType].toString();
+                token.walletBalance = walletBalance[token.assetType].toString();
             }
         }
         return marketTokens;
@@ -64,20 +66,20 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
     const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
     const suppliedTokens = [...tokens];
     const walletBalance = account.underlyingBalances || [];
-
     suppliedTokens.map((token) => {
         if (Object.keys(suppliedMarket).length > 0 && suppliedMarket.hasOwnProperty(token.assetType)) {
             suppliedMarket[token.assetType].assetType = token.assetType;
             suppliedMarket[token.assetType].banner = token.banner;
             suppliedMarket[token.assetType].title = token.title;
             suppliedMarket[token.assetType].logo = token.logo;
+            suppliedMarket[token.assetType].usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 suppliedMarket[token.assetType].walletBalance = walletBalance[token.assetType].toString();
             }
         }
         return suppliedMarket;
     });
-    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: Object.values(suppliedMarket) });
+    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(Object.values(suppliedMarket)) });
 };
 
 /**
@@ -98,6 +100,7 @@ export const borrowedMarketAction = (account, markets) => async (dispatch) => {
             borrowedMarket[token.assetType].banner = token.banner;
             borrowedMarket[token.assetType].title = token.title;
             borrowedMarket[token.assetType].logo = token.logo;
+            borrowedMarket[token.assetType].usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 borrowedMarket[token.assetType].walletBalance = walletBalance[token.assetType].toString();
             }
@@ -105,5 +108,5 @@ export const borrowedMarketAction = (account, markets) => async (dispatch) => {
         return borrowedMarket;
     });
 
-    dispatch({ type: GET_BORROWED_MARKET_DATA, payload: Object.values(borrowedMarket) });
+    dispatch({ type: GET_BORROWED_MARKET_DATA, payload: formatTokenData(Object.values(borrowedMarket)) });
 };

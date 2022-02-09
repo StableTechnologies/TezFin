@@ -2,6 +2,7 @@ import { TezosMessageUtils, TezosNodeReader } from 'conseiljs';
 
 import { AssetType } from './enum';
 import { JSONPath } from 'jsonpath-plus';
+import { OracleMap } from 'types';
 import bigInt from 'big-integer';
 
 export namespace PriceFeed {
@@ -13,13 +14,13 @@ export namespace PriceFeed {
      * @param oracleMap map id for harbinger oracle
      * @param server rpc node url
      */
-    export async function GetPrice(asset: AssetType, oracleMap: number, server: string): Promise<bigInt.BigInteger> {
+    export async function GetPrice(asset: AssetType, oracleMap: OracleMap, server: string): Promise<bigInt.BigInteger> {
         const packedKey = TezosMessageUtils.encodeBigMapKey(
             Buffer.from(TezosMessageUtils.writePackedData(asset + "-USD", "string"), "hex")
         );
-        const mapResult = await TezosNodeReader.getValueForBigMapKey(server, oracleMap, packedKey);
+        const mapResult = await TezosNodeReader.getValueForBigMapKey(server, oracleMap.id, packedKey);
         const balance = JSONPath({
-            path: "$.args[0].args[0].int",
+            path: oracleMap.path,
             json: mapResult,
         })[0]
         return bigInt(balance);

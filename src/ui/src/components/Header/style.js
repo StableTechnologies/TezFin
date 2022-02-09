@@ -173,12 +173,19 @@ export const useStyles = makeStyles({
             width: '95%'
         }
     },
+    limitText: {
+      fontSize: '0.75rem',
+      textAlign: 'center',
+      lineHeight: '18px'
+    },
     addWalletCon: {
         paddingTop: '2.1875rem',
         paddingRight: '2.5rem',
         textAlign: 'end',
-        '@media(max-width: 501px)': {
+        '@media(max-width: 768px)': {
             paddingTop: '1.625rem',
+        },
+        '@media(max-width: 501px)': {
             paddingRight: '0.5rem'
         },
     },
@@ -188,12 +195,12 @@ export const useStyles = makeStyles({
         background: 'transparent',
         fontSize: '1rem',
         fontWeight: '400',
-        lineHeight: '2.25rem',
+        lineHeight: '2rem',
         textTransform: 'none',
         borderRadius: '.5rem',
         '@media(max-width: 501px)': {
           width: '8.25rem',
-          height: '1.5rem',
+          lineHeight: '1.9rem',
           fontSize: '.875rem',
         },
         '@media(max-width: 320px)': {

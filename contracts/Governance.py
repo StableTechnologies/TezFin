@@ -253,8 +253,8 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
     @sp.entry_point
     def supportMarket(self, params):
         self.verifyAdministrator()
-        sp.set_type(params, sp.TRecord(comptroller = sp.TAddress, market=sp.TRecord(cToken = sp.TAddress, name=sp.TString)))
-        contract = sp.contract(sp.TRecord(cToken = sp.TAddress, name=sp.TString), params.comptroller, "supportMarket").open_some()
+        sp.set_type(params, sp.TRecord(comptroller = sp.TAddress, market=sp.TRecord(cToken = sp.TAddress, name=sp.TString, priceExp=sp.TNat)))
+        contract = sp.contract(sp.TRecord(cToken = sp.TAddress, name=sp.TString, priceExp=sp.TNat), params.comptroller, "supportMarket").open_some()
         sp.transfer(params.market, sp.mutez(0), contract)
 
 

@@ -1,5 +1,5 @@
 {
-    "loglevel": "debug",
+    "loglevel": "info",
     "tezosNode": "https://tezos-hangzhou.cryptonomic-infra.tech:443/",
     "conseilServer": {
         "url": "https://conseil-hangzhou.cryptonomic-infra.tech:443",
@@ -42,16 +42,19 @@
     },
     "tokenMint": [
         "ETH",
-        "BTC"
+        "BTC",
+        "USD"
     ],
     "mint": [
         "ETH",
-        "BTC"
+        "BTC",
+        "USD"
     ],
     "mintAmount": 10,
     "redeem": [
         "ETH",
-        "BTC"
+        "BTC",
+        "USD"
     ],
     "redeemAmount": 20,
     "borrow": [
@@ -64,20 +67,36 @@
     "repayBorrowAmount": 10,
     "enterMarkets": [
         "ETH",
-        "BTC"
+        "BTC",
+        "USD",
+        "XTZ"
     ],
     "exitMarket": [
         "ETH"
     ],
     "supportMarket": [
-        "ETH",
-        "BTC",
-        "XTZ"
+        {
+            "name": "ETH",
+            "priceExp": 0
+        },
+        {
+            "name": "BTC",
+            "priceExp": 10
+        },
+        {
+            "name": "USD",
+            "priceExp": 12
+        },
+        {
+            "name": "XTZ",
+            "priceExp": 12
+        }
     ],
     "disableMarket": [],
     "unpauseMarkets": [
         "ETH",
         "BTC",
+        "USD",
         "XTZ"
     ],
     "setPrices": {

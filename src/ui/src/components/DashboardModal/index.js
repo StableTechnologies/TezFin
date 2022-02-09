@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { BigNumber } from 'bignumber.js';
 import bigInt from 'big-integer';
 
-import { decimalify, undecimalify } from '../../util';
+import { decimalify, nFormatter, undecimalify } from '../../util';
 
 import Box from '@mui/material/Box';
 import CloseButton from '../CloseButton';
@@ -26,8 +26,9 @@ const DashboardModal = (props) => {
 
 	const {
 		open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
-		LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, amount,
-		collateralize, extraPadding, progressBarColor, CurrentStateText, CurrentStateTextTwo, mainModal
+		LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
+		collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
+    maxAction, maxAmount
 	} = props;
 
 	const [tabValue, setTabValue] = useState('one');
@@ -40,7 +41,7 @@ const DashboardModal = (props) => {
 		setTabValue(newValue);
 	};
 
-  const scale = new BigNumber('1000000000000000000');
+  const scale = new BigNumber('1000000000000000000000000');
   if(account.health) {
     tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
     tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
@@ -49,6 +50,10 @@ const DashboardModal = (props) => {
 	useEffect(() => {
 		setTokenValue('');
 	}, [close]);
+
+	useEffect(() => {
+		setTokenValue(maxAmount)
+	}, [maxAmount]);
 
 	return (
     <React.Fragment>
@@ -76,12 +81,19 @@ const DashboardModal = (props) => {
               type="text"
               placeholder="0"
               onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
-              onChange={(e) => amount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
+              onChange={(e) => setAmount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
               value={tokenValue}
               inputProps={{ className: classes.inputText }}
               className={classes.textField}
             />
-            <Button className={classes.inputBtn} disableRipple> Use Max </Button>
+            <Button
+              className={classes.inputBtn}
+              onClick={() => {maxAction(tabValue);}}
+              disableRipple
+              >
+              {tabValue === 'one' && inputBtnTextOne}
+              {tabValue === 'two' && inputBtnTextTwo}
+            </Button>
           </form>
           </DialogContent> :
           <DialogContent className={`${classes.padding0} ${extraPadding}`}>
@@ -141,7 +153,9 @@ const DashboardModal = (props) => {
         <DialogContent className={classes.limit}>
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
-            <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> ${tokenDetails.borrowLimit || '0.00'}</Grid>
+            <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
+              ${(tokenDetails.borrowLimit > 0) ? nFormatter(tokenDetails.borrowLimit, 2) : '0.00'}
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogContent className={classes.limitUsed}>
@@ -154,7 +168,7 @@ const DashboardModal = (props) => {
           <Grid container>
             <Grid item xs={12}>
                 <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                    <CustomizedProgressBars backgroundColor={progressBarColor} value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
+                    <CustomizedProgressBars value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
                 </Box>
             </Grid>
           </Grid>

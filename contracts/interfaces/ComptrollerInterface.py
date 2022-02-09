@@ -173,28 +173,6 @@ class ComptrollerInterface(sp.Contract):
         pass
 
 
-
-    # Admin functions
-    """    
-        # Set the number of blocks since the last update until the price is considered valid
-
-        blockNumber: TNat
-    """
-    @sp.entry_point
-    def setPricePeriodRelevance(self, blockNumber):
-        pass
-
-
-    """    
-        # Set the number of blocks since the last update until the liquidity is considered valid
-
-        blockNumber: TNat
-    """
-    @sp.entry_point
-    def setLiquidityPeriodRelevance(self, blockNumber):
-        pass
-
-
     """    
         Sets a new pending governance for the market
 

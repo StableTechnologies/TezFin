@@ -21,3 +21,8 @@ class OracleMock(OracleInterface.OracleInterface):
         
         callbackParam = (requestedAsset, (sp.timestamp(0), self.data.price))
         sp.transfer(callbackParam, sp.mutez(0), callback)
+
+    @sp.onchain_view()
+    def getPrice(self, assetCode):
+        sp.set_type(assetCode, sp.TString)
+        sp.result((sp.timestamp(0), self.data.price))

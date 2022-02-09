@@ -24,9 +24,6 @@ const Dashboard = () => {
       if (!markets) { return; }
       dispatch(allMarketAction(account, markets));
 
-
-      if (!account.address) { return; }
-
       dispatch(suppliedMarketAction(account, markets));
       dispatch(borrowedMarketAction(account, markets));
     }, [dispatch, account, markets]);

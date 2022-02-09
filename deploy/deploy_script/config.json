@@ -1,5 +1,5 @@
 {
-  "tezosNode": "https://tezos-hangzhou.cryptonomic-infra.tech:443/",
+  "tezosNode": "https://tezos-hangzhou.cryptonomic-infra.tech:443",
   "conseilServer": {
     "url": "https://conseil-hangzhou.cryptonomic-infra.tech:443",
     "apiKey": "328ac16b-5497-4e73-a97d-45af0e83425c",

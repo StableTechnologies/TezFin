@@ -32,7 +32,7 @@
         "tokenId": 0,
         "dependencies": [
             "Governance",
-            "FA2",
+            "BTCtz",
             "CFA2_IRM"
         ]
     },
@@ -40,7 +40,8 @@
         "initialExchangeRateMantissa": 1000000000000000000,
         "dependencies": [
             "Governance",
-            "FA12",
+            "ETHtz",
+            "USDtz",
             "CFA12_IRM"
         ]
     },

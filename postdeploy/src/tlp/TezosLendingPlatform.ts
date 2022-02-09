@@ -16,7 +16,8 @@ export namespace TezosLendingPlatform {
         FA12 = "FA12",
         FA2 = "FA2",
         ETH = "ETH",
-        BTC = "BTC"
+        BTC = "BTC",
+        USD = "USD"
     }
 
     export enum TokenStandard {
@@ -50,9 +51,8 @@ export namespace TezosLendingPlatform {
         comptroller: string;
         interestRateModel: { [underlying: string]: string };
         governance: string;
-        priceFeed: string;
+        oracleMap: number;
     }
-
     /*
      * @description
      *
@@ -60,7 +60,8 @@ export namespace TezosLendingPlatform {
      */
     export const tokenNames: { [assetType: string]: string } = {
         "ETH": "ETH",
-        "BTC": "BTC"
+        "BTC": "BTC",
+        "USD": "USD"
     };
 
     /*
@@ -70,39 +71,50 @@ export namespace TezosLendingPlatform {
      */
     export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
-            "XTZ": "KT1Gbc2VCqF7W5TQiGszSM49nckf9igYmj3M",
-            "ETH": "KT1VGLyMmt11c4adNArXYH9dPaB7LLXoz8K5",
-            "BTC": "KT1Mr7BTETa2qtEJ2Y7by1pMAfHZhzWfH2Bk"
+            "BTC": "KT1XQuJmEa9n9xRK5rPBSwRD31vh1pqXBd2r",
+            "XTZ": "KT1XoC1kqi97ZrHBvy5VrgzKNUmH7LhWbWWi",
+            "ETH": "KT1QAHeKPUXkcKQ25TXCYo2XS3VHs3JCZ1qS",
+            "USD": "KT1DeE8DtjW3xu6KTNLm5YTwg7GzZYbogaj3"
         },
         fTokensReverse: {
-            "KT1Gbc2VCqF7W5TQiGszSM49nckf9igYmj3M": AssetType.XTZ,
-            "KT1VGLyMmt11c4adNArXYH9dPaB7LLXoz8K5": AssetType.ETH,
-            "KT1Mr7BTETa2qtEJ2Y7by1pMAfHZhzWfH2Bk": AssetType.BTC
+            "KT1XoC1kqi97ZrHBvy5VrgzKNUmH7LhWbWWi": AssetType.XTZ,
+            "KT1QAHeKPUXkcKQ25TXCYo2XS3VHs3JCZ1qS": AssetType.ETH,
+            "KT1DeE8DtjW3xu6KTNLm5YTwg7GzZYbogaj3": AssetType.USD,
+            "KT1XQuJmEa9n9xRK5rPBSwRD31vh1pqXBd2r": AssetType.BTC
         },
         underlying: {
             "ETH": {
                 assetType: AssetType.ETH,
                 address: "KT1TVRtzyN7QysJquDBD6e36Etzj3w7jxReQ",
-                balancesMapId: 39991
+                balancesMapId: 39991,
+                balancesPath: "$.args[1].int"
+            },
+            "USD": {
+                assetType: AssetType.USD,
+                address: "KT1V7E1Wj9fAiaq7F2d942GzKLWuZrVuqxrx",
+                balancesMapId: 39991,
+                balancesPath: "$.args[1].int"
             },
             "BTC": {
                 assetType: AssetType.BTC,
                 address: "KT1JqmwY3JJoHN7uh75pALrAx6sSpRbEZc9R",
                 tokenId: 0,
-                balancesMapId: 39994
+                balancesMapId: 39994,
+                balancesPath: "$.int"
             },
             "XTZ": {
-                assetType: AssetType.XTZ
+                assetType: AssetType.XTZ,
             }
         },
-        comptroller: "KT1AD8rvgSHoM8SrNRzCVxLpDM6eKFgNH3kU",
+        comptroller: "KT1MndSifWNCajEiayw84oK5MxS9AfRpmLc2",
         interestRateModel: {
-            "XTZ": "KT1NRFY1vtLGh2buux35uQpabyJRsqYjSAVB",
-            "ETH": "KT1R1vM6rVnR532w95E7cGAYY3rSNz8hq8fi",
-            "BTC": "KT1BkEsTJDGpKugb86zdFyVm3EvuT2aeoyz6"
+            "XTZ": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
+            "ETH": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
+            "BTC": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
+            "USD": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH"
         },
-        governance: "KT1A7VB84jAoQyqBxy5rghfvDkPaQi6XRTyp",
-        priceFeed: "KT1PMQZxQTrFPJn3pEaj9rvGfJA9Hvx7Z1CL"
+        governance: "KT1HC1SDb3dYhiBFkKiHfQ6DQdBKZyRpjJUo",
+        oracleMap: 18599
     };
 
     /*
