@@ -8,7 +8,7 @@ import { statOperation } from './index';
 
 export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
     for (const asset of config.supportMarket)
-        await supportMarket(asset as TezosLendingPlatform.AssetType, keystore, signer, protocolAddresses);
+        await supportMarket(asset.name as TezosLendingPlatform.AssetType, asset.priceExp, keystore, signer, protocolAddresses);
     for (const asset of config.unpauseMarkets)
         await unpauseMarkets(asset as TezosLendingPlatform.AssetType, keystore, signer, protocolAddresses);
     // mint underlyings
@@ -30,7 +30,7 @@ export async function tokenMint(asset: string, keystore: KeyStore, signer: Signe
     }
 }
 
-async function supportMarket(asset: TezosLendingPlatform.AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
+async function supportMarket(asset: TezosLendingPlatform.AssetType, priceExp: number, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
     // supportMarket
     log.info(`supportMarket ${asset}`);
     const supportMarket: Governance.SupportMarketPair = {
@@ -41,7 +41,7 @@ async function supportMarket(asset: TezosLendingPlatform.AssetType, keystore: Ke
         }
     };
     log.info(`${JSON.stringify(supportMarket)}`);
-    const supportMarketOpId = await Governance.SupportMarket(supportMarket, protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
+    const supportMarketOpId = await Governance.SupportMarket(supportMarket, Math.pow(10, priceExp), protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
     const supportMarketResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, supportMarketOpId, config.delay, config.networkBlockTime);
     statOperation(supportMarketResult);
 }

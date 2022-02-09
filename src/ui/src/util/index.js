@@ -3,14 +3,16 @@ import {
     KeyStoreType,
     TezosConseilClient,
     TezosNodeReader,
-    TezosNodeWriter
+    TezosNodeWriter,
+    registerLogger
 } from 'conseiljs';
 
-import bigInt from 'big-integer';
 import { BigNumber } from "bignumber.js";
 import { DAppClient } from '@airgap/beacon-sdk';
 import { Mutex } from 'async-mutex';
 import Tezos from '../library/tezos';
+import bigInt from 'big-integer';
+import log from 'loglevel';
 
 // const config = require(`../library/${process.env.REACT_APP_ENV || "prod"}-network-config.json`);
 const config = require('../library/dev-network-config.json');
@@ -28,6 +30,9 @@ const client = new DAppClient({ name: config.dappName });
 export const shorten = (first, last, str) => `${str.substring(0, first)}...${str.substring(str.length - last)}`;
 
 export const connectTezAccount = async () => {
+    const logger = log.getLogger("conseiljs");
+    logger.setLevel("debug", false);
+    registerLogger(logger);
     const network = config.infra.conseilServer.network;
     const resp = await client.requestPermissions({ network: { type: network } });
     const account = await client.getActiveAccount();
@@ -103,6 +108,9 @@ export const confirmOps = async (operations) => {
             config.infra.tezosNode,
             address
         );
+        // operations.pop();
+        // operations.pop();
+        console.log(operations)
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
@@ -144,9 +152,9 @@ export const undecimalify = (val, decimals) => {
 /**
  * Format token data for display in the market table.
  */
- export function formatTokenData(data) {
-  const filtered = data.filter(i => bigInt(i.balanceUnderlying).gt(0));
-  return filtered;
+export function formatTokenData(data) {
+    const filtered = data.filter(i => bigInt(i.balanceUnderlying).gt(0));
+    return filtered;
 }
 
 /**
@@ -155,19 +163,19 @@ export const undecimalify = (val, decimals) => {
  * @param  formatDecimals number to decimal points.
  * @returns abbreviated number in string format.
  */
-export const nFormatter = (num, formatDecimals = 4) =>{
-  let suffix = [
-    { value: 1, symbol: "" },
-    { value: 1E3, symbol: "k" },
-    { value: 1E6, symbol: "M" },
-    { value: 1E9, symbol: "B" },
-  ];
-  var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  let i;
-  for (i = suffix.length - 1; i > 0; i--) {
-    if (num >= suffix[i].value) {
-      break;
+export const nFormatter = (num, formatDecimals = 4) => {
+    let suffix = [
+        { value: 1, symbol: "" },
+        { value: 1E3, symbol: "k" },
+        { value: 1E6, symbol: "M" },
+        { value: 1E9, symbol: "B" },
+    ];
+    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    let i;
+    for (i = suffix.length - 1; i > 0; i--) {
+        if (num >= suffix[i].value) {
+            break;
+        }
     }
-  }
-  return (num/suffix[i].value).toFixed(formatDecimals).replace(rx, "$1") + suffix[i].symbol;
+    return (num / suffix[i].value).toFixed(formatDecimals).replace(rx, "$1") + suffix[i].symbol;
 }

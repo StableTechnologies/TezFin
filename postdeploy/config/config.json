@@ -75,10 +75,22 @@
         "ETH"
     ],
     "supportMarket": [
-        "ETH",
-        "BTC",
-        "USD",
-        "XTZ"
+        {
+            "name": "ETH",
+            "priceExp": 0
+        },
+        {
+            "name": "BTC",
+            "priceExp": 10
+        },
+        {
+            "name": "USD",
+            "priceExp": 12
+        },
+        {
+            "name": "XTZ",
+            "priceExp": 12
+        }
     ],
     "disableMarket": [],
     "unpauseMarkets": [
