@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { decimals } from 'tezoslendingplatformjs';
+
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -6,6 +8,7 @@ import ConfirmModal from '../ConfirmModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
+import { decimalify, undecimalify } from '../../util';
 
 const BorrowModal = (props) => {
     const classes = useStyles();
@@ -19,6 +22,7 @@ const BorrowModal = (props) => {
     const publicKeyHash = account.address;
 
     const [amount, setAmount] = useState('');
+    const [maxAmount, setMaxAmount] = useState('');
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
@@ -28,6 +32,15 @@ const BorrowModal = (props) => {
     };
     const handleCloseConfirm = () => {
         setConfirmModal(false);
+    };
+
+    const maxAction = (tabValue) => {
+      if(tabValue === 'one') {
+        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
+      }
+      if(tabValue === 'two') {
+        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
+      }
     };
 
     const borrowToken = async() => {
@@ -49,12 +62,12 @@ const BorrowModal = (props) => {
 
     useEffect(() => {
       setAmount('');
-      // setMaxAmount('');
+      setMaxAmount('');
     }, [close]);
 
-    // useEffect(() => {
-    //     setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
-    // }, [maxAmount]);
+    useEffect(() => {
+        setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
+    }, [maxAmount]);
 
     return (
         <>
@@ -79,6 +92,8 @@ const BorrowModal = (props) => {
                 setAmount={(e) => { setAmount(e); }}
                 inputBtnTextOne = "80% Limit"
                 inputBtnTextTwo = "Use Max"
+                maxAction={(tabValue) => maxAction(tabValue)}
+                maxAmount= {maxAmount}
             />
         </>
     );

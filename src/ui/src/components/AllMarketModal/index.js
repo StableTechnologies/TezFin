@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConfirmModal from '../ConfirmModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
-import { allMarketAction, marketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
+import { marketAction } from '../../reduxContent/market/actions';
 import { decimalify, undecimalify } from '../../util';
 
 import { decimals } from 'tezoslendingplatformjs';
@@ -36,7 +36,7 @@ const AllMarketModal = (props) => {
 
     const maxAction = (tabValue) => {
       if(tabValue === 'one') {
-        if(tokenDetails.title.toLowerCase() === "xtz".toLowerCase()){
+        if(tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()){
           setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
         }
         else{
@@ -44,9 +44,9 @@ const AllMarketModal = (props) => {
         }
       }
       if(tabValue === 'two') {
-        setMaxAmount('');
+        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
       }
-    }
+    };
 
     const supplyToken = async() => {
       const response = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
