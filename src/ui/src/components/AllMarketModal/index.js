@@ -25,6 +25,7 @@ const AllMarketModal = (props) => {
     const [maxAmount, setMaxAmount] = useState('');
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
+    const [response, setResponse] = useState('');
 
     const handleOpenConfirm = () => {
       setConfirmModal(true);
@@ -48,32 +49,21 @@ const AllMarketModal = (props) => {
     }
 
     const supplyToken = async() => {
-      const underlying = tokenDetails.assetType.toLowerCase();
-      const mintPair = { underlying, amount };
-      close();
-      setAmount('');
-      setTokenText('supply');
-      handleOpenConfirm();
-      const response = await supplyTokenAction(mintPair, protocolAddresses, publicKeyHash);
-      if(response) {
-        dispatch(marketAction(comptroller, protocolAddresses, server));
-        setConfirmModal(false);
-      }
+      const response = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
     };
 
     const borrowToken = async() => {
-      const underlying = tokenDetails.assetType.toLowerCase();
-      const borrowPair = { underlying, amount };
-      close();
-      setAmount('');
-      setTokenText('borrow');
-      handleOpenConfirm();
-      const response = await borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash);
+      const response = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
+    };
+
+    useEffect(() => {
       if(response) {
         dispatch(marketAction(comptroller, protocolAddresses, server));
         setConfirmModal(false);
       }
-    };
+    }, [response]);
 
     useEffect(() => {
       setAmount('');
@@ -110,7 +100,8 @@ const AllMarketModal = (props) => {
                 setAmount={(e) => { setAmount(e); }}
                 visibility={true}
                 mainModal={true}
-                inputBtn = "Use Max"
+                inputBtnTextOne = "Use Max"
+                inputBtnTextTwo = "80% Limit"
                 maxAction={(tabValue) => maxAction(tabValue)}
                 maxAmount= {maxAmount}
             />

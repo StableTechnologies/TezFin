@@ -62,6 +62,7 @@ export const getWallet = async () => {
  */
 export const deactivateAccount = async () => {
     await client.clearActiveAccount();
+    localStorage.clear();
 };
 
 /**
@@ -155,7 +156,7 @@ export const undecimalify = (val, decimals) => {
  * @param  formatDecimals number to decimal points.
  * @returns abbreviated number in string format.
  */
-export const nFormatter = (num, formatDecimals = 4) =>{
+export const nFormatter = (num, formatDecimals = 2) =>{
   let suffix = [
     { value: 1, symbol: "" },
     { value: 1E3, symbol: "k" },

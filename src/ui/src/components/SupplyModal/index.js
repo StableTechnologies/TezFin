@@ -26,6 +26,7 @@ const SupplyModal = (props) => {
     const [amount, setAmount] = useState('');
     const [maxAmount, setMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
+    const [response, setResponse] = useState('');
 
     const handleOpenConfirm = () => {
         setConfirmModal(true);
@@ -46,34 +47,22 @@ const SupplyModal = (props) => {
         setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
       }
     }
-
     const supplyToken = async() => {
-        const underlying = tokenDetails.assetType.toLowerCase();
-        const mintPair = { underlying, amount };
-        close();
-        setAmount('');
-        setTokenText('supply');
-        handleOpenConfirm();
-        const response = await supplyTokenAction(mintPair, protocolAddresses, publicKeyHash);
-        if(response) {
-          dispatch(marketAction(comptroller, protocolAddresses, server));
-          setConfirmModal(false);
-        }
+      const response = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
     };
 
     const withdrawToken = async() => {
-        const underlying = tokenDetails.assetType.toLowerCase();
-        const redeemPair = { underlying, amount };
-        close();
-        setAmount('');
-        setTokenText('withdraw');
-        handleOpenConfirm();
-        const response = await withdrawTokenAction(redeemPair, protocolAddresses, publicKeyHash);
-        if(response) {
-          dispatch(marketAction(comptroller, protocolAddresses, server));
-          setConfirmModal(false);
-        }
+      const response = await withdrawTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
     };
+
+    useEffect(() => {
+      if(response) {
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+        setConfirmModal(false);
+      }
+    }, [response]);
 
     useEffect(() => {
         setAmount('');
@@ -106,7 +95,8 @@ const SupplyModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 setAmount={(e) => { setAmount(e); }}
-                inputBtnText = "Use Max"
+                inputBtnTextOne = "Use Max"
+                inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => maxAction(tabValue)}
                 maxAmount= {maxAmount}
             />

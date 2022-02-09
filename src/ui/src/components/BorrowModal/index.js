@@ -21,6 +21,7 @@ const BorrowModal = (props) => {
     const [amount, setAmount] = useState('');
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
+    const [response, setResponse] = useState('');
 
     const handleOpenConfirm = () => {
         setConfirmModal(true);
@@ -30,32 +31,30 @@ const BorrowModal = (props) => {
     };
 
     const borrowToken = async() => {
-        const underlying = tokenDetails.assetType.toLowerCase();
-        const borrowPair = { underlying, amount };
-        close();
-        setAmount('');
-        setTokenText('borrow');
-        handleOpenConfirm();
-        const response = await borrowTokenAction(borrowPair, protocolAddresses, publicKeyHash);
-        if(response) {
-          dispatch(marketAction(comptroller, protocolAddresses, server));
-          setConfirmModal(false);
-        }
+      const response = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
     };
 
     const repayBorrowToken = async() => {
-        const underlying = tokenDetails.assetType.toLowerCase();
-        const repayBorrowPair = { underlying, amount };
-        close();
-        setAmount('');
-        setTokenText('repay');
-        handleOpenConfirm();
-        const response = await repayBorrowTokenAction(repayBorrowPair, protocolAddresses, publicKeyHash);
-        if(response) {
-          dispatch(marketAction(comptroller, protocolAddresses, server));
-          setConfirmModal(false);
-        }
+      const response = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
     };
+
+    useEffect(() => {
+      if(response) {
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+        setConfirmModal(false);
+      }
+    }, [response]);
+
+    useEffect(() => {
+      setAmount('');
+      // setMaxAmount('');
+    }, [close]);
+
+    // useEffect(() => {
+    //     setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
+    // }, [maxAmount]);
 
     return (
         <>
@@ -78,7 +77,8 @@ const BorrowModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 setAmount={(e) => { setAmount(e); }}
-                inputBtnText = "80% Limit"
+                inputBtnTextOne = "80% Limit"
+                inputBtnTextTwo = "Use Max"
             />
         </>
     );

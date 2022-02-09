@@ -27,7 +27,8 @@ const DashboardModal = (props) => {
 	const {
 		open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
 		LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
-		collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnText, maxAction, maxAmount
+		collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
+    maxAction, maxAmount
 	} = props;
 
 	const [tabValue, setTabValue] = useState('one');
@@ -85,23 +86,14 @@ const DashboardModal = (props) => {
               inputProps={{ className: classes.inputText }}
               className={classes.textField}
             />
-            {mainModal ?
-              <Button
-                className={classes.inputBtn}
-                onClick={() => {maxAction(tabValue);}}
-                disableRipple
-                >
-                {tabValue === 'one' && "Use Max"}
-                {tabValue === 'two' && "80% Limit"}
-              </Button> :
-              <Button
-                className={classes.inputBtn}
-                onClick={() => {maxAction(tabValue);}}
-                disableRipple
+            <Button
+              className={classes.inputBtn}
+              onClick={() => {maxAction(tabValue);}}
+              disableRipple
               >
-                {inputBtnText}
-              </Button>
-            }
+              {tabValue === 'one' && inputBtnTextOne}
+              {tabValue === 'two' && inputBtnTextTwo}
+            </Button>
           </form>
           </DialogContent> :
           <DialogContent className={`${classes.padding0} ${extraPadding}`}>
