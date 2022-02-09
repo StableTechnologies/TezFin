@@ -3,8 +3,7 @@ import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 /**
  * This function is used to get the account details of a user.
- *
- * @param  clients
+ * @param  address
  * @param  server
  * @param  protocolAddresses
  * @param  comptroller

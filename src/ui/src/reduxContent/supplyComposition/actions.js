@@ -7,12 +7,12 @@ import { tokenColor } from '../../components/Constants';
 
 
 /**
- * This function is used to get the supplyComposition data of an account
+ * This function is used to get the supplyComposition data of an account.
  *
- * @param  account
+ * @param  suppliedMarkets
  * @returns supplyComposition
  */
-export const supplyCompositionAction = (account, suppliedMarkets) => async (dispatch) => {
+export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => {
     let supplyComposition = {} ;
     let assets = [];
 
@@ -24,18 +24,22 @@ export const supplyCompositionAction = (account, suppliedMarkets) => async (disp
           balanceUnderlying: x.balanceUnderlying,
           total: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title]),
           color: tokenColor[x.title],
-        })
+          collateral: x.collateral,
+          collateralUsd: 0
+        });
       });
 
       const totalUsdValue = assets.reduce((a,b) => a + b.total, 0);
       assets.map(x => {
         x.rate = ((x.total / totalUsdValue) * 100).toFixed(2);
-      })
+        x.collateral && ( x.collateralUsd = x.total )
+      });
+      const totalCollateralUsd = assets.reduce((a,b) => a + b.collateralUsd, 0);
 
       supplyComposition = {
         assets: assets,
         totalUsdValue: totalUsdValue,
-        collateral: account.totalCollateralUsd,
+        collateral: totalCollateralUsd,
       }
     }
 
