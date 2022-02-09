@@ -31,7 +31,7 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
 
 export const connectTezAccount = async () => {
     const logger = log.getLogger("conseiljs");
-    logger.setLevel("debug", false);
+    logger.setLevel("info", false);
     registerLogger(logger);
     const network = config.infra.conseilServer.network;
     const resp = await client.requestPermissions({ network: { type: network } });
@@ -108,9 +108,7 @@ export const confirmOps = async (operations) => {
             config.infra.tezosNode,
             address
         );
-        // operations.pop();
-        // operations.pop();
-        console.log(operations)
+
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
