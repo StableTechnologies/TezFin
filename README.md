@@ -55,6 +55,7 @@ Code is organized in the following structure
 
 To run tests use SmartPy CLI from the core project directory. Create a folder for test outputs. Example:
 
+
 ```sh
 mkdir TezFinTest
 cd TezFin
