@@ -4,7 +4,6 @@ import {
     TezosConseilClient,
     TezosNodeReader,
     TezosNodeWriter,
-    registerLogger
 } from 'conseiljs';
 
 import { BigNumber } from "bignumber.js";
@@ -12,7 +11,6 @@ import { DAppClient } from '@airgap/beacon-sdk';
 import { Mutex } from 'async-mutex';
 import Tezos from '../library/tezos';
 import bigInt from 'big-integer';
-import log from 'loglevel';
 
 // const config = require(`../library/${process.env.REACT_APP_ENV || "prod"}-network-config.json`);
 const config = require('../library/dev-network-config.json');
@@ -30,9 +28,6 @@ const client = new DAppClient({ name: config.dappName });
 export const shorten = (first, last, str) => `${str.substring(0, first)}...${str.substring(str.length - last)}`;
 
 export const connectTezAccount = async () => {
-    const logger = log.getLogger("conseiljs");
-    logger.setLevel("info", false);
-    registerLogger(logger);
     const network = config.infra.conseilServer.network;
     const resp = await client.requestPermissions({ network: { type: network } });
     const account = await client.getActiveAccount();
