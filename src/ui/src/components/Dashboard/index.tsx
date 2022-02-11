@@ -17,6 +17,7 @@ const Dashboard = () => {
     const dispatch = useDispatch();
 
     const { account } = useSelector((state: any) => state.addWallet);
+    const { address } = useSelector((state: any) => state.addWallet.account);
     const { markets } = useSelector((state: any) => state.market);
     const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state: any) => state.market);
 
@@ -30,14 +31,18 @@ const Dashboard = () => {
 
     return (
         <Grid container className={classes.dashboard}>
-          <Grid item xs={12} md={6} className={classes._paddingRight}>
-            <Typography className={classes.tableTitle}> Supplying </Typography>
-            <SuppliedTokenTable tableData={suppliedMarkets}/>
-          </Grid>
-          <Grid item xs={12} md={6} className={classes._paddingLeft}>
-            <Typography className={classes.tableTitle}> Borrowing </Typography>
-            <BorrowedTokenTable tableData={borrowedMarkets} />
-          </Grid>
+          {address &&
+            <>
+              <Grid item xs={12} md={6} className={classes._paddingRight}>
+                <Typography className={classes.tableTitle}> Supplying </Typography>
+                <SuppliedTokenTable tableData={suppliedMarkets}/>
+              </Grid>
+              <Grid item xs={12} md={6} className={classes._paddingLeft}>
+                <Typography className={classes.tableTitle}> Borrowing </Typography>
+                <BorrowedTokenTable tableData={borrowedMarkets} />
+              </Grid>
+            </>
+          }
           <Grid item xs={12} >
             <Typography className={classes.tableTitle}> Markets </Typography>
             <AllMarketTokenTable tableData={allMarkets} />
