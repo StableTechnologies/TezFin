@@ -46,6 +46,7 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
             token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
             token.supplyRate = markets[token.assetType].supply.rate.toString();
             token.borrowRate = markets[token.assetType].borrow.rate.toString();
+            token.walletBalance = '';
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 token.walletBalance = walletBalance[token.assetType].toString();
             }
@@ -64,22 +65,24 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
  */
 export const suppliedMarketAction = (account, markets) => async (dispatch) => {
     const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
-    const suppliedTokens = [...tokens];
-    const walletBalance = account.underlyingBalances || [];
+
+    const suppliedTokens = tokens.map(({ assetType, banner, title, logo,usdPrice, walletBalance }) => ({
+      assetType,
+      banner,
+      title,
+      logo,
+      usdPrice,
+      walletBalance,
+    }));
+
     suppliedTokens.map((token) => {
-        if (Object.keys(suppliedMarket).length > 0 && suppliedMarket.hasOwnProperty(token.assetType)) {
-            suppliedMarket[token.assetType].assetType = token.assetType;
-            suppliedMarket[token.assetType].banner = token.banner;
-            suppliedMarket[token.assetType].title = token.title;
-            suppliedMarket[token.assetType].logo = token.logo;
-            suppliedMarket[token.assetType].usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
-            if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
-                suppliedMarket[token.assetType].walletBalance = walletBalance[token.assetType].toString();
-            }
-        }
-        return suppliedMarket;
-    });
-    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(Object.values(suppliedMarket)) });
+      if (Object.keys(suppliedMarket).length > 0 && suppliedMarket.hasOwnProperty(token.assetType)) {
+        token.rate = suppliedMarket[token.assetType].rate;
+        token.balanceUnderlying = suppliedMarket[token.assetType].balanceUnderlying;
+        token.collateral = suppliedMarket[token.assetType].collateral;
+      }
+    })
+    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(suppliedTokens) });
 };
 
 /**
@@ -91,22 +94,24 @@ export const suppliedMarketAction = (account, markets) => async (dispatch) => {
  */
 export const borrowedMarketAction = (account, markets) => async (dispatch) => {
     const borrowedMarket = TezosLendingPlatform.getBorrowedMarkets(account, markets);
-    const borrowedTokens = [...tokens];
-    const walletBalance = account.underlyingBalances || [];
+
+    const borrowedTokens = tokens.map(({ assetType, banner, title, logo,usdPrice, walletBalance }) => ({
+      assetType,
+      banner,
+      title,
+      logo,
+      usdPrice,
+      walletBalance,
+    }));
 
     borrowedTokens.map((token) => {
-        if (Object.keys(borrowedMarket).length > 0 && borrowedMarket.hasOwnProperty(token.assetType)) {
-            borrowedMarket[token.assetType].assetType = token.assetType;
-            borrowedMarket[token.assetType].banner = token.banner;
-            borrowedMarket[token.assetType].title = token.title;
-            borrowedMarket[token.assetType].logo = token.logo;
-            borrowedMarket[token.assetType].usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString()).div(new BigNumber(10).pow(new BigNumber(6))).toFixed(4);
-            if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
-                borrowedMarket[token.assetType].walletBalance = walletBalance[token.assetType].toString();
-            }
-        }
-        return borrowedMarket;
-    });
+      if (Object.keys(borrowedMarket).length > 0 && borrowedMarket.hasOwnProperty(token.assetType)) {
+        token.rate = borrowedMarket[token.assetType].rate;
+        token.balanceUnderlying = borrowedMarket[token.assetType].balanceUnderlying;
+        token.liquidityUnderlying = borrowedMarket[token.assetType].liquidityUnderlying;
+        token.collateral = borrowedMarket[token.assetType].collateral;
+      }
+    })
 
-    dispatch({ type: GET_BORROWED_MARKET_DATA, payload: formatTokenData(Object.values(borrowedMarket)) });
+    dispatch({ type: GET_BORROWED_MARKET_DATA, payload: formatTokenData(borrowedTokens) });
 };
