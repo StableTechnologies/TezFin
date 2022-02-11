@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 
 import Switch from '../Switch';
 import SupplyModal from '../SupplyModal';
@@ -19,6 +20,7 @@ import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
+import { useSelector } from 'react-redux';
 
 const SuppliedTokenTable = (props) => {
   const classes = useStyles();
@@ -28,6 +30,8 @@ const SuppliedTokenTable = (props) => {
   const [openSupplyModal, setSupplyModal] = useState(false);
   const [collModal, setCollModal] = useState(false);
   const [disableCollModal, setDisableCollModal] = useState(false);
+
+  const { allMarkets } = useSelector((state: any) => state.market);
 
   const closeModal = () => {
     setSupplyModal(false);
@@ -86,11 +90,20 @@ const SuppliedTokenTable = (props) => {
         </TableHead>
         <TableBody>
           {(displayData.length === 0) &&
-            <TableRow>
-              <TableCell colSpan={5} className={classes.emptyStateText}>
-                You are not supplying assets at this time.
-              </TableCell>
-            </TableRow>
+             <TableRow>
+             {allMarkets.map(x => (
+             <>
+               {(x.marketSize) ?
+                <TableCell colSpan={5} className={classes.emptyStateText}>
+                   You are not supplying assets at this time.
+                 </TableCell> :
+                 <TableCell colSpan={1}>
+                   <Skeleton />
+                 </TableCell>
+               }
+             </>
+             ))}
+           </TableRow>
           }
           {displayData && displayData.map((data) => (
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
