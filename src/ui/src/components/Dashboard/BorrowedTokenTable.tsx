@@ -12,11 +12,14 @@ import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
+import { useSelector } from 'react-redux';
 
 
 const BorrowedTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
+
+  const { address } = useSelector((state: any) => state.addWallet.account);
 
   const [tokenDetails, setTokenDetails] = useState();
   const [openMktModal, setMktModal] = useState(false);
@@ -53,8 +56,11 @@ const BorrowedTokenTable = (props) => {
           <TableBody>
             {(displayData.length === 0) &&
               <TableRow>
-                <TableCell colSpan={6} className={classes.emptyStateText}>
-                  You are not borrowing assets at this time.
+                <TableCell colSpan={4} className={classes.emptyStateText}>
+                  { address ?
+                    'You are not borrowing assets at this time.' :
+                    'You are not connected to a wallet at this time.'
+                  }
                 </TableCell>
               </TableRow>
             }

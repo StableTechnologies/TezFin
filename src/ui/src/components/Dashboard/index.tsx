@@ -17,6 +17,7 @@ const Dashboard = () => {
     const dispatch = useDispatch();
 
     const { account } = useSelector((state: any) => state.addWallet);
+    const { address } = useSelector((state: any) => state.addWallet.account);
     const { markets } = useSelector((state: any) => state.market);
     const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state: any) => state.market);
 
