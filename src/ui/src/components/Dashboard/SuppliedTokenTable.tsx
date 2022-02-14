@@ -19,10 +19,13 @@ import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
+import { useSelector } from 'react-redux';
 
 const SuppliedTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
+
+  const { address } = useSelector((state: any) => state.addWallet.account);
 
   const [tokenDetails, setTokenDetails] = useState();
   const [openSupplyModal, setSupplyModal] = useState(false);
@@ -87,8 +90,11 @@ const SuppliedTokenTable = (props) => {
         <TableBody>
           {(displayData.length === 0) &&
             <TableRow>
-              <TableCell colSpan={5} className={classes.emptyStateText}>
-                You are not supplying assets at this time.
+              <TableCell colSpan={4} className={classes.emptyStateText}>
+                { address ?
+                  'You are not supplying assets at this time.' :
+                  'You are not connected to a wallet at this time.'
+                }
               </TableCell>
             </TableRow>
           }
