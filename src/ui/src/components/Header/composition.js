@@ -24,12 +24,7 @@ const Composition = (props) => {
             <Box className={classes.progressBar}>
               {supplyBar ?
                 <StackedBars composition={data} /> :
-                <>
-                  <ToolTipProgressBars value={Number(data.rate)} backgroundColor={progressBarColor} height='16px'/>
-                  <Typography className={classes.limitText}>
-                    {data.limitBalance && `$${nFormatter(data.limitBalance,2)} Left`}
-                  </Typography>
-                </>
+                <ToolTipProgressBars value={Number(data.rate)} backgroundColor={progressBarColor} height='16px'/>
               }
             </Box>
             <Box className={classes.box}>
