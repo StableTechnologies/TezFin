@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,17 +8,20 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 
-import { decimalify, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
+import { decimalify, nFormatter } from '../../util';
+
+import AllMarketModal from '../AllMarketModal';
+import TableSkeleton from '../Skeleton';
 
 import { useStyles } from './style';
-import AllMarketModal from '../AllMarketModal';
 
 const AllMarketTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
+
+  const { address } = useSelector((state: any) => state.addWallet.account);
 
 	const [tokenDetails, setTokenDetails] = useState();
 	const [openMktModal, setMktModal] = useState(false);
@@ -54,7 +58,7 @@ const AllMarketTokenTable = (props) => {
         {tableData && tableData.map((data) =>(
           <>
             {
-              (data.walletBalance !== undefined) ?
+              ((address && data.walletBalance) || (!address && data.marketSize)) ?
               <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                 <TableCell>
                   <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
@@ -88,11 +92,7 @@ const AllMarketTokenTable = (props) => {
                 </TableCell>
               </TableRow>
               :
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <Skeleton />
-                </TableCell>
-              </TableRow>
+              <TableSkeleton cell={6}/>
             }
           </>
           ))}
