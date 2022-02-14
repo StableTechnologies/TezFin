@@ -31,18 +31,14 @@ const Dashboard = () => {
 
     return (
         <Grid container className={classes.dashboard}>
-          {address &&
-            <>
-              <Grid item xs={12} md={6} className={classes._paddingRight}>
-                <Typography className={classes.tableTitle}> Supplying </Typography>
-                <SuppliedTokenTable tableData={suppliedMarkets}/>
-              </Grid>
-              <Grid item xs={12} md={6} className={classes._paddingLeft}>
-                <Typography className={classes.tableTitle}> Borrowing </Typography>
-                <BorrowedTokenTable tableData={borrowedMarkets} />
-              </Grid>
-            </>
-          }
+          <Grid item xs={12} md={6} className={classes._paddingRight}>
+            <Typography className={classes.tableTitle}> Supplying </Typography>
+            <SuppliedTokenTable tableData={suppliedMarkets}/>
+          </Grid>
+          <Grid item xs={12} md={6} className={classes._paddingLeft}>
+            <Typography className={classes.tableTitle}> Borrowing </Typography>
+            <BorrowedTokenTable tableData={borrowedMarkets} />
+          </Grid>
           <Grid item xs={12} >
             <Typography className={classes.tableTitle}> Markets </Typography>
             <AllMarketTokenTable tableData={allMarkets} />

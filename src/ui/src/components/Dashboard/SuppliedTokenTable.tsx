@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -20,11 +21,12 @@ import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
-import { useSelector } from 'react-redux';
 
 const SuppliedTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
+
+  const { address } = useSelector((state: any) => state.addWallet.account);
 
   const [tokenDetails, setTokenDetails] = useState();
   const [openSupplyModal, setSupplyModal] = useState(false);
@@ -90,20 +92,14 @@ const SuppliedTokenTable = (props) => {
         </TableHead>
         <TableBody>
           {(displayData.length === 0) &&
-             <TableRow>
-             {allMarkets.map(x => (
-             <>
-               {(x.marketSize) ?
-                <TableCell colSpan={5} className={classes.emptyStateText}>
-                   You are not supplying assets at this time.
-                 </TableCell> :
-                 <TableCell colSpan={1}>
-                   <Skeleton />
-                 </TableCell>
-               }
-             </>
-             ))}
-           </TableRow>
+            <TableRow>
+              <TableCell colSpan={4} className={classes.emptyStateText}>
+                { address ?
+                  'You are not supplying assets at this time.' :
+                  'You are not connected to a wallet at this time.'
+                }
+              </TableCell>
+            </TableRow>
           }
           {displayData && displayData.map((data) => (
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
