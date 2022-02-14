@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import BorrowModal from '../BorrowModal';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,21 +8,26 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
+
+import TableSkeleton from '../Skeleton';
+import BorrowModal from '../BorrowModal';
+
 import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
-import { useSelector } from 'react-redux';
-
 
 const BorrowedTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
 
   const { address } = useSelector((state: any) => state.addWallet.account);
+  const { allMarkets } = useSelector((state: any) => state.market);
 
   const [tokenDetails, setTokenDetails] = useState();
   const [openMktModal, setMktModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
   const closeModal = () => {
     setMktModal(false);
@@ -33,7 +38,15 @@ const BorrowedTokenTable = (props) => {
     setMktModal(true);
   };
 
-  const displayData = formatTokenData(tableData);
+  const borrowedData = formatTokenData(tableData);
+
+  useEffect(() => {
+    allMarkets.map(x=>{
+      if((address && x.walletBalance) || (!address && x.marketSize)) {
+        setLoading(false);
+        }
+    })
+  }, [allMarkets]);
 
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
@@ -54,17 +67,22 @@ const BorrowedTokenTable = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {(displayData.length === 0) &&
-              <TableRow>
-                <TableCell colSpan={4} className={classes.emptyStateText}>
-                  { address ?
-                    'You are not borrowing assets at this time.' :
-                    'You are not connected to a wallet at this time.'
-                  }
-                </TableCell>
-              </TableRow>
+            {(borrowedData.length === 0) &&
+              <>
+               {loading ?
+               <TableSkeleton cell={4}/> :
+                <TableRow>
+                  <TableCell colSpan={4} className={classes.emptyStateText}>
+                    { address ?
+                      'You are not borrowing assets at this time.' :
+                      'You are not connected to a wallet at this time.'
+                    }
+                  </TableCell>
+                </TableRow>
+               }
+             </>
             }
-            {displayData && displayData.map((data) => (
+            {borrowedData && borrowedData.map((data) => (
               <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                 <TableCell>
                   <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
