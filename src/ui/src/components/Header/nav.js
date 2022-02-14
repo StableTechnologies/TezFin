@@ -55,7 +55,7 @@ const Nav = () => {
                 icon= {
                   <Box
                     className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
-                    onClick={addWallet}
+                    onClick={() => {address ? '' : addWallet()}}
                     disableRipple
                   >
                     {(tezAccount && (shorten(6, 6, tezAccount))) || 'Connect Wallet' }
