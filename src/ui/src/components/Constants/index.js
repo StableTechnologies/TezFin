@@ -24,11 +24,11 @@ export const tokens = [
 ];
 export const tokenColor = {
     XTZ: '#3391F6',
-    ETH: '#2FC396',
-    BTC: '#E9EE08',
-    USD: 'lavender',
-    ETHtz: '#2FC396',
-    BTCtz: '#E9EE08',
-    USDtz: 'lavender',
+    ETH: '#662F9D',
+    BTC: '#F2991A',
+    USD: '#189DA3',
+    ETHtz: '#662F9D',
+    BTCtz: '#F2991A',
+    USDtz: '#189DA3',
 };
 
