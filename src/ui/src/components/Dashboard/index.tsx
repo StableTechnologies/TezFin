@@ -25,8 +25,8 @@ const Dashboard = () => {
       if (!markets) { return; }
       dispatch(allMarketAction(account, markets));
 
-      dispatch(suppliedMarketAction(account, markets));
-      dispatch(borrowedMarketAction(account, markets));
+      dispatch(suppliedMarketAction(allMarkets));
+      dispatch(borrowedMarketAction(allMarkets));
     }, [dispatch, account, markets]);
 
     return (

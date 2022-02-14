@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,15 +9,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
-import { decimalify, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
+import { decimalify, nFormatter } from '../../util';
+
+import AllMarketModal from '../AllMarketModal';
+import TableSkeleton from '../Skeleton';
 
 import { useStyles } from './style';
-import AllMarketModal from '../AllMarketModal';
 
 const AllMarketTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
+
+  const { address } = useSelector((state: any) => state.addWallet.account);
 
 	const [tokenDetails, setTokenDetails] = useState();
 	const [openMktModal, setMktModal] = useState(false);
@@ -50,39 +55,46 @@ const AllMarketTokenTable = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {tableData && tableData.map((data) => (
-            <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
-              <TableCell>
-                <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
-                <Typography className={classes.tokenName}> {" "} {data.title} </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <span>
-                  {(data.marketSize > 0) ? nFormatter(decimalify(data.marketSize.toString(), decimals[data.title])) : "0"} {" "} {data.title}
-                </span> <br/>
-                <span className={classes.faintFont}>
-                  ${(data.marketSize > 0) ? nFormatter(decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
-                </span>
-              </TableCell>
-              <TableCell align="right">
-                <span>
-                  {(data.totalBorrowed > 0) ? nFormatter(decimalify(data.totalBorrowed.toString(), decimals[data.title])) : "0"} {" "} {data.title}
-                </span> <br/>
-                <span className={classes.faintFont}>
-                  ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
-                </span>
-              </TableCell>
-              <TableCell align="right"> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(2) : "0"}% </TableCell>
-              <TableCell align="right"> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(2) : "0"}% </TableCell>
-              <TableCell align="right">
-                <span>
-                  {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : "0"} {data.title}
-                </span> <br/>
-                <span className={classes.faintFont}>
-                  ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
-                </span>
-              </TableCell>
-            </TableRow>
+        {tableData && tableData.map((data) =>(
+          <>
+            {
+              ((address && data.walletBalance) || (!address && data.marketSize)) ?
+              <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
+                <TableCell>
+                  <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
+                  <Typography className={classes.tokenName}> {" "} {data.title} </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <span>
+                    {(data.marketSize > 0) ? nFormatter(decimalify(data.marketSize.toString(), decimals[data.title])) : "0"} {" "} {data.title}
+                  </span> <br/>
+                  <span className={classes.faintFont}>
+                    ${(data.marketSize > 0) ? nFormatter(decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
+                  </span>
+                </TableCell>
+                <TableCell align="right">
+                  <span>
+                    {(data.totalBorrowed > 0) ? nFormatter(decimalify(data.totalBorrowed.toString(), decimals[data.title])) : "0"} {" "} {data.title}
+                  </span> <br/>
+                  <span className={classes.faintFont}>
+                    ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
+                  </span>
+                </TableCell>
+                <TableCell align="right"> {(data.supplyRate > 0) ? Number(data.supplyRate).toFixed(2) : "0"}% </TableCell>
+                <TableCell align="right"> {(data.borrowRate > 0) ? Number(data.borrowRate).toFixed(2) : "0"}% </TableCell>
+                <TableCell align="right">
+                  <span>
+                    {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : "0"} {data.title}
+                  </span> <br/>
+                  <span className={classes.faintFont}>
+                    ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
+                  </span>
+                </TableCell>
+              </TableRow>
+              :
+              <TableSkeleton cell={6}/>
+            }
+          </>
           ))}
         </TableBody>
       </Table>

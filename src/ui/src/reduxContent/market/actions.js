@@ -20,7 +20,6 @@ import { tokens } from '../../components/Constants';
 export const marketAction = (comptroller, protocolAddresses, server) => async (dispatch) => {
     if (comptroller) {
         const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
-        console.log("markets ::: ", markets);
         dispatch({ type: GET_MARKET_DATA, payload: markets });
     }
 };
@@ -32,11 +31,12 @@ export const marketAction = (comptroller, protocolAddresses, server) => async (d
  * @param markets
  * @returns market details
  */
-export const allMarketAction = (account, markets) => async (dispatch) => {
+export const allMarketAction = (account, markets) => (dispatch) => {
     const marketTokens = [...tokens];
     const walletBalance = account.underlyingBalances || [];
     const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
     const borrowedMarket = TezosLendingPlatform.getBorrowedMarkets(account, markets);
+
     marketTokens.map((token) => {
         if (Object.keys(markets).length > 0 && markets.hasOwnProperty(token.assetType)) {
             token.supply = { ...suppliedMarket[token.assetType] };
@@ -59,59 +59,41 @@ export const allMarketAction = (account, markets) => async (dispatch) => {
 /**
  * This function is used to get the supplied market data in which an account has supplied.
  *
- * @param account
  * @param markets
  * @returns suppliedMarket
  */
-export const suppliedMarketAction = (account, markets) => async (dispatch) => {
-    const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
+export const suppliedMarketAction = (markets) => (dispatch) => {
 
-    const suppliedTokens = tokens.map(({ assetType, banner, title, logo,usdPrice, walletBalance }) => ({
+  const suppliedTokens = markets.map(({ assetType, banner, title, logo,usdPrice, walletBalance, supply}) => ({
       assetType,
       banner,
       title,
       logo,
       usdPrice,
       walletBalance,
+      ...supply
     }));
 
-    suppliedTokens.map((token) => {
-      if (Object.keys(suppliedMarket).length > 0 && suppliedMarket.hasOwnProperty(token.assetType)) {
-        token.rate = suppliedMarket[token.assetType].rate;
-        token.balanceUnderlying = suppliedMarket[token.assetType].balanceUnderlying;
-        token.collateral = suppliedMarket[token.assetType].collateral;
-      }
-    })
-    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(suppliedTokens) });
+  dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(suppliedTokens) });
 };
 
 /**
  * This function is used to get the borrowed market data in which an account has borrowed funds.
  *
- * @param account
  * @param markets
  * @returns borrowedMarket
  */
-export const borrowedMarketAction = (account, markets) => async (dispatch) => {
-    const borrowedMarket = TezosLendingPlatform.getBorrowedMarkets(account, markets);
+export const borrowedMarketAction = (markets) => (dispatch) => {
 
-    const borrowedTokens = tokens.map(({ assetType, banner, title, logo,usdPrice, walletBalance }) => ({
+    const borrowedTokens = markets.map(({ assetType, banner, title, logo,usdPrice, walletBalance, borrow }) => ({
       assetType,
       banner,
       title,
       logo,
       usdPrice,
       walletBalance,
+      ...borrow
     }));
-
-    borrowedTokens.map((token) => {
-      if (Object.keys(borrowedMarket).length > 0 && borrowedMarket.hasOwnProperty(token.assetType)) {
-        token.rate = borrowedMarket[token.assetType].rate;
-        token.balanceUnderlying = borrowedMarket[token.assetType].balanceUnderlying;
-        token.liquidityUnderlying = borrowedMarket[token.assetType].liquidityUnderlying;
-        token.collateral = borrowedMarket[token.assetType].collateral;
-      }
-    })
 
     dispatch({ type: GET_BORROWED_MARKET_DATA, payload: formatTokenData(borrowedTokens) });
 };

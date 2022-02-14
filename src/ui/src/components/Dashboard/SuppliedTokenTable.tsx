@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,6 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
+import TableSkeleton from '../Skeleton';
 import Switch from '../Switch';
 import SupplyModal from '../SupplyModal';
 import CollateralizeModal from '../CollateralizeModal';
@@ -19,18 +21,19 @@ import { decimalify, formatTokenData, nFormatter } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
-import { useSelector } from 'react-redux';
 
 const SuppliedTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
 
   const { address } = useSelector((state: any) => state.addWallet.account);
+  const { allMarkets } = useSelector((state: any) => state.market);
 
   const [tokenDetails, setTokenDetails] = useState();
   const [openSupplyModal, setSupplyModal] = useState(false);
   const [collModal, setCollModal] = useState(false);
   const [disableCollModal, setDisableCollModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const closeModal = () => {
     setSupplyModal(false);
@@ -52,7 +55,15 @@ const SuppliedTokenTable = (props) => {
     }
 };
 
-  const displayData = formatTokenData(tableData);
+  const suppliedData = formatTokenData(tableData);
+
+  useEffect(() => {
+    allMarkets.map(x=>{
+      if((address && x.walletBalance) || (!address && x.marketSize)) {
+          setLoading(false);
+        }
+    });
+  }, [allMarkets, address]);
 
   return (
     <TableContainer className={`${classes.root} ${classes.tableCon}`}>
@@ -88,17 +99,22 @@ const SuppliedTokenTable = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {(displayData.length === 0) &&
-            <TableRow>
-              <TableCell colSpan={4} className={classes.emptyStateText}>
-                { address ?
-                  'You are not supplying assets at this time.' :
-                  'You are not connected to a wallet at this time.'
-                }
-              </TableCell>
-            </TableRow>
+          {(suppliedData.length === 0) &&
+            <>
+              {loading ?
+              <TableSkeleton cell={4}/> :
+              <TableRow>
+                <TableCell colSpan={4} className={classes.emptyStateText}>
+                  { address ?
+                    'You are not supplying assets at this time.' :
+                    'You are not connected to a wallet at this time.'
+                  }
+                </TableCell>
+              </TableRow>
+              }
+            </>
           }
-          {displayData && displayData.map((data) => (
+          {suppliedData && suppliedData.map((data) => (
             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
               <TableCell>
                 <img src={Tez} alt={`${data.title}-Icon`} className={classes.img} />
@@ -112,7 +128,7 @@ const SuppliedTokenTable = (props) => {
                   {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : '0.00'} {data.title}
                 </span> <br/>
                 <span className={classes.faintFont}>
-									${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
+                  ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : "0.00"}
                 </span>
               </TableCell>
               <TableCell align="right" className={classes.switchPadding}>
