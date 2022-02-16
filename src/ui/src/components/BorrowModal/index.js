@@ -4,7 +4,7 @@ import { decimals } from 'tezoslendingplatformjs';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../StatusModal';
+import ConfirmModal from '../StatusModal/ConfirmationModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';

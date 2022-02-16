@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { supplyTokenAction, withdrawTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../StatusModal';
+import ConfirmModal from '../StatusModal/ConfirmationModal';
+import SuccessModal from '../StatusModal/SuccessModal';
+import ErrorModal from '../StatusModal/ErrorModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
@@ -22,20 +24,27 @@ const SupplyModal = (props) => {
     const publicKeyHash = account.address;
 
     const [openConfirmModal, setConfirmModal] = useState(false);
+    const [openSuccessModal, setSuccessModal] = useState(false);
+    const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
     const [maxAmount, setMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [confirm, setConfirm] = useState('');
-    const [error, setError] = useState('');
+    const [confirmError, setConfirmError] = useState('');
+    const [error, setError] = useState(false);
 
     const handleOpenConfirm = () => setConfirmModal(true);
     const handleCloseConfirm = () => setConfirmModal(false);
+    const handleOpenSuccess = () => setSuccessModal(true);
+    const handleCloseSuccess = () => setSuccessModal(false);
+    const handleOpenError = () => setErrorModal(true);
+    const handleCloseError = () => setErrorModal(false);
 
     const supplyToken = async() => {
-        const { response, error } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
-        setResponse(response);
-        setError(error);
+      const { response, error } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      setResponse(response);
+      setError(error);
     };
 
     const withdrawToken = async() => {
@@ -44,27 +53,39 @@ const SupplyModal = (props) => {
       setError(error);
     };
 
-    useEffect(() => error &&  setTokenText('error'), [error]);
     useEffect(() => tokenText && handleOpenConfirm(), [tokenText]);
     useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
       if(response) {
-        setTokenText('verifying');
         (async () => {
-          const confirm = await verifyTransaction(response);
+          const { confirm, error } = await verifyTransaction(response);
           setConfirm(confirm);
-          console.log('confirm', confirm);
+          setConfirmError(error);
         })()
       }
     }, [response]);
 
     useEffect(() => {
+      if(error) {
+        setConfirmModal(false);
+        setErrorModal(true);
+      }
+    }, [error]);
+
+    useEffect(() => {
       if(confirm) {
-        setTokenText('success');
+        setConfirmModal(false);
+        setSuccessModal(true);
         dispatch(marketAction(comptroller, protocolAddresses, server));
       }
     }, [confirm]);
+    useEffect(() => {
+      if(confirmError) {
+        setConfirmModal(false);
+        setErrorModal(true);
+      }
+    }, [confirmError]);
 
     useEffect(() => {
       setAmount('');
@@ -73,7 +94,9 @@ const SupplyModal = (props) => {
 
     return (
       <>
-        <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} error={error} />
+        <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={ tokenText} approved={response} />
+        <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
+        <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
         <DashboardModal
           APYText={`${tokenDetails.title} Variable APY Rate`}
           Limit="Borrow Limit"

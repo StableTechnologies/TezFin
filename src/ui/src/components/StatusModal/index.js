@@ -9,61 +9,31 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import CloseButton from '../CloseButton';
 
-import confirmGif from '../../assets/confirm.gif';
-import successGif from '../../assets/success.gif';
-import errorGif from '../../assets/error.gif';
-
 import useStyles from './style';
 
-const ConfirmModal = (props) => {
+const StatusModal = (props) => {
     const classes = useStyles();
-    const { open, close, token, tokenText, error } = props;
-
-    const [gif, setGif] = useState('');
-    const [title, setTitle] = useState('');
-
-    useEffect(() => {
-      if(tokenText === 'success') {
-        setGif(successGif);
-        setTitle('Congrats!');
-      }
-      if(tokenText === 'error') {
-        setGif(errorGif)
-        setTitle('oops!');
-      }
-      return () => {
-        setGif('')
-        setTitle('');
-      }
-    }, [tokenText]);
-
-
+    const { open, close, gifSrc, title, tokenText, closBtn, confirmError } = props;
 
     return (
       <Dialog open={open} className={classes.root}>
-         <CloseButton onClick={close}/>
+       {closBtn && <CloseButton onClick={close}/>}
         <DialogTitle className={classes.title}>
-          {title || 'Confirm Transaction'}
+          {title}
         </DialogTitle>
         <DialogContent className={classes.gifCon}>
-          <img src={gif || confirmGif} alt="confirm-gif" className={classes.gif}/>
+          <img src={gifSrc} alt={gifSrc} className={classes.gif}/>
         </DialogContent>
         <DialogContent>
           <DialogContentText>
-            {(tokenText === 'enable') && `To enable  ${token} token, please confirm the transaction.`}
-            {(tokenText === 'withdraw') && `To withdraw ${token}, please confirm the transaction.`}
-            {(tokenText === 'supply') && `To supply ${token} token, please confirm the transaction.`}
-            {(tokenText === 'borrow') && `To borrow ${token}, please confirm the transaction.`}
-            {(tokenText === 'repay') && `To repay ${token}, please confirm the transaction.`}
-            {(tokenText === 'collateral') && `To enable ${token} as collateral, please confirm the transaction.`}
-            {(tokenText === 'disable') && `To disable ${token} as collateral, please confirm the transaction.`}
-            {(tokenText === 'verifying') && `verifying transaction, please hold.`}
-            {(tokenText === 'success') && `Transaction completed succesfully.`}
-            {(tokenText === 'error') && `${error.description}`}
+            {tokenText}
+          </DialogContentText>
+          <DialogContentText>
+            {confirmError}
           </DialogContentText>
         </DialogContent>
       </Dialog>
     );
 };
 
-export default ConfirmModal;
+export default StatusModal;

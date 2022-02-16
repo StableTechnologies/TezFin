@@ -115,20 +115,26 @@ export const confirmTransaction = async (operations) => {
         const response = await client.requestOperation({ operationDetails: opGroup });
         return { response };
     } catch (error) {
-        console.log('error@confirmTransaction', error);
-        console.log('error@description', error.description);
+        console.log( error);
         return { error };
-        // throw 'this is the error' + error;
     }
 };
 
+/**
+ * Confirms transaction completion on conseiljs
+ *
+ * @param result RPC output
+ *
+ * @return operation response
+ */
 export const verifyTransaction = async (result) => {
   try {
       const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
       const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
-      return confirm;
+      return { confirm };
   } catch (error) {
-    console.log('errorConfirm', error);
+    console.log(error);
+    return { error }
   }
 }
 

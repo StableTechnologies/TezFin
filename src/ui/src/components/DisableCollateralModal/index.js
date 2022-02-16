@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { marketAction } from '../../reduxContent/market/actions';
 
 import { disableCollateralizeTokenAction } from '../../util/modalActions';
-import ConfirmModal from '../StatusModal';
+import ConfirmModal from '../StatusModal/ConfirmationModal';
 import DashboardModal from '../DashboardModal';
 
 import { useStyles } from './style';
+import { verifyTransaction } from '../../util';
 
 const DisableCollateralModal = (props) => {
     const classes = useStyles();
@@ -24,6 +25,7 @@ const DisableCollateralModal = (props) => {
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
+    const [confirm, setConfirm] = useState('');
     const [error, setError] = useState('');
 
     const handleOpenConfirm = () => {
@@ -46,10 +48,21 @@ const DisableCollateralModal = (props) => {
     useEffect(() => error &&  setTokenText('error'), [error]);
     useEffect(() => {
       if(response) {
-        dispatch(marketAction(comptroller, protocolAddresses, server));
-        setConfirmModal(false);
+        setTokenText('verifying');
+        (async () => {
+          const confirm = await verifyTransaction(response);
+          setConfirm(confirm);
+          console.log('confirm', confirm);
+        })()
       }
     }, [response]);
+
+    useEffect(() => {
+      if(confirm) {
+        setTokenText('success');
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+      }
+    }, [confirm]);
 
 
     return (
