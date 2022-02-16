@@ -83,7 +83,7 @@ export const getActiveAccount = async () => {
  *
  * @return operation response
  */
-export const confirmOps = async (operations) => {
+export const confirmTransaction = async (operations) => {
     try {
         const address = operations[0].source;
         let curve = KeyStoreCurve.ED25519;
@@ -112,14 +112,25 @@ export const confirmOps = async (operations) => {
             operations,
             true
         );
-        const result = await client.requestOperation({ operationDetails: opGroup });
-        const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
-        const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
-        return confirm;
+        const response = await client.requestOperation({ operationDetails: opGroup });
+        return { response };
     } catch (error) {
-        throw error;
+        console.log('error@confirmTransaction', error);
+        console.log('error@description', error.description);
+        return { error };
+        // throw 'this is the error' + error;
     }
 };
+
+export const verifyTransaction = async (result) => {
+  try {
+      const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
+      const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
+      return confirm;
+  } catch (error) {
+    console.log('errorConfirm', error);
+  }
+}
 
 /**
  * This function that takes a number/string and the number of decimals and returns the decimal version of that number.

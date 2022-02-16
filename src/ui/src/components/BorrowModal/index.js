@@ -4,11 +4,12 @@ import { decimals } from 'tezoslendingplatformjs';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../ConfirmModal';
+import ConfirmModal from '../StatusModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
-import { decimalify, undecimalify } from '../../util';
+import { undecimalify, verifyTransaction } from '../../util';
+import { borrowingMaxAction } from '../../util/maxAction';
 
 const BorrowModal = (props) => {
     const classes = useStyles();
@@ -26,6 +27,8 @@ const BorrowModal = (props) => {
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
+    const [confirm, setConfirm] = useState('');
+    const [error, setError] = useState('');
 
     const handleOpenConfirm = () => {
         setConfirmModal(true);
@@ -34,44 +37,47 @@ const BorrowModal = (props) => {
         setConfirmModal(false);
     };
 
-    const maxAction = (tabValue) => {
-      if(tabValue === 'one') {
-        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
-      }
-      if(tabValue === 'two') {
-        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
-      }
-    };
-
     const borrowToken = async() => {
-      const response = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
       setResponse(response);
+      setError(error);
     };
 
     const repayBorrowToken = async() => {
-      const response = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
       setResponse(response);
+      setError(error);
     };
+
+    useEffect(() => error &&  setTokenText('error'), [error]);
+    useEffect(() => tokenText && handleOpenConfirm(), [tokenText]);
+    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
       if(response) {
-        dispatch(marketAction(comptroller, protocolAddresses, server));
-        setConfirmModal(false);
+        setTokenText('verifying');
+        (async () => {
+          const confirm = await verifyTransaction(response);
+          setConfirm(confirm);
+        })()
       }
     }, [response]);
+
+    useEffect(() => {
+      if(confirm) {
+        setTokenText('success');
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+      }
+    }, [confirm]);
 
     useEffect(() => {
       setAmount('');
       setMaxAmount('');
     }, [close]);
 
-    useEffect(() => {
-        setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
-    }, [maxAmount]);
-
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
+            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} error={error} />
             <DashboardModal
                 APYText="Borrow APY"
                 Limit="Borrow Limit"
@@ -92,7 +98,7 @@ const BorrowModal = (props) => {
                 setAmount={(e) => { setAmount(e); }}
                 inputBtnTextOne = "80% Limit"
                 inputBtnTextTwo = "Use Max"
-                maxAction={(tabValue) => maxAction(tabValue)}
+                maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, setMaxAmount)}
                 maxAmount= {maxAmount}
             />
         </>

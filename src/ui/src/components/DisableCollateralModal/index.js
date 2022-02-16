@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { marketAction } from '../../reduxContent/market/actions';
-import { disableCollateralizeTokenAction } from '../../util/modalActions';
-import ConfirmModal from '../ConfirmModal';
 
+import { marketAction } from '../../reduxContent/market/actions';
+
+import { disableCollateralizeTokenAction } from '../../util/modalActions';
+import ConfirmModal from '../StatusModal';
 import DashboardModal from '../DashboardModal';
 
 import { useStyles } from './style';
@@ -22,6 +23,8 @@ const DisableCollateralModal = (props) => {
 
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
+    const [response, setResponse] = useState('');
+    const [error, setError] = useState('');
 
     const handleOpenConfirm = () => {
         setConfirmModal(true);
@@ -35,16 +38,23 @@ const DisableCollateralModal = (props) => {
         close();
         setTokenText('disable');
         handleOpenConfirm();
-        const response = await disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
-        if(response) {
-          dispatch(marketAction(comptroller, protocolAddresses, server));
-          setConfirmModal(false);
-        }
+        const { response, error} = await disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
+        setResponse(response);
+        setError(error);
     };
+
+    useEffect(() => error &&  setTokenText('error'), [error]);
+    useEffect(() => {
+      if(response) {
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+        setConfirmModal(false);
+      }
+    }, [response]);
+
 
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText}/>
+            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText} error={error} />
             <DashboardModal
                 headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
                 APYText = {`${tokenDetails.title} ` + 'Variable APY Rate'}

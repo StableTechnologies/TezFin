@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collateralizeTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../ConfirmModal';
+import ConfirmModal from '../StatusModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
@@ -21,6 +21,8 @@ const CollateralizeModal = (props) => {
 
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
+    const [response, setResponse] = useState('');
+    const [error, setError] = useState('');
 
     const handleOpenConfirm = () => {
         setConfirmModal(true);
@@ -34,16 +36,22 @@ const CollateralizeModal = (props) => {
         close();
         setTokenText('collateral');
         handleOpenConfirm();
-        const response = await collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
-        if(response) {
-          dispatch(marketAction(comptroller, protocolAddresses, server));
-          setConfirmModal(false);
-        }
+        const { response, error } = await collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
+        setResponse(response);
+        setError(error);
     };
+
+    useEffect(() => error &&  setTokenText('error'), [error]);
+    useEffect(() => {
+      if(response) {
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+        setConfirmModal(false);
+      }
+    }, [response]);
 
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
+            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} error={error} />
             <DashboardModal
                 headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
                 APYText={`${tokenDetails.title} ` + 'Variable APY Rate'}

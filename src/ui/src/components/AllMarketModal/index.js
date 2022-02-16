@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { supplyTokenAction, borrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../ConfirmModal';
+import ConfirmModal from '../StatusModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
-import { decimalify, undecimalify } from '../../util';
+import { undecimalify, verifyTransaction } from '../../util';
 
 import { decimals } from 'tezoslendingplatformjs';
+import { marketsMaxAction } from '../../util/maxAction';
 
 const AllMarketModal = (props) => {
     const classes = useStyles();
@@ -26,6 +27,8 @@ const AllMarketModal = (props) => {
     const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
+    const [confirm, setConfirm] = useState('');
+    const [error, setError] = useState('');
 
     const handleOpenConfirm = () => {
       setConfirmModal(true);
@@ -34,49 +37,47 @@ const AllMarketModal = (props) => {
       setConfirmModal(false);
     };
 
-    const maxAction = (tabValue) => {
-      if(tabValue === 'one') {
-        if(tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()){
-          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
-        }
-        else{
-          setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
-        }
-      }
-      if(tabValue === 'two') {
-        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
-      }
-    };
-
     const supplyToken = async() => {
-      const response = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error} = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
       setResponse(response);
+      setError(error);
     };
 
     const borrowToken = async() => {
-      const response = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
       setResponse(response);
+      setError(error);
     };
+
+    useEffect(() => error &&  setTokenText('error'), [error]);
+    useEffect(() => tokenText && handleOpenConfirm(), [tokenText]);
+    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
       if(response) {
-        dispatch(marketAction(comptroller, protocolAddresses, server));
-        setConfirmModal(false);
+        setTokenText('verifying');
+        (async () => {
+          const confirm = await verifyTransaction(response);
+          setConfirm(confirm);
+        })()
       }
     }, [response]);
+
+    useEffect(() => {
+      if(confirm) {
+        setTokenText('success');
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+      }
+    }, [confirm]);
 
     useEffect(() => {
       setAmount('');
       setMaxAmount('');
     }, [close]);
 
-    useEffect(() => {
-      setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
-    }, [maxAmount]);
-
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
+            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} error={error} />
             <DashboardModal
                 APYText={`${tokenDetails.title} Variable APY Rate`}
                 APYTextTwo="Borrow APY"
@@ -102,7 +103,7 @@ const AllMarketModal = (props) => {
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
                 inputBtnTextTwo = "80% Limit"
-                maxAction={(tabValue) => maxAction(tabValue)}
+                maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, setMaxAmount)}
                 maxAmount= {maxAmount}
             />
         </>
