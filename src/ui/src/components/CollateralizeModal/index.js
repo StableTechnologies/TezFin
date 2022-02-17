@@ -28,6 +28,7 @@ const CollateralizeModal = (props) => {
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [confirm, setConfirm] = useState('');
+    const [confirmError, setConfirmError] = useState('');
     const [error, setError] = useState('');
 
     const handleOpenPending = () => setPendingModal(true);
@@ -48,7 +49,6 @@ const CollateralizeModal = (props) => {
     };
 
     useEffect(() => tokenText && handleOpenPending(), [tokenText]);
-    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
       if(response) {
@@ -81,16 +81,12 @@ const CollateralizeModal = (props) => {
       }
     }, [confirmError]);
 
-    useEffect(() => {
-      setAmount('');
-      setMaxAmount('');
-    }, [close]);
 
 
     return (
       <>
         <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
-        <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
+        <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} />
         <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
         <DashboardModal
           headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."

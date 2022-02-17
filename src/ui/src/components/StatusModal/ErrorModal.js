@@ -25,6 +25,7 @@ const ErrorModal = (props) => {
           </>
         }
         confirmError={
+          confirmError &&
           <Button
             variant="outlined"
             onClick={()=> location.reload(true)}

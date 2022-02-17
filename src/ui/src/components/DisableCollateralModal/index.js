@@ -49,7 +49,6 @@ const DisableCollateralModal = (props) => {
     };
 
     useEffect(() => tokenText && handleOpenPending(), [tokenText]);
-    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
       if(response) {
@@ -75,6 +74,7 @@ const DisableCollateralModal = (props) => {
         dispatch(marketAction(comptroller, protocolAddresses, server));
       }
     }, [confirm]);
+
     useEffect(() => {
       if(confirmError) {
         setPendingModal(false);
@@ -82,15 +82,11 @@ const DisableCollateralModal = (props) => {
       }
     }, [confirmError]);
 
-    useEffect(() => {
-      setAmount('');
-      setMaxAmount('');
-    }, [close]);
 
     return (
       <>
         <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
-        <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
+        <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} />
         <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
         <DashboardModal
           headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
