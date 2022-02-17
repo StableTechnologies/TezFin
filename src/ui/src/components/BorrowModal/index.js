@@ -4,11 +4,14 @@ import { decimals } from 'tezoslendingplatformjs';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../ConfirmModal';
+import PendingModal from '../StatusModal/PendingModal';
+import SuccessModal from '../StatusModal/SuccessModal';
+import ErrorModal from '../StatusModal/ErrorModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
-import { decimalify, undecimalify } from '../../util';
+import { undecimalify, verifyTransaction } from '../../util';
+import { borrowingMaxAction } from '../../util/maxAction';
 
 const BorrowModal = (props) => {
     const classes = useStyles();
@@ -21,80 +24,104 @@ const BorrowModal = (props) => {
     const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
+    const [openPendingModal, setPendingModal] = useState(false);
+    const [openSuccessModal, setSuccessModal] = useState(false);
+    const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
     const [maxAmount, setMaxAmount] = useState('');
-    const [openConfirmModal, setConfirmModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
+    const [confirm, setConfirm] = useState('');
+    const [confirmError, setConfirmError] = useState('');
+    const [error, setError] = useState('');
 
-    const handleOpenConfirm = () => {
-        setConfirmModal(true);
-    };
-    const handleCloseConfirm = () => {
-        setConfirmModal(false);
-    };
+    const handleOpenPending = () => setPendingModal(true);
+    const handleClosePending = () => setPendingModal(false);
+    const handleOpenSuccess = () => setSuccessModal(true);
+    const handleCloseSuccess = () => setSuccessModal(false);
+    const handleOpenError = () => setErrorModal(true);
+    const handleCloseError = () => setErrorModal(false);
 
-    const maxAction = (tabValue) => {
-      if(tabValue === 'one') {
-        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
-      }
-      if(tabValue === 'two') {
-        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
-      }
-    };
 
     const borrowToken = async() => {
-      const response = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
       setResponse(response);
+      setError(error);
     };
 
     const repayBorrowToken = async() => {
-      const response = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
       setResponse(response);
+      setError(error);
     };
+
+    useEffect(() => tokenText && handleOpenPending(), [tokenText]);
+    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
       if(response) {
-        dispatch(marketAction(comptroller, protocolAddresses, server));
-        setConfirmModal(false);
+        (async () => {
+          const { confirm, error } = await verifyTransaction(response);
+          setConfirm(confirm);
+          setConfirmError(error);
+        })()
       }
     }, [response]);
+
+    useEffect(() => {
+      if(error) {
+        setPendingModal(false);
+        setErrorModal(true);
+      }
+    }, [error]);
+
+    useEffect(() => {
+      if(confirm) {
+        setPendingModal(false);
+        setSuccessModal(true);
+        dispatch(marketAction(comptroller, protocolAddresses, server));
+      }
+    }, [confirm]);
+    useEffect(() => {
+      if(confirmError) {
+        setPendingModal(false);
+        setErrorModal(true);
+      }
+    }, [confirmError]);
 
     useEffect(() => {
       setAmount('');
       setMaxAmount('');
     }, [close]);
 
-    useEffect(() => {
-        setAmount(undecimalify(maxAmount, decimals[tokenDetails.title]));
-    }, [maxAmount]);
-
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} />
-            <DashboardModal
-                APYText="Borrow APY"
-                Limit="Borrow Limit"
-                LimitUsed="Borrow Limit Used"
-                CurrentStateText="Currently Borrowing"
-                open={open}
-                close={close}
-                tokenDetails={tokenDetails}
-                handleClickTabOne={borrowToken}
-                handleClickTabTwo={repayBorrowToken}
-                labelOne="Borrow"
-                labelTwo="Repay"
-                buttonOne="Borrow"
-                buttonTwo="Repay"
-                btnSub={classes.btnSub}
-                inkBarStyle={classes.inkBarStyle}
-                visibility={true}
-                setAmount={(e) => { setAmount(e); }}
-                inputBtnTextOne = "80% Limit"
-                inputBtnTextTwo = "Use Max"
-                maxAction={(tabValue) => maxAction(tabValue)}
-                maxAmount= {maxAmount}
-            />
+          <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
+          <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
+          <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
+          <DashboardModal
+            APYText="Borrow APY"
+            Limit="Borrow Limit"
+            LimitUsed="Borrow Limit Used"
+            CurrentStateText="Currently Borrowing"
+            open={open}
+            close={close}
+            tokenDetails={tokenDetails}
+            handleClickTabOne={borrowToken}
+            handleClickTabTwo={repayBorrowToken}
+            labelOne="Borrow"
+            labelTwo="Repay"
+            buttonOne="Borrow"
+            buttonTwo="Repay"
+            btnSub={classes.btnSub}
+            inkBarStyle={classes.inkBarStyle}
+            visibility={true}
+            setAmount={(e) => { setAmount(e); }}
+            inputBtnTextOne = "80% Limit"
+            inputBtnTextTwo = "Use Max"
+            maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, setMaxAmount)}
+            maxAmount= {maxAmount}
+          />
         </>
     );
 };
