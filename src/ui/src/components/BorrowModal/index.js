@@ -4,7 +4,7 @@ import { decimals } from 'tezoslendingplatformjs';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../StatusModal/ConfirmationModal';
+import PendingModal from '../StatusModal/PendingModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
@@ -24,33 +24,33 @@ const BorrowModal = (props) => {
 
     const [amount, setAmount] = useState('');
     const [maxAmount, setMaxAmount] = useState('');
-    const [openConfirmModal, setConfirmModal] = useState(false);
+    const [openPendingModal, setPendingModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [confirm, setConfirm] = useState('');
     const [error, setError] = useState('');
 
-    const handleOpenConfirm = () => {
-        setConfirmModal(true);
+    const handleOpenPending = () => {
+        setPendingModal(true);
     };
-    const handleCloseConfirm = () => {
-        setConfirmModal(false);
+    const handleClosePending = () => {
+        setPendingModal(false);
     };
 
     const borrowToken = async() => {
-      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
       setResponse(response);
       setError(error);
     };
 
     const repayBorrowToken = async() => {
-      const { response, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
       setResponse(response);
       setError(error);
     };
 
     useEffect(() => error &&  setTokenText('error'), [error]);
-    useEffect(() => tokenText && handleOpenConfirm(), [tokenText]);
+    useEffect(() => tokenText && handleOpenPending(), [tokenText]);
     useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
@@ -77,7 +77,7 @@ const BorrowModal = (props) => {
 
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} error={error} />
+            <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} error={error} />
             <DashboardModal
                 APYText="Borrow APY"
                 Limit="Borrow Limit"

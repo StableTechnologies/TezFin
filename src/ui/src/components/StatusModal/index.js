@@ -25,12 +25,10 @@ const StatusModal = (props) => {
           <img src={gifSrc} alt={gifSrc} className={classes.gif}/>
         </DialogContent>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText className={classes.statusText}>
             {tokenText}
           </DialogContentText>
-          <DialogContentText>
             {confirmError}
-          </DialogContentText>
         </DialogContent>
       </Dialog>
     );

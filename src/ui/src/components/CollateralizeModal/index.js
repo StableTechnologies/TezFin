@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collateralizeTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../StatusModal/ConfirmationModal';
+import PendingModal from '../StatusModal/PendingModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
 import { marketAction } from '../../reduxContent/market/actions';
@@ -20,24 +20,24 @@ const CollateralizeModal = (props) => {
     const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
-    const [openConfirmModal, setConfirmModal] = useState(false);
+    const [openPendingModal, setPendingModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [confirm, setConfirm] = useState('');
     const [error, setError] = useState('');
 
-    const handleOpenConfirm = () => {
-        setConfirmModal(true);
+    const handleOpenPending = () => {
+        setPendingModal(true);
     };
-    const handleCloseConfirm = () => {
-        setConfirmModal(false);
+    const handleClosePending = () => {
+        setPendingModal(false);
     };
 
     const collateralizeToken = async() => {
         const { assetType } = tokenDetails;
         close();
         setTokenText('collateral');
-        handleOpenConfirm();
+        handleOpenPending();
         const { response, error } = await collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
         setResponse(response);
         setError(error);
@@ -66,7 +66,7 @@ const CollateralizeModal = (props) => {
 
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} error={error} />
+            <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} error={error} />
             <DashboardModal
                 headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
                 APYText={`${tokenDetails.title} ` + 'Variable APY Rate'}

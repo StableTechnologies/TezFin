@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import Button from '@mui/material/Button';
+
 import StatusModal from './index';
 
 import errorGif from '../../assets/error.gif';
@@ -19,10 +21,18 @@ const ErrorModal = (props) => {
         tokenText={
           <>
             {(error) && (error.description || `could not ${tokenText} ${token} token`)}
-            {(confirmError) && 'Could not confirm transaction completion on chain, please refresh dashboard.'}
+            {(confirmError) && 'Could not confirm transaction completion on chain.'}
           </>
         }
-        confirmError={ '1234567898765432' }
+        confirmError={
+          <Button
+            variant="outlined"
+            onClick={()=> location.reload(true)}
+            className={classes.refreshBtn}
+          >
+            Refresh
+          </Button>
+        }
       />
     );
 };

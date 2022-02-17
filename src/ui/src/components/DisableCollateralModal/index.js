@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { marketAction } from '../../reduxContent/market/actions';
 
 import { disableCollateralizeTokenAction } from '../../util/modalActions';
-import ConfirmModal from '../StatusModal/ConfirmationModal';
+import PendingModal from '../StatusModal/PendingModal';
 import DashboardModal from '../DashboardModal';
 
 import { useStyles } from './style';
@@ -22,24 +22,24 @@ const DisableCollateralModal = (props) => {
     const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
-    const [openConfirmModal, setConfirmModal] = useState(false);
+    const [openPendingModal, setPendingModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [confirm, setConfirm] = useState('');
     const [error, setError] = useState('');
 
-    const handleOpenConfirm = () => {
-        setConfirmModal(true);
+    const handleOpenPending = () => {
+        setPendingModal(true);
     };
-    const handleCloseConfirm = () => {
-        setConfirmModal(false);
+    const handleClosePending = () => {
+        setPendingModal(false);
     };
 
     const disableToken = async() => {
         const { assetType } = tokenDetails;
         close();
         setTokenText('disable');
-        handleOpenConfirm();
+        handleOpenPending();
         const { response, error} = await disableCollateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
         setResponse(response);
         setError(error);
@@ -67,7 +67,7 @@ const DisableCollateralModal = (props) => {
 
     return (
         <>
-            <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText= {tokenText} error={error} />
+            <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText= {tokenText} error={error} />
             <DashboardModal
                 headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
                 APYText = {`${tokenDetails.title} ` + 'Variable APY Rate'}

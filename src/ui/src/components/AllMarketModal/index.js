@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supplyTokenAction, borrowTokenAction } from '../../util/modalActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ConfirmModal from '../StatusModal/ConfirmationModal';
+import PendingModal from '../StatusModal/PendingModal';
 import SuccessModal from '../StatusModal/SuccessModal';
 import ErrorModal from '../StatusModal/ErrorModal';
 import DashboardModal from '../DashboardModal';
@@ -24,7 +24,7 @@ const AllMarketModal = (props) => {
     const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
-    const [openConfirmModal, setConfirmModal] = useState(false);
+    const [openPendingModal, setPendingModal] = useState(false);
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
@@ -35,26 +35,26 @@ const AllMarketModal = (props) => {
     const [confirmError, setConfirmError] = useState('');
     const [error, setError] = useState('');
 
-    const handleOpenConfirm = () => setConfirmModal(true);
-    const handleCloseConfirm = () => setConfirmModal(false);
+    const handleOpenPending = () => setPendingModal(true);
+    const handleClosePending = () => setPendingModal(false);
     const handleOpenSuccess = () => setSuccessModal(true);
     const handleCloseSuccess = () => setSuccessModal(false);
     const handleOpenError = () => setErrorModal(true);
     const handleCloseError = () => setErrorModal(false);
 
     const supplyToken = async() => {
-      const { response, error} = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error} = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
       setResponse(response);
       setError(error);
     };
 
     const borrowToken = async() => {
-      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash);
+      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
       setResponse(response);
       setError(error);
     };
 
-    useEffect(() => tokenText && handleOpenConfirm(), [tokenText]);
+    useEffect(() => tokenText && handleOpenPending(), [tokenText]);
     useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
@@ -69,14 +69,14 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
       if(error) {
-        setConfirmModal(false);
+        setPendingModal(false);
         setErrorModal(true);
       }
     }, [error]);
 
     useEffect(() => {
       if(confirm) {
-        setConfirmModal(false);
+        setPendingModal(false);
         setSuccessModal(true);
         dispatch(marketAction(comptroller, protocolAddresses, server));
       }
@@ -84,7 +84,7 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
       if(confirmError) {
-        setConfirmModal(false);
+        setPendingModal(false);
         setErrorModal(true);
       }
     }, [confirmError]);
@@ -96,7 +96,7 @@ const AllMarketModal = (props) => {
 
     return (
       <>
-        <ConfirmModal open={openConfirmModal} close={handleCloseConfirm} token={tokenDetails.title} tokenText={tokenText} approved={response} />
+        <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} approved={response} />
         <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
         <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
         <DashboardModal
