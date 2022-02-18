@@ -30,7 +30,7 @@ export const borrowCompositionAction = (account, borrowedMarkets) => async (disp
       const totalUsdValue = assets.reduce((a,b) => a + b.total, 0);
       const scale = new BigNumber('1000000000000000000000000');
       if(account.health) {
-        borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
+        borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale);
       }
 
       const rate = ((totalUsdValue / borrowLimit) * 100);
