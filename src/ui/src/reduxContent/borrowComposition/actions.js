@@ -1,8 +1,7 @@
-import { TezosLendingPlatform, decimals } from 'tezoslendingplatformjs';
+import { decimals } from 'tezoslendingplatformjs';
 import { BigNumber } from "bignumber.js";
 import bigInt from 'big-integer';
 import { decimalify } from '../../util';
-import { tokenColor } from '../../components/Constants';
 
 import { GET_BORROW_COMPOSITION_DATA } from './types.js';
 
