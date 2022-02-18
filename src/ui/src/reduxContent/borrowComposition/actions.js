@@ -33,7 +33,7 @@ export const borrowCompositionAction = (account, borrowedMarkets) => async (disp
         borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
       }
 
-      const rate = ((totalUsdValue / borrowLimit) * 100).toFixed(2);
+      const rate = ((totalUsdValue / borrowLimit) * 100);
       const limitBalance = borrowLimit - totalUsdValue;
 
       borrowComposition = {

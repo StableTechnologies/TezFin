@@ -24,7 +24,7 @@ const Composition = (props) => {
             <Box className={classes.progressBar}>
               {supplyBar ?
                 <StackedBars composition={data} /> :
-                <ToolTipProgressBars value={Number(data.rate)} backgroundColor={progressBarColor} height='16px'/>
+                <ToolTipProgressBars value={data.rate} backgroundColor={progressBarColor} height='16px'/>
               }
             </Box>
             <Box className={classes.box}>

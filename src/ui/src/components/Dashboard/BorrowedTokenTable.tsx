@@ -12,7 +12,7 @@ import { Typography } from '@mui/material';
 import TableSkeleton from '../Skeleton';
 import BorrowModal from '../BorrowModal';
 
-import { decimalify, formatTokenData, nFormatter } from '../../util';
+import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useStyles } from './style';
@@ -90,7 +90,7 @@ const BorrowedTokenTable = (props) => {
                     {" "} {data.title}
                   </Typography>
                 </TableCell>
-                <TableCell align="right"> {Number(data.rate).toFixed(2)}% </TableCell>
+                <TableCell align="right"> {truncateNum(data.rate)}% </TableCell>
                 <TableCell align="right">
                   <span>
                     {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : "0"} {" "} {data.title}
