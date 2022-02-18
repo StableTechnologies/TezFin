@@ -17,6 +17,7 @@ const PendingModal = (props) => {
     return (
       <StatusModal
         {...props}
+        closBtn={response && true}
         title={ response ? 'Transaction In-Progress' : 'Confirm Transaction'}
         gifSrc={confirmGif}
         tokenText={ response ?
