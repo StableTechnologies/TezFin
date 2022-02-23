@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { BigNumber } from 'bignumber.js';
 import bigInt from 'big-integer';
 
-import { decimalify, nFormatter, undecimalify } from '../../util';
+import { decimalify, nFormatter, truncateNum, undecimalify } from '../../util';
 
 import Box from '@mui/material/Box';
 import CloseButton from '../CloseButton';
@@ -43,8 +43,8 @@ const DashboardModal = (props) => {
 
   const scale = new BigNumber('1000000000000000000000000');
   if(account.health) {
-    tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale).toFixed(2);
-    tokenDetails.borrowLimitUsed = (account.health / 10000).toFixed(2);
+    tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale);
+    tokenDetails.borrowLimitUsed = (account.health / 10000);
   }
 
 	useEffect(() => {
@@ -89,6 +89,7 @@ const DashboardModal = (props) => {
             <Button
               className={classes.inputBtn}
               onClick={() => {maxAction(tabValue);}}
+              disabled={address ? false : true}
               disableRipple
               >
               {tabValue === 'one' && inputBtnTextOne}
@@ -140,11 +141,14 @@ const DashboardModal = (props) => {
                     </Grid>
                     {mainModal ?
                     <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                      {(tabValue === 'one') && (tokenDetails.supplyRate ? Number(tokenDetails.supplyRate).toFixed(2) : "0")}
-                      {(tabValue === 'two') && (tokenDetails.borrowRate ? Number(tokenDetails.borrowRate).toFixed(2) : "0")}
+                      {(tabValue === 'one') && (tokenDetails.supplyRate ? truncateNum(tokenDetails.supplyRate) : "0")}
+                      {(tabValue === 'two') && (tokenDetails.borrowRate ? truncateNum(tokenDetails.borrowRate) : "0")}
                       {"%"}
                     </Grid> :
-                    <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} > {Number(tokenDetails.rate).toFixed(2) || "0"} {"%"} </Grid>
+                    <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
+                      {(tokenDetails.rate) ? truncateNum(tokenDetails.rate) : "0"}
+                      {"%"}
+                    </Grid>
                     }
                   </Grid>
               </DialogContent>
@@ -161,14 +165,16 @@ const DashboardModal = (props) => {
         <DialogContent className={classes.limitUsed}>
           <Grid container textAlign="justify" justifyContent="space-between">
             <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
-            <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}> {tokenDetails.borrowLimitUsed || '0'}% </Grid>
+            <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
+              {(tokenDetails.borrowLimitUsed > 0) ? truncateNum(tokenDetails.borrowLimitUsed) : '0'}%
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogContent className={classes.progressBarCon}>
           <Grid container>
             <Grid item xs={12}>
                 <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                    <CustomizedProgressBars value={Number(tokenDetails.borrowLimitUsed)} height="8px"/>
+                    <CustomizedProgressBars value={tokenDetails.borrowLimitUsed} height="8px"/>
                 </Box>
             </Grid>
           </Grid>

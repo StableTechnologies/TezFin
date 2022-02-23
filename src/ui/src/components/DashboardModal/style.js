@@ -210,8 +210,11 @@ export const useStyles = makeStyles({
         textAlign: 'left',
         color: '#4F4F4F',
         '&:hover': {
-            color: '#3391F6',
-            background: 'transparent'
+          color: '#3391F6',
+          background: 'transparent'
+        },
+        '&:disabled': {
+            color: '#4F4F4F',
         },
         '@media(max-width: 501px)': {
           fontSize: '0.875rem',

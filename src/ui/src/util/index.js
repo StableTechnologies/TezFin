@@ -169,6 +169,17 @@ export function formatTokenData(data) {
 }
 
 /**
+ * This function converts a number to string and truncates it to two decimals without rounding it up.
+ * @param num number to truncate.
+ *
+ * @return truncated value.
+*/
+export const truncateNum = (num) => {
+
+  return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)
+};
+
+/**
  * This function abbreviates a number and returns it as a string with it's suffix.
  * @param  num number to be abbreviated.
  * @param  formatDecimals number to decimal points.
@@ -181,12 +192,16 @@ export const nFormatter = (num, formatDecimals = 4) => {
         { value: 1E6, symbol: "M" },
         { value: 1E9, symbol: "B" },
     ];
-    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+
     let i;
     for (i = suffix.length - 1; i > 0; i--) {
         if (num >= suffix[i].value) {
             break;
         }
     }
-    return (num / suffix[i].value).toFixed(formatDecimals).replace(rx, "$1") + suffix[i].symbol;
+
+    let formattedNum = (num / suffix[i].value).toString();
+    formattedNum = +formattedNum.slice(0, (formattedNum.toString().indexOf(".")) + (formatDecimals + 1));
+
+    return formattedNum + suffix[i].symbol;
 }
