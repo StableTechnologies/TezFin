@@ -12,7 +12,7 @@
   "author": "itamarreif",
   "license": "ISC",
   "dependencies": {
-    "conseiljs": "5.0.9-4",
+    "conseiljs": "5.0.9-5",
     "conseiljs-softsigner": "^5.0.4",
     "loglevel": "1.7.1",
     "node-fetch": "2.6.1"

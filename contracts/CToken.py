@@ -161,7 +161,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         accountBorrows = self.getBorrowBalance(params.borrower) + params.borrowAmount
         self.data.balances[params.borrower].accountBorrows.principal = accountBorrows
         self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
-        self.data.totalBorrows += accountBorrows
+        self.data.totalBorrows += params.borrowAmount
 
     def verifyBorrowAllowed(self, borrower_, borrowAmount_):
         self.addAddressIfNecessary(borrower_)

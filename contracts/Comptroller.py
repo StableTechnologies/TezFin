@@ -111,7 +111,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(accountSnapshot.borrowBalance == sp.nat(0), EC.CMPT_BORROW_IN_MARKET)  
         cTokenAddress = sp.sender
         self.redeemAllowedInternal(cTokenAddress, accountSnapshot.account, accountSnapshot.cTokenBalance)
-        sp.if self.data.collaterals.contains(accountSnapshot.account):
+        sp.if (self.data.collaterals.contains(accountSnapshot.account)) & (self.data.collaterals[accountSnapshot.account].contains(cTokenAddress)):
             # if sender has collateralized this market, remove from collaterals
             self.data.collaterals[accountSnapshot.account].remove(cTokenAddress)
         self.invalidateLiquidity(accountSnapshot.account)
@@ -154,7 +154,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyMarketListed(cToken)
         market = self.data.markets[cToken]
         # If the redeemer is not 'in' the market, then we can bypass the liquidity check
-        sp.if self.data.collaterals.contains(redeemer):
+        sp.if self.data.collaterals.contains(redeemer) & self.data.collaterals[redeemer].contains(cToken):
             self.checkInsuffLiquidityInternal(cToken, redeemer, redeemAmount)
         self.invalidateLiquidity(redeemer)
 
@@ -343,7 +343,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.if self.data.loans.contains(params.account):
             sp.for asset in self.data.loans[params.account].elements():
                 # only get liquidity for assets that aren't in collaterals to avoid double counting
-                sp.if ~ self.data.collaterals[params.account].contains(asset):
+                sp.if (self.data.collaterals.contains(params.account)) & (~ self.data.collaterals[params.account].contains(asset)):
                     # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
                     # updateAssetPrice() should be executed within 5 blocks prior to this call
                     self.getAccountLiquidityForAsset(asset, params.account)
@@ -383,7 +383,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         priceIndex = self.mul_exp_exp(self.data.markets[asset].price, self.data.markets[asset].collateralFactor)
         tokensToDenom = sp.compute(self.mul_exp_exp(priceIndex, exchangeRate))
         # incase of only borrow don't consider supply as collateral
-        sp.if self.data.collaterals[params.account].contains(asset):
+        sp.if self.data.collaterals.contains(params.account) & self.data.collaterals[params.account].contains(asset):
             self.data.calculation.sumCollateral += self.mulScalarTruncate(tokensToDenom, params.cTokenBalance)
         self.data.calculation.sumBorrowPlusEffects += self.mulScalarTruncate(self.data.markets[asset].price, params.borrowBalance)
         sp.if sp.some(asset) == self.data.calculation.cTokenModify:

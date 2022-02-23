@@ -1,7 +1,7 @@
 import * as config from '../config/config.json';
 
 import { Governance, TezosLendingPlatform } from './tlp';
-import { KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper } from 'conseiljs';
+import { KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper } from 'conseiljs';
 
 import log from 'loglevel';
 import { statOperation } from './index';
@@ -41,9 +41,9 @@ async function supportMarket(asset: TezosLendingPlatform.AssetType, priceExp: nu
         }
     };
     log.info(`${JSON.stringify(supportMarket)}`);
+    const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const supportMarketOpId = await Governance.SupportMarket(supportMarket, Math.pow(10, priceExp), protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
-    const supportMarketResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, supportMarketOpId, config.delay, config.networkBlockTime);
-    statOperation(supportMarketResult);
+    const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, supportMarketOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 async function unpauseMarkets(asset: TezosLendingPlatform.AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
@@ -57,9 +57,9 @@ async function unpauseMarkets(asset: TezosLendingPlatform.AssetType, keystore: K
         }
     };
     log.info(`${JSON.stringify(setMintPaused)}`);
+    let head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const setMintPausedOpId = await Governance.SetMintPaused(setMintPaused, protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
-    const setMintPausedResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, setMintPausedOpId, config.delay, config.networkBlockTime);
-    statOperation(setMintPausedResult);
+    const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, setMintPausedOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
     log.info(`setBorrowPaused: ${asset}`);
     const setBorrowPaused: Governance.SetBorrowPausedPair = {
         comptrollerAddress: protocolAddresses.comptroller,
@@ -68,9 +68,9 @@ async function unpauseMarkets(asset: TezosLendingPlatform.AssetType, keystore: K
             fTokenAddress: protocolAddresses.fTokens[asset]
         }
     };
+    head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const setBorrowPausedOpId = await Governance.SetBorrowPaused(setBorrowPaused, protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
-    const setBorrowPausedResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, setBorrowPausedOpId, config.delay, config.networkBlockTime);
-    statOperation(setBorrowPausedResult);
+    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, setBorrowPausedOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 async function SetPrice(asset: TezosLendingPlatform.AssetType, price: number, priceOracleAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
