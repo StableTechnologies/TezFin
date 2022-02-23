@@ -14,6 +14,7 @@ import Switch from '../Switch';
 import SupplyModal from '../SupplyModal';
 import CollateralizeModal from '../CollateralizeModal';
 import DisableCollateralModal from '../DisableCollateralModal';
+
 import Tez from '../../assets/largeXTZ.svg';
 import questionCircleIcon from '../../assets/questionCircle.svg'
 

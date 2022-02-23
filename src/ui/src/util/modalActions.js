@@ -1,6 +1,6 @@
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
-import { confirmOps } from './index.js';
+import { confirmTransaction } from './index.js';
 
 /**
  * This function is used to supply tokens to the market.
@@ -23,7 +23,7 @@ export const supplyTokenAction = async(tokenDetails, amount, close, setTokenText
     protocolAddresses,
     publicKeyHash
   );
-  return confirmOps(mint, publicKeyHash);
+  return confirmTransaction(mint, publicKeyHash);
 };
 
 /**
@@ -49,7 +49,7 @@ export const withdrawTokenAction = async(tokenDetails, amount, close, setTokenTe
     protocolAddresses,
     publicKeyHash
 );
-  return confirmOps(withdraw);
+  return confirmTransaction(withdraw);
 };
 
 /**
@@ -75,7 +75,7 @@ export const borrowTokenAction = async(tokenDetails, amount, close, setTokenText
       protocolAddresses,
       publicKeyHash
   );
-  return confirmOps(borrow);
+  return confirmTransaction(borrow);
  };
 
 /**
@@ -99,7 +99,7 @@ export const repayBorrowTokenAction = async(tokenDetails, amount, close, setToke
       protocolAddresses,
       publicKeyHash
   );
-  return confirmOps(repayBorrow);
+  return confirmTransaction(repayBorrow);
 };
 
 /**
@@ -118,7 +118,7 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
         protocolAddresses,
         publicKeyHash
     );
-   return confirmOps(collateralizeToken);
+   return confirmTransaction(collateralizeToken);
 };
 
 /**
@@ -138,5 +138,5 @@ export const disableCollateralizeTokenAction = (asset, protocolAddresses, public
         publicKeyHash
     );
 
-   return confirmOps(disableCollateralizeToken);
+   return confirmTransaction(disableCollateralizeToken);
 };

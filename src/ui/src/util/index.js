@@ -83,46 +83,66 @@ export const getActiveAccount = async () => {
  *
  * @return operation response
  */
-export const confirmOps = async (operations) => {
-    const address = operations[0].source;
-    let curve = KeyStoreCurve.ED25519;
-    if (address.startsWith('tz2')) {
-        curve = KeyStoreCurve.SECP256K1;
-    } else if (address.startsWith('tz3')) {
-        curve = KeyStoreCurve.SECP256R1;
+export const confirmTransaction = async (operations) => {
+    try {
+        const address = operations[0].source;
+        let curve = KeyStoreCurve.ED25519;
+        if (address.startsWith('tz2')) {
+            curve = KeyStoreCurve.SECP256K1;
+        } else if (address.startsWith('tz3')) {
+            curve = KeyStoreCurve.SECP256R1;
+        }
+        const keyStore = {
+            publicKey: '', // this precludes reveal operation inclusion
+            secretKey: '',
+            publicKeyHash: address,
+            curve,
+            storeType: KeyStoreType.Mnemonic
+        };
+
+        const counter = await TezosNodeReader.getCounterForAccount(
+            config.infra.tezosNode,
+            address
+        );
+
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(
+            config.infra.tezosNode,
+            keyStore,
+            counter,
+            operations,
+            true
+        );
+        const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
+        const response = await client.requestOperation({ operationDetails: opGroup });
+        return { response: { response, head: head.header.level } };
+    } catch (error) {
+        console.log(error);
+        return { error };
     }
-    const keyStore = {
-        publicKey: '', // this precludes reveal operation inclusion
-        secretKey: '',
-        publicKeyHash: address,
-        curve,
-        storeType: KeyStoreType.Mnemonic
-    };
-
-    const counter = await TezosNodeReader.getCounterForAccount(
-        config.infra.tezosNode,
-        address
-    );
-
-    const opGroup = await TezosNodeWriter.prepareOperationGroup(
-        config.infra.tezosNode,
-        keyStore,
-        counter,
-        operations,
-        true
-    );
-    const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
-
-    const result = await client.requestOperation({ operationDetails: opGroup });
-    const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
-    const confirm = await TezosNodeReader.awaitOperationConfirmation(
-        config.infra.tezosNode,
-        head.header.level - 1,
-        groupid,
-        6
-    ).then((res) => { if (res.contents[0].metadata.operation_result.status === 'applied') { return res; } throw new Error('operation status not applied'); });
-    return confirm;
 };
+
+/**
+ * Confirms transaction completion on conseiljs
+ *
+ * @param result RPC output
+ *
+ * @return operation response
+ */
+export const verifyTransaction = async ({ response, head }) => {
+    try {
+        const groupid = response.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
+        const confirm = await TezosNodeReader.awaitOperationConfirmation(
+            config.infra.tezosNode,
+            head - 1,
+            groupid,
+            6
+        ).then((res) => { if (res.contents[0].metadata.operation_result.status === 'applied') { return res; } throw new Error('operation status not applied'); });
+        return { confirm };
+    } catch (error) {
+        console.log(error);
+        return { error };
+    }
+}
 
 /**
  * This function that takes a number/string and the number of decimals and returns the decimal version of that number.
