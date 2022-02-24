@@ -73,6 +73,9 @@ const DisableCollateralModal = (props) => {
         setSuccessModal(true);
         dispatch(marketAction(comptroller, protocolAddresses, server));
       }
+      return () => {
+        setResponse('');
+      }
     }, [confirm]);
 
     useEffect(() => {

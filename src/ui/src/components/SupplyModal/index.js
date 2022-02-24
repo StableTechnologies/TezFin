@@ -79,7 +79,11 @@ const SupplyModal = (props) => {
         setSuccessModal(true);
         dispatch(marketAction(comptroller, protocolAddresses, server));
       }
+      return () => {
+        setResponse('');
+      }
     }, [confirm]);
+
     useEffect(() => {
       if(confirmError) {
         setPendingModal(false);

@@ -16,7 +16,7 @@ const ErrorModal = (props) => {
       <StatusModal
         {...props}
         closBtn={true}
-        title={error ? error.title : 'Oops!'}
+        title={error && (error.title || 'Transaction Failed')}
         gifSrc={errorGif}
         tokenText={
           <>

@@ -17,10 +17,10 @@ const PendingModal = (props) => {
   return (
     <StatusModal
       {...props}
-      closBtn={response.response && true}
-      title={response.response ? 'Transaction In-Progress' : 'Confirm Transaction'}
+      closBtn={response && true}
+      title={response ? 'Transaction In-Progress' : 'Confirm Transaction'}
       gifSrc={confirmGif}
-      tokenText={response.response ?
+      tokenText={response ?
         <>
           Operation hash: {shorten(6, 6, response.response.transactionHash)}
           <IconButton aria-label="copy"
