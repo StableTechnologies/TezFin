@@ -5,6 +5,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import Tooltip from '@mui/material/Tooltip';
 
 import { tooltipStyles } from './style';
+import { truncateNum } from '../../util';
 
 
 const BorderLinearProgress = styled(LinearProgress)(({ height, value, width }) => ({
@@ -32,7 +33,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ height, value, width }) =
         <Box sx={{ flexGrow: 1 }}>
             <BorderLinearProgress
               variant="determinate"
-              value={value || 0}
+              value={value ? ((value > 100) ? 100 : value) : 0}
               className={backgroundColor}
               height={height}
             />
@@ -46,14 +47,14 @@ export const ToolTipProgressBars = (props) => {
 
     return (
       <Tooltip
-        title={ value ? `${value}% Used` : ''}
+        title={ value ? `${truncateNum(value)}% Used` : ''}
         placement="top"
         classes={tooltipClass}
       >
         <Box sx={{ flexGrow: 1 }}>
             <BorderLinearProgress
               variant="determinate"
-              value={value || 0}
+              value={value ? ((value > 100) ? 100 : value) : 0}
               className={backgroundColor}
               height={height}
             />
