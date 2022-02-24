@@ -23,7 +23,7 @@
   "dependencies": {
     "big-integer": "^1.6.51",
     "bignumber.js": "9.0.1",
-    "conseiljs": "5.0.9-4",
+    "conseiljs": "5.0.9-5",
     "jsonpath-plus": "^6.0.1"
   }
 }

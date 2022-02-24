@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "deploy.js",
   "dependencies": {
-    "conseiljs": "^5.0.8-3",
+    "conseiljs": "5.0.9-5",
     "conseiljs-softsigner": "^5.0.4-1",
     "glob": "7.1.7",
     "loglevel": "^1.7.1",

@@ -42,7 +42,6 @@ const BorrowModal = (props) => {
     const handleOpenError = () => setErrorModal(true);
     const handleCloseError = () => setErrorModal(false);
 
-
     const borrowToken = async() => {
       const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
       setResponse(response);
@@ -81,7 +80,11 @@ const BorrowModal = (props) => {
         setSuccessModal(true);
         dispatch(marketAction(comptroller, protocolAddresses, server));
       }
+      return () => {
+        setResponse('');
+      }
     }, [confirm]);
+
     useEffect(() => {
       if(confirmError) {
         setPendingModal(false);

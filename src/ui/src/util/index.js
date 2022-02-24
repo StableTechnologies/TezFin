@@ -3,14 +3,14 @@ import {
     KeyStoreType,
     TezosConseilClient,
     TezosNodeReader,
-    TezosNodeWriter,
+    TezosNodeWriter
 } from 'conseiljs';
 
-import { BigNumber } from "bignumber.js";
+import { BigNumber } from 'bignumber.js';
 import { DAppClient } from '@airgap/beacon-sdk';
 import { Mutex } from 'async-mutex';
-import Tezos from '../library/tezos';
 import bigInt from 'big-integer';
+import Tezos from '../library/tezos';
 
 // const config = require(`../library/${process.env.REACT_APP_ENV || "prod"}-network-config.json`);
 const config = require('../library/dev-network-config.json');
@@ -28,7 +28,7 @@ const client = new DAppClient({ name: config.dappName });
 export const shorten = (first, last, str) => `${str.substring(0, first)}...${str.substring(str.length - last)}`;
 
 export const connectTezAccount = async () => {
-    const network = config.infra.conseilServer.network;
+    const { network } = config.infra.conseilServer;
     const resp = await client.requestPermissions({ network: { type: network } });
     const account = await client.getActiveAccount();
 
@@ -112,10 +112,11 @@ export const confirmTransaction = async (operations) => {
             operations,
             true
         );
+        const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
         const response = await client.requestOperation({ operationDetails: opGroup });
-        return { response };
+        return { response: { response, head: head.header.level } };
     } catch (error) {
-        console.log( error);
+        console.log(error);
         return { error };
     }
 };
@@ -127,15 +128,20 @@ export const confirmTransaction = async (operations) => {
  *
  * @return operation response
  */
-export const verifyTransaction = async (result) => {
-  try {
-      const groupid = result.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
-      const confirm = await TezosConseilClient.awaitOperationConfirmation(config.infra.conseilServer, config.infra.conseilServer.network, groupid, 5);
-      return { confirm };
-  } catch (error) {
-    console.log(error);
-    return { error }
-  }
+export const verifyTransaction = async ({ response, head }) => {
+    try {
+        const groupid = response.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
+        const confirm = await TezosNodeReader.awaitOperationConfirmation(
+            config.infra.tezosNode,
+            head - 1,
+            groupid,
+            6
+        ).then((res) => { if (res.contents[0].metadata.operation_result.status === 'applied') { return res; } throw new Error('operation status not applied'); });
+        return { confirm };
+    } catch (error) {
+        console.log(error);
+        return { error };
+    }
 }
 
 /**
@@ -147,7 +153,7 @@ export const decimalify = (val, decimals, formatDecimals = 4) => {
     if (!val) { return val; }
 
     return Number(new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(formatDecimals));
-}
+};
 
 /**
  * This function that takes a decimal number/string and the number of decimals and returns the non decimal version of that number as string type.
@@ -158,13 +164,13 @@ export const undecimalify = (val, decimals) => {
     if (!val) { return val; }
 
     return new BigNumber(val.toString()).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(0);
-}
+};
 
 /**
  * Format token data for display in the market table.
  */
 export function formatTokenData(data) {
-    const filtered = data.filter(i => bigInt(i.balanceUnderlying).gt(0));
+    const filtered = data.filter((i) => bigInt(i.balanceUnderlying).gt(0));
     return filtered;
 }
 
@@ -176,7 +182,7 @@ export function formatTokenData(data) {
 */
 export const truncateNum = (num) => {
 
-  return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)
+    return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)
 };
 
 /**
@@ -186,13 +192,9 @@ export const truncateNum = (num) => {
  * @returns abbreviated number in string format.
  */
 export const nFormatter = (num, formatDecimals = 4) => {
-    let suffix = [
-        { value: 1, symbol: "" },
-        { value: 1E3, symbol: "k" },
-        { value: 1E6, symbol: "M" },
-        { value: 1E9, symbol: "B" },
+    const suffix = [
+        { value: 1, symbol: '' }, { value: 1E3, symbol: 'k' }, { value: 1E6, symbol: 'M' }, { value: 1E9, symbol: 'B' }
     ];
-
     let i;
     for (i = suffix.length - 1; i > 0; i--) {
         if (num >= suffix[i].value) {
