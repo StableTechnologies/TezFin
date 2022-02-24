@@ -477,7 +477,7 @@ export namespace TezosLendingPlatform {
      * @param gas
      * @param freight
      */
-    export function permissionOperation(params: FToken.MintPair | FToken.RepayBorrowPair, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction | undefined {
+    export function permissionOperation(params: FToken.MintPair | FToken.RepayBorrowPair, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] | undefined {
         const underlying: UnderlyingAsset = protocolAddresses.underlying[params.underlying] == undefined
             ? { assetType: AssetType.XTZ, tokenStandard: TokenStandard.XTZ, decimals: 6 }
             : protocolAddresses.underlying[params.underlying];
@@ -488,7 +488,7 @@ export namespace TezosLendingPlatform {
                     // fa12 approved balance is depleted, so no need to invoke again to cancel
                     undefined :
                     // fa12 approve balance
-                    Tzip7ReferenceTokenHelper.ApproveBalanceOperation(params.amount, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, pkh, 0, gas, freight);
+                    [Tzip7ReferenceTokenHelper.ApproveBalanceOperation(0, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, pkh, 0, gas, freight), Tzip7ReferenceTokenHelper.ApproveBalanceOperation(params.amount, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, pkh, 0, gas, freight)];
             case TokenStandard.FA2:
                 const updateOperator: UpdateOperator = {
                     owner: pkh,
@@ -497,9 +497,9 @@ export namespace TezosLendingPlatform {
                 };
                 return cancelPermission ?
                     // fa2 remove operator
-                    MultiAssetTokenHelper.RemoveOperatorsOperation(underlying.address!, counter, pkh, 0, [updateOperator]) :
+                    [MultiAssetTokenHelper.RemoveOperatorsOperation(underlying.address!, counter, pkh, 0, [updateOperator])] :
                     // fa2 add operator
-                    MultiAssetTokenHelper.AddOperatorsOperation(underlying.address!, counter, pkh, 0, [updateOperator]);
+                    [MultiAssetTokenHelper.AddOperatorsOperation(underlying.address!, counter, pkh, 0, [updateOperator])];
             case TokenStandard.XTZ:
                 return undefined;
         }
@@ -518,13 +518,13 @@ export namespace TezosLendingPlatform {
         // get permissions from underlying asset
         let permissionOp = permissionOperation(mint, false, protocolAddresses, 0, pkh);
         if (permissionOp != undefined)
-            ops.push(permissionOp);
+            ops.push(...permissionOp);
         // mint operation
         ops.push(FToken.MintOperation(mint, 0, protocolAddresses.fTokens[mint.underlying], pkh, gas, freight));
         // remove permissions from underlying asset
         let removePermissionOp = permissionOperation(mint, true, protocolAddresses, 0, pkh);
         if (removePermissionOp != undefined)
-            ops.push(removePermissionOp);
+            ops.push(...removePermissionOp);
         return ops;
     }
 
@@ -641,13 +641,13 @@ export namespace TezosLendingPlatform {
         // get permissions from underlying asset
         let permissionOp = permissionOperation(repayBorrow, false, protocolAddresses, 0, pkh);
         if (permissionOp != undefined)
-            ops.push(permissionOp);
+            ops.push(...permissionOp);
         // repayBorrow operation
         ops.push(FToken.RepayBorrowOperation(repayBorrow, 0, protocolAddresses.fTokens[repayBorrow.underlying], pkh, gas, freight));
         // remove permissions from underlying asset
         let removePermissionOp = permissionOperation(repayBorrow, true, protocolAddresses, 0, pkh);
         if (removePermissionOp != undefined)
-            ops.push(removePermissionOp);
+            ops.push(...removePermissionOp);
         return ops;
     }
 
