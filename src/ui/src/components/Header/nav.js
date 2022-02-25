@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-undef */
+/* eslint-disable no-shadow */
+/* eslint-disable no-use-before-define */
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,18 +29,17 @@ const Nav = () => {
     const { markets } = useSelector((state) => state.market);
 
     const addWallet = async () => {
-      const { clients } = await getWallet();
-      const address = clients.tezos.account;
-      dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
-      };
+        const { address } = await getWallet();
+        dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
+    };
 
-    const disconnectWallet =async() => {
-      await deactivateAccount();
-      dispatch(disconnectWalletAction());
-    }
+    const disconnectWallet = async () => {
+        await deactivateAccount();
+        dispatch(disconnectWalletAction());
+    };
 
     useEffect(() => {
-      setTezAccount(address);
+        setTezAccount(address);
     }, [address]);
 
     return (
@@ -45,23 +48,23 @@ const Nav = () => {
                 <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
             </Grid>
             <Grid item xs={6} lg={6} className={classes.addWalletCon}>
-              <BasicSpeedDial
-                onClose={() => setOpen(false)}
-                onOpen={() => {tezAccount ? setOpen(true) : ''}}
-                open={open}
-                copyAddress={() => navigator.clipboard.writeText(tezAccount)}
-                changeWallet={addWallet}
-                disconnectWallet={disconnectWallet}
-                icon= {
-                  <Box
-                    className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
-                    onClick={() => {address ? '' : addWallet()}}
-                    disableRipple
-                  >
-                    {(tezAccount && (shorten(6, 6, tezAccount))) || 'Connect Wallet' }
-                  </Box>
-                }
-              />
+                <BasicSpeedDial
+                    onClose={() => setOpen(false)}
+                    onOpen={() => { tezAccount ? setOpen(true) : ''; }}
+                    open={open}
+                    copyAddress={() => navigator.clipboard.writeText(tezAccount)}
+                    changeWallet={addWallet}
+                    disconnectWallet={disconnectWallet}
+                    icon= {
+                        <Box
+                            className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
+                            onClick={() => { tezAccount ? '' : addWallet(); }}
+                            disableRipple
+                        >
+                            {(tezAccount && (shorten(6, 6, tezAccount))) || 'Connect Wallet' }
+                        </Box>
+                    }
+                />
             </Grid>
         </Grid>
     );

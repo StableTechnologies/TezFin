@@ -1,6 +1,10 @@
+/* eslint-disable import/extensions */
+/* eslint-disable import/no-unresolved */
+// eslint-disable-next-line no-use-before-define
 import React from 'react';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+
 import { useStyles } from './style';
 
 type Props = {
