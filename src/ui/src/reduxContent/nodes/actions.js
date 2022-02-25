@@ -1,5 +1,6 @@
 import { Comptroller, granadanetAddresses } from 'tezoslendingplatformjs';
-import { GET_COMPTROLLER, GET_PROTOCOL_ADDRESSES, GET_TEZOS_NODE } from './types.js';
+import { GET_COMPTROLLER, GET_PROTOCOL_ADDRESSES, GET_TEZOS_NODE } from './types';
+
 const config = require('../../library/dev-network-config.json');
 
 export const granadanetAction = () => async (dispatch) => {

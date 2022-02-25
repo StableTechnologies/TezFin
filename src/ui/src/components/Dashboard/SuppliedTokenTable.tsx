@@ -20,7 +20,7 @@ import CollateralizeModal from '../CollateralizeModal';
 import DisableCollateralModal from '../DisableCollateralModal';
 
 import Tez from '../../assets/largeXTZ.svg';
-import questionCircleIcon from '../../assets/questionCircle.svg'
+import questionCircleIcon from '../../assets/questionCircle.svg';
 
 // eslint-disable-next-line object-curly-newline
 import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';

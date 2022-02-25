@@ -2,7 +2,7 @@ import {
     GET_MARKET_DATA,
     GET_ALL_MARKET_DATA,
     GET_SUPPLIED_MARKET_DATA,
-    GET_BORROWED_MARKET_DATA,
+    GET_BORROWED_MARKET_DATA
 } from './types';
 
 const initState = {
@@ -10,7 +10,7 @@ const initState = {
     markets: [],
     allMarkets: [],
     suppliedMarkets: [],
-    borrowedMarkets: [],
+    borrowedMarkets: []
 };
 
 const marketReducer = (state = initState, action) => {
