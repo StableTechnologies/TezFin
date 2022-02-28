@@ -35,7 +35,7 @@ const Composition = (props) => {
                         <Grid item>
                             <Typography className={classes.statsTitle}> {dataTitle} </Typography>
                             <Typography className={classes.statsValue}>
-                              ${(data.totalUsdValue > 0) && (nFormatter(data.totalUsdValue, 2) || '0.00')}
+                              ${(data.totalUsdValue > 0) ? nFormatter(data.totalUsdValue, 2) : '0.00'}
                             </Typography>
                         </Grid>
                     </Grid>
