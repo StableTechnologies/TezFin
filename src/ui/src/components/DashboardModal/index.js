@@ -88,10 +88,13 @@ const DashboardModal = (props) => {
                                 id="tokenValue"
                                 type="text"
                                 placeholder="0"
-                                onInput={(e) => setTokenValue(e.target.value.replace(/"^[0-9]*[.,]?[0-9]*$/, ''))}
+                                autoComplete='off'
+                                onFocus={(e) => { e.target.placeholder = ''; }}
+                                onBlur={(e) => { e.target.placeholder = '0'; }}
+                                onInput={(e) => setTokenValue(e.target.value.replace(/[^0-9.]/g, ''))}
                                 onChange={(e) => setAmount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
                                 value={tokenValue}
-                                inputProps={{ className: classes.inputText }}
+                                inputProps={{ className: classes.inputText, pattern: '[0-9]+', inputMode: 'decimal' }}
                                 className={classes.textField}
                             />
                             <Button
