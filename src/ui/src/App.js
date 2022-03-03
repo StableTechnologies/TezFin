@@ -1,7 +1,10 @@
-import {
-    Route, BrowserRouter as Router, Switch, useHistory
-} from 'react-router-dom';
+/* eslint-disable array-element-newline */
+/* eslint-disable import/extensions */
+import { useEffect } from 'react';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Grid from '@mui/material/Grid';
 import { comptrollerAction, granadanetAction, tezosNodeAction } from './reduxContent/nodes/actions';
 import { allMarketAction, marketAction } from './reduxContent/market/actions';
 
@@ -9,11 +12,10 @@ import './App.css';
 
 import Header from './components/Header';
 import Home from './components/Home';
+// eslint-disable-next-line import/no-unresolved
 import Dashboard from './components/Dashboard';
 import Footer from './components/Footer';
 
-import Grid from '@mui/material/Grid';
-import { useEffect } from 'react';
 import { addWalletAction } from './reduxContent/addWallet/actions';
 import { getActiveAccount } from './util';
 
@@ -39,16 +41,16 @@ const App = () => {
     }, [dispatch, comptroller, protocolAddresses, server]);
 
     useEffect(() => {
-      const isWallet = async () => {
-          const address = await getActiveAccount();
-          if (address) {
-              dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
-              dispatch(allMarketAction(account, markets));
-          }
-      };
-      isWallet();
-  }, [dispatch, address, server, protocolAddresses, comptroller, markets]);
-
+        const isWallet = async () => {
+            // eslint-disable-next-line no-shadow
+            const address = await getActiveAccount();
+            if (address) {
+                dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
+                dispatch(allMarketAction(account, markets));
+            }
+        };
+        isWallet();
+    }, [dispatch, address, server, protocolAddresses, comptroller, markets]);
 
     return (
         <Router>

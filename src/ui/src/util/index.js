@@ -1,16 +1,13 @@
 import {
     KeyStoreCurve,
     KeyStoreType,
-    TezosConseilClient,
     TezosNodeReader,
     TezosNodeWriter
 } from 'conseiljs';
 
 import { BigNumber } from 'bignumber.js';
 import { DAppClient } from '@airgap/beacon-sdk';
-import { Mutex } from 'async-mutex';
 import bigInt from 'big-integer';
-import Tezos from '../library/tezos';
 
 // const config = require(`../library/${process.env.REACT_APP_ENV || "prod"}-network-config.json`);
 const config = require('../library/dev-network-config.json');
@@ -27,34 +24,17 @@ const client = new DAppClient({ name: config.dappName });
  */
 export const shorten = (first, last, str) => `${str.substring(0, first)}...${str.substring(str.length - last)}`;
 
-export const connectTezAccount = async () => {
-    const { network } = config.infra.conseilServer;
-    const resp = await client.requestPermissions({ network: { type: network } });
-    const account = await client.getActiveAccount();
-
-    return { client, account: account.address };
-};
-
 /**
  * This function lets a user to connect to a tezos wallet.
  *
  * @returns clients
  */
 export const getWallet = async () => {
-    const { client, account: tezAccount } = await connectTezAccount();
-    const mutex = new Mutex();
-    const clients = {
-        tezos: new Tezos(
-            client,
-            tezAccount
-            // config.tezos.priceOracle,
-            // config.tezos.feeContract,
-            // config.tezos.RPC,
-            // config.tezos.conseilServer,
-            // mutex
-        )
-    };
-    return { clients };
+    const { network } = config.infra.conseilServer;
+    const response = await client.requestPermissions({ network: { type: network } });
+    const { address } = response;
+
+    return { address };
 };
 
 /**
@@ -62,6 +42,7 @@ export const getWallet = async () => {
  */
 export const deactivateAccount = async () => {
     await client.clearActiveAccount();
+    // eslint-disable-next-line no-undef
     localStorage.clear();
 };
 
@@ -72,7 +53,6 @@ export const deactivateAccount = async () => {
  */
 export const getActiveAccount = async () => {
     const activeAccount = await client.getActiveAccount();
-
     return activeAccount ? activeAccount.address : undefined;
 };
 
@@ -142,7 +122,7 @@ export const verifyTransaction = async ({ response, head }) => {
         console.log(error);
         return { error };
     }
-}
+};
 
 /**
  * This function that takes a number/string and the number of decimals and returns the decimal version of that number.
@@ -180,10 +160,7 @@ export function formatTokenData(data) {
  *
  * @return truncated value.
 */
-export const truncateNum = (num) => {
-
-    return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)
-};
+export const truncateNum = (num) => num.toString().match(/^-?\d+(?:\.\d{0,2})?/);
 
 /**
  * This function abbreviates a number and returns it as a string with it's suffix.
@@ -196,6 +173,7 @@ export const nFormatter = (num, formatDecimals = 4) => {
         { value: 1, symbol: '' }, { value: 1E3, symbol: 'k' }, { value: 1E6, symbol: 'M' }, { value: 1E9, symbol: 'B' }
     ];
     let i;
+    // eslint-disable-next-line no-plusplus
     for (i = suffix.length - 1; i > 0; i--) {
         if (num >= suffix[i].value) {
             break;
@@ -203,7 +181,7 @@ export const nFormatter = (num, formatDecimals = 4) => {
     }
 
     let formattedNum = (num / suffix[i].value).toString();
-    formattedNum = +formattedNum.slice(0, (formattedNum.toString().indexOf(".")) + (formatDecimals + 1));
+    formattedNum = +formattedNum.slice(0, (formattedNum.toString().indexOf('.')) + (formatDecimals + 1));
 
     return formattedNum + suffix[i].symbol;
-}
+};

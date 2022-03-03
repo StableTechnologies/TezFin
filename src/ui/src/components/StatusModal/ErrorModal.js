@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-undef */
+import React from 'react';
 
 import Button from '@mui/material/Button';
 
@@ -10,31 +12,34 @@ import useStyles from './style';
 
 const ErrorModal = (props) => {
     const classes = useStyles();
-    const { open, close, token, tokenText, error, confirmError } = props;
+    const {
+        token, tokenText, error, confirmError
+    } = props;
 
     return (
-      <StatusModal
-        {...props}
-        closBtn={true}
-        title={error && (error.title || 'Transaction Failed')}
-        gifSrc={errorGif}
-        tokenText={
-          <>
-            {(error) && (error.description || `could not ${tokenText} ${token} token`)}
-            {(confirmError) && 'Could not confirm transaction completion on chain.'}
-          </>
-        }
-        confirmError={
-          confirmError &&
-          <Button
-            variant="outlined"
-            onClick={()=> location.reload(true)}
-            className={classes.refreshBtn}
-          >
-            Refresh
-          </Button>
-        }
-      />
+        <StatusModal
+            {...props}
+            closBtn={true}
+            title={error && (error.title || 'Transaction Failed')}
+            gifSrc={errorGif}
+            tokenText={
+                <>
+                    {(error) && (error.description || `could not ${tokenText} ${token} token`)}
+                    {(confirmError) && 'Could not confirm transaction completion on chain.'}
+                </>
+            }
+            confirmError={
+                confirmError
+                && <Button
+                    variant="outlined"
+                    // eslint-disable-next-line no-restricted-globals
+                    onClick={() => location.reload(true)}
+                    className={classes.refreshBtn}
+                >
+                    Refresh
+                </Button>
+            }
+        />
     );
 };
 

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-use-before-define
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,11 +25,11 @@ const Header = () => {
     const { supplyComposition } = useSelector((state) => state.supplyComposition);
     const { borrowComposition } = useSelector((state) => state.borrowComposition);
     const account = useSelector((state) => state.addWallet.account);
-    const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state) => state.market);
+    const { suppliedMarkets, borrowedMarkets } = useSelector((state) => state.market);
 
     useEffect(() => {
-      dispatch(supplyCompositionAction(suppliedMarkets));
-      dispatch(borrowCompositionAction(account, borrowedMarkets));
+        dispatch(supplyCompositionAction(suppliedMarkets));
+        dispatch(borrowCompositionAction(account, borrowedMarkets));
     }, [dispatch, account, suppliedMarkets, borrowedMarkets]);
 
     return (
@@ -37,8 +38,8 @@ const Header = () => {
             <Grid container>
                 <Grid item xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>
-                      Net APY: 0.00% {" "}
-                      <img src={questionCircle} alt={"questionIcon"} className={classes.netAPYImg} />
+                      Net APY: 0.00% {' '}
+                        <img src={questionCircle} alt={'questionIcon'} className={classes.netAPYImg} />
                     </Typography>
                 </Grid>
             </Grid>

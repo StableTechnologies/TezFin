@@ -1,8 +1,9 @@
+// eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { decimals } from 'tezoslendingplatformjs';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
-import { useDispatch, useSelector } from 'react-redux';
 
 import PendingModal from '../StatusModal/PendingModal';
 import SuccessModal from '../StatusModal/SuccessModal';
@@ -37,94 +38,95 @@ const BorrowModal = (props) => {
 
     const handleOpenPending = () => setPendingModal(true);
     const handleClosePending = () => setPendingModal(false);
-    const handleOpenSuccess = () => setSuccessModal(true);
     const handleCloseSuccess = () => setSuccessModal(false);
-    const handleOpenError = () => setErrorModal(true);
     const handleCloseError = () => setErrorModal(false);
 
-    const borrowToken = async() => {
-      const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
-      setResponse(response);
-      setError(error);
+    const borrowToken = async () => {
+        // eslint-disable-next-line no-shadow
+        const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
+        setResponse(response);
+        setError(error);
     };
 
-    const repayBorrowToken = async() => {
-      const { response, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
-      setResponse(response);
-      setError(error);
+    const repayBorrowToken = async () => {
+        // eslint-disable-next-line no-shadow
+        const { response, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
+        setResponse(response);
+        setError(error);
     };
 
     useEffect(() => tokenText && handleOpenPending(), [tokenText]);
     useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
 
     useEffect(() => {
-      if(response) {
-        (async () => {
-          const { confirm, error } = await verifyTransaction(response);
-          setConfirm(confirm);
-          setConfirmError(error);
-        })()
-      }
+        if (response) {
+            (async () => {
+                // eslint-disable-next-line no-shadow
+                const { confirm, error } = await verifyTransaction(response);
+                setConfirm(confirm);
+                setConfirmError(error);
+            })();
+        }
     }, [response]);
 
     useEffect(() => {
-      if(error) {
-        setPendingModal(false);
-        setErrorModal(true);
-      }
+        if (error) {
+            setPendingModal(false);
+            setErrorModal(true);
+        }
     }, [error]);
 
     useEffect(() => {
-      if(confirm) {
-        setPendingModal(false);
-        setSuccessModal(true);
-        dispatch(marketAction(comptroller, protocolAddresses, server));
-      }
-      return () => {
-        setResponse('');
-      }
+        if (confirm) {
+            setPendingModal(false);
+            setSuccessModal(true);
+            dispatch(marketAction(comptroller, protocolAddresses, server));
+        }
+        return () => {
+            setResponse('');
+        };
     }, [confirm]);
 
     useEffect(() => {
-      if(confirmError) {
-        setPendingModal(false);
-        setErrorModal(true);
-      }
+        if (confirmError) {
+            setPendingModal(false);
+            setErrorModal(true);
+        }
     }, [confirmError]);
 
     useEffect(() => {
-      setAmount('');
-      setMaxAmount('');
+        setAmount('');
+        setMaxAmount('');
     }, [close]);
 
     return (
         <>
-          <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
-          <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
-          <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
-          <DashboardModal
-            APYText="Borrow APY"
-            Limit="Borrow Limit"
-            LimitUsed="Borrow Limit Used"
-            CurrentStateText="Currently Borrowing"
-            open={open}
-            close={close}
-            tokenDetails={tokenDetails}
-            handleClickTabOne={borrowToken}
-            handleClickTabTwo={repayBorrowToken}
-            labelOne="Borrow"
-            labelTwo="Repay"
-            buttonOne="Borrow"
-            buttonTwo="Repay"
-            btnSub={classes.btnSub}
-            inkBarStyle={classes.inkBarStyle}
-            visibility={true}
-            setAmount={(e) => { setAmount(e); }}
-            inputBtnTextOne = "80% Limit"
-            inputBtnTextTwo = "Use Max"
-            maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, setMaxAmount)}
-            maxAmount= {maxAmount}
-          />
+            <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
+            <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
+            <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
+            <DashboardModal
+                APYText="Borrow APY"
+                Limit="Borrow Limit"
+                LimitUsed="Borrow Limit Used"
+                CurrentStateText="Currently Borrowing"
+                open={open}
+                close={close}
+                tokenDetails={tokenDetails}
+                handleClickTabOne={borrowToken}
+                handleClickTabTwo={repayBorrowToken}
+                labelOne="Borrow"
+                labelTwo="Repay"
+                buttonOne="Borrow"
+                buttonTwo="Repay"
+                btnSub={classes.btnSub}
+                inkBarStyle={classes.inkBarStyle}
+                visibility={true}
+                setAmount={(e) => { setAmount(e); }}
+                inputBtnTextOne = "80% Limit"
+                inputBtnTextTwo = "Use Max"
+                maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, setMaxAmount)}
+                maxAmount= {maxAmount}
+            />
         </>
     );
 };

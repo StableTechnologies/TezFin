@@ -1,5 +1,6 @@
 import { makeStyles } from '@mui/styles';
 
+// eslint-disable-next-line import/prefer-default-export
 export const useStyles = makeStyles({
     root: {
         '& .MuiTabs-scroller': {
@@ -21,8 +22,8 @@ export const useStyles = makeStyles({
             fontSize: '1rem',
             fontWeight: '700',
             '@media(max-width: 320px)': {
-              fontSize: '0.875rem',
-            },
+                fontSize: '0.875rem'
+            }
         }
     }
 });

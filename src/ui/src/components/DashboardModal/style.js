@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles({
@@ -15,8 +16,8 @@ export const useStyles = makeStyles({
             overflow: 'hidden',
             padding: '0 2.5rem .5rem',
             '@media(max-width: 501px)': {
-              padding: '0 0.5rem .5rem',
-            },
+                padding: '0 0.5rem .5rem'
+            }
         },
         '& .MuiDialogContentText-root': {
             fontWeight: '300',
@@ -24,26 +25,26 @@ export const useStyles = makeStyles({
             lineHeight: '1.875rem',
             letterSpacing: '0.05em',
             '@media(min-width: 1024px)': {
-              margin: '1.25rem 3.125rem',
+                margin: '1.25rem 3.125rem',
                 padding: '0'
-              },
-              '@media(max-width: 500px)': {
-                fontSize: '.875rem',
             },
+            '@media(max-width: 500px)': {
+                fontSize: '.875rem'
+            }
         },
         '& .MuiDialogActions-root': {
             padding: '0',
             margin: '2.9375rem 2.875rem 2.75rem',
             '@media(max-width: 768px)': {
-              margin: '30px 2.875rem',
+                margin: '30px 2.875rem'
             },
             '@media(max-width: 501px)': {
-              margin: '1.875rem',
+                margin: '1.875rem'
             },
             '@media(max-width: 320px)': {
-              marginLeft: '1rem',
-              marginRight: '1rem',
-            },
+                marginLeft: '1rem',
+                marginRight: '1rem'
+            }
         },
         '& .MuiOutlinedInput-notchedOutline': {
             border: '0'
@@ -56,7 +57,6 @@ export const useStyles = makeStyles({
             color: '#fff'
         }
     },
-
 
     img: {
         width: '1.5rem',
@@ -80,36 +80,36 @@ export const useStyles = makeStyles({
         borderBottom: '0',
         textAlign: 'left',
         '@media(max-width: 768px)': {
-          padding: '1.25rem 2.5rem !important',
+            padding: '1.25rem 2.5rem !important'
         },
         '@media(max-width: 501px)': {
-          padding: '1.25rem 0.5rem !important',
-          borderTop: '1px solid #E0E0E0',
-        },
-      },
-      apyRate: {
+            padding: '1.25rem 0.5rem !important',
+            borderTop: '1px solid #E0E0E0'
+        }
+    },
+    apyRate: {
         padding: '1.5625rem 1.5rem !important',
         borderTop: '2px solid #E0E0E0',
         borderBottom: '2px solid #E0E0E0',
         textAlign: 'left',
         margin: '0 1rem',
         '@media(max-width: 768px)': {
-          padding: '1.25rem 1.5rem !important',
+            padding: '1.25rem 1.5rem !important'
         },
         '@media(max-width: 501px)': {
-          padding: '1.25rem 0rem !important',
-          margin: '0 0.5rem',
-        },
+            padding: '1.25rem 0rem !important',
+            margin: '0 0.5rem'
+        }
     },
     limit: {
-      paddingTop: '1.875rem !important',
-      paddingBottom: '1.25rem !important',
+        paddingTop: '1.875rem !important',
+        paddingBottom: '1.25rem !important'
     },
     limitUsed: {
-      paddingBottom: '1.25rem !important',
+        paddingBottom: '1.25rem !important'
     },
     progressBarCon: {
-      paddingBottom: '0 !important',
+        paddingBottom: '0 !important'
     },
     btnMain: {
         borderRadius: '.5rem',
@@ -121,7 +121,7 @@ export const useStyles = makeStyles({
         textTransform: 'unset'
     },
     modalTextRight: {
-      whiteSpace: 'nowrap',
+        whiteSpace: 'nowrap',
         textAlign: 'end'
     },
     close: {
@@ -146,14 +146,14 @@ export const useStyles = makeStyles({
         fontWeight: '300',
         lineHeight: '30px',
         '@media(max-width: 501px)': {
-          fontSize: '1rem',
+            fontSize: '1rem'
         },
         '@media(max-width: 376px)': {
-          fontSize: '0.875rem',
+            fontSize: '0.875rem'
         },
         '@media(max-width: 320px)': {
-          fontSize: '0.75rem',
-        },
+            fontSize: '0.75rem'
+        }
     },
     visibility: {
         visibility: 'hidden'
@@ -161,29 +161,29 @@ export const useStyles = makeStyles({
     formFieldCon: {
         padding: '69px 0px 53px !important',
         '@media(max-width: 768px)': {
-          padding: '35px 0px !important',
+            padding: '35px 0px !important'
         },
         '@media(max-width: 501px)': {
-          padding: '0 0px 1.25rem !important',
-        },
-      },
-      form: {
+            padding: '0 0px 1.25rem !important'
+        }
+    },
+    form: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-evenly',
         paddingRight: '51px',
         paddingLeft: '143px',
         '@media(max-width: 501px)': {
-          padding: '0 1rem',
-          justifyContent: 'start',
-        },
-      },
-      textField: {
+            padding: '0 1rem',
+            justifyContent: 'start'
+        }
+    },
+    textField: {
         height: '3.5rem',
         width: '186px',
         '@media(max-width: 320px)': {
-          width: '145px',
-        },
+            width: '145px'
+        }
     },
     inputText: {
         color: '#000',
@@ -199,8 +199,8 @@ export const useStyles = makeStyles({
             color: '#BDBDBD'
         },
         '@media(max-width: 501px)': {
-          fontSize: '2rem',
-        },
+            fontSize: '2rem'
+        }
     },
     inputBtn: {
         fontSize: '1rem',
@@ -210,17 +210,17 @@ export const useStyles = makeStyles({
         textAlign: 'left',
         color: '#4F4F4F',
         '&:hover': {
-          color: '#3391F6',
-          background: 'transparent'
+            color: '#3391F6',
+            background: 'transparent'
         },
         '&:disabled': {
-            color: '#4F4F4F',
+            color: '#4F4F4F'
         },
         '@media(max-width: 501px)': {
-          fontSize: '0.875rem',
+            fontSize: '0.875rem'
         },
         '@media(max-width: 320px)': {
-          fontSize: '0.7rem',
-        },
+            fontSize: '0.7rem'
+        }
     }
 });

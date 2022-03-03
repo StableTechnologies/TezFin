@@ -2,7 +2,7 @@ import { GET_ACCOUNT } from './types';
 
 const initState = {
     isFetching: true,
-    account: {},
+    account: {}
 };
 
 const addWalletReducer = (state = initState, action) => {

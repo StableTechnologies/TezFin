@@ -1,12 +1,12 @@
+
+import { BigNumber } from 'bignumber.js';
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import {
     GET_ALL_MARKET_DATA,
     GET_BORROWED_MARKET_DATA,
     GET_MARKET_DATA,
-    GET_SUPPLIED_MARKET_DATA,
+    GET_SUPPLIED_MARKET_DATA
 } from './types';
-
-import { BigNumber } from "bignumber.js";
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { formatTokenData } from '../../util';
 import { tokens } from '../../components/Constants';
 
@@ -63,18 +63,17 @@ export const allMarketAction = (account, markets) => (dispatch) => {
  * @returns suppliedMarket
  */
 export const suppliedMarketAction = (markets) => (dispatch) => {
-
-  const suppliedTokens = markets.map(({ assetType, banner, title, logo,usdPrice, walletBalance, supply}) => ({
-      assetType,
-      banner,
-      title,
-      logo,
-      usdPrice,
-      walletBalance,
-      ...supply
+    const suppliedTokens = markets.map(({ assetType, banner, title, logo,usdPrice, walletBalance, supply}) => ({
+        assetType,
+        banner,
+        title,
+        logo,
+        usdPrice,
+        walletBalance,
+        ...supply
     }));
 
-  dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(suppliedTokens) });
+    dispatch({ type: GET_SUPPLIED_MARKET_DATA, payload: formatTokenData(suppliedTokens) });
 };
 
 /**
@@ -84,15 +83,15 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
  * @returns borrowedMarket
  */
 export const borrowedMarketAction = (markets) => (dispatch) => {
-
-    const borrowedTokens = markets.map(({ assetType, banner, title, logo,usdPrice, walletBalance, borrow }) => ({
-      assetType,
-      banner,
-      title,
-      logo,
-      usdPrice,
-      walletBalance,
-      ...borrow
+    // eslint-disable-next-line object-curly-newline
+    const borrowedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, borrow }) => ({
+        assetType,
+        banner,
+        title,
+        logo,
+        usdPrice,
+        walletBalance,
+        ...borrow
     }));
 
     dispatch({ type: GET_BORROWED_MARKET_DATA, payload: formatTokenData(borrowedTokens) });
