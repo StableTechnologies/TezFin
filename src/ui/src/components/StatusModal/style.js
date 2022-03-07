@@ -39,6 +39,10 @@ const useStyles = makeStyles({
     },
     refreshBtn: {
         marginTop: '1rem'
+    },
+    hashLink: {
+        textDecoration: 'none',
+        color: '#007cb3'
     }
 
 });
