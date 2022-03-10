@@ -128,8 +128,16 @@ const DashboardModal = (props) => {
                                 </Grid>
                                 {mainModal
                                     ? <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                        {(tabValue === 'one') && (decimalify(tokenDetails.marketSize, decimals[tokenDetails.title]) || '0')}
-                                        {(tabValue === 'two') && (decimalify(tokenDetails.totalBorrowed, decimals[tokenDetails.title]) || '0')}
+                                        {(tabValue === 'one') && (
+                                            (tokenDetails.supply.balanceUnderlying > 0)
+                                                ? decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title])
+                                                : '0'
+                                        )}
+                                        {(tabValue === 'two') && (
+                                            (tokenDetails.borrow.balanceUnderlying > 0)
+                                                ? decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title])
+                                                : '0'
+                                        )}
                                         {' '} {tokenDetails.title}
                                     </Grid>
                                     : <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >

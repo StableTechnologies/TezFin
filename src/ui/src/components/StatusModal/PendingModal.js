@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-use-before-define
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import IconButton from '@mui/material/IconButton';
 
@@ -15,6 +16,15 @@ const PendingModal = (props) => {
     const classes = useStyles();
     const { token, tokenText, response } = props;
 
+    const { network } = useSelector((state) => state.nodes.tezosNode.conseilServerInfo);
+
+    const [transactionHash, setTransactionHash] = useState('one');
+
+    useEffect(() => {
+        // eslint-disable-next-line no-unused-expressions
+        response && setTransactionHash(response.response.transactionHash);
+    }, [response]);
+
     return (
         <StatusModal
             {...props}
@@ -23,10 +33,18 @@ const PendingModal = (props) => {
             gifSrc={confirmGif}
             tokenText={response
                 ? <>
-                    Operation hash: {shorten(6, 6, response.response.transactionHash)}
+                    Operation hash: {' '}
+                    <a
+                        href={`https://arronax.io/tezos/${network}/operations/${transactionHash}`}
+                        target="_blank"
+                        rel="noopener"
+                        className={classes.hashLink}
+                    >
+                        {shorten(6, 6, transactionHash)}
+                    </a>
                     <IconButton aria-label="copy"
                         // eslint-disable-next-line no-undef
-                        onClick={() => navigator.clipboard.writeText(response.response.transactionHash)}
+                        onClick={() => navigator.clipboard.writeText(transactionHash)}
                         className={classes.copyBtn}
                         disableRipple
                     >
