@@ -28,6 +28,7 @@ import CustomizedProgressBars from '../ProgressBar';
 
 import Tez from '../../assets/largeXTZ.svg';
 import { useStyles } from './style';
+import LightTooltip from './LightTooltip';
 
 const DashboardModal = (props) => {
     const classes = useStyles();
@@ -70,10 +71,15 @@ const DashboardModal = (props) => {
                 <DialogTitle>
                     <div>
                         <img src={tokenDetails.logo} alt="logo" className={classes.img} />
-                        <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                            {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
-                            {' '} {tokenDetails.banner}
-                        </Typography>
+                        <LightTooltip
+                            title={ tokenDetails.walletBalance ? `${tokenDetails.walletBalance}  ${tokenDetails.banner}` : ''}
+                            placement="bottom"
+                        >
+                            <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+                                {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
+                                {' '} {tokenDetails.banner}
+                            </Typography>
+                        </LightTooltip>
                     </div>
                 </DialogTitle>
                 {(!visibility || collateralize)
