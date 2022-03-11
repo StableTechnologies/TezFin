@@ -1,6 +1,6 @@
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
-import { confirmTransaction } from './index';
+import { evaluateTransaction } from './index';
 
 /**
  * This function is used to supply tokens to the market.
@@ -8,22 +8,22 @@ import { confirmTransaction } from './index';
  * @param  amount amount to be supplied.
  * @param  close close Modal.
  * @param  setTokenText set text for confirmation modal.
- * @param  handleOpenConfirm open confirmation modal.
+ * @param  handleOpenInitialize open initial operation modal.
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const supplyTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash) => {
+export const supplyTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash) => {
     const underlying = tokenDetails.assetType.toLowerCase();
     const mintPair = { underlying, amount };
     close();
     setTokenText('supply');
-    handleOpenConfirm();
+    handleOpenInitialize();
     const mint = TezosLendingPlatform.MintOpGroup(
         mintPair,
         protocolAddresses,
         publicKeyHash
     );
-    return confirmTransaction(mint, publicKeyHash);
+    return evaluateTransaction(mint);
 };
 
 /**
@@ -32,16 +32,16 @@ export const supplyTokenAction = async (tokenDetails, amount, close, setTokenTex
  * @param  amount amount to be supplied.
  * @param  close close Modal.
  * @param  setTokenText set text for confirmation modal.
- * @param  handleOpenConfirm open confirmation modal.
+ * @param  handleOpenInitialize open initial operation modal.
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const withdrawTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash) => {
+export const withdrawTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash) => {
     const underlying = tokenDetails.assetType.toUpperCase();
     const redeemPair = { underlying, amount };
     close();
     setTokenText('withdraw');
-    handleOpenConfirm();
+    handleOpenInitialize();
     const collaterals = redeemPair.underlying;
     const withdraw = TezosLendingPlatform.RedeemOpGroup(
         redeemPair,
@@ -49,7 +49,7 @@ export const withdrawTokenAction = async (tokenDetails, amount, close, setTokenT
         protocolAddresses,
         publicKeyHash
     );
-    return confirmTransaction(withdraw);
+    return evaluateTransaction(withdraw);
 };
 
 /**
@@ -58,16 +58,16 @@ export const withdrawTokenAction = async (tokenDetails, amount, close, setTokenT
  * @param  amount amount to be supplied.
  * @param  close close Modal.
  * @param  setTokenText set text for confirmation modal.
- * @param  handleOpenConfirm open confirmation modal.
+ * @param  handleOpenInitialize open initial operation modal.
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const borrowTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash) => {
+export const borrowTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash) => {
     const underlying = tokenDetails.assetType.toUpperCase();
     const borrowPair = { underlying, amount };
     close();
     setTokenText('borrow');
-    handleOpenConfirm();
+    handleOpenInitialize();
     const collaterals = Object.keys(protocolAddresses.fTokens);
     const borrow = TezosLendingPlatform.BorrowOpGroup(
         borrowPair,
@@ -75,7 +75,7 @@ export const borrowTokenAction = async (tokenDetails, amount, close, setTokenTex
         protocolAddresses,
         publicKeyHash
     );
-    return confirmTransaction(borrow);
+    return evaluateTransaction(borrow);
 };
 
 /**
@@ -84,22 +84,22 @@ export const borrowTokenAction = async (tokenDetails, amount, close, setTokenTex
  * @param  amount amount to be supplied.
  * @param  close close Modal.
  * @param  setTokenText set text for confirmation modal.
- * @param  handleOpenConfirm open confirmation modal.
+ * @param  handleOpenInitialize open initial operation modal.
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const repayBorrowTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenConfirm, protocolAddresses, publicKeyHash) => {
+export const repayBorrowTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash) => {
     const underlying = tokenDetails.assetType.toUpperCase();
     const repayBorrowPair = { underlying, amount };
     close();
     setTokenText('repay');
-    handleOpenConfirm();
+    handleOpenInitialize();
     const repayBorrow = TezosLendingPlatform.RepayBorrowOpGroup(
         repayBorrowPair,
         protocolAddresses,
         publicKeyHash
     );
-    return confirmTransaction(repayBorrow);
+    return evaluateTransaction(repayBorrow);
 };
 
 /**
@@ -118,7 +118,7 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
         protocolAddresses,
         publicKeyHash
     );
-    return confirmTransaction(collateralizeToken);
+    return evaluateTransaction(collateralizeToken);
 };
 
 /**
@@ -138,5 +138,5 @@ export const disableCollateralizeTokenAction = (asset, protocolAddresses, public
         publicKeyHash
     );
 
-    return confirmTransaction(disableCollateralizeToken);
+    return evaluateTransaction(disableCollateralizeToken);
 };

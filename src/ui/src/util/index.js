@@ -59,11 +59,11 @@ export const getActiveAccount = async () => {
 /**
  * Sends a transaction to the blockchain
  *
- * @param operations List of operations needed to be sent to the chain
+ * @param operations List of operations needed to be sent to the chain.
  *
- * @return operation response
+ * @return operation group.
  */
-export const confirmTransaction = async (operations) => {
+export const evaluateTransaction = async (operations) => {
     try {
         const address = operations[0].source;
         let curve = KeyStoreCurve.ED25519;
@@ -92,6 +92,21 @@ export const confirmTransaction = async (operations) => {
             operations,
             true
         );
+        return { opGroup };
+    } catch (error) {
+        console.log('evaluateTX', error);
+        return { error };
+    }
+};
+/**
+ * Sends a transaction to the blockchain
+ *
+ * @param opGroup operation group needed to be sent to the chain
+ *
+ * @return operation response
+ */
+export const confirmTransaction = async (opGroup) => {
+    try {
         const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
         const response = await client.requestOperation({ operationDetails: opGroup });
         return { response: { response, head: head.header.level } };

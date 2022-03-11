@@ -6,9 +6,10 @@ import { decimals } from 'tezoslendingplatformjs';
 import { marketAction } from '../../reduxContent/market/actions';
 
 import { supplyTokenAction, borrowTokenAction } from '../../util/modalActions';
-import { undecimalify, verifyTransaction } from '../../util';
+import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { marketsMaxAction } from '../../util/maxAction';
 
+import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
 import SuccessModal from '../StatusModal/SuccessModal';
 import ErrorModal from '../StatusModal/ErrorModal';
@@ -26,6 +27,7 @@ const AllMarketModal = (props) => {
     const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
+    const [openInitializeModal, setInitializeModal] = useState(false);
     const [openPendingModal, setPendingModal] = useState(false);
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
@@ -33,31 +35,48 @@ const AllMarketModal = (props) => {
     const [maxAmount, setMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
+    const [opGroup, setOpGroup] = useState('');
     const [confirm, setConfirm] = useState('');
     const [confirmError, setConfirmError] = useState('');
     const [error, setError] = useState('');
+    const [evaluationError, setEvaluationError] = useState(false);
+    const [errType, setErrType] = useState(false);
 
-    const handleOpenPending = () => setPendingModal(true);
+    const handleOpenInitialize = () => setInitializeModal(true);
+    const handleCloseInitialize = () => setInitializeModal(false);
     const handleClosePending = () => setPendingModal(false);
     const handleCloseSuccess = () => setSuccessModal(false);
     const handleCloseError = () => setErrorModal(false);
 
     const supplyToken = async () => {
         // eslint-disable-next-line no-shadow
-        const { response, error } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
-        setResponse(response);
-        setError(error);
+        const { opGroup, error } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+        setOpGroup(opGroup);
+        setEvaluationError(error);
     };
 
     const borrowToken = async () => {
         // eslint-disable-next-line no-shadow
-        const { response, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenPending, protocolAddresses, publicKeyHash);
-        setResponse(response);
-        setError(error);
+        const { opGroup, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+        setOpGroup(opGroup);
+        setEvaluationError(error);
     };
 
-    useEffect(() => tokenText && handleOpenPending(), [tokenText]);
+    useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
     useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
+
+    useEffect(() => {
+        if (opGroup) {
+            setInitializeModal(false);
+            setPendingModal(true);
+            (async () => {
+                // eslint-disable-next-line no-shadow
+                const { response, error } = await confirmTransaction(opGroup);
+                setResponse(response);
+                setError(error);
+            })();
+        }
+    }, [opGroup]);
 
     useEffect(() => {
         if (response) {
@@ -72,10 +91,19 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
         if (error) {
+            setErrType('error');
             setPendingModal(false);
             setErrorModal(true);
         }
     }, [error]);
+
+    useEffect(() => {
+        if (evaluationError) {
+            setErrType('evaluationError');
+            setInitializeModal(false);
+            setErrorModal(true);
+        }
+    }, [evaluationError]);
 
     useEffect(() => {
         if (confirm) {
@@ -90,6 +118,7 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
         if (confirmError) {
+            setErrType('confirmError');
             setPendingModal(false);
             setErrorModal(true);
         }
@@ -102,9 +131,10 @@ const AllMarketModal = (props) => {
 
     return (
         <>
+            <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
             <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
             <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
-            <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
+            <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} errType={errType} />
             <DashboardModal
                 APYText={`${tokenDetails.title} Variable APY Rate`}
                 APYTextTwo="Borrow APY"

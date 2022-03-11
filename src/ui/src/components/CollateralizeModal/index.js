@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { collateralizeTokenAction } from '../../util/modalActions';
-import { verifyTransaction } from '../../util';
+import { confirmTransaction, verifyTransaction } from '../../util';
 import { marketAction } from '../../reduxContent/market/actions';
 
+import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
 import SuccessModal from '../StatusModal/SuccessModal';
 import ErrorModal from '../StatusModal/ErrorModal';
@@ -24,16 +25,21 @@ const CollateralizeModal = (props) => {
     const { server } = useSelector((state) => state.nodes.tezosNode);
     const publicKeyHash = account.address;
 
+    const [openInitializeModal, setInitializeModal] = useState(false);
     const [openPendingModal, setPendingModal] = useState(false);
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
     const [tokenText, setTokenText] = useState('');
+    const [opGroup, setOpGroup] = useState('');
     const [response, setResponse] = useState('');
     const [confirm, setConfirm] = useState('');
     const [confirmError, setConfirmError] = useState('');
     const [error, setError] = useState('');
+    const [evaluationError, setEvaluationError] = useState(false);
+    const [errType, setErrType] = useState(false);
 
-    const handleOpenPending = () => setPendingModal(true);
+    const handleOpenInitialize = () => setInitializeModal(true);
+    const handleCloseInitialize = () => setInitializeModal(false);
     const handleClosePending = () => setPendingModal(false);
     const handleCloseSuccess = () => setSuccessModal(false);
     const handleCloseError = () => setErrorModal(false);
@@ -42,14 +48,27 @@ const CollateralizeModal = (props) => {
         const { assetType } = tokenDetails;
         close();
         setTokenText('collateral');
-        handleOpenPending();
+        handleOpenInitialize();
         // eslint-disable-next-line no-shadow
-        const { response, error } = await collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
-        setResponse(response);
-        setError(error);
+        const { opGroup, error } = await collateralizeTokenAction(assetType, protocolAddresses, publicKeyHash);
+        setOpGroup(opGroup);
+        setEvaluationError(error);
     };
 
-    useEffect(() => tokenText && handleOpenPending(), [tokenText]);
+    useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
+
+    useEffect(() => {
+        if (opGroup) {
+            setInitializeModal(false);
+            setPendingModal(true);
+            (async () => {
+                // eslint-disable-next-line no-shadow
+                const { response, error } = await confirmTransaction(opGroup);
+                setResponse(response);
+                setError(error);
+            })();
+        }
+    }, [opGroup]);
 
     useEffect(() => {
         if (response) {
@@ -64,10 +83,19 @@ const CollateralizeModal = (props) => {
 
     useEffect(() => {
         if (error) {
+            setErrType('error');
             setPendingModal(false);
             setErrorModal(true);
         }
     }, [error]);
+
+    useEffect(() => {
+        if (evaluationError) {
+            setErrType('evaluationError');
+            setInitializeModal(false);
+            setErrorModal(true);
+        }
+    }, [evaluationError]);
 
     useEffect(() => {
         if (confirm) {
@@ -82,6 +110,7 @@ const CollateralizeModal = (props) => {
 
     useEffect(() => {
         if (confirmError) {
+            setErrType('confirmError');
             setPendingModal(false);
             setErrorModal(true);
         }
@@ -89,9 +118,10 @@ const CollateralizeModal = (props) => {
 
     return (
         <>
+            <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
             <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
             <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} />
-            <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} confirmError={confirmError} />
+            <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} errType={errType} />
             <DashboardModal
                 headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
                 APYText={`${tokenDetails.title} xxVariable APY Rate`}

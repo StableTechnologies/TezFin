@@ -13,23 +13,29 @@ import useStyles from './style';
 const ErrorModal = (props) => {
     const classes = useStyles();
     const {
-        token, tokenText, error, confirmError
+        token, tokenText, error, errType
     } = props;
 
     return (
         <StatusModal
             {...props}
             closBtn={true}
-            title={error && (error.title || 'Transaction Failed')}
+            title={
+                <>
+                    {errType === 'error' && (error.title || 'Transaction Failed')}
+                    {errType === 'evaluationError' && ('Construction Failed')}
+                </>
+            }
             gifSrc={errorGif}
             tokenText={
                 <>
-                    {(error) && (error.description || `could not ${tokenText} ${token} token`)}
-                    {(confirmError) && 'Could not confirm transaction completion on chain.'}
+                    {(errType === 'error') && (error.description || `could not ${tokenText} ${token} token`)}
+                    {(errType === 'confirmError') && 'Could not confirm transaction completion on chain.'}
+                    {(errType === 'evaluationError') && 'Could not construct operation.'}
                 </>
             }
             confirmError={
-                confirmError
+                (errType === 'confirmError')
                 && <Button
                     variant="outlined"
                     // eslint-disable-next-line no-restricted-globals

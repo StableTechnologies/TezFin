@@ -55,7 +55,7 @@ const PendingModal = (props) => {
                     {(tokenText === 'withdraw') && `To withdraw ${token}, please confirm the transaction in your wallet.`}
                     {(tokenText === 'supply') && `To supply ${token} token, please confirm the transaction in your wallet.`}
                     {(tokenText === 'borrow') && `To borrow ${token}, please confirm the transaction in your wallet.`}
-                    {(tokenText === 'repay') && `To repay ${token}, please confirm the transaction in your wallet.`}
+                    {(tokenText === 'repay') && `To repay ${token} loan, please confirm the transaction in your wallet.`}
                     {(tokenText === 'collateral') && `To enable ꜰ${token} as collateral, please confirm the transaction in your wallet.`}
                     {(tokenText === 'disable') && `To disable ꜰ${token} as collateral, please confirm the transaction in your wallet.`}
                 </>
