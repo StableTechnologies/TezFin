@@ -34,16 +34,17 @@ const ErrorModal = (props) => {
                     {(errType === 'evaluationError') && 'Could not construct operation.'}
                 </>
             }
-            confirmError={
-                (errType === 'confirmError')
-                && <Button
-                    variant="outlined"
-                    // eslint-disable-next-line no-restricted-globals
-                    onClick={() => location.reload(true)}
-                    className={classes.refreshBtn}
-                >
-                    Refresh
-                </Button>
+            button={
+                errType
+              && <Button
+                  variant="outlined"
+                  // eslint-disable-next-line no-restricted-globals
+                  onClick={(errType === 'confirmError') ? () => location.reload(true) : props.close}
+                  className={classes.modalBtn}
+              >
+                  {(errType === 'confirmError') && 'Refresh'}
+                  {((errType === 'error') || (errType === 'evaluationError')) && 'Okay'}
+              </Button>
             }
         />
     );

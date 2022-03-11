@@ -1,11 +1,16 @@
 // eslint-disable-next-line no-use-before-define
 import React from 'react';
 
+import Button from '@mui/material/Button';
+
 import StatusModal from './index';
 
 import successGif from '../../assets/success.gif';
 
+import useStyles from './style';
+
 const SuccessModal = (props) => {
+    const classes = useStyles();
     const {
         open, close, token, tokenText, amount
     } = props;
@@ -25,6 +30,15 @@ const SuccessModal = (props) => {
                 {(tokenText === 'collateral') && `You have successfully enabled ꜰ${token} as collateral.`}
                 {(tokenText === 'disable') && `You have successfully disabled ꜰ${token} as collateral.`}
             </>}
+            button={
+                <Button
+                    variant="outlined"
+                    onClick={close}
+                    className={classes.modalBtn}
+                >
+                    Okay
+                </Button>
+            }
         />
     );
 };

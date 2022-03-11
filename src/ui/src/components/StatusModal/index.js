@@ -13,7 +13,7 @@ import useStyles from './style';
 const StatusModal = (props) => {
     const classes = useStyles();
     const {
-        open, close, gifSrc, title, tokenText, closBtn, confirmError
+        open, close, gifSrc, title, tokenText, closBtn, button
     } = props;
 
     return (
@@ -29,7 +29,7 @@ const StatusModal = (props) => {
                 <DialogContentText className={classes.statusText}>
                     {tokenText}
                 </DialogContentText>
-                {confirmError}
+                {button}
             </DialogContent>
         </Dialog>
     );
