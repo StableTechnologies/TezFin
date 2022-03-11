@@ -22,14 +22,14 @@ const ErrorModal = (props) => {
             closBtn={true}
             title={
                 <>
-                    {errType === 'error' && (error.title || 'Transaction Failed')}
+                    {(errType === 'error' && error) && (error.title || 'Transaction Failed')}
                     {errType === 'evaluationError' && ('Construction Failed')}
                 </>
             }
             gifSrc={errorGif}
             tokenText={
                 <>
-                    {(errType === 'error') && (error.description || `could not ${tokenText} ${token} token`)}
+                    {(errType === 'error' && error) && (error.description || `could not ${tokenText} ${token} token`)}
                     {(errType === 'confirmError') && 'Could not confirm transaction completion on chain.'}
                     {(errType === 'evaluationError') && 'Could not construct operation.'}
                 </>
