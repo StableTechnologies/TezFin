@@ -124,32 +124,6 @@ class ComptrollerInterface(sp.Contract):
         pass
 
 
-    """
-        Update price of the given asset
-
-        asset: TAddress - CToken market address
-    """
-    @sp.entry_point
-    def updateAssetPrice(self, asset):
-        pass
-
-
-    """
-        Updates stored liquidity for the given account
-
-        requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the account
-            accrueInterest() should be executed within 5 blocks prior to this call, for all markets entered by the account
-
-        dev: should be called before entry points that works with account liquidity
-
-        account: TAddress - The account to calculate liquidity for
-    """
-    @sp.entry_point
-    def updateAccountLiquidity(self, account):
-        pass
-
-
     """    
         Determine what the account liquidity would be if the given amounts were redeemed/borrowed
 

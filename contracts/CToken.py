@@ -211,6 +211,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.data.balances[params.borrower].accountBorrows.principal = self.sub_nat_nat(accountBorrows, repayAmount)
         self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
         self.data.totalBorrows = self.sub_nat_nat(self.data.totalBorrows, repayAmount)
+        sp.if self.data.balances[params.borrower].accountBorrows.principal==0:
+            c = sp.contract(sp.TAddress, self.data.comptroller, entry_point="removeFromLoans").open_some()
+            sp.transfer(params.borrower, sp.mutez(0), c)
 
     def verifyRepayBorrowAllowed(self, payer_, borrower_, repayAmount_):
         self.addAddressIfNecessary(payer_)
@@ -344,6 +347,21 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.utils.view(CTI.TAccountSnapshot)
     def getAccountSnapshot(self, params):
+        accSnapshot = sp.compute(sp.record(
+                account = params,
+                cTokenBalance = sp.nat(0), 
+                borrowBalance = sp.nat(0),
+                exchangeRateMantissa = sp.nat(0)
+            ))
+        sp.if self.data.balances.contains(params):
+            self.verifyAccruedInterestRelevance()
+            accSnapshot.cTokenBalance = self.data.balances[params].balance
+            accSnapshot.borrowBalance = self.getBorrowBalance(params)
+            accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
+        sp.result(accSnapshot)
+
+    @sp.onchain_view()
+    def getAccountSnapshotView(self, params):
         accSnapshot = sp.compute(sp.record(
                 account = params,
                 cTokenBalance = sp.nat(0), 
