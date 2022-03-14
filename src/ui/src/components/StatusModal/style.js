@@ -37,8 +37,16 @@ const useStyles = makeStyles({
     copyBtn: {
         marginTop: '-3px'
     },
-    refreshBtn: {
-        marginTop: '1rem'
+    modalBtn: {
+        marginTop: '1rem',
+        border: '1px solid #000',
+        color: '#000',
+        background: 'transparent',
+        '&:hover': {
+            border: '1px solid #fff',
+            color: '#fff',
+            background: '#000'
+        }
     },
     hashLink: {
         textDecoration: 'none',
