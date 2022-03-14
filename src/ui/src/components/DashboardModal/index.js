@@ -43,18 +43,18 @@ const DashboardModal = (props) => {
     const [tabValue, setTabValue] = useState('one');
     const [tokenValue, setTokenValue] = useState('');
 
-    const { account } = useSelector((state) => state.addWallet);
     const { address } = useSelector((state) => state.addWallet.account);
+    const { collateral } = useSelector((state) => state.supplyComposition.supplyComposition);
+    const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+
+    let borrowLimitUsed;
+    if (borrowing && collateral) {
+        borrowLimitUsed = borrowing.multiply(10000).divide(collateral).toJSNumber();
+    }
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
-
-    const scale = new BigNumber('1000000000000000000000000');
-    if (account.health) {
-        tokenDetails.borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale);
-        tokenDetails.borrowLimitUsed = (account.health / 10000);
-    }
 
     useEffect(() => {
         setTokenValue('');
@@ -183,7 +183,8 @@ const DashboardModal = (props) => {
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
                         <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            ${(tokenDetails.borrowLimit > 0) ? nFormatter(tokenDetails.borrowLimit, 2) : '0.00'}
+                            {/* ${(tokenDetails.borrowLimit > 0) ? nFormatter(tokenDetails.borrowLimit, 2) : '0.00'} */}
+                            ${(borrowLimit > 0) ? nFormatter(borrowLimit, 2) : '0.00'}
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -191,7 +192,7 @@ const DashboardModal = (props) => {
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
                         <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {(tokenDetails.borrowLimitUsed > 0) ? truncateNum(tokenDetails.borrowLimitUsed) : '0'}%
+                            {(borrowLimitUsed > 0) ? truncateNum(borrowLimitUsed) : '0'}%
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -199,7 +200,7 @@ const DashboardModal = (props) => {
                     <Grid container>
                         <Grid item xs={12}>
                             <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars value={tokenDetails.borrowLimitUsed} height="8px"/>
+                                <CustomizedProgressBars value={borrowLimitUsed} height="8px"/>
                             </Box>
                         </Grid>
                     </Grid>
