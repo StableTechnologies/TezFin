@@ -105,7 +105,8 @@ export namespace TezosLendingPlatform {
         const underlyingBalances = await GetUnderlyingBalances(address, markets, server);
         // get balance in each market
         const marketBalances = await GetFtokenBalances(address, markets, server);
-
+        console.log("markets", marketBalances)
+        console.log("collaterals", collaterals)
         // get prices from oracle
         // calculate usd balances and collaterals
         for (const asset in marketBalances) {
@@ -551,11 +552,6 @@ export namespace TezosLendingPlatform {
      */
     export function RedeemOpGroup(redeem: FToken.RedeemPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
-        // accrue interest operation
-        if (!collaterals.includes(redeem.underlying)) { // need to accrueInterest on the redeemed market as well)
-            collaterals.push(redeem.underlying);
-        }
-        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // comptroller data relevance
         ops = ops.concat(Comptroller.DataRelevanceOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh));
         // redeem operation
@@ -587,13 +583,6 @@ export namespace TezosLendingPlatform {
      */
     export function BorrowOpGroup(borrow: FToken.BorrowPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
-        // accrue interest operation
-        if (!collaterals.includes(borrow.underlying)) { // need to accrueInterest on the borrowed market as well
-            collaterals.push(borrow.underlying);
-        }
-
-        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
-
         // comptroller data relevance
         ops = ops.concat(Comptroller.DataRelevanceOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh));
         // borrow operation
@@ -674,8 +663,6 @@ export namespace TezosLendingPlatform {
      */
     export function EnterMarketsOpGroup(enterMarkets: Comptroller.EnterMarketsPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
-        // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // comptroller data relevance
         ops = ops.concat(Comptroller.DataRelevanceOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh));
         // enterMarkets operation
@@ -707,8 +694,6 @@ export namespace TezosLendingPlatform {
      */
     export function ExitMarketOpGroup(exitMarket: Comptroller.ExitMarketPair, collaterals: AssetType[], protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
-        // accrue interest operation
-        ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // comptroller data relevance
         ops = ops.concat(Comptroller.DataRelevanceOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh));
         // enterMarkets operation

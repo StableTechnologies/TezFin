@@ -1,5 +1,5 @@
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { GET_ACCOUNT } from './types';
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 /**
  * This function is used to get the account details of a user.
@@ -11,6 +11,7 @@ import { GET_ACCOUNT } from './types';
  */
 export const addWalletAction = (address, server, protocolAddresses, comptroller, markets) => async (dispatch) => {
     const account = await TezosLendingPlatform.GetAccount(address, markets, comptroller, protocolAddresses, server);
+    console.log("accc", account, comptroller)
     dispatch({ type: GET_ACCOUNT, payload: account });
 };
 

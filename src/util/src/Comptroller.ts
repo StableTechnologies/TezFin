@@ -74,13 +74,13 @@ export namespace Comptroller {
         try {
             return {
                 accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
+                collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
                 loansMapId: JSONPath({ path: '$.args[0].args[1].args[1].int', json: storageResult })[0],
                 administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
-                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
-                expScale: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
-                halfExpScale: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
-                liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
+                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                expScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
+                halfExpScale: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
+                liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[1].args[0].int', json: storageResult })[0],
                 marketsMapId: marketsMapId,
                 oracleAddress: JSONPath({ path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
                 pendingAdministrator: JSONPath({ path: '$.args[0].args[3].prim', json: storageResult })[0],
@@ -161,47 +161,6 @@ export namespace Comptroller {
         address: string;
     }
 
-    /*
-     * Description
-     *
-     * @param
-     */
-    export function UpdateAssetPriceMicheline(updateAssetPrice: UpdateAssetPricePair): string {
-        console.log('jjj', updateAssetPrice)
-        return `{ "bytes": "${TezosMessageUtils.writeAddress(updateAssetPrice.address)}" }`
-    }
-
-    /*
-     * Description
-     *
-     * @param
-     */
-    export function UpdateAssetPriceMichelson(updateAssetPrice: UpdateAssetPricePair): string {
-        return `0x${TezosMessageUtils.writeAddress(updateAssetPrice.address)}`;
-    }
-
-    /*
-     * Returns the operation for invoking the UpdateAssetPrice entry point of the comptroller contract
-     *
-     * @param
-     */
-    export function UpdateAssetPriceOperation(updateAssetPrice: UpdateAssetPricePair, counter: number, comptrollerAddress: string, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
-        const entrypoint = 'updateAssetPrice';
-        const parameters = UpdateAssetPriceMicheline(updateAssetPrice);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
-    }
-
-    /*
-     * @description
-     *
-     * @param
-     */
-    export async function UpdateAssetPrice(updateAssetPrice: UpdateAssetPricePair, server: string, comptrollerAddress: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
-        const entrypoint = 'updateAccountLiquidity';
-        const parameters = UpdateAccountLiquidityMicheline(updateAssetPrice);
-        const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
-        return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
-    }
 
     /*
      * Description
@@ -236,22 +195,11 @@ export namespace Comptroller {
      * @param
      */
     export function UpdateAccountLiquidityOperation(updateAccountLiquidity: UpdateAccountLiquidityPair, counter: number, comptrollerAddress: string, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
-        const entrypoint = 'updateAccountLiquidity';
+        const entrypoint = 'updateAccountLiquidityWithView';
         const parameters = UpdateAccountLiquidityMicheline(updateAccountLiquidity);
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     }
 
-    /*
-     * @description
-     *
-     * @param
-     */
-    export async function UpdateAccountLiquidity(updateAccountLiquidity: UpdateAccountLiquidityPair, server: string, comptrollerAddress: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
-        const entrypoint = 'updateAccountLiquidity';
-        const parameters = UpdateAccountLiquidityMicheline(updateAccountLiquidity);
-        const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
-        return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
-    }
 
     /*
      * Add the required operations for entrypoints that invoke transferOut. This requires updating the comptroller contract's accounting.
@@ -266,14 +214,7 @@ export namespace Comptroller {
     export function DataRelevanceOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         console.log('lll', collaterals)
-        // updateAssetPrice for every collateralized market
-        for (const collateral of collaterals) {
-            const updateAssetPrice: Comptroller.UpdateAssetPricePair = { address: protocolAddresses.fTokens[collateral] };
-            console.log("data relevance", updateAssetPrice, protocolAddresses)
-            const updateAssetPriceOp = Comptroller.UpdateAssetPriceOperation(updateAssetPrice, counter, protocolAddresses.comptroller, pkh, gas, freight);
-            ops.push(updateAssetPriceOp);
-        }
-        // updateAccountLiquidity
+        // updateAccountLiquidityWithView
         const updateAccountLiquidity: Comptroller.UpdateAccountLiquidityPair = { address: pkh };
         const updateAccountLiquidityOp = Comptroller.UpdateAccountLiquidityOperation(updateAccountLiquidity, counter, protocolAddresses.comptroller, pkh, gas, freight);
         ops.push(updateAccountLiquidityOp);
