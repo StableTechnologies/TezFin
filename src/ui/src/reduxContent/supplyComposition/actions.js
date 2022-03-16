@@ -30,9 +30,9 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
             return suppliedMarkets;
         });
 
-        const totalUsdValue = assets.reduce((a, b) => a + b.total, 0);
+        const supplying = assets.reduce((a, b) => a + b.total, 0);
         assets.map((x) => {
-            x.rate = ((x.total / totalUsdValue) * 100);
+            x.rate = ((x.total / supplying) * 100);
             x.collateral && (x.collateralUsd = x.total);
         });
 
@@ -40,7 +40,7 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
 
         supplyComposition = {
             assets,
-            totalUsdValue,
+            supplying,
             collateral: totalCollateralUsd
         };
     }

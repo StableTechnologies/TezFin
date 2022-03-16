@@ -1,6 +1,5 @@
 import { decimals } from 'tezoslendingplatformjs';
-import { BigNumber } from 'bignumber.js';
-import bigInt from 'big-integer';
+
 import { decimalify } from '../../util';
 
 import { GET_BORROW_COMPOSITION_DATA } from './types';
@@ -12,10 +11,14 @@ import { GET_BORROW_COMPOSITION_DATA } from './types';
  * @returns borrowComposition
  */
 // eslint-disable-next-line import/prefer-default-export
-export const borrowCompositionAction = (account, borrowedMarkets) => async (dispatch) => {
+export const borrowCompositionAction = (account, borrowedMarkets) => async (dispatch, getState) => {
+    const state = getState();
+
+    const { collateral } = state.supplyComposition.supplyComposition;
+    const totalCollateral = collateral * 0.8;
+
     let borrowComposition = {};
     const assets = [];
-    let borrowLimit;
 
     if (Object.keys(borrowedMarkets).length > 0) {
         borrowedMarkets.map((x) => {
@@ -28,18 +31,14 @@ export const borrowCompositionAction = (account, borrowedMarkets) => async (disp
             return borrowedMarkets;
         });
 
-        const totalUsdValue = assets.reduce((a, b) => a + b.total, 0);
-        const scale = new BigNumber('1000000000000000000000000');
-        if (account.health) {
-            borrowLimit = new BigNumber(account.totalCollateralUsd.multiply(bigInt(account.health)).toString()).dividedBy(scale);
-        }
-
-        const rate = ((totalUsdValue / borrowLimit) * 100);
-        const limitBalance = borrowLimit - totalUsdValue;
+        const borrowing = assets.reduce((a, b) => a + b.total, 0);
+        const borrowLimit = totalCollateral - borrowing;
+        const rate = (borrowing / borrowLimit) * 100;
+        const limitBalance = borrowLimit - borrowing;
 
         borrowComposition = {
             assets,
-            totalUsdValue,
+            borrowing,
             borrowLimit,
             rate,
             limitBalance
