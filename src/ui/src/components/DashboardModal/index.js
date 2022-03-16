@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { BigNumber } from 'bignumber.js';
-import bigInt from 'big-integer';
 import { decimals } from 'tezoslendingplatformjs';
 
 import Box from '@mui/material/Box';
@@ -48,8 +47,9 @@ const DashboardModal = (props) => {
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
 
     let borrowLimitUsed;
+    const scale = new BigNumber('10000');
     if (borrowing && collateral) {
-        borrowLimitUsed = borrowing.multiply(10000).divide(collateral).toJSNumber();
+        borrowLimitUsed = new BigNumber(borrowing).multipliedBy(scale).dividedBy(new BigNumber(collateral)).toString();
     }
 
     const handleTabChange = (event, newValue) => {
@@ -200,7 +200,7 @@ const DashboardModal = (props) => {
                     <Grid container>
                         <Grid item xs={12}>
                             <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars value={borrowLimitUsed} height="8px"/>
+                                <CustomizedProgressBars value={Number(borrowLimitUsed)} height="8px"/>
                             </Box>
                         </Grid>
                     </Grid>
