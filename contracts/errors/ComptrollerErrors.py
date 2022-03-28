@@ -21,3 +21,5 @@ class ErrorCodes:
     CMPT_LIQUIDITY_ABSENT = "CMPT_LIQUIDITY_ABSENT" # Liquidity for the given account is not found
     CMPT_LIQUIDITY_INVALID = "CMPT_LIQUIDITY_INVALID" # Liquidity is already invalid
     CMPT_LIQUIDITY_OLD = "CMPT_LIQUIDITY_OLD" # Liquidity is too old
+
+    CMPT_PRICE_ERROR = "CMPT_PRICE_ERROR" # invalid price from oracle

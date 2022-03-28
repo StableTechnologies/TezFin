@@ -476,6 +476,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TUnit)
         sp.result(self.exchangeRateStoredImpl())
 
+    @sp.onchain_view()
+    def exchangeRateStoredView(self, params):
+        sp.set_type(params, sp.TUnit)
+        sp.result(self.exchangeRateStoredImpl())
+
     def exchangeRateStoredImpl(self):
         return self.exchangeRateAdjusted(sp.nat(0))
 

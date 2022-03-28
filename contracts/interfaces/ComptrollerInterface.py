@@ -16,6 +16,9 @@ TAccountLiquidityParams = sp.TRecord(cTokenModify=sp.TAddress,
                             ).layout(("account", ("cTokenModify", ("redeemTokens", "borrowAmount"))))
 TGetAccountLiquidityParams = sp.TRecord(data=TAccountLiquidityParams, callback=sp.TContract(sp.TInt))
 
+TLiquidateCalculateSeizeTokens = sp.TRecord(
+    cTokenBorrowed=sp.TAddress, cTokenCollateral=sp.TAddress, actualRepayAmount=sp.TNat)
+
 class ComptrollerInterface(sp.Contract):
 
     """    
