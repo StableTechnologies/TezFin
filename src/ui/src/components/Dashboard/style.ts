@@ -82,7 +82,10 @@ export const useStyles = makeStyles({
     tableCon: {
         border: '1px solid #E0E0E0',
         borderBottom: '0',
-        borderRadius: '1rem'
+        borderRadius: '1rem',
+        '&::-webkit-scrollbar': {
+            display: 'none'
+        }
     },
     questionCircleIcon: {
         width: '1rem',
