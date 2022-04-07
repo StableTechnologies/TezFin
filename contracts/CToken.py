@@ -451,6 +451,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def borrowBalanceStored(self, params):
         sp.set_type(params, sp.TAddress)
         sp.result(self.getBorrowBalance(params))
+    
+    @sp.onchain_view()
+    def borrowBalanceStoredView(self, params):
+        sp.set_type(params, sp.TAddress)
+        sp.result(self.getBorrowBalance(params))
 
     def getBorrowBalance(self, account):
         borrowSnapshot = sp.local('borrowSnapshot', self.data.balances[account].accountBorrows)
