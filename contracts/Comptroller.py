@@ -321,15 +321,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             0), sp.self_entry_point("returnHypoAccountLiquidity"))
 
     @sp.utils.view(sp.TInt)
-    def getAccountLiquidityInternal(self, params):
-        sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
-        calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(cTokenModify=sp.some(
-            params.cTokenModify), account=params.account, redeemTokens=params.redeemTokens, borrowAmount=params.borrowAmount))).value
-        liquidity = sp.compute(
-            calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
-        sp.result(liquidity)
-
-    @sp.utils.view(sp.TInt)
     def returnHypoAccountLiquidity(self, params):
         sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
         liquidity = self.getHypoAccountLiquidityInternal(params)
@@ -392,7 +383,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                                        t=sp.TNat).open_some("INVALID ACCOUNT BORROW BALANCE VIEW")
         
         maxClose = sp.local("maxClose", self.mulScalarTruncate(self.makeExp(
-            self.data.liquidationIncentiveMantissa), borrowBalance))
+            self.data.closeFactorMantissa), borrowBalance))
        
         sp.verify(maxClose.value >= params.repayAmount, EC.CMPT_TOO_MUCH_REPAY)
 
