@@ -14,41 +14,41 @@ export const decimals = {
 
 export const granadanetAddresses: ProtocolAddresses = {
     fTokens: {
-        "BTC": "KT1A7wKhkPhgfjUUZSa2TusWWrshHKwftUDc",
-        "XTZ": "KT1AZQqgMRuMn36j1ENgUbbBePLqLqjCbMrY",
-        "ETH": "KT19cqTZHgda91W8EuBL8LPNhnwwVa1knpgZ",
-        "USD": "KT1MPWZEoG4civwcNtBmbHjFyuAQ7KkHwHaz"
+        "BTC": "KT1WS9wxA8SPw3YZQSiu2MbAmgGkQCm5Qwdv",
+        "XTZ": "KT1Ls44WK9uycR41rMvwTiAVNsRCfgMiCyft",
+        "ETH": "KT1WkkQmWssgLiEKUqVY1cAgyxddhQzsTCSi",
+        "USD": "KT1R9RDqwa1iYUEp4mPo2xFUvZYLCBGCmQfd"
     },
     fTokensReverse: {
-        "KT1AZQqgMRuMn36j1ENgUbbBePLqLqjCbMrY": AssetType.XTZ,
-        "KT19cqTZHgda91W8EuBL8LPNhnwwVa1knpgZ": AssetType.ETH,
-        "KT1MPWZEoG4civwcNtBmbHjFyuAQ7KkHwHaz": AssetType.USD,
-        "KT1A7wKhkPhgfjUUZSa2TusWWrshHKwftUDc": AssetType.BTC
+        "KT1Ls44WK9uycR41rMvwTiAVNsRCfgMiCyft": AssetType.XTZ,
+        "KT1WkkQmWssgLiEKUqVY1cAgyxddhQzsTCSi": AssetType.ETH,
+        "KT1R9RDqwa1iYUEp4mPo2xFUvZYLCBGCmQfd": AssetType.USD,
+        "KT1WS9wxA8SPw3YZQSiu2MbAmgGkQCm5Qwdv": AssetType.BTC
     },
     underlying: {
         "ETH": {
             assetType: AssetType.ETH,
             tokenStandard: TokenStandard.FA12,
             decimals: 18,
-            address: "KT1TVRtzyN7QysJquDBD6e36Etzj3w7jxReQ",
-            balancesMapId: 39991,
+            address: "KT1AAfsTHPnWT5cU77CUNQ2dcQNtAJ1jauPC",
+            balancesMapId: 34651,
             balancesPath: "$.args[1].int"
         },
         "USD": {
             assetType: AssetType.USD,
+            address: "KT1XA22D7DazGGefGVGyWHH9Y2MTFmiPjxq3",
+            balancesMapId: 34654,
             tokenStandard: TokenStandard.FA12,
             decimals: 6,
-            address: "KT1V7E1Wj9fAiaq7F2d942GzKLWuZrVuqxrx",
-            balancesMapId: 110771,
-            balancesPath: "$.args[0].int"
+            balancesPath: "$.args[1].int"
         },
         "BTC": {
             assetType: AssetType.BTC,
             tokenStandard: TokenStandard.FA2,
             decimals: 8,
-            address: "KT1JqmwY3JJoHN7uh75pALrAx6sSpRbEZc9R",
+            address: "KT1D11fEJQuUGn4m161mHmZ7Lkayzq4Cv6xW",
             tokenId: 0,
-            balancesMapId: 39994,
+            balancesMapId: 34646,
             balancesPath: "$.int"
         },
         "XTZ": {
@@ -57,29 +57,29 @@ export const granadanetAddresses: ProtocolAddresses = {
             decimals: 6
         }
     },
-    comptroller: "KT1FAQT239EoPCKxnb5da9ZDCEbmivNwAky6",
+    comptroller: "KT1AZHZwsyRh8JqLoKf1by5Nngty7zLUxnyC",
     interestRateModel: {
-        "XTZ": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
-        "ETH": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
-        "BTC": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH",
-        "USD": "KT1GwurQofidvhvyhqPkHMwc9ACNtQw5pMSH"
+        "XTZ": "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw",
+        "ETH": "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw",
+        "BTC": "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw",
+        "USD": "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw"
     },
-    governance: "KT1HC1SDb3dYhiBFkKiHfQ6DQdBKZyRpjJUo",
+    governance: "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
     oracleMap: {
         "ETH": {
-            id: 18599,
+            id: 25877,
             path: "$.args[0].args[0].int"
         },
         "USD": {
-            id: 116362,
+            id: 34657,
             path: "$.args[1].int"
         },
         "BTC": {
-            id: 18599,
+            id: 25877,
             path: "$.args[0].args[0].int"
         },
         "XTZ": {
-            id: 18599,
+            id: 25877,
             path: "$.args[0].args[0].int"
         }
     }

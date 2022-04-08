@@ -3,9 +3,9 @@ set -e # Any subsequent(*) commands which fail will cause the shell script to ex
 # 1 - path to SmartPy.sh
 # example:  ./deploy/shell_scripts/deploy_all_contracts.sh ~/smartpy-cli/SmartPy.sh
 
-# ($1 compile ./deploy/compile_targets/CompileTestData.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
-# && echo "CompileTestData.py was successfully compiled" || echo
-# node ./deploy/deploy_script/deploy.js
+($1 compile ./deploy/compile_targets/CompileTestData.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
+&& echo "CompileTestData.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy.js
 
 ($1 compile ./deploy/compile_targets/CompileTezFinOracle.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
 && echo "CompileTezFinOracle.py was successfully compiled" || echo
