@@ -53,7 +53,7 @@ export const useStyles = makeStyles({
                 '@media(max-width: 1200px)': {
                     fontSize: '0.75rem'
                 },
-                '@media(max-width: 768px)': {
+                '@media(max-width: 501px)': {
                     fontSize: '0.625rem'
                 },
                 '@media(max-width: 320px)': {
@@ -74,6 +74,9 @@ export const useStyles = makeStyles({
                     fontSize: '1rem'
                 },
                 '@media(max-width: 768px)': {
+                    fontSize: '0.875rem'
+                },
+                '@media(max-width: 501px)': {
                     fontSize: '0.75rem'
                 }
             }
@@ -99,14 +102,17 @@ export const useStyles = makeStyles({
         '@media (min-width: 769px) and (max-width: 1024px)': {
             width: '1.5rem',
             height: '1.5rem',
-            marginBottom: '-6px',
-            fontSize: '0.75rem'
+            marginBottom: '-6px'
+        },
+        '@media(max-width: 768px)': {
+            width: '1.5rem',
+            height: '1.5rem',
+            marginBottom: '-8px'
         },
         '@media(max-width: 501px)': {
             width: '1rem',
             height: '1rem',
-            marginBottom: '-4px',
-            fontSize: '0.75rem'
+            marginBottom: '-4px'
         }
     },
     tokenName: {

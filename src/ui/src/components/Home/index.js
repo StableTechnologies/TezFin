@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
+// eslint-disable-next-line no-use-before-define
+import React from 'react';
 
-import Grid from '@mui/material/Grid';
-import { Typography } from '@mui/material';
-import Divider from '@mui/material/Divider';
+// import Grid from '@mui/material/Grid';
+// import { Typography } from '@mui/material';
+// import Divider from '@mui/material/Divider';
 
-import { useHistory } from 'react-router';
-import tezfinLogo from '../../assets/tezfin-logo.svg';
-import useStyles, { classes1, Button } from './style';
+import { useHistory } from 'react-router-dom';
+// import tezfinLogo from '../../assets/tezfin-logo.svg';
+// import useStyles, { classes1, Button } from './style';
 
 const Home = () => {
-    const classes = useStyles();
+    // const classes = useStyles();
     const history = useHistory();
 
     history.push('/dashboard');
