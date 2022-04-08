@@ -119,6 +119,9 @@ export const useStyles = makeStyles({
         '@media(min-width: 769px) and (max-width: 1200px)': {
             paddingRight: '1rem'
         },
+        '@media(max-width: 768px)': {
+            maxWidth: '28%'
+        },
         '@media(max-width: 501px)': {
             paddingRight: '1rem',
             marginRight: '1rem'
