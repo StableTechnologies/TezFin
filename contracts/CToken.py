@@ -10,8 +10,6 @@ Exponential = sp.io.import_script_from_url("file:contracts/utils/Exponential.py"
 SweepTokens = sp.io.import_script_from_url("file:contracts/utils/SweepTokens.py")
 OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
 
-UPDATE_ACCRUE_INTEREST_PERIOD = 5 # The number of blocks since the last accrue interest update is valid
-
 class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
     def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
         Exponential.Exponential.__init__(
@@ -28,7 +26,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             initialExchangeRateMantissa = initialExchangeRateMantissa_, # Initial exchange rate used when minting the first CTokens
             reserveFactorMantissa = sp.nat(0), # Fraction of interest currently set aside for reserves
             accrualBlockNumber = sp.nat(0), # Block number that interest was last accrued at
-            isAccrualInterestValid = sp.bool(False),
             borrowIndex = sp.nat(int(1e18)), # Accumulator of the total earned interest rate since the opening of the market
             totalBorrows = sp.nat(0), # Total amount of outstanding borrows of the underlying in this market
             totalReserves = sp.nat(0), # Total amount of reserves of the underlying held in this market
@@ -37,7 +34,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             administrator = administrator_, # Administrator`s address for this contract
             pendingAdministrator = sp.none, # Pending administrator`s address for this contract
             activeOperations = sp.set(t=sp.TNat), # Set of currently active operations to protect execution flow
-            accrualIntPeriodRelevance = sp.nat(UPDATE_ACCRUE_INTEREST_PERIOD),
             **extra_storage
         )
 
@@ -64,7 +60,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         mintTokens = self.getMintTokens(params.mintAmount)
         self.data.totalSupply += mintTokens
         self.data.balances[params.minter].balance += mintTokens
-        self.invalidateAccruedInterest()
 
     def verifyMintAllowed(self, minter_, mintAmount_):
         self.addAddressIfNecessary(minter_)
@@ -130,7 +125,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.data.totalSupply = sp.as_nat(self.data.totalSupply - redeemTokens, "Insufficient supply")
         self.data.balances[params.redeemer].balance = sp.as_nat(self.data.balances[params.redeemer].balance - redeemTokens, "Insufficient balance")
         self.doTransferOut(params.redeemer, redeemAmount)
-        self.invalidateAccruedInterest()
 
     def verifyRedeemAllowed(self, redeemer_, redeemAmount_):
         c = sp.contract(CMPI.TRedeemAllowedParams, self.data.comptroller, entry_point="redeemAllowed").open_some()
@@ -167,8 +161,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         accountBorrows = self.getBorrowBalance(params.borrower) + params.borrowAmount
         self.data.balances[params.borrower].accountBorrows.principal = accountBorrows
         self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
-        self.data.totalBorrows += accountBorrows
-        self.invalidateAccruedInterest()
+        self.data.totalBorrows += params.borrowAmount
 
     def verifyBorrowAllowed(self, borrower_, borrowAmount_):
         self.addAddressIfNecessary(borrower_)
@@ -218,7 +211,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.data.balances[params.borrower].accountBorrows.principal = self.sub_nat_nat(accountBorrows, repayAmount)
         self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
         self.data.totalBorrows = self.sub_nat_nat(self.data.totalBorrows, repayAmount)
-        self.invalidateAccruedInterest()
+        sp.if self.data.balances[params.borrower].accountBorrows.principal==0:
+            c = sp.contract(sp.TAddress, self.data.comptroller, entry_point="removeFromLoans").open_some()
+            sp.transfer(params.borrower, sp.mutez(0), c)
 
     def verifyRepayBorrowAllowed(self, payer_, borrower_, repayAmount_):
         self.addAddressIfNecessary(payer_)
@@ -352,6 +347,21 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.utils.view(CTI.TAccountSnapshot)
     def getAccountSnapshot(self, params):
+        accSnapshot = sp.compute(sp.record(
+                account = params,
+                cTokenBalance = sp.nat(0), 
+                borrowBalance = sp.nat(0),
+                exchangeRateMantissa = sp.nat(0)
+            ))
+        sp.if self.data.balances.contains(params):
+            self.verifyAccruedInterestRelevance()
+            accSnapshot.cTokenBalance = self.data.balances[params].balance
+            accSnapshot.borrowBalance = self.getBorrowBalance(params)
+            accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
+        sp.result(accSnapshot)
+
+    @sp.onchain_view()
+    def getAccountSnapshotView(self, params):
         accSnapshot = sp.compute(sp.record(
                 account = params,
                 cTokenBalance = sp.nat(0), 
@@ -524,7 +534,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.if sp.level != self.data.accrualBlockNumber:
             self.activateOp(OP.CTokenOperations.ACCRUE)
             self.accrueInterestInternal(params)
-        self.data.isAccrualInterestValid = sp.bool(True)
 
     def accrueInterestInternal(self, params):
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel, entry_point="getBorrowRate").open_some()
@@ -533,9 +542,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                  reserves=self.data.totalReserves,
                                  cb=sp.self_entry_point("doAccrueInterest"))
         sp.transfer(transferData, sp.mutez(0), c)
-
-    def invalidateAccruedInterest(self):
-        self.data.isAccrualInterestValid = sp.bool(False)
 
     @sp.entry_point(lazify = True)
     def doAccrueInterest(self, borrowRateMantissa):
@@ -557,17 +563,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
 
  # Admin Functions
-    """    
-        # Set the number of blocks since the last accrue interest update is valid
-
-        blockNumber: TNat
-    """
-    @sp.entry_point
-    def setAccrualIntPeriodRelevance(self, blockNumber):
-        self.verifyAdministrator()
-        sp.set_type(blockNumber, sp.TNat)
-        self.data.accrualIntPeriodRelevance = blockNumber
-
 
     """    
         Sets a new pending governance for the market
@@ -672,7 +667,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyAccruedInterestRelevance()
         sp.verify(newReserveFactor <= self.data.reserveFactorMaxMantissa, EC.CT_INVALID_RESERVE_FACTOR)
         self.data.reserveFactorMantissa = newReserveFactor
-        self.invalidateAccruedInterest()
 
 
     """    
@@ -695,7 +689,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyAccruedInterestRelevance()
         self.doTransferIn(params.originalSender, params.addAmount)
         self.data.totalReserves += params.addAmount
-        self.invalidateAccruedInterest()
 
 
     """    
@@ -721,7 +714,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         # Store reserves[n+1] = reserves[n] - reduceAmount
         self.data.totalReserves = self.sub_nat_nat(self.data.totalReserves, amount)
         self.doTransferOut(self.data.administrator, amount, True)
-        self.invalidateAccruedInterest()
 
     # Helpers
     def verifyAdministrator(self):
@@ -731,9 +723,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.verify(self.getCashImpl() >= amount, EC.CT_INSUFFICIENT_CASH)
 
     def verifyAccruedInterestRelevance(self):
-        updatePeriod = sp.compute(self.sub_nat_nat(sp.level, self.data.accrualBlockNumber))
-        sp.verify(updatePeriod < self.data.accrualIntPeriodRelevance, EC.CT_INTEREST_OLD)
-        sp.verify(self.data.isAccrualInterestValid, EC.CT_INTEREST_INVALID)
+        sp.verify(sp.level == self.data.accrualBlockNumber, EC.CT_INTEREST_OLD)
 
     def verifyInternal(self):
         sp.verify(sp.sender == sp.self_address, EC.CT_INTERNAL_FUNCTION)

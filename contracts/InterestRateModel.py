@@ -7,9 +7,9 @@ IRMInterface = sp.io.import_script_from_url("file:contracts/interfaces/InterestR
 
 
 class InterestRateModel(IRMInterface.InterestRateModelInterface):
-    def __init__(self, multiplierPerBlock_, baseRatePerBlock_, **extra_storage):
+    def __init__(self, multiplierPerBlock_, baseRatePerBlock_,scale_, **extra_storage):
         self.init(
-            scale=sp.nat(int(1e18)), 
+            scale=scale_, #must match order of reserveFactorMantissa
             multiplierPerBlock=multiplierPerBlock_, # The multiplier of utilization rate that gives the slope of the interest rate
             baseRatePerBlock=baseRatePerBlock_, # The base interest rate which is the y-intercept when utilization rate is 0
             **extra_storage
@@ -27,10 +27,9 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
     def getBorrowRate(self, params):
         sp.set_type(params, IRMInterface.TBorrowRateParams)
         utRate = self.utilizationRate(params.cash, params.borrows, params.reserves)
-        result = self.calculateBorrowRate(params.cash, params.borrows, params.reserves, utRate)
+        result = self.calculateBorrowRate(utRate)
         sp.transfer(result, sp.mutez(0), params.cb)
 
-        
     """ 
         Calculates the current supply interest rate per block
 
@@ -43,7 +42,7 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         sp.set_type(params, IRMInterface.TSupplyRateParams)
         oneMinusReserveFactor = sp.as_nat(self.data.scale - params.reserveFactorMantissa)
         utRate = self.utilizationRate(params.cash, params.borrows, params.reserves)
-        borrowRate = self.calculateBorrowRate(params.cash, params.borrows, params.reserves, utRate)
+        borrowRate = self.calculateBorrowRate(utRate)
         rateToPool = borrowRate * oneMinusReserveFactor // self.data.scale
         result = utRate * rateToPool // self.data.scale
         sp.transfer(result, sp.mutez(0), params.cb)
@@ -58,5 +57,5 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         return ur.value
 
 
-    def calculateBorrowRate(self, cash, borrows, reserves, utRate):
+    def calculateBorrowRate(self, utRate):
         return sp.compute(utRate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)

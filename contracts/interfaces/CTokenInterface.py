@@ -291,18 +291,6 @@ class CTokenInterface(sp.Contract):
         pass
 
 
-        
-    # Admin Functions
-    """    
-        # Set the number of blocks since the last accrue interest update is valid
-
-        blockNumber: TNat
-    """
-    @sp.entry_point
-    def setAccrualIntPeriodRelevance(self, blockNumber):
-        pass
-
-
     """    
         Sets a new pending governance for the market
 

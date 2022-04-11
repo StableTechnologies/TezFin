@@ -1,4 +1,4 @@
-# TezFin Contracts
+# TezFin
 
 This project is the implementation of Compound Protocol on Tezos chain using SmartPy language.
 
@@ -15,7 +15,7 @@ The platform consists of the following contracts
 
 For the detailed description please refer to the [wiki pages](https://github.com/RSerhii/TezFin/wiki).
 
-## Project structure
+## Project Structure
 
 SmartPy CLI is required to interact with contracts. For installation please refer to https://smartpy.io/cli/
 
@@ -54,6 +54,7 @@ Code is organized in the following structure
 ## Test Contracts
 
 To run tests use SmartPy CLI from the core project directory. Create a folder for test outputs. Example:
+
 
 ```sh
 mkdir TezFinTest

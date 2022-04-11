@@ -1,13 +1,16 @@
 {
     "CFA12_IRM": {
+        "scale": 1000000000000000000,
         "multiplierPerBlock": 180000000000,
         "baseRatePerBlock": 840000000000
     },
     "CFA2_IRM": {
+        "scale": 100000000,
         "multiplierPerBlock": 180000000000,
         "baseRatePerBlock": 840000000000
     },
     "CXTZ_IRM": {
+        "scale": 1000000,
         "multiplierPerBlock": 200000000000,
         "baseRatePerBlock": 860000000000
     },
@@ -29,15 +32,16 @@
         "tokenId": 0,
         "dependencies": [
             "Governance",
-            "FA2",
+            "BTCtz",
             "CFA2_IRM"
         ]
     },
     "CFA12": {
-        "initialExchangeRateMantissa": 100000000000000000000,
+        "initialExchangeRateMantissa": 1000000000000000000,
         "dependencies": [
             "Governance",
-            "FA12",
+            "ETHtz",
+            "USDtz",
             "CFA12_IRM"
         ]
     },

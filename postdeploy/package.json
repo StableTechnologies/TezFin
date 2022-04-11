@@ -1,0 +1,24 @@
+{
+  "name": "tezfin-util",
+  "version": "0.0.1-alpha",
+  "description": "Utility for testing the tezfin wrapper code and contracts",
+  "main": "index.ts",
+  "scripts": {
+    "postinstall": "npm run build",
+    "build": "rm -rf ./build/ && tsc",
+    "test": "npm run build && clear && npm run start",
+    "start": "node ./build/src/index.js"
+  },
+  "author": "itamarreif",
+  "license": "ISC",
+  "dependencies": {
+    "conseiljs": "5.1.0",
+    "conseiljs-softsigner": "^5.0.4",
+    "loglevel": "1.7.1",
+    "node-fetch": "2.6.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.5.7",
+    "typescript": "^4.1.2"
+  }
+}

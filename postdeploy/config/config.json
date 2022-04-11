@@ -1,0 +1,106 @@
+{
+    "loglevel": "info",
+  "tezosNode": "https://tezos-ithaca.cryptonomic-infra.tech:443",
+  "conseilServer": {
+    "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
+    "apiKey": "328ac16b-5497-4e73-a97d-45af0e83425c",
+    "network": "ithacanet"
+  },
+    "keystore": {
+        "pkh": "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE",
+        "mnemonic": [
+            "egg",
+            "zoo",
+            "cigar",
+            "oppose",
+            "shrimp",
+            "chair",
+            "wood",
+            "practice",
+            "trash",
+            "rice",
+            "spell",
+            "unhappy",
+            "disorder",
+            "zebra",
+            "kite"
+        ],
+        "email": "zdnmiequ.ulruuquy@teztnets.xyz",
+        "password": "dlfsJnRlHy",
+        "amount": "22841330521",
+        "activation_code": "77c3e768abfdb7e389f7ccd890c091ba42b84a88"
+    },
+    "networkBlockTime": 31,
+    "delay": 7,
+    "revealAccount": false,
+    "protocolAddressesPath": "../TezFinBuild/deploy_result/deploy.json",
+    "tx": {
+        "amount": 0,
+        "fee": 1000000,
+        "gas": 500000,
+        "freight": 50000
+    },
+    "tokenMint": [
+        "ETH",
+        "BTC",
+        "USD"
+    ],
+    "mint": [
+        "ETH",
+        "BTC",
+        "USD"
+    ],
+    "mintAmount": 10,
+    "redeem": [
+        "ETH",
+        "BTC",
+        "USD"
+    ],
+    "redeemAmount": 20,
+    "borrow": [
+        "BTC"
+    ],
+    "borrowAmount": 50,
+    "repayBorrow": [
+        "BTC"
+    ],
+    "repayBorrowAmount": 10,
+    "enterMarkets": [
+        "ETH",
+        "BTC",
+        "USD",
+        "XTZ"
+    ],
+    "exitMarket": [
+        "ETH"
+    ],
+    "supportMarket": [
+        {
+            "name": "ETH",
+            "priceExp": 0
+        },
+        {
+            "name": "BTC",
+            "priceExp": 10
+        },
+        {
+            "name": "USD",
+            "priceExp": 12
+        },
+        {
+            "name": "XTZ",
+            "priceExp": 12
+        }
+    ],
+    "disableMarket": [],
+    "unpauseMarkets": [
+        "ETH",
+        "BTC",
+        "USD",
+        "XTZ"
+    ],
+    "setPrices": {
+        "assets": [],
+        "price": 10
+    }
+}

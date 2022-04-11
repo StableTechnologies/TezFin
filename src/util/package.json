@@ -1,0 +1,29 @@
+{
+  "name": "tezoslendingplatformjs",
+  "version": "0.0.1",
+  "description": "Typescript util for working with the Tezos Lending Platform",
+  "main": "build/index.js",
+  "scripts": {
+    "postinstall": "npm run build",
+    "start": "node ./build/src/index.js",
+    "build": "tsc",
+    "package": "rm -rf ./build && tsc",
+    "test": "npm run build && clear && npm run start",
+    "reinstall": "rm -rf ./node_modules ./build && npm i"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "@types/node": "^16.10.3",
+    "@types/node-fetch": "^3.0.3",
+    "loglevel": "^1.7.1",
+    "node-fetch": "^3.2.0",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "big-integer": "^1.6.51",
+    "bignumber.js": "9.0.1",
+    "conseiljs": "5.1.0",
+    "jsonpath-plus": "^6.0.1"
+  }
+}
