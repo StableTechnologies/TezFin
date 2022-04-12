@@ -48,6 +48,9 @@ export const useStyles = makeStyles({
         '@media(max-width: 1024px)': {
             paddingLeft: '4rem'
         },
+        '@media(max-width: 900px)': {
+            paddingLeft: '2rem'
+        },
         '@media(max-width: 768px)': {
             padding: '2.6875rem 4rem 1.5rem'
         },
@@ -70,6 +73,9 @@ export const useStyles = makeStyles({
         '@media(max-width: 1024px)': {
             paddingLeft: '4rem'
         },
+        '@media(max-width: 900px)': {
+            paddingLeft: '2rem'
+        },
         '@media(max-width: 768px)': {
             paddingLeft: '4rem'
         },
@@ -79,6 +85,13 @@ export const useStyles = makeStyles({
     },
     compositionTwo: {
         paddingLeft: '1.875rem',
+        '@media(max-width: 1024px)': {
+            paddingLeft: '0.9375rem'
+        },
+        '@media(max-width: 900px)': {
+            paddingLeft: '2rem',
+            paddingTop: '1.5rem'
+        },
         '@media(max-width: 768px)': {
             paddingLeft: '4rem',
             paddingTop: '1.5rem'
@@ -106,9 +119,16 @@ export const useStyles = makeStyles({
         '@media(min-width: 769px) and (max-width: 1200px)': {
             paddingRight: '1rem'
         },
+        '@media(max-width: 768px)': {
+            maxWidth: '28%'
+        },
         '@media(max-width: 501px)': {
             paddingRight: '1rem',
             marginRight: '1rem'
+        },
+        '@media(max-width: 320px)': {
+            paddingRight: '0.5rem',
+            marginRight: '0.5rem'
         }
     },
     boxTwo: {
@@ -156,18 +176,36 @@ export const useStyles = makeStyles({
         '@media(max-width: 768px)': {
             fontSize: '1rem'
         },
-        '@media(max-width: 376px)': {
+        '@media(max-width: 501px)': {
             fontSize: '0.875rem'
+        },
+        '@media(max-width: 320px)': {
+            fontSize: '0.75rem'
         }
     },
     progressBar: {
         width: '33rem',
         paddingTop: '7px',
+        '@media(min-width: 1441px)': {
+            width: '85%'
+        },
+        '@media(max-width: 1280px)': {
+            width: '80%'
+        },
         '@media(max-width: 1024px)': {
-            width: '23.75rem'
+            width: '85%'
+        },
+        '@media(max-width: 900px)': {
+            width: '65%'
         },
         '@media(max-width: 768px)': {
             width: '75%'
+        },
+        '@media(max-width: 501px)': {
+            width: '85%'
+        },
+        '@media(max-width: 376px)': {
+            width: '90%'
         }
     },
     addWalletCon: {
