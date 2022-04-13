@@ -249,6 +249,7 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
             market: TRecord
                 cToken: TAddress - The address of the market (token) to list
                 name: TString - The market name in price oracle
+                priceExp: TNat - exponent needed to normalize the token prices to 10^18 (eth:0, btc: 10, usd: 12)
     """
     @sp.entry_point
     def supportMarket(self, params):

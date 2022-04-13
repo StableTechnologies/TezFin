@@ -9,8 +9,8 @@
     "test": "npm run build && clear && npm run start",
     "start": "node ./build/src/index.js"
   },
-  "author": "itamarreif",
-  "license": "ISC",
+  "author": "Stable Technologies",
+  "license": "MIT",
   "dependencies": {
     "conseiljs": "5.1.0",
     "conseiljs-softsigner": "^5.0.4",
