@@ -3,6 +3,17 @@ import { styled } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles({
+    root: {
+        '& .MuiPopover-paper': {
+            width: '382px',
+            maxHeight: '202px',
+            borderRadius: '4px',
+            background: '#fff',
+            marginTop: '0.5rem',
+            padding: '1rem 0.5rem',
+            overflow: 'hidden'
+        }
+    },
     tezHeaderCon: {
         paddingLeft: '2.6875rem',
         paddingTop: '1.625rem',
@@ -252,6 +263,33 @@ export const useStyles = makeStyles({
         '&:hover': {
             background: 'transparent'
         }
+    },
+    popoverImg: {
+        width: '1rem',
+        height: '1rem',
+        margin: '0 8px',
+        '@media(min-width: 1024px)': {
+            width: '1.5rem',
+            height: '1.5rem'
+        }
+    },
+    popoverBtn: {
+        display: 'flex',
+        color: '#2F80ED',
+        paddingBottom: '1.5rem',
+        fontWeight: '300',
+        fontSize: '1rem',
+        textTransform: 'none',
+        lineHeight: '30px',
+        '&:hover': {
+            background: 'transparent'
+        }
+    },
+    copyText: {
+        color: '#000',
+        fontWeight: '400',
+        fontSize: '1.25rem',
+        paddingLeft: '1rem'
     }
 });
 
