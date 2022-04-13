@@ -100,6 +100,9 @@ export const useStyles = makeStyles({
             paddingLeft: '0.9375rem'
         },
         '@media(max-width: 900px)': {
+            paddingLeft: '2rem'
+        },
+        '@media(max-width: 899px)': {
             paddingLeft: '2rem',
             paddingTop: '1.5rem'
         },
@@ -130,16 +133,21 @@ export const useStyles = makeStyles({
         '@media(min-width: 769px) and (max-width: 1200px)': {
             paddingRight: '1rem'
         },
+        '@media(max-width: 900px)': {
+            maxWidth: '25%'
+        },
         '@media(max-width: 768px)': {
             maxWidth: '28%'
         },
         '@media(max-width: 501px)': {
             paddingRight: '1rem',
-            marginRight: '1rem'
+            marginRight: '1rem',
+            minWidth: '170px'
         },
         '@media(max-width: 320px)': {
             paddingRight: '0.5rem',
-            marginRight: '0.5rem'
+            marginRight: '0.5rem',
+            minWidth: '135px'
         }
     },
     boxTwo: {

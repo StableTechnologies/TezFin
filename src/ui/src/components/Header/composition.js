@@ -27,7 +27,7 @@ const Composition = (props) => {
                 }
             </Box>
             <Box className={classes.box}>
-                <Grid container>
+                <Grid container flexWrap='nowrap'>
                     <Grid container item xs={6} className={classes.boxOne}>
                         <Grid item paddingRight='1rem' alignSelf='flex-end'>
                             <img src={dataIcon} alt="borrowing-icon" className={classes.boxImg}/>
