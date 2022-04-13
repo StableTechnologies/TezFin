@@ -8,6 +8,7 @@ import { marketAction } from '../../reduxContent/market/actions';
 import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { supplyingMaxAction } from '../../util/maxAction';
 import { supplyTokenAction, withdrawTokenAction } from '../../util/modalActions';
+import { useSupplyErrorText } from '../../util/customHooks';
 
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
@@ -42,6 +43,11 @@ const SupplyModal = (props) => {
     const [error, setError] = useState(false);
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
+    const [tokenValue, setTokenValue] = useState('');
+    const [currrentTab, setCurrrentTab] = useState('');
+    const [limit, setLimit] = useState('');
+
+    const buttonOne = useSupplyErrorText(tokenValue, limit);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -130,6 +136,13 @@ const SupplyModal = (props) => {
         setMaxAmount('');
     }, [close]);
 
+    useEffect(() => {
+        supplyingMaxAction(currrentTab, tokenDetails, setLimit);
+        return () => {
+            setLimit('');
+        };
+    }, [currrentTab, tokenDetails]);
+
     return (
         <>
             <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
@@ -149,7 +162,7 @@ const SupplyModal = (props) => {
                 handleClickTabTwo={withdrawToken}
                 labelOne="Supply"
                 labelTwo="Withdraw"
-                buttonOne="Supply"
+                buttonOne={buttonOne}
                 buttonTwo="Withdraw"
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
@@ -159,6 +172,7 @@ const SupplyModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => supplyingMaxAction(tabValue, tokenDetails, setMaxAmount)}
                 maxAmount= {maxAmount}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>
     );

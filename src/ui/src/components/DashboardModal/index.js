@@ -36,7 +36,7 @@ const DashboardModal = (props) => {
         open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
         LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
         collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
-        maxAction, maxAmount
+        maxAction, maxAmount, getProps
     } = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -63,6 +63,12 @@ const DashboardModal = (props) => {
     useEffect(() => {
         setTokenValue(maxAmount);
     }, [maxAmount]);
+
+    useEffect(() => {
+        if (getProps) {
+            getProps(tokenValue, tabValue);
+        }
+    }, [tokenValue, tabValue]);
 
     return (
         <React.Fragment>
@@ -205,7 +211,7 @@ const DashboardModal = (props) => {
                         </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions sx={{ flexDirection: 'column' }}>
                     <>
                         {collateralize
                             ? <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple>
@@ -225,6 +231,9 @@ const DashboardModal = (props) => {
                                         {tabValue === 'one' && buttonOne}
                                         {tabValue === 'two' && buttonTwo}
                                     </Button>
+                                }
+                                {
+                                    <Typography className={classes.errorText}> You must repay your borrowed amounts before you can withdraw. </Typography>
                                 }
                             </>
                         }

@@ -15,16 +15,16 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
     }
 };
 
-export const borrowingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
+export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
     if (tabValue === 'one') {
-        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
+        setMaxAmount(decimalify(borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
     }
     if (tabValue === 'two') {
         setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
     }
 };
 
-export const marketsMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
+export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
     if (tabValue === 'one') {
         if (tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()) {
             setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
@@ -33,6 +33,6 @@ export const marketsMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
         }
     }
     if (tabValue === 'two') {
-        setMaxAmount(decimalify(tokenDetails.borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
+        setMaxAmount(decimalify(borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
     }
 };

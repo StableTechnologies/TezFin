@@ -8,12 +8,14 @@ import { marketAction } from '../../reduxContent/market/actions';
 import { supplyTokenAction, borrowTokenAction } from '../../util/modalActions';
 import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { marketsMaxAction } from '../../util/maxAction';
+import { useBorrowErrorText, useSupplyErrorText } from '../../util/customHooks';
 
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
 import SuccessModal from '../StatusModal/SuccessModal';
 import ErrorModal from '../StatusModal/ErrorModal';
 import DashboardModal from '../DashboardModal';
+
 import { useStyles } from './style';
 
 const AllMarketModal = (props) => {
@@ -25,6 +27,8 @@ const AllMarketModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
     const { server } = useSelector((state) => state.nodes.tezosNode);
+    const { borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+
     const publicKeyHash = account.address;
 
     const [openInitializeModal, setInitializeModal] = useState(false);
@@ -41,6 +45,12 @@ const AllMarketModal = (props) => {
     const [error, setError] = useState('');
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
+    const [tokenValue, setTokenValue] = useState('');
+    const [currrentTab, setCurrrentTab] = useState('');
+    const [limit, setLimit] = useState('');
+
+    const buttonOne = useSupplyErrorText(tokenValue, limit);
+    const buttonTwo = useBorrowErrorText(tokenValue, limit);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -129,6 +139,18 @@ const AllMarketModal = (props) => {
         setMaxAmount('');
     }, [close]);
 
+    useEffect(() => {
+        marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        console.log('currrentTab::', currrentTab);
+        console.log('borrowLimit::', borrowLimit);
+        console.log('limit::', limit);
+        console.log('maxAmount::', maxAmount);
+        console.log('amount::', amount);
+        return () => {
+            setLimit('');
+        };
+    }, [currrentTab, tokenDetails]);
+
     return (
         <>
             <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
@@ -149,8 +171,8 @@ const AllMarketModal = (props) => {
                 handleClickTabTwo={borrowToken}
                 labelOne="Supply"
                 labelTwo="Borrow"
-                buttonOne="Supply"
-                buttonTwo="Borrow"
+                buttonOne={buttonOne}
+                buttonTwo={buttonTwo}
                 btnSub={classes.btnSub}
                 btnSubTwo={classes.btnSubTwo}
                 inkBarStyle={classes.inkBarStyle}
@@ -160,8 +182,9 @@ const AllMarketModal = (props) => {
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
                 inputBtnTextTwo = "80% Limit"
-                maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, setMaxAmount)}
+                maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>
     );

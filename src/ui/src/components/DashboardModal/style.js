@@ -222,5 +222,14 @@ export const useStyles = makeStyles({
         '@media(max-width: 320px)': {
             fontSize: '0.7rem'
         }
+    },
+    errorText: {
+        marginTop: '0.5625rem',
+        color: '#000000AB',
+        textAlign: 'left',
+        fontWeight: '300',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
+        letterSpacing: '0.005em'
     }
 });
