@@ -4,17 +4,30 @@
 import smartpy as sp
 
 
-TMintAllowedParams = sp.TRecord(cToken=sp.TAddress, minter=sp.TAddress, mintAmount=sp.TNat).layout(("cToken", ("minter", "mintAmount")))
-TBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, borrower=sp.TAddress, borrowAmount=sp.TNat).layout(("cToken", ("borrower", "borrowAmount")))
-TRedeemAllowedParams = sp.TRecord(cToken=sp.TAddress, redeemer=sp.TAddress, redeemAmount=sp.TNat).layout(("cToken", ("redeemer", "redeemAmount")))
-TRepayBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, payer=sp.TAddress, borrower=sp.TAddress, repayAmount=sp.TNat).layout(("cToken", ("payer", ("borrower", "repayAmount"))))
-TTransferAllowedParams = sp.TRecord(cToken=sp.TAddress, src=sp.TAddress, dst=sp.TAddress, transferTokens=sp.TNat).layout((("cToken", "src"), ("dst", "transferTokens")))
+TMintAllowedParams = sp.TRecord(cToken=sp.TAddress, minter=sp.TAddress, mintAmount=sp.TNat).layout(
+    ("cToken", ("minter", "mintAmount")))
+TBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, borrower=sp.TAddress, borrowAmount=sp.TNat).layout(
+    ("cToken", ("borrower", "borrowAmount")))
+TRedeemAllowedParams = sp.TRecord(cToken=sp.TAddress, redeemer=sp.TAddress, redeemAmount=sp.TNat).layout(
+    ("cToken", ("redeemer", "redeemAmount")))
+TRepayBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, payer=sp.TAddress, borrower=sp.TAddress, repayAmount=sp.TNat).layout(
+    ("cToken", ("payer", ("borrower", "repayAmount"))))
+TTransferAllowedParams = sp.TRecord(cToken=sp.TAddress, src=sp.TAddress, dst=sp.TAddress,
+                                    transferTokens=sp.TNat).layout((("cToken", "src"), ("dst", "transferTokens")))
 TAccountLiquidityParams = sp.TRecord(cTokenModify=sp.TAddress,
-                             account=sp.TAddress,
-                             redeemTokens=sp.TNat,
-                             borrowAmount=sp.TNat
-                            ).layout(("account", ("cTokenModify", ("redeemTokens", "borrowAmount"))))
-TGetAccountLiquidityParams = sp.TRecord(data=TAccountLiquidityParams, callback=sp.TContract(sp.TInt))
+                                     account=sp.TAddress,
+                                     redeemTokens=sp.TNat,
+                                     borrowAmount=sp.TNat
+                                     ).layout(("account", ("cTokenModify", ("redeemTokens", "borrowAmount"))))
+TGetAccountLiquidityParams = sp.TRecord(
+    data=TAccountLiquidityParams, callback=sp.TContract(sp.TInt))
+
+TLiquidateCalculateSeizeTokens = sp.TRecord(
+    cTokenBorrowed=sp.TAddress, cTokenCollateral=sp.TAddress, actualRepayAmount=sp.TNat)
+
+TLiquidateBorrowAllowed = sp.TRecord(
+    cTokenBorrowed=sp.TAddress, cTokenCollateral=sp.TAddress, borrower=sp.TAddress, liquidator=sp.TAddress, repayAmount=sp.TNat)
+
 
 class ComptrollerInterface(sp.Contract):
 
@@ -26,7 +39,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def enterMarkets(self, cTokens):
         pass
-
 
     """    
         Removes asset from sender's account liquidity calculation
@@ -44,7 +56,6 @@ class ComptrollerInterface(sp.Contract):
     def exitMarket(self, cToken):
         pass
 
-
     """    
         Checks if the account should be allowed to mint tokens in the given market
 
@@ -56,7 +67,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def mintAllowed(self, params):
         pass
-
 
     """    
         Checks if the account should be allowed to redeem tokens in the given market
@@ -74,7 +84,6 @@ class ComptrollerInterface(sp.Contract):
     def redeemAllowed(self, params):
         pass
 
-
     """    
         Checks if the account should be allowed to borrow the underlying asset of the given market
 
@@ -91,7 +100,6 @@ class ComptrollerInterface(sp.Contract):
     def borrowAllowed(self, params):
         pass
 
-
     """    
         Checks if the account should be allowed to repay a borrow in the given market
 
@@ -104,7 +112,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def repayBorrowAllowed(self, params):
         pass
-
 
     """    
         Checks if the account should be allowed to transfer tokens in the given market
@@ -122,7 +129,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def transferAllowed(self, params):
         pass
-
 
     """    
         Determine what the account liquidity would be if the given amounts were redeemed/borrowed
@@ -146,7 +152,6 @@ class ComptrollerInterface(sp.Contract):
     def getHypoAccountLiquidity(self, params):
         pass
 
-
     """    
         Sets a new pending governance for the market
 
@@ -157,7 +162,7 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def setPendingGovernance(self, pendingAdminAddress):
         pass
-    
+
     """    
         Accept a new governance for the market
 
@@ -180,7 +185,6 @@ class ComptrollerInterface(sp.Contract):
     def setPriceOracle(self, params):
         pass
 
-
     """    
         Sets the closeFactor used when liquidating borrows
 
@@ -191,7 +195,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def setCloseFactor(self, params):
         pass
-
 
     """    
         Sets the collateralFactor for a market
@@ -206,7 +209,6 @@ class ComptrollerInterface(sp.Contract):
     def setCollateralFactor(self, params):
         pass
 
-
     """    
         Sets liquidationIncentive
 
@@ -217,7 +219,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def setLiquidationIncentive(self, params):
         pass
-
 
     """    
         Add the market to the markets mapping and set it as listed
@@ -232,7 +233,6 @@ class ComptrollerInterface(sp.Contract):
     def supportMarket(self, params):
         pass
 
-
     """    
         Disable the supported market
 
@@ -243,7 +243,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def disableMarket(self, params):
         pass
-
 
     """    
         Set the given borrow cap for the given cToken market. Borrowing that brings total borrows to or above borrow cap will revert.
@@ -258,7 +257,6 @@ class ComptrollerInterface(sp.Contract):
     def setMarketBorrowCap(self, params):
         pass
 
-
     """    
         Pause or activate the mint of given CToken
 
@@ -272,7 +270,6 @@ class ComptrollerInterface(sp.Contract):
     def setMintPaused(self, params):
         pass
 
-
     """    
         Pause or activate the borrow of given CToken
 
@@ -285,7 +282,6 @@ class ComptrollerInterface(sp.Contract):
     @sp.entry_point
     def setBorrowPaused(self, params):
         pass
-
 
     """    
         Pause or activate the transfer of CTokens

@@ -461,6 +461,20 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def borrowBalanceStored(self, params):
         sp.set_type(params, sp.TAddress)
         sp.result(self.getBorrowBalance(params))
+    
+    """    
+        Return the borrow balance of account based on stored data
+
+        dev: Do accrueInterest() before this function to get the up-to-date borrow balance
+
+        params: TAddress - The address whose balance should be calculated
+
+        return: The calculated balance
+    """
+    @sp.onchain_view()
+    def borrowBalanceStoredView(self, params):
+        sp.set_type(params, sp.TAddress)
+        sp.result(self.getBorrowBalance(params))
 
     def getBorrowBalance(self, account):
         borrowSnapshot = sp.local('borrowSnapshot', self.data.balances[account].accountBorrows)
@@ -483,6 +497,21 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.utils.view(sp.TNat)
     def exchangeRateStored(self, params):
+        sp.set_type(params, sp.TUnit)
+        sp.result(self.exchangeRateStoredImpl())
+
+    """    
+        Calculates the exchange rate from the underlying to the CToken
+
+        dev: This function does not accrue interest before calculating the exchange rate
+        dev: Do accrueInterest() before this function to get the up-to-date exchange rate
+
+        params: TUnit
+
+        return: Calculated exchange rate scaled by 1e18
+    """
+    @sp.onchain_view()
+    def exchangeRateStoredView(self, params):
         sp.set_type(params, sp.TUnit)
         sp.result(self.exchangeRateStoredImpl())
 
