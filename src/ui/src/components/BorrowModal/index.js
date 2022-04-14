@@ -162,8 +162,8 @@ const BorrowModal = (props) => {
                 handleClickTabTwo={repayBorrowToken}
                 labelOne="Borrow"
                 labelTwo="Repay"
-                buttonOne={buttonOne}
-                buttonTwo={buttonTwo}
+                buttonOne={buttonOne.text}
+                buttonTwo={buttonTwo.text}
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
@@ -172,6 +172,7 @@ const BorrowModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
+                disabled={buttonOne.disabled || buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>

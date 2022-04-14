@@ -162,7 +162,7 @@ const SupplyModal = (props) => {
                 handleClickTabTwo={withdrawToken}
                 labelOne="Supply"
                 labelTwo="Withdraw"
-                buttonOne={buttonOne}
+                buttonOne={buttonOne.text}
                 buttonTwo="Withdraw"
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
@@ -172,6 +172,8 @@ const SupplyModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => supplyingMaxAction(tabValue, tokenDetails, setMaxAmount)}
                 maxAmount= {maxAmount}
+                // disabled={buttonOne.disabled || buttonTwo.disabled}
+                disabled={buttonOne.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>

@@ -3,46 +3,55 @@ import { useState, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
 
 export const useSupplyErrorText = (tokenValue, limit) => {
-    const [buttonText, setButtonText] = useState('Supply');
+    const [text, setText] = useState('Supply');
+    const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
         if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
-            setButtonText('Insufficient Funds');
+            setText('Insufficient Funds');
+            setDisabled(true);
         }
         return () => {
-            setButtonText('Supply');
+            setText('Supply');
+            setDisabled(false);
         };
     }, [tokenValue, limit]);
 
-    return buttonText;
+    return { text, disabled };
 };
 
 export const useBorrowErrorText = (tokenValue, limit) => {
-    const [buttonText, setButtonText] = useState('Borrow');
+    const [text, setText] = useState('Borrow');
+    const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
         if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
-            setButtonText('Insufficient Collateral');
+            setText('Insufficient Collateral');
+            setDisabled(true);
         }
         return () => {
-            setButtonText('Borrow');
+            setText('Borrow');
+            setDisabled(false);
         };
     }, [tokenValue, limit]);
 
-    return buttonText;
+    return { text, disabled };
 };
 
 export const useRepayErrorText = (tokenValue, limit) => {
-    const [buttonText, setButtonText] = useState('Repay');
+    const [text, setText] = useState('Repay');
+    const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
         if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
-            setButtonText('Insufficient Funds');
+            setText('Insufficient Funds');
+            setDisabled(true);
         }
         return () => {
-            setButtonText('Repay');
+            setText('Repay');
+            setDisabled(false);
         };
     }, [tokenValue, limit]);
 
-    return buttonText;
+    return { text, disabled };
 };

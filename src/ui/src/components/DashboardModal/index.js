@@ -36,7 +36,7 @@ const DashboardModal = (props) => {
         open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
         LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
         collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
-        maxAction, maxAmount, getProps
+        maxAction, maxAmount, getProps, disabled
     } = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -218,7 +218,7 @@ const DashboardModal = (props) => {
                                 {buttonOne}
                             </Button>
                             : <>
-                                {(tokenValue && address)
+                                {((tokenValue > 0) && address && !disabled)
                                     ? <>
                                         {tabValue === 'one'
                                             && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>

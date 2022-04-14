@@ -141,11 +141,6 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
         marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
-        console.log('currrentTab::', currrentTab);
-        console.log('borrowLimit::', borrowLimit);
-        console.log('limit::', limit);
-        console.log('maxAmount::', maxAmount);
-        console.log('amount::', amount);
         return () => {
             setLimit('');
         };
@@ -171,8 +166,8 @@ const AllMarketModal = (props) => {
                 handleClickTabTwo={borrowToken}
                 labelOne="Supply"
                 labelTwo="Borrow"
-                buttonOne={buttonOne}
-                buttonTwo={buttonTwo}
+                buttonOne={buttonOne.text}
+                buttonTwo={buttonTwo.text}
                 btnSub={classes.btnSub}
                 btnSubTwo={classes.btnSubTwo}
                 inkBarStyle={classes.inkBarStyle}
@@ -184,6 +179,7 @@ const AllMarketModal = (props) => {
                 inputBtnTextTwo = "80% Limit"
                 maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
+                disabled={buttonOne.disabled || buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>
