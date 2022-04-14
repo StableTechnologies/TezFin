@@ -36,7 +36,7 @@ const DashboardModal = (props) => {
         open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
         LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
         collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
-        maxAction, maxAmount, getProps, disabled
+        maxAction, maxAmount, getProps, disabled, errorText
     } = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -227,13 +227,15 @@ const DashboardModal = (props) => {
                                             && <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub} `} onClick={handleClickTabTwo} disableRipple> {buttonTwo} </Button>
                                         }
                                     </>
-                                    : <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
-                                        {tabValue === 'one' && buttonOne}
-                                        {tabValue === 'two' && buttonTwo}
-                                    </Button>
-                                }
-                                {((buttonTwo === 'Withdraw' && (tokenValue > 0)) && disabled)
-                                    && <Typography className={classes.errorText}> You must repay your borrowed amounts before you can withdraw. </Typography>
+                                    : <>
+                                        <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
+                                            {tabValue === 'one' && buttonOne}
+                                            {tabValue === 'two' && buttonTwo}
+                                        </Button>
+                                        <Typography className={classes.errorText}>
+                                            {errorText}
+                                        </Typography>
+                                    </>
                                 }
                             </>
                         }

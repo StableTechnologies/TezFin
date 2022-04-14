@@ -8,7 +8,7 @@ import { marketAction } from '../../reduxContent/market/actions';
 import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { supplyingMaxAction } from '../../util/maxAction';
 import { supplyTokenAction, withdrawTokenAction } from '../../util/modalActions';
-import { useSupplyErrorText, useWithdrawErrorText } from '../../util/customHooks';
+import { useSupplyErrorText, useWithdrawErrorText } from '../../util/modalHooks';
 
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
@@ -173,6 +173,7 @@ const SupplyModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => supplyingMaxAction(tabValue, tokenDetails, setMaxAmount)}
                 maxAmount= {maxAmount}
+                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
                 disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />

@@ -8,7 +8,7 @@ import { marketAction } from '../../reduxContent/market/actions';
 import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { borrowingMaxAction } from '../../util/maxAction';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
-import { useBorrowErrorText, useRepayErrorText } from '../../util/customHooks';
+import { useBorrowErrorText, useRepayErrorText } from '../../util/modalHooks';
 
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
@@ -172,6 +172,7 @@ const BorrowModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
+                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
                 disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
