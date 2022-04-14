@@ -38,6 +38,19 @@ export const useBorrowErrorText = (tokenValue, limit) => {
     return { text, disabled };
 };
 
+export const useWithdrawErrorText = (tokenValue, limit) => {
+    const text = 'Withdraw';
+    const [disabled, setDisabled] = useState(false);
+
+    useEffect(() => {
+        if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
+            setDisabled(true);
+        }
+    }, [tokenValue, limit]);
+
+    return { text, disabled };
+};
+
 export const useRepayErrorText = (tokenValue, limit) => {
     const [text, setText] = useState('Repay');
     const [disabled, setDisabled] = useState(false);

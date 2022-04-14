@@ -172,7 +172,7 @@ const BorrowModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
-                disabled={buttonOne.disabled || buttonTwo.disabled}
+                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>

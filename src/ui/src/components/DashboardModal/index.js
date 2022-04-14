@@ -232,8 +232,8 @@ const DashboardModal = (props) => {
                                         {tabValue === 'two' && buttonTwo}
                                     </Button>
                                 }
-                                {
-                                    <Typography className={classes.errorText}> You must repay your borrowed amounts before you can withdraw. </Typography>
+                                {((buttonTwo === 'Withdraw' && (tokenValue > 0)) && disabled)
+                                    && <Typography className={classes.errorText}> You must repay your borrowed amounts before you can withdraw. </Typography>
                                 }
                             </>
                         }

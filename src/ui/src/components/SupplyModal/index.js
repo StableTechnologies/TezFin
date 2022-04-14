@@ -8,7 +8,7 @@ import { marketAction } from '../../reduxContent/market/actions';
 import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { supplyingMaxAction } from '../../util/maxAction';
 import { supplyTokenAction, withdrawTokenAction } from '../../util/modalActions';
-import { useSupplyErrorText } from '../../util/customHooks';
+import { useSupplyErrorText, useWithdrawErrorText } from '../../util/customHooks';
 
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
@@ -48,6 +48,7 @@ const SupplyModal = (props) => {
     const [limit, setLimit] = useState('');
 
     const buttonOne = useSupplyErrorText(tokenValue, limit);
+    const buttonTwo = useWithdrawErrorText(tokenValue, limit);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -163,7 +164,7 @@ const SupplyModal = (props) => {
                 labelOne="Supply"
                 labelTwo="Withdraw"
                 buttonOne={buttonOne.text}
-                buttonTwo="Withdraw"
+                buttonTwo={buttonTwo.text}
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
@@ -172,8 +173,7 @@ const SupplyModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => supplyingMaxAction(tabValue, tokenDetails, setMaxAmount)}
                 maxAmount= {maxAmount}
-                // disabled={buttonOne.disabled || buttonTwo.disabled}
-                disabled={buttonOne.disabled}
+                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>

@@ -179,7 +179,7 @@ const AllMarketModal = (props) => {
                 inputBtnTextTwo = "80% Limit"
                 maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
-                disabled={buttonOne.disabled || buttonTwo.disabled}
+                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>
