@@ -486,6 +486,16 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TUnit)
         sp.result(self.exchangeRateStoredImpl())
 
+    """    
+        Calculates the exchange rate from the underlying to the CToken
+
+        dev: This function does not accrue interest before calculating the exchange rate
+        dev: Do accrueInterest() before this function to get the up-to-date exchange rate
+
+        params: TUnit
+
+        return: Calculated exchange rate scaled by 1e18
+    """
     @sp.onchain_view()
     def exchangeRateStoredView(self, params):
         sp.set_type(params, sp.TUnit)

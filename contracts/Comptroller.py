@@ -335,6 +335,12 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
         sp.result(liquidity)
 
+    """
+        Determines the amount of collateral tokens that can seized given the 
+        borrowed token, the collateral token and the repay amount
+
+        return: TNat - the no. of collateral tokens that can be seized on repay of the borrowed amount
+    """
     @sp.onchain_view()
     def liquidateCalculateSeizeTokens(self, params):
         sp.set_type(params, CMPTInterface.TLiquidateCalculateSeizeTokens)
