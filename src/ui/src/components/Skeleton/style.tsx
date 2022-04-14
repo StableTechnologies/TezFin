@@ -17,7 +17,17 @@ export const useStyles = makeStyles({
     cellOneImg: {
         display: 'flex',
         width: '2rem',
-        height: '2rem'
+        height: '2rem',
+        '@media(max-width: 768px)': {
+            width: '1.5rem',
+            height: '1.5rem',
+            marginTop: '4px'
+        },
+        '@media(max-width: 501px)': {
+            width: '1rem',
+            height: '1rem',
+            marginTop: '8px'
+        }
     },
     cellText: {
         margin: '0.5rem',

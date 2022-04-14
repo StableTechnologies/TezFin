@@ -6,3 +6,4 @@ node_modules
 build
 .test/
 TezFinBuild/compiled_contracts/
+/.idea/

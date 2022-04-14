@@ -4,6 +4,10 @@ import time
 OracleInterface = sp.io.import_script_from_url("file:contracts/interfaces/OracleInterface.py")
 
 class TezFinOracle(OracleInterface.OracleInterface):
+    """
+        TezFinOracle acts as proxy for the original harbinger oracle(https://github.com/tacoinfra/harbinger-contracts/blob/master/oracle.py)
+        It also allows admin to set up custom values for assets that are not be supported by harbinger enabling the use of those assets in TezFin.
+    """
     def __init__(self, admin, oracle):
         self.init(
             overrides = sp.big_map(l={"USD-USD":(sp.timestamp(int(time.time())),sp.as_nat(1000000))},tkey=sp.TString, tvalue=sp.TPair(sp.TTimestamp, sp.TNat)),
@@ -16,28 +20,43 @@ class TezFinOracle(OracleInterface.OracleInterface):
 
     @sp.entry_point
     def set_oracle(self, address):
+        """
+            Sets the Harbinger Oracle Address used to resolve asset prices
+        """
         sp.set_type(address, sp.TAddress)
         sp.verify(self.is_admin(sp.sender), message = "NOT_ADMIN")
         self.data.oracle = address
 
     @sp.entry_point
     def set_admin(self, address):
+        """
+            Sets the admin address for the contract
+        """
         sp.set_type(address, sp.TAddress)
         sp.verify(self.is_admin(sp.sender), message = "NOT_ADMIN")
         self.data.admin = address
 
     @sp.entry_point
     def setPrice(self, asset, price):
+        """
+            Sets the price for custom assets not supported by harbinger eg. USD
+        """
         sp.verify(self.is_admin(sp.sender), message = "NOT_ADMIN")
         self.data.overrides[asset] = (sp.now, price)
 
     @sp.entry_point
     def removeAsset(self, asset):
+        """
+            Removes custom asset
+        """
         sp.verify(self.is_admin(sp.sender), message = "NOT_ADMIN")
         del self.data.overrides[asset]
         
     @sp.entry_point
     def get(self, requestPair):
+        """
+            Proxies to harbinger get entrypoint if not custom asset
+        """
         sp.set_type(requestPair, OracleInterface.TGetPriceParam)
 
         # Destructure the arguments.
@@ -54,6 +73,9 @@ class TezFinOracle(OracleInterface.OracleInterface):
 
     @sp.onchain_view()
     def getPrice(self, requestedAsset):
+        """
+            Proxies to harbinger getPrice view if not custom asset
+        """
         sp.set_type(requestedAsset, sp.TString)
         sp.if self.data.overrides.contains(requestedAsset):
             sp.result(self.data.overrides[requestedAsset])

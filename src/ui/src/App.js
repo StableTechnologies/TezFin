@@ -58,13 +58,13 @@ const App = () => {
                 <Header />
                 {/* <Home /> */}
                 <Switch>
-                    <Route exact path="/dashboard">
+                    <Route exact path='/dashboard'>
                         <Dashboard />
                     </Route>
                     {/* <Route exact path="/market"></Route> */}
                     {/* <Route exact path="/about"></Route> */}
                     {/* <Route exact path="/"> <Home /> </Route> */}
-                    <Route exact path="/"> <Home /> </Route>
+                    <Route exact path={['/', '/dashboard']}> <Home /> </Route>
                 </Switch>
                 <Footer />
             </Grid>

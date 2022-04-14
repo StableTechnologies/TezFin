@@ -53,7 +53,7 @@ export const useStyles = makeStyles({
                 '@media(max-width: 1200px)': {
                     fontSize: '0.75rem'
                 },
-                '@media(max-width: 768px)': {
+                '@media(max-width: 501px)': {
                     fontSize: '0.625rem'
                 },
                 '@media(max-width: 320px)': {
@@ -74,6 +74,9 @@ export const useStyles = makeStyles({
                     fontSize: '1rem'
                 },
                 '@media(max-width: 768px)': {
+                    fontSize: '0.875rem'
+                },
+                '@media(max-width: 501px)': {
                     fontSize: '0.75rem'
                 }
             }
@@ -82,7 +85,10 @@ export const useStyles = makeStyles({
     tableCon: {
         border: '1px solid #E0E0E0',
         borderBottom: '0',
-        borderRadius: '1rem'
+        borderRadius: '1rem',
+        '&::-webkit-scrollbar': {
+            display: 'none'
+        }
     },
     questionCircleIcon: {
         width: '1rem',
@@ -96,14 +102,17 @@ export const useStyles = makeStyles({
         '@media (min-width: 769px) and (max-width: 1024px)': {
             width: '1.5rem',
             height: '1.5rem',
-            marginBottom: '-6px',
-            fontSize: '0.75rem'
+            marginBottom: '-6px'
+        },
+        '@media(max-width: 768px)': {
+            width: '1.5rem',
+            height: '1.5rem',
+            marginBottom: '-8px'
         },
         '@media(max-width: 501px)': {
             width: '1rem',
             height: '1rem',
-            marginBottom: '-4px',
-            fontSize: '0.75rem'
+            marginBottom: '-4px'
         }
     },
     tokenName: {
@@ -129,6 +138,9 @@ export const useStyles = makeStyles({
         '@media(max-width: 1024px)': {
             padding: '0px 4rem 10.125rem'
         },
+        '@media(max-width: 900px)': {
+            padding: '0px 2rem 10.125rem'
+        },
         '@media(max-width: 768px)': {
             padding: '0px 4rem 10.125rem'
         },
@@ -136,11 +148,25 @@ export const useStyles = makeStyles({
             padding: '0px 1rem 10.125rem'
         }
     },
-    '@media(min-width: 1024px)': {
-        borrowTablePadding: {
-            paddingLeft: '1.875rem'
+    borrowTablePadding: {
+        '@media(min-width: 900px)': {
+            paddingLeft: '0.875rem'
         },
-        supplyTablePadding: {
+        '@media(min-width: 1024px)': {
+            paddingLeft: '0.9375rem'
+        },
+        '@media(min-width: 1200px)': {
+            paddingLeft: '1.875rem'
+        }
+    },
+    supplyTablePadding: {
+        '@media(min-width: 900px)': {
+            paddingRight: '0.875rem'
+        },
+        '@media(min-width: 1024px)': {
+            paddingRight: '0.9375rem'
+        },
+        '@media(min-width: 1200px)': {
             paddingRight: '1.875rem'
         }
     },
