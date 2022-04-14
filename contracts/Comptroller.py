@@ -329,11 +329,23 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     @sp.utils.view(sp.TInt)
     def returnHypoAccountLiquidity(self, params):
         sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
+        liquidity = self.getHypoAccountLiquidityInternal(params)
+        sp.result(liquidity)
+    
+    def getHypoAccountLiquidityInternal(self, params):
+        sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
         calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(cTokenModify=sp.some(
             params.cTokenModify), account=params.account, redeemTokens=params.redeemTokens, borrowAmount=params.borrowAmount))).value
         liquidity = sp.compute(
             calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
-        sp.result(liquidity)
+        return liquidity
+    
+    def getAccountLiquidityInternal(self, account):
+        calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(
+            cTokenModify=sp.none, account=account, redeemTokens=sp.nat(0), borrowAmount=sp.nat(0)))).value
+        liquidity = sp.compute(
+            calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
+        return liquidity
 
     """
         Determines the amount of collateral tokens that can seized given the 
@@ -354,7 +366,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             priceCollateralMantissa.value.mantissa == sp.nat(0)), EC.CMPT_PRICE_ERROR)
 
         exchangeRateMantissa = sp.view("exchangeRateStoredView", params.cTokenCollateral, sp.unit,
-                                       t=sp.TNat).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
+                                       t=sp.TNat).open_some("INVALID EXCHANGE RATE VIEW")
 
         numerator = sp.local("numerator", self.mul_exp_exp(self.makeExp(
             self.data.liquidationIncentiveMantissa), priceBorrowedMantissa.value))
@@ -366,6 +378,33 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         sp.result(self.mulScalarTruncate(
             ratio.value, params.actualRepayAmount))
+    
+    """
+        Determines whether a users position can be liquidated
+
+        return: TBool - return true if position can be liquidated else errors out
+    """
+    @sp.onchain_view()
+    def liquidateBorrowAllowed(self, params):
+        sp.set_type(params, CMPTInterface.TLiquidateBorrowAllowed)
+        # liquidator is not used, left here for future proofing
+        
+        self.verifyMarketListed(params.cTokenBorrowed)
+        self.verifyMarketListed(params.cTokenCollateral)
+
+        liquidity = sp.local("liquidtiy", self.getAccountLiquidityInternal(params.borrower))
+
+        sp.verify(liquidity.value < 0, EC.CMPT_INSUFFICIENT_SHORTFALL)
+        
+        borrowBalance = sp.view("borrowBalanceStoredView", params.cTokenBorrowed, params.borrower,
+                                       t=sp.TNat).open_some("INVALID ACCOUNT BORROW BALANCE VIEW")
+        
+        maxClose = sp.local("maxClose", self.mulScalarTruncate(self.makeExp(
+            self.data.closeFactorMantissa), borrowBalance))
+       
+        sp.verify(maxClose.value >= params.repayAmount, EC.CMPT_TOO_MUCH_REPAY)
+
+        sp.result(True)
 
     def calculateCurrentAccountLiquidityWithView(self, account):
         return self.calculateAccountLiquidityWithView(sp.record(cTokenModify=sp.none, account=account, redeemTokens=sp.nat(0), borrowAmount=sp.nat(0)))
