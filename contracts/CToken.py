@@ -462,6 +462,15 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TAddress)
         sp.result(self.getBorrowBalance(params))
     
+    """    
+        Return the borrow balance of account based on stored data
+
+        dev: Do accrueInterest() before this function to get the up-to-date borrow balance
+
+        params: TAddress - The address whose balance should be calculated
+
+        return: The calculated balance
+    """
     @sp.onchain_view()
     def borrowBalanceStoredView(self, params):
         sp.set_type(params, sp.TAddress)

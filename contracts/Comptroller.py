@@ -379,6 +379,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.result(self.mulScalarTruncate(
             ratio.value, params.actualRepayAmount))
     
+    """
+        Determines whether a users position can be liquidated
+
+        return: TBool - return true if position can be liquidated else errors out
+    """
     @sp.onchain_view()
     def liquidateBorrowAllowed(self, params):
         sp.set_type(params, CMPTInterface.TLiquidateBorrowAllowed)

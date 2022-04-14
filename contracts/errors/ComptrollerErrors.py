@@ -23,5 +23,5 @@ class ErrorCodes:
     CMPT_LIQUIDITY_OLD = "CMPT_LIQUIDITY_OLD" # Liquidity is too old
 
     CMPT_PRICE_ERROR = "CMPT_PRICE_ERROR" # invalid price from oracle
-    CMPT_INSUFFICIENT_SHORTFALL = "CMPT_INSUFFICIENT_SHORTFALL"
-    CMPT_TOO_MUCH_REPAY = "CMPT_TOO_MUCH_REPAY"
+    CMPT_INSUFFICIENT_SHORTFALL = "CMPT_INSUFFICIENT_SHORTFALL" # insufficient shortfall to liquidate a users position
+    CMPT_TOO_MUCH_REPAY = "CMPT_TOO_MUCH_REPAY" # liquidation repay amount larger than possible liquidation
