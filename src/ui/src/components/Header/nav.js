@@ -6,11 +6,14 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-
-import BasicSpeedDial from '../SpeedDial/index.tsx';
+import Popover from '@mui/material/Popover';
+import Button from '@mui/material/Button';
 
 import tezHeader from '../../assets/tezHeader.svg';
+import CopyIcon from '../../assets/copyIcon.svg';
+import DisconnectIcon from '../../assets/disconnectIcon.svg';
+import ExchangeIcon from '../../assets/exchangeIcon.svg';
+
 import { shorten, getWallet, deactivateAccount } from '../../util';
 import { addWalletAction, disconnectWalletAction } from '../../reduxContent/addWallet/actions';
 
@@ -21,7 +24,7 @@ const Nav = () => {
     const dispatch = useDispatch();
 
     const [tezAccount, setTezAccount] = useState('');
-    const [open, setOpen] = React.useState(false);
+    const [openPopover, setPopover] = useState(null);
 
     const { address } = useSelector((state) => state.addWallet.account);
     const { server } = useSelector((state) => state.nodes.tezosNode);
@@ -34,9 +37,13 @@ const Nav = () => {
     };
 
     const disconnectWallet = async () => {
+        setPopover(null);
         await deactivateAccount();
         dispatch(disconnectWalletAction());
     };
+
+    const open = Boolean(openPopover);
+    const id = open ? 'connected-wallet-popover' : undefined;
 
     useEffect(() => {
         setTezAccount(address);
@@ -48,23 +55,41 @@ const Nav = () => {
                 <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
             </Grid>
             <Grid item xs={6} lg={6} className={classes.addWalletCon}>
-                <BasicSpeedDial
-                    onClose={() => setOpen(false)}
-                    onOpen={() => { tezAccount ? setOpen(true) : ''; }}
+                <Button
+                    className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
+                    onClick={(e) => { tezAccount ? setPopover(e.currentTarget) : addWallet(); }}
+                    disableRipple
+                >
+                    {(tezAccount && (shorten(6, 6, tezAccount))) || 'Connect Wallet' }
+                </Button>
+                <Popover
+                    id={id}
                     open={open}
-                    copyAddress={() => navigator.clipboard.writeText(tezAccount)}
-                    changeWallet={addWallet}
-                    disconnectWallet={disconnectWallet}
-                    icon= {
-                        <Box
-                            className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
-                            onClick={() => { tezAccount ? '' : addWallet(); }}
-                            disableRipple
-                        >
-                            {(tezAccount && (shorten(6, 6, tezAccount))) || 'Connect Wallet' }
-                        </Box>
-                    }
-                />
+                    anchorEl={openPopover}
+                    onClose={() => setPopover(null)}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left'
+                    }}
+                    className={classes.root}
+                >
+                    <Button
+                        onClick={() => navigator.clipboard.writeText(tezAccount)}
+                        className={`${classes.popoverBtn} ${classes.copyText}`}
+                        disableRipple
+                    >
+                        {tezAccount && shorten(10, 8, tezAccount)} {' '}
+                        <img src={CopyIcon} alt="copy icon" className={classes.popoverImg} />
+                    </Button>
+                    <Button onClick={addWallet} className={classes.popoverBtn} disableRipple>
+                        <img src={ExchangeIcon} alt="change icon" className={classes.popoverImg} />
+                        {' '} Change Wallet
+                    </Button>
+                    <Button onClick={disconnectWallet} className={classes.popoverBtn} disableRipple>
+                        <img src={DisconnectIcon} alt="disconnect icon" className={classes.popoverImg} />
+                        {' '} Disconnect Wallet
+                    </Button>
+                </Popover>
             </Grid>
         </Grid>
     );

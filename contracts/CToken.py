@@ -360,6 +360,16 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
         sp.result(accSnapshot)
 
+    """    
+        Get a snapshot of the account's balances, and the cached exchange rate
+
+        dev: This is used by comptroller to more efficiently perform liquidity checks.
+        dev: Do accrueInterest() before this function to get the up-to-date balance
+
+        params: TAddress - The address of the account to snapshot
+
+        return: TAccountSnapshot - account balance information
+    """
     @sp.onchain_view()
     def getAccountSnapshotView(self, params):
         accSnapshot = sp.compute(sp.record(

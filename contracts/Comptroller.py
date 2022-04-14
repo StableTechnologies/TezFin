@@ -13,22 +13,21 @@ OracleInterface = sp.io.import_script_from_url(
 Exponential = sp.io.import_script_from_url(
     "file:contracts/utils/Exponential.py")
 OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
-SweepTokens = sp.io.import_script_from_url(
-    "file:contracts/utils/SweepTokens.py")
 
-TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
-                     # Multiplier representing the most one can borrow against their collateral in this market.
-                     collateralFactor=Exponential.TExp,
-                     # For instance, 0.9 to allow borrowing 90% of collateral value.
-                     # Must be between 0 and 1, and stored as a mantissa.
-                     mintPaused=sp.TBool,
-                     borrowPaused=sp.TBool,
-                     name=sp.TString,  # Asset name for price oracle
-                     price=Exponential.TExp,  # The price of the asset
-                     priceExp=sp.TNat,  # The price of the asset
-                     updateLevel=sp.TNat,  # Block level of last price update
-                     borrowCap=sp.TNat  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
-                     )
+SweepTokens = sp.io.import_script_from_url("file:contracts/utils/SweepTokens.py")
+
+TMarket = sp.TRecord(isListed = sp.TBool,  # Whether or not this market is listed
+        collateralFactor = Exponential.TExp,  # Multiplier representing the most one can borrow against their collateral in this market.
+                                # For instance, 0.9 to allow borrowing 90% of collateral value.
+                                # Must be between 0 and 1, and stored as a mantissa.
+        mintPaused = sp.TBool,
+        borrowPaused = sp.TBool,
+        name = sp.TString, # Asset name for price oracle
+        price = Exponential.TExp, # The price of the asset
+        priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
+        updateLevel = sp.TNat, # Block level of last price update
+        borrowCap = sp.TNat # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
+    )
 
 TLiquidity = sp.TRecord(
     liquidity=sp.TInt,  # Current account liquidity. Negative value indicates shortfall
@@ -258,6 +257,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.redeemAllowedInternal(
             params.cToken, params.src, params.transferTokens)
 
+    """
+        Updates all asset prices using harbinger view
+    """
     @sp.entry_point
     def updateAllAssetPricesWithView(self):
         self.updateAllAssetPrices()
@@ -287,10 +289,14 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(account, sp.TAddress)
         self.updateAllAssetPrices()
         self.accrueAllAssetInterests()
-        sp.transfer(account, sp.mutez(0), sp.self_entry_point(
-            "setAccountLiquidityWithView"))
+        sp.transfer(account, sp.mutez(0), sp.self_entry_point("setAccountLiquidityWithView"))
+    
+    """
+        Updates stored liquidity for the given account
 
-    @sp.entry_point(lazify=True)
+        account: TAddress - The account to calculate liquidity for
+    """
+    @sp.entry_point(lazify = True)
     def setAccountLiquidityWithView(self, account):
         sp.set_type(account, sp.TAddress)
         liquidity = sp.local(
@@ -550,6 +556,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         params: TRecord
             cToken: TAddress - The address of the market (token) to list
             name: TString - The market name in price oracle
+            priceExp: TNat - exponent needed to normalize the token prices to 10^18 (eth:0, btc: 10, usd: 12)
     """
     @sp.entry_point(lazify=True)
     def supportMarket(self, params):
