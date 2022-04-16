@@ -217,7 +217,7 @@ const DashboardModal = (props) => {
                                 {buttonOne}
                             </Button>
                             : <>
-                                {((tokenValue > 0) && address && !disabled)
+                                {((tokenValue > 0 && address) && !disabled)
                                     ? <>
                                         {tabValue === 'one'
                                             && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>
