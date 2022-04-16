@@ -16,6 +16,9 @@ import { tokenColor } from '../../components/Constants';
 export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => {
     let supplyComposition = {};
     const assets = [];
+    let supplying = 0;
+    let collateralized = 0;
+    let totalCollateral = 0;
 
     if (Object.keys(suppliedMarkets).length > 0) {
         suppliedMarkets.map((x) => {
@@ -33,7 +36,7 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
             return suppliedMarkets;
         });
 
-        const supplying = assets.reduce((a, b) => a + b.balanceUnderlyingUsd, 0);
+        supplying = assets.reduce((a, b) => a + b.balanceUnderlyingUsd, 0);
         assets.map((x) => {
             x.rate = ((x.balanceUnderlyingUsd / supplying) * 100);
             if (x.collateral) {
@@ -42,16 +45,15 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
             }
         });
 
-        const collateralized = assets.reduce((a, b) => a + b.collateralUsd, 0);
-        const totalCollateral = assets.reduce((a, b) => a + b.totalCollateralUnderlying, 0);
-
-        supplyComposition = {
-            assets,
-            supplying,
-            collateralized,
-            totalCollateral
-        };
+        collateralized = assets.reduce((a, b) => a + b.collateralUsd, 0);
+        totalCollateral = assets.reduce((a, b) => a + b.totalCollateralUnderlying, 0);
     }
+    supplyComposition = {
+        assets,
+        supplying,
+        collateralized,
+        totalCollateral
+    };
 
     dispatch({ type: GET_SUPPLY_COMPOSITION_DATA, payload: supplyComposition });
 };

@@ -12,13 +12,14 @@ import { GET_BORROW_COMPOSITION_DATA } from './types';
  * @returns borrowComposition
  */
 // eslint-disable-next-line import/prefer-default-export
-export const borrowCompositionAction = (account, borrowedMarkets) => async (dispatch, getState) => {
+export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, getState) => {
     const state = getState();
 
     const { totalCollateral } = state.supplyComposition.supplyComposition;
 
     let borrowComposition = {};
     const assets = [];
+    let borrowing = 0;
 
     if (Object.keys(borrowedMarkets).length > 0) {
         borrowedMarkets.map((x) => {
@@ -32,19 +33,18 @@ export const borrowCompositionAction = (account, borrowedMarkets) => async (disp
             return borrowedMarkets;
         });
 
-        const borrowing = assets.reduce((a, b) => a + b.total, 0);
-        const borrowLimit = totalCollateral - borrowing;
-        const limitBalance = borrowLimit - borrowing;
-        const borrowUtilization = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
-
-        borrowComposition = {
-            assets,
-            borrowing,
-            borrowLimit,
-            borrowUtilization,
-            limitBalance
-        };
+        borrowing = assets.reduce((a, b) => a + b.total, 0);
     }
+    const borrowLimit = totalCollateral - borrowing;
+    const limitBalance = borrowLimit - borrowing;
+    const borrowUtilization = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
+    borrowComposition = {
+        assets,
+        borrowing,
+        borrowLimit,
+        borrowUtilization,
+        limitBalance
+    };
 
     dispatch({ type: GET_BORROW_COMPOSITION_DATA, payload: borrowComposition });
 };
