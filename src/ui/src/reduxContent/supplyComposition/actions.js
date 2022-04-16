@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 import { decimalify } from '../../util';
 
@@ -22,26 +23,33 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
                 title: x.title,
                 usdPrice: x.usdPrice,
                 balanceUnderlying: x.balanceUnderlying,
-                total: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title]),
+                balanceUnderlyingUsd: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title]),
                 color: tokenColor[x.title],
                 collateral: x.collateral,
+                collateralFactor: new BigNumber(x.collateralFactor).toNumber(),
+                totalCollateralUnderlying: 0,
                 collateralUsd: 0
             });
             return suppliedMarkets;
         });
 
-        const supplying = assets.reduce((a, b) => a + b.total, 0);
+        const supplying = assets.reduce((a, b) => a + b.balanceUnderlyingUsd, 0);
         assets.map((x) => {
-            x.rate = ((x.total / supplying) * 100);
-            x.collateral && (x.collateralUsd = x.total);
+            x.rate = ((x.balanceUnderlyingUsd / supplying) * 100);
+            if (x.collateral) {
+                x.collateralUsd = x.balanceUnderlyingUsd;
+                x.totalCollateralUnderlying = new BigNumber(x.collateralUsd).multipliedBy(new BigNumber(x.collateralFactor)).toNumber();
+            }
         });
 
-        const totalCollateralUsd = assets.reduce((a, b) => a + b.collateralUsd, 0);
+        const collateralized = assets.reduce((a, b) => a + b.collateralUsd, 0);
+        const totalCollateral = assets.reduce((a, b) => a + b.totalCollateralUnderlying, 0);
 
         supplyComposition = {
             assets,
             supplying,
-            collateral: totalCollateralUsd
+            collateralized,
+            totalCollateral
         };
     }
 

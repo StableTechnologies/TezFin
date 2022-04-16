@@ -140,7 +140,8 @@ const AllMarketModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        // eslint-disable-next-line no-unused-expressions
+        borrowLimit && marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
         return () => {
             setLimit('');
         };

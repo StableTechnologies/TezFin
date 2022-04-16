@@ -43,13 +43,12 @@ const DashboardModal = (props) => {
     const [tokenValue, setTokenValue] = useState('');
 
     const { address } = useSelector((state) => state.addWallet.account);
-    const { collateral } = useSelector((state) => state.supplyComposition.supplyComposition);
+    const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
 
     let borrowLimitUsed;
-    const scale = new BigNumber('10000');
-    if (borrowing && collateral) {
-        borrowLimitUsed = new BigNumber(borrowing).multipliedBy(scale).dividedBy(new BigNumber(collateral)).toString();
+    if (borrowing && totalCollateral) {
+        borrowLimitUsed = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
     }
 
     const handleTabChange = (event, newValue) => {
@@ -198,7 +197,7 @@ const DashboardModal = (props) => {
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
                         <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {(borrowLimitUsed > 0) ? truncateNum(borrowLimitUsed) : '0'}%
+                            {(borrowLimitUsed > 0) ? ((borrowLimitUsed > 100) ? 100 : truncateNum(borrowLimitUsed)) : '0'}%
                         </Grid>
                     </Grid>
                 </DialogContent>
