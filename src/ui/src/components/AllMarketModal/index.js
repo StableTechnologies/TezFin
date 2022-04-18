@@ -140,12 +140,11 @@ const AllMarketModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        // eslint-disable-next-line no-unused-expressions
-        borrowLimit && marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
         return () => {
             setLimit('');
         };
-    }, [currrentTab, tokenDetails]);
+    }, [currrentTab, tokenDetails, tokenValue]);
 
     return (
         <>
@@ -177,7 +176,7 @@ const AllMarketModal = (props) => {
                 visibility={true}
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
-                inputBtnTextTwo = "80% Limit"
+                inputBtnTextTwo = "90% Limit"
                 maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
                 errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}

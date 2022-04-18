@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { decimalify } from './index';
@@ -6,7 +7,9 @@ import { decimalify } from './index';
 export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
     if (tabValue === 'one') {
         if (tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()) {
-            setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5);
+            decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title]) > 5
+                ? setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5)
+                : setMaxAmount(0);
         } else {
             setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]));
         }
@@ -18,7 +21,7 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
 
 export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
     if (tabValue === 'one') {
-        setMaxAmount(decimalify(borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
+        setMaxAmount(new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber());
     }
     // TODO: calculate the max value to repay properly.
     if (tabValue === 'two') {
@@ -29,7 +32,7 @@ export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAm
 export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
     if (tabValue === 'one') {
         if (tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()) {
-            tokenDetails.walletBalance > 5
+            decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title]) > 5
                 ? setMaxAmount(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) - 5)
                 : setMaxAmount(0);
         } else {
@@ -37,7 +40,6 @@ export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmou
         }
     }
     if (tabValue === 'two') {
-        // TODO: calculate the max value to borrow properly.
-        setMaxAmount(decimalify(borrowLimit.toString(), decimals[tokenDetails.title]) * 0.8);
+        setMaxAmount(new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber());
     }
 };

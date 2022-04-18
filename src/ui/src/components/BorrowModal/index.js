@@ -168,7 +168,7 @@ const BorrowModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 setAmount={(e) => { setAmount(e); }}
-                inputBtnTextOne = "80% Limit"
+                inputBtnTextOne = "90% Limit"
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
