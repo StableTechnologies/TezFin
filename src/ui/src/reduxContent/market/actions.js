@@ -1,12 +1,11 @@
+import { BigNumber } from 'bignumber.js';
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import {
     GET_ALL_MARKET_DATA,
     GET_BORROWED_MARKET_DATA,
     GET_MARKET_DATA,
     GET_SUPPLIED_MARKET_DATA
 } from './types';
-
-import { BigNumber } from 'bignumber.js';
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { formatTokenData } from '../../util';
 import { tokens } from '../../components/Constants';
 
@@ -47,6 +46,7 @@ export const allMarketAction = (account, markets) => (dispatch) => {
             token.supplyRate = markets[token.assetType].supply.rate.toString();
             token.borrowRate = markets[token.assetType].borrow.rate.toString();
             token.walletBalance = '';
+            token.collateralFactor = new BigNumber(markets[token.assetType].collateralFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed();
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 token.walletBalance = walletBalance[token.assetType].toString();
             }
@@ -63,13 +63,14 @@ export const allMarketAction = (account, markets) => (dispatch) => {
  * @returns suppliedMarket
  */
 export const suppliedMarketAction = (markets) => (dispatch) => {
-    const suppliedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, supply }) => ({
+    const suppliedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, collateralFactor, supply }) => ({
         assetType,
         banner,
         title,
         logo,
         usdPrice,
         walletBalance,
+        collateralFactor,
         ...supply
     }));
 
@@ -84,13 +85,14 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
  */
 export const borrowedMarketAction = (markets) => (dispatch) => {
     // eslint-disable-next-line object-curly-newline
-    const borrowedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, borrow }) => ({
+    const borrowedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, collateralFactor, borrow }) => ({
         assetType,
         banner,
         title,
         logo,
         usdPrice,
         walletBalance,
+        collateralFactor,
         ...borrow
     }));
 

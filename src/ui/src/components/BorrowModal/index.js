@@ -3,7 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { decimals } from 'tezoslendingplatformjs';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { marketAction } from '../../reduxContent/market/actions';
+
+import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
+import { borrowingMaxAction } from '../../util/maxAction';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
+import { useBorrowErrorText, useRepayErrorText } from '../../util/modalHooks';
 
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
@@ -11,9 +16,6 @@ import SuccessModal from '../StatusModal/SuccessModal';
 import ErrorModal from '../StatusModal/ErrorModal';
 import DashboardModal from '../DashboardModal';
 import { useStyles } from './style';
-import { marketAction } from '../../reduxContent/market/actions';
-import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
-import { borrowingMaxAction } from '../../util/maxAction';
 
 const BorrowModal = (props) => {
     const classes = useStyles();
@@ -24,6 +26,7 @@ const BorrowModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
     const { server } = useSelector((state) => state.nodes.tezosNode);
+    const { borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
     const publicKeyHash = account.address;
 
     const [openInitializeModal, setInitializeModal] = useState(false);
@@ -40,6 +43,12 @@ const BorrowModal = (props) => {
     const [error, setError] = useState('');
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
+    const [tokenValue, setTokenValue] = useState('');
+    const [currrentTab, setCurrrentTab] = useState('');
+    const [limit, setLimit] = useState('');
+
+    const buttonOne = useBorrowErrorText(tokenValue, limit);
+    const buttonTwo = useRepayErrorText(tokenValue, limit);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -128,6 +137,13 @@ const BorrowModal = (props) => {
         setMaxAmount('');
     }, [close]);
 
+    useEffect(() => {
+        borrowingMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        return () => {
+            setLimit('');
+        };
+    }, [currrentTab, tokenDetails]);
+
     return (
         <>
             <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
@@ -146,16 +162,19 @@ const BorrowModal = (props) => {
                 handleClickTabTwo={repayBorrowToken}
                 labelOne="Borrow"
                 labelTwo="Repay"
-                buttonOne="Borrow"
-                buttonTwo="Repay"
+                buttonOne={buttonOne.text}
+                buttonTwo={buttonTwo.text}
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 setAmount={(e) => { setAmount(e); }}
-                inputBtnTextOne = "80% Limit"
+                inputBtnTextOne = "90% Limit"
                 inputBtnTextTwo = "Use Max"
-                maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, setMaxAmount)}
+                maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
                 maxAmount= {maxAmount}
+                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
+                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>
     );

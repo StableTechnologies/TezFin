@@ -47,6 +47,7 @@ const Nav = () => {
 
     useEffect(() => {
         setTezAccount(address);
+        setPopover(null);
     }, [address]);
 
     return (

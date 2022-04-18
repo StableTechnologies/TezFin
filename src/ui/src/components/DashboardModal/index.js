@@ -36,20 +36,19 @@ const DashboardModal = (props) => {
         open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
         LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
         collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
-        maxAction, maxAmount
+        maxAction, maxAmount, getProps, disabled, errorText
     } = props;
 
     const [tabValue, setTabValue] = useState('one');
     const [tokenValue, setTokenValue] = useState('');
 
     const { address } = useSelector((state) => state.addWallet.account);
-    const { collateral } = useSelector((state) => state.supplyComposition.supplyComposition);
+    const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
 
     let borrowLimitUsed;
-    const scale = new BigNumber('10000');
-    if (borrowing && collateral) {
-        borrowLimitUsed = new BigNumber(borrowing).multipliedBy(scale).dividedBy(new BigNumber(collateral)).toString();
+    if (borrowing && totalCollateral) {
+        borrowLimitUsed = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
     }
 
     const handleTabChange = (event, newValue) => {
@@ -63,6 +62,12 @@ const DashboardModal = (props) => {
     useEffect(() => {
         setTokenValue(maxAmount);
     }, [maxAmount]);
+
+    useEffect(() => {
+        if (getProps) {
+            getProps(tokenValue, tabValue);
+        }
+    }, [tokenValue, tabValue]);
 
     return (
         <React.Fragment>
@@ -192,7 +197,7 @@ const DashboardModal = (props) => {
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
                         <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {(borrowLimitUsed > 0) ? truncateNum(borrowLimitUsed) : '0'}%
+                            {(borrowLimitUsed > 0) ? ((borrowLimitUsed > 100) ? 100 : truncateNum(borrowLimitUsed)) : '0'}%
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -205,14 +210,14 @@ const DashboardModal = (props) => {
                         </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions sx={{ flexDirection: 'column' }}>
                     <>
                         {collateralize
                             ? <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple>
                                 {buttonOne}
                             </Button>
                             : <>
-                                {(tokenValue && address)
+                                {((tokenValue > 0 && address) && !disabled)
                                     ? <>
                                         {tabValue === 'one'
                                             && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>
@@ -221,10 +226,15 @@ const DashboardModal = (props) => {
                                             && <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub} `} onClick={handleClickTabTwo} disableRipple> {buttonTwo} </Button>
                                         }
                                     </>
-                                    : <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
-                                        {tabValue === 'one' && buttonOne}
-                                        {tabValue === 'two' && buttonTwo}
-                                    </Button>
+                                    : <>
+                                        <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
+                                            {tabValue === 'one' && buttonOne}
+                                            {tabValue === 'two' && buttonTwo}
+                                        </Button>
+                                        <Typography className={classes.errorText}>
+                                            {errorText}
+                                        </Typography>
+                                    </>
                                 }
                             </>
                         }

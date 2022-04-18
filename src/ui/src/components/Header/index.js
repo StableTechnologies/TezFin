@@ -29,7 +29,7 @@ const Header = () => {
 
     useEffect(() => {
         dispatch(supplyCompositionAction(suppliedMarkets));
-        dispatch(borrowCompositionAction(account, borrowedMarkets));
+        dispatch(borrowCompositionAction(borrowedMarkets));
     }, [dispatch, account, suppliedMarkets, borrowedMarkets]);
 
     return (

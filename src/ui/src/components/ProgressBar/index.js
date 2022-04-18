@@ -48,7 +48,7 @@ export const ToolTipProgressBars = (props) => {
 
     return (
         <Tooltip
-            title={ value ? `${truncateNum(value)}% Used` : ''}
+            title={ value ? `${(value > 100) ? 100 : truncateNum(value)}% Used` : ''}
             placement="top"
             classes={tooltipClass}
         >

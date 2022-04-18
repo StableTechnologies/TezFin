@@ -8,6 +8,7 @@ import { marketAction } from '../../reduxContent/market/actions';
 import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { supplyingMaxAction } from '../../util/maxAction';
 import { supplyTokenAction, withdrawTokenAction } from '../../util/modalActions';
+import { useSupplyErrorText, useWithdrawErrorText } from '../../util/modalHooks';
 
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
@@ -42,6 +43,12 @@ const SupplyModal = (props) => {
     const [error, setError] = useState(false);
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
+    const [tokenValue, setTokenValue] = useState('');
+    const [currrentTab, setCurrrentTab] = useState('');
+    const [limit, setLimit] = useState('');
+
+    const buttonOne = useSupplyErrorText(tokenValue, limit);
+    const buttonTwo = useWithdrawErrorText(tokenValue, limit);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -130,6 +137,13 @@ const SupplyModal = (props) => {
         setMaxAmount('');
     }, [close]);
 
+    useEffect(() => {
+        supplyingMaxAction(currrentTab, tokenDetails, setLimit);
+        return () => {
+            setLimit('');
+        };
+    }, [currrentTab, tokenDetails]);
+
     return (
         <>
             <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
@@ -149,8 +163,8 @@ const SupplyModal = (props) => {
                 handleClickTabTwo={withdrawToken}
                 labelOne="Supply"
                 labelTwo="Withdraw"
-                buttonOne="Supply"
-                buttonTwo="Withdraw"
+                buttonOne={buttonOne.text}
+                buttonTwo={buttonTwo.text}
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
@@ -159,6 +173,9 @@ const SupplyModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 maxAction={(tabValue) => supplyingMaxAction(tabValue, tokenDetails, setMaxAmount)}
                 maxAmount= {maxAmount}
+                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
+                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>
     );

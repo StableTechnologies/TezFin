@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { decimalify } from '../../util';
@@ -11,14 +12,15 @@ import { GET_BORROW_COMPOSITION_DATA } from './types';
  * @returns borrowComposition
  */
 // eslint-disable-next-line import/prefer-default-export
-export const borrowCompositionAction = (account, borrowedMarkets) => async (dispatch, getState) => {
+export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, getState) => {
     const state = getState();
 
-    const { collateral } = state.supplyComposition.supplyComposition;
-    const totalCollateral = collateral * 0.8;
+    const { totalCollateral } = state.supplyComposition.supplyComposition;
 
     let borrowComposition = {};
     const assets = [];
+    let borrowing = 0;
+    let borrowUtilization = 0;
 
     if (Object.keys(borrowedMarkets).length > 0) {
         borrowedMarkets.map((x) => {
@@ -26,24 +28,24 @@ export const borrowCompositionAction = (account, borrowedMarkets) => async (disp
                 title: x.title,
                 usdPrice: x.usdPrice,
                 balanceUnderlying: x.balanceUnderlying,
+                collateralFactor: new BigNumber(x.collateralFactor).toNumber(),
                 total: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title])
             });
             return borrowedMarkets;
         });
 
-        const borrowing = assets.reduce((a, b) => a + b.total, 0);
-        const borrowLimit = totalCollateral - borrowing;
-        const rate = (borrowing / borrowLimit) * 100;
-        const limitBalance = borrowLimit - borrowing;
-
-        borrowComposition = {
-            assets,
-            borrowing,
-            borrowLimit,
-            rate,
-            limitBalance
-        };
+        borrowing = assets.reduce((a, b) => a + b.total, 0);
+        borrowUtilization = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
     }
+    const borrowLimit = totalCollateral - borrowing;
+    const limitBalance = borrowLimit - borrowing;
+    borrowComposition = {
+        assets,
+        borrowing,
+        borrowLimit,
+        borrowUtilization,
+        limitBalance
+    };
 
     dispatch({ type: GET_BORROW_COMPOSITION_DATA, payload: borrowComposition });
 };

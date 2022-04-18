@@ -5,6 +5,7 @@ export const useStyles = makeStyles({
     root: {
         '& .MuiDialog-paper': {
             maxWidth: '472px',
+            minHeight: 'auto',
             textAlign: 'center',
             borderRadius: '0',
             color: '#000'
@@ -33,17 +34,16 @@ export const useStyles = makeStyles({
             }
         },
         '& .MuiDialogActions-root': {
-            padding: '0',
-            margin: '2.9375rem 2.875rem 2.75rem',
+            padding: '2.75rem 2.875rem',
             '@media(max-width: 768px)': {
-                margin: '30px 2.875rem'
+                padding: '30px 2.875rem'
             },
             '@media(max-width: 501px)': {
-                margin: '1.875rem'
+                padding: '1.875rem'
             },
             '@media(max-width: 320px)': {
-                marginLeft: '1rem',
-                marginRight: '1rem'
+                paddingLeft: '1rem',
+                paddingRight: '1rem'
             }
         },
         '& .MuiOutlinedInput-notchedOutline': {
@@ -109,7 +109,8 @@ export const useStyles = makeStyles({
         paddingBottom: '1.25rem !important'
     },
     progressBarCon: {
-        paddingBottom: '0 !important'
+        paddingBottom: '0 !important',
+        minHeight: '8px'
     },
     btnMain: {
         borderRadius: '.5rem',
@@ -222,5 +223,14 @@ export const useStyles = makeStyles({
         '@media(max-width: 320px)': {
             fontSize: '0.7rem'
         }
+    },
+    errorText: {
+        marginTop: '0.5625rem',
+        color: '#000000AB',
+        textAlign: 'left',
+        fontWeight: '300',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
+        letterSpacing: '0.005em'
     }
 });
