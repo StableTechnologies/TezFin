@@ -21,6 +21,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             totalSupply = sp.nat(0), # Total number of tokens in circulation
             borrowRateMaxMantissa = sp.nat(int(5e12)), # Maximum borrow rate that can ever be applied (.0005% / block)
             reserveFactorMaxMantissa = sp.nat(int(1e18)), # Maximum fraction of interest that can be set aside for reserves
+            protocolSeizeShareMantissa = sp.nat(int(1e9)), # Share of seized tokens during liquidations that goes to the protocol reserves
             comptroller = comptroller_, # Contract which oversees inter-cToken operations
             interestRateModel = interestRateModel_, # Model which tells what the current interest rate should be
             initialExchangeRateMantissa = initialExchangeRateMantissa_, # Initial exchange rate used when minting the first CTokens
@@ -220,7 +221,52 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         c = sp.contract(CMPI.TRepayBorrowAllowedParams, self.data.comptroller, entry_point="repayBorrowAllowed").open_some()
         transferData = sp.record(cToken=sp.self_address, payer=payer_, borrower=borrower_, repayAmount=repayAmount_)
         sp.transfer(transferData, sp.mutez(0), c)
-    
+
+    """    
+        Liquidator seizes a borrower's collateral corresponding to an underwater loan.
+
+        params: 
+            liquidator  - Liquidator's account
+            borrower    - Borrower's account
+            numTokens   - Number of tokens to seize
+
+        requirements: 
+            accrueInterest() should be executed within 5 blocks prior to this call
+    """
+    @sp.entry_point
+    def seize(self, liquidator, borrower, numTokens):
+        sp.set_type(liquidator, sp.TAddress)
+        sp.set_type(borrower, sp.TAddress)
+        sp.set_type(numTokens, sp.TNat)
+        self.verifyNotInternal()
+        self.verifySeizeAllowed(sp.sender, sp.sender, params)
+        self.seizeInternal(sp.record(payer= liquidator, borrower= borrower, repayAmount= numTokens))
+
+    def seizeInternal(self, liquidator, borrower, numTokens):
+        sp.set_type(liquidator, sp.TAddress)
+        sp.set_type(borrower, sp.TAddress)
+        sp.set_type(numTokens, sp.TNat)
+
+        self.verifyAccruedInterestRelevance()
+        sp.verify(borrower != liquidator, EC.CT_LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER)
+
+        borrowerTokensNew = self.data.balances[borrower].balance - numTokens
+        protocolSeizeTokens = numTokens * self.data.protocolSeizeShareMantissa
+        liquidatorSeizeTokens = numTokens - protocolSeizeTokens
+        exchangeRate = self.makeExp(self.exchangeRateStoredImpl())
+        protocolSeizeAmount = self.mulScalarTruncate(exchangeRate, protocolSeizeTokens)
+        totalReservesNew = self.data.totalReserves + protocolSeizeAmount
+        totalSupplyNew = self.data.totalSupply +  protocolSeizeTokens
+        liquidatorTokensNew = self.data.balances[liquidator].balance + liquidatorSeizeTokens
+
+        self.data.totalReserves = totalReservesNew
+        self.data.totalSupply = totalSupplyNew
+        self.data.balances[borrower].balance = borrowerTokensNew
+        self.data.balances[liquidator].balance = liquidatorTokensNew
+
+    def verifySeizeAllowed(self, payer_, borrower_, repayAmount_):
+        # TODO: Implement this function!
+        pass
 
     """    
         Transfer `value` tokens from `from_` to `to_`

@@ -25,4 +25,5 @@ class ErrorCodes:
     CT_NOT_SET_PENDING_ADMIN = "CT_NOT_SET_PENDING_ADMIN" # Pending administrator hasn't been set
     CT_INTEREST_INVALID	= "CT_INTEREST_INVALID" # Accrued interest is already invalid
     CT_INTEREST_OLD = "CT_INTEREST_OLD" # Accrued interest is too old
+    CT__LIQUIDATOR_IS_BORROWER = "CT_LIQUIDATOR_IS_BORROWER" # Can't liquidate own loan
 
