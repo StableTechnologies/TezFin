@@ -15,17 +15,20 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
         }
     }
     if (tabValue === 'two') {
-        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
+        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title]));
     }
 };
 
 export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
     if (tabValue === 'one') {
-        setMaxAmount(new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber());
+        const limit = new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+        limit >= 0
+            ? setMaxAmount(limit)
+            : setMaxAmount(0);
     }
     // TODO: calculate the max value to repay properly.
     if (tabValue === 'two') {
-        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title]));
+        setMaxAmount(decimalify(tokenDetails.balanceUnderlying.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title]));
     }
 };
 
@@ -40,6 +43,9 @@ export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmou
         }
     }
     if (tabValue === 'two') {
-        setMaxAmount(new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber());
+        const limit = new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+        limit >= 0
+            ? setMaxAmount(limit)
+            : setMaxAmount(0);
     }
 };
