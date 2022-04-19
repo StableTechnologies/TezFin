@@ -48,7 +48,7 @@ const SupplyModal = (props) => {
     const [limit, setLimit] = useState('');
 
     const buttonOne = useSupplyErrorText(tokenValue, limit);
-    const buttonTwo = useWithdrawErrorText(tokenValue, limit);
+    const buttonTwo = useWithdrawErrorText(tokenValue, limit, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);

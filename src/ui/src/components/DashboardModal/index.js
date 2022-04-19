@@ -213,9 +213,21 @@ const DashboardModal = (props) => {
                 <DialogActions sx={{ flexDirection: 'column' }}>
                     <>
                         {collateralize
-                            ? <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple>
-                                {buttonOne}
-                            </Button>
+                            ? <>
+                                {!disabled
+                                    ? <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple>
+                                        {buttonOne}
+                                    </Button>
+                                    : <>
+                                        <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disabled>
+                                            {buttonOne}
+                                        </Button>
+                                        <Typography className={classes.errorText}>
+                                            {errorText}
+                                        </Typography>
+                                    </>
+                                }
+                            </>
                             : <>
                                 {((tokenValue > 0 && address) && !disabled)
                                     ? <>
@@ -224,6 +236,11 @@ const DashboardModal = (props) => {
                                         }
                                         {tabValue === 'two'
                                             && <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub} `} onClick={handleClickTabTwo} disableRipple> {buttonTwo} </Button>
+                                        }
+                                        {(tabValue === 'two' && buttonTwo === 'Repay')
+                                         && <Typography className={classes.errorText}>
+                                             {errorText}
+                                         </Typography>
                                         }
                                     </>
                                     : <>

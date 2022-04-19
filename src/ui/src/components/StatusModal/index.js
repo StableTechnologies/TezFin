@@ -17,7 +17,7 @@ const StatusModal = (props) => {
     } = props;
 
     return (
-        <Dialog open={open} className={classes.root}>
+        <Dialog open={open} onClose={closBtn && close} className={classes.root}>
             {closBtn && <CloseButton onClick={close}/>}
             <DialogTitle className={classes.title}>
                 {title}
