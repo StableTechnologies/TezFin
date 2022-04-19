@@ -71,7 +71,7 @@ const DashboardModal = (props) => {
 
     return (
         <React.Fragment>
-            <Dialog open={open} className={classes.root}>
+            <Dialog open={open} onClose={close} className={classes.root}>
                 <CloseButton onClick={close} />
                 <DialogTitle>
                     <div>
@@ -141,18 +141,18 @@ const DashboardModal = (props) => {
                                     ? <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
                                         {(tabValue === 'one') && (
                                             (tokenDetails.supply.balanceUnderlying > 0)
-                                                ? decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title])
+                                                ? nFormatter(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
                                                 : '0'
                                         )}
                                         {(tabValue === 'two') && (
                                             (tokenDetails.borrow.balanceUnderlying > 0)
-                                                ? decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title])
+                                                ? nFormatter(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
                                                 : '0'
                                         )}
                                         {' '} {tokenDetails.title}
                                     </Grid>
                                     : <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                        {decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title])} {' '} {tokenDetails.title}
+                                        {nFormatter(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))} {' '} {tokenDetails.title}
                                     </Grid>
                                 }
                             </Grid>
