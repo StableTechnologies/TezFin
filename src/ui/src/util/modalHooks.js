@@ -1,7 +1,11 @@
 /* eslint-disable import/prefer-default-export */
-import { useState, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
+import { decimals } from 'tezoslendingplatformjs';
+
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+
+import { decimalify } from './index';
 
 export const useSupplyErrorText = (tokenValue, limit) => {
     const [text, setText] = useState('Supply');
@@ -101,19 +105,47 @@ export const useRepayErrorText = (tokenValue, limit) => {
     return { text, errorText, disabled };
 };
 
-export const useDisableTokenErrorText = () => {
+export const useDisableTokenErrorText = (tokenDetails) => {
     const text = 'Disable Token';
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
 
+    const { collateralized } = useSelector((state) => state.supplyComposition.supplyComposition);
+    const { borrowing } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { borrowedMarkets } = useSelector((state) => state.market);
+
+    const tokenValueUsd = (tokenDetails.balanceUnderlying > 0) && decimalify(new BigNumber(tokenDetails.balanceUnderlying).multipliedBy(
+        new BigNumber(tokenDetails.usdPrice)
+    ).toNumber(), decimals[tokenDetails.title], decimals[tokenDetails.title]);
+    const pendingCollateralizedUsd = new BigNumber(collateralized).minus(new BigNumber(tokenValueUsd)).toNumber();
+
+    let isBorrowed;
     useEffect(() => {
-        setErrorText('You cannot disable collateral on an asset supplied. You have to withdraw first');
-        setDisabled(true);
+        borrowedMarkets.map((x) => {
+            if (x.assetType === tokenDetails.assetType) {
+                isBorrowed = true;
+                setDisabled(true);
+            }
+            return isBorrowed;
+        });
+    }, [tokenDetails]);
+
+    useEffect(() => {
+        if (isBorrowed) {
+            setErrorText('You cannot disable collateral on the same asset you borrowed. Please repay your balance first.');
+            setDisabled(true);
+        } else if (borrowing > pendingCollateralizedUsd) {
+            setErrorText('You cannot disable collateral if it causes your borrowed amount to go beyond the collateral ratio. Please repay some of your borrowed amount first.');
+            setDisabled(true);
+        } else {
+            setErrorText('');
+            setDisabled(false);
+        }
         return () => {
             setErrorText('');
             setDisabled(false);
         };
-    }, []);
+    }, [tokenDetails]);
 
     return { text, errorText, disabled };
 };

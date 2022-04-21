@@ -41,7 +41,7 @@ const DisableCollateralModal = (props) => {
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
 
-    const buttonOne = useDisableTokenErrorText();
+    const buttonOne = useDisableTokenErrorText(tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
