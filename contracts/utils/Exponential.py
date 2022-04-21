@@ -155,6 +155,19 @@ class Exponential(sp.Contract):
         sp.set_type(b, sp.TNat)
         return self.makeExp(a.mantissa + b * self.data.expScale)
 
+    """  
+        params: 
+            a: TNat
+            b: TNat
+        return: TNat
+    """
+
+    def add_nat_nat(self, a, b):
+        sp.set_type(a, sp.TNat)
+        sp.set_type(b, sp.TNat)
+        return a + b
+
+
     """    
         params: 
             a: TExp
