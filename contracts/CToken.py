@@ -287,17 +287,18 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         borrowerBalance = self.data.balances[borrower].balance
         liquidatorBalance = self.data.balances[liquidator].balance
 
-        borrowerTokensNew =  self.sub_nat_nat(borrowerBalance, seizeTokens)
+        borrowerTokensNew = self.sub_nat_nat(borrowerBalance, seizeTokens)
 
         protocolSeizeTokens = sp.local("protocolSeizeTokens", self.mul_nat_exp(
             seizeTokens, self.makeExp(self.data.protocolSeizeShareMantissa)))
 
-        liquidatorSeizeTokens = self.sub_nat_nat(seizeTokens, protocolSeizeTokens.value)
+        liquidatorSeizeTokens = self.sub_nat_nat(
+            seizeTokens, protocolSeizeTokens.value)
 
         exchangeRate = self.makeExp(self.exchangeRateStoredImpl())
 
         protocolSeizeAmount = self.mulScalarTruncate(
-                exchangeRate, protocolSeizeTokens.value)
+            exchangeRate, protocolSeizeTokens.value)
 
         totalReservesNew = self.add_nat_nat(self.data.totalReserves,
                                             protocolSeizeAmount)
@@ -312,6 +313,58 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.data.totalSupply = totalSupplyNew
         self.data.balances[borrower].balance = borrowerTokensNew
         self.data.balances[liquidator].balance = liquidatorTokensNew
+
+    """
+        The sender liquidates the borrowers collateral.
+        The collateral seized is transferred to the liquidator.
+        * @param borrower The borrower of this cToken to be liquidated
+        * @param cTokenCollateral The market in which to seize collateral from the borrower
+        * @param repayAmount The amount of the underlying borrowed asset to repay
+
+        need to perform accrue interest before calling this
+    """
+
+    @sp.entry_point
+    def liquidateBorrow(self, params):
+        sp.set_type(params, CTI.TLiquidate)
+
+        self.liquidateBorrowFresh(
+            sp.sender, params.borrower, params.repayAmount, params.cTokenCollateral)
+
+    def liquidateBorrowFresh(self, liquidator, borrower, repayAmount, cTokenCollateral):
+        allowed = sp.view("liquidateBorrowAllowed", self.data.comptroller, sp.record(
+            cTokenBorrowed=sp.self_address, cTokenCollateral=cTokenCollateral, borrower=borrower, liquidator=liquidator, repayAmount=repayAmount),
+            t=sp.TBool).open_some("INVALID LIQUIDATE BORROW ALLOWED VIEW")
+        sp.verify(allowed, EC.CT_LIQUIDATE_COMPTROLLER_REJECTION)
+
+        self.verifyAccruedInterestRelevance()
+
+        accrualBlockNumber = sp.view("accrualBlockNumber", cTokenCollateral, sp.unit,
+                                     t=sp.TNat).open_some("INVALID ACCRUAL BLOCK NUMBER VIEW")
+
+        sp.verify(sp.level == accrualBlockNumber, EC.CT_INTEREST_OLD)
+
+        sp.verify(borrower != liquidator,
+                  EC.CT_LIQUIDATE_LIQUIDATOR_IS_BORROWER)
+
+        sp.verify(repayAmount > 0, EC.CT_LIQUIDATE_CLOSE_AMOUNT_IS_INVALID)
+
+        self.repayBorrowInternal(
+            sp.record(payer=liquidator, borrower=borrower, repayAmount=repayAmount))
+
+        seizeTokens = sp.view("liquidateCalculateSeizeTokens", self.data.comptroller, sp.record(
+            cTokenBorrowed=sp.self_address, cTokenCollateral=cTokenCollateral, actualRepayAmount=repayAmount),
+            t=sp.TNat).open_some("INVALID LIQUIDATE CALC SEIZE TOKEN VIEW")
+
+        borrowerBalance = sp.view("balanceOf", cTokenCollateral, borrower,
+                                  t=sp.TNat).open_some("INVALID BALANCE OF VIEW")
+
+        sp.verify(borrowerBalance > seizeTokens, "LIQUIDATE_SEIZE_TOO_MUCH")
+
+        destination = sp.contract(
+            CTI.TSeize, cTokenCollateral, "seize").open_some()
+        sp.transfer(sp.record(liquidator=liquidator, borrower=borrower,
+                    seizeTokens=seizeTokens), sp.mutez(0), destination)
 
     """    
         Transfer `value` tokens from `from_` to `to_`
@@ -388,6 +441,17 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.utils.view(sp.TNat)
     def getBalance(self, params):
+        sp.result(self.data.balances[params].balance)
+
+    """    
+        Get the CToken balance of the account specified in `params`
+
+        params: TAddress - The address of the account to query
+
+        return: The number of tokens owned by `params`
+    """
+    @sp.utils.view(sp.TNat)
+    def balanceOf(self, params):
         sp.result(self.data.balances[params].balance)
 
     """    
@@ -632,6 +696,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def comptroller(self, params):
         sp.set_type(params, sp.TUnit)
         sp.result(self.data.comptroller)
+
+    @sp.onchain_view()
+    def accrualBlockNumber(self, params):
+        sp.set_type(params, sp.TUnit)
+        sp.result(self.data.accrualBlockNumber)
 
     """    
         Get cash balance of this cToken in the underlying asset
