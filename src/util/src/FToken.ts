@@ -190,7 +190,7 @@ export namespace FToken {
     }
 
     /*
-     * @description 
+     * @description
      *
      * @param storage
      */
@@ -230,14 +230,14 @@ export namespace FToken {
     }
 
     /**
-     * 
+     *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
      * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
      * @param blockMultiplier Rate line slope, order of magnitude of scale.
      * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
-     * @returns 
+     * @returns
      */
     function _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate) {
         const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
@@ -252,12 +252,12 @@ export namespace FToken {
     }
 
     /**
-     * 
+     *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
      * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
-     * @returns 
+     * @returns
      */
     function _calcUtilizationRate(loans, balance, reserves, scale) {
         const _loans = bigInt(loans);
@@ -274,7 +274,7 @@ export namespace FToken {
     }
 
     /**
-     * 
+     *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
@@ -282,7 +282,7 @@ export namespace FToken {
      * @param blockMultiplier Rate line slope, order of magnitude of scale.
      * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
      * @param reserveFactor Reserve share order of magnitude of scale.
-     * @returns 
+     * @returns
      */
     function _calcSupplyRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate, reserveFactor) {
         const _scale = bigInt(scale)
@@ -298,7 +298,7 @@ export namespace FToken {
     }
 
     /**
-     * 
+     *
      * @param rate Periodic (per-block) interest rate.
      * @param annualPeriods 365.25*24*60*2.
      * @returns Annual rate as a percentage.
@@ -351,8 +351,14 @@ export namespace FToken {
      *
      * @param
      */
-    export function normalizeToIndex(amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
-        return amount; // TODO: .multiply(currentIndex.divide(prevIndex));
+    export const normalizeToIndex = {
+        supply : function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
+            return amount;
+        },
+        borrow : function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
+            if (bigInt(prevIndex).eq(0)) { return bigInt(0); }
+            return amount.multiply(currentIndex.divide(prevIndex));
+        }
     }
 
     /*
@@ -379,8 +385,8 @@ export namespace FToken {
         // return 0 balance if uninitialized in contract
         return {
             assetType: assetType,
-            supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex(bigInt(supplyPrincipal), bigInt(1_000_000), currentIndex),
-            loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex(bigInt(borrowPrincipal), borrowIndex, currentIndex)
+            supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex.supply(bigInt(supplyPrincipal), bigInt(1_000_000), currentIndex),
+            loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex.borrow(bigInt(borrowPrincipal), borrowIndex, currentIndex)
         }
     }
 
