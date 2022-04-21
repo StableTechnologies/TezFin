@@ -97,10 +97,10 @@ const BorrowedTokenTable = (props) => {
                             <TableCell align="right"> {truncateNum(data.rate)}% </TableCell>
                             <TableCell align="right">
                                 <span>
-                                    {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : '0'} {' '} {data.title}
+                                    {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
                                 </span> <br/>
                                 <span className={classes.faintFont}>
-                                    ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                    ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                 </span>
                             </TableCell>
                             <TableCell align="right">
