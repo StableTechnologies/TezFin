@@ -12,7 +12,8 @@ TBorrowRateParams:
     borrows: The total amount of borrows the market has outstanding
     reserves: The total amount of reserves the market has
 """
-TBorrowRateParams = sp.TRecord(cash=sp.TNat, borrows=sp.TNat, reserves=sp.TNat, cb=TCallback)
+TBorrowRateParams = sp.TRecord(
+    cash=sp.TNat, borrows=sp.TNat, reserves=sp.TNat, cb=TCallback)
 
 """
 TSupplyRateParams:
@@ -21,7 +22,9 @@ TSupplyRateParams:
     reserves: The total amount of reserves the market has
     reserveFactorMantissa: The current reserve factor the market has
 """
-TSupplyRateParams = sp.TRecord(cash=sp.TNat, borrows=sp.TNat, reserves=sp.TNat, reserveFactorMantissa=sp.TNat, cb=TCallback)
+TSupplyRateParams = sp.TRecord(cash=sp.TNat, borrows=sp.TNat,
+                               reserves=sp.TNat, reserveFactorMantissa=sp.TNat, cb=TCallback)
+
 
 class InterestRateModelInterface(sp.Contract):
 
@@ -35,7 +38,6 @@ class InterestRateModelInterface(sp.Contract):
     @sp.entry_point
     def getBorrowRate(self, params):
         pass
-
 
     """ 
         Calculates the current supply interest rate per block

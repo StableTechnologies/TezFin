@@ -14,20 +14,22 @@ Exponential = sp.io.import_script_from_url(
     "file:contracts/utils/Exponential.py")
 OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
 
-SweepTokens = sp.io.import_script_from_url("file:contracts/utils/SweepTokens.py")
+SweepTokens = sp.io.import_script_from_url(
+    "file:contracts/utils/SweepTokens.py")
 
-TMarket = sp.TRecord(isListed = sp.TBool,  # Whether or not this market is listed
-        collateralFactor = Exponential.TExp,  # Multiplier representing the most one can borrow against their collateral in this market.
-                                # For instance, 0.9 to allow borrowing 90% of collateral value.
-                                # Must be between 0 and 1, and stored as a mantissa.
-        mintPaused = sp.TBool,
-        borrowPaused = sp.TBool,
-        name = sp.TString, # Asset name for price oracle
-        price = Exponential.TExp, # The price of the asset
-        priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
-        updateLevel = sp.TNat, # Block level of last price update
-        borrowCap = sp.TNat # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
-    )
+TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
+                     # Multiplier representing the most one can borrow against their collateral in this market.
+                     collateralFactor=Exponential.TExp,
+                     # For instance, 0.9 to allow borrowing 90% of collateral value.
+                     # Must be between 0 and 1, and stored as a mantissa.
+                     mintPaused=sp.TBool,
+                     borrowPaused=sp.TBool,
+                     name=sp.TString,  # Asset name for price oracle
+                     price=Exponential.TExp,  # The price of the asset
+                     priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
+                     updateLevel=sp.TNat,  # Block level of last price update
+                     borrowCap=sp.TNat  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
+                     )
 
 TLiquidity = sp.TRecord(
     liquidity=sp.TInt,  # Current account liquidity. Negative value indicates shortfall
@@ -289,14 +291,15 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(account, sp.TAddress)
         self.updateAllAssetPrices()
         self.accrueAllAssetInterests()
-        sp.transfer(account, sp.mutez(0), sp.self_entry_point("setAccountLiquidityWithView"))
-    
+        sp.transfer(account, sp.mutez(0), sp.self_entry_point(
+            "setAccountLiquidityWithView"))
+
     """
         Updates stored liquidity for the given account
 
         account: TAddress - The account to calculate liquidity for
     """
-    @sp.entry_point(lazify = True)
+    @sp.entry_point(lazify=True)
     def setAccountLiquidityWithView(self, account):
         sp.set_type(account, sp.TAddress)
         liquidity = sp.local(
@@ -331,7 +334,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
         liquidity = self.getHypoAccountLiquidityInternal(params)
         sp.result(liquidity)
-    
+
     def getHypoAccountLiquidityInternal(self, params):
         sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
         calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(cTokenModify=sp.some(
@@ -339,7 +342,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         liquidity = sp.compute(
             calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
         return liquidity
-    
+
     def getAccountLiquidityInternal(self, account):
         calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(
             cTokenModify=sp.none, account=account, redeemTokens=sp.nat(0), borrowAmount=sp.nat(0)))).value
@@ -378,7 +381,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         sp.result(self.mulScalarTruncate(
             ratio.value, params.actualRepayAmount))
-    
+
     """
         Determines whether a users position can be liquidated
 
@@ -388,24 +391,25 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def liquidateBorrowAllowed(self, params):
         sp.set_type(params, CMPTInterface.TLiquidateBorrowAllowed)
         # liquidator is not used, left here for future proofing
-        
+
         self.verifyMarketListed(params.cTokenBorrowed)
         self.verifyMarketListed(params.cTokenCollateral)
 
-        liquidity = sp.local("liquidtiy", self.getAccountLiquidityInternal(params.borrower))
+        liquidity = sp.local(
+            "liquidtiy", self.getAccountLiquidityInternal(params.borrower))
 
         sp.verify(liquidity.value < 0, EC.CMPT_INSUFFICIENT_SHORTFALL)
-        
+
         borrowBalance = sp.view("borrowBalanceStoredView", params.cTokenBorrowed, params.borrower,
-                                       t=sp.TNat).open_some("INVALID ACCOUNT BORROW BALANCE VIEW")
-        
+                                t=sp.TNat).open_some("INVALID ACCOUNT BORROW BALANCE VIEW")
+
         maxClose = sp.local("maxClose", self.mulScalarTruncate(self.makeExp(
             self.data.closeFactorMantissa), borrowBalance))
-       
+
         sp.verify(maxClose.value >= params.repayAmount, EC.CMPT_TOO_MUCH_REPAY)
 
         sp.result(True)
-    
+
     """
         Determines whether a seize is allwed
 
@@ -413,7 +417,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.onchain_view()
     def seizeAllowed(self, params):
-        sp.set_type(params, sp.TRecord(cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
+        sp.set_type(params, sp.TRecord(
+            cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
         # liquidator is not used, left here for future proofing
 
         self.verifyMarketListed(params.cTokenBorrowed)
@@ -421,9 +426,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         borrowComptroller = sp.view("comptroller", params.cTokenBorrowed, sp.unit,
                                     t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-        
+
         collateralComptroller = sp.view("comptroller", params.cTokenCollateral, sp.unit,
-                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
+                                        t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
 
         sp.verify(borrowComptroller == collateralComptroller,
                   EC.CMPT_COMPTROLLER_MISMATCH)
