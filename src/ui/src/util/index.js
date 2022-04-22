@@ -195,8 +195,10 @@ export const nFormatter = (num, formatDecimals = 4) => {
         }
     }
 
-    let formattedNum = (num / suffix[i].value).toString();
-    formattedNum = +formattedNum.slice(0, (formattedNum.toString().indexOf('.')) + (formatDecimals + 1));
+    let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toString();
+    if (formattedNum % 1 !== 0) {
+        formattedNum = +formattedNum.slice(0, (formattedNum.toString().indexOf('.')) + (formatDecimals + 1));
+    }
 
     return formattedNum + suffix[i].symbol;
 };
