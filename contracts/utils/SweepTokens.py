@@ -1,6 +1,8 @@
 import smartpy as sp
 
-TransferTokens = sp.io.import_script_from_url("file:contracts/utils/TransferTokens.py")
+TransferTokens = sp.io.import_script_from_url(
+    "file:contracts/utils/TransferTokens.py")
+
 
 class SweepTokens(TransferTokens.TransferTokens):
     """    
@@ -15,14 +17,14 @@ class SweepTokens(TransferTokens.TransferTokens):
         sp.set_type(isContract, sp.TBool)
         self.verifySweepMutez()
         sp.if isContract:
-            handle = sp.contract(sp.TUnit, self.data.administrator, entry_point="receive").open_some()
+            handle = sp.contract(
+                sp.TUnit, self.data.administrator, entry_point="receive").open_some()
             sp.transfer(sp.unit, sp.balance, handle)
         sp.else:
             sp.send(self.data.administrator, sp.balance)
-        
-    def verifySweepMutez(self): # Override
-        pass
 
+    def verifySweepMutez(self):  # Override
+        pass
 
     """    
         A public function to sweep accidental FA1.2 transfers to this contract. Tokens are sent to admin
@@ -31,13 +33,14 @@ class SweepTokens(TransferTokens.TransferTokens):
     """
     @sp.entry_point
     def sweepFA12(self, params):
-        sp.set_type(params, sp.TRecord(amount = sp.TNat, tokenAddress = sp.TAddress))
+        sp.set_type(params, sp.TRecord(
+            amount=sp.TNat, tokenAddress=sp.TAddress))
         self.verifySweepFA12(params.tokenAddress)
-        self.transferFA12(sp.self_address, self.data.administrator, params.amount, params.tokenAddress)
-        
-    def verifySweepFA12(self, tokenAddress): # Override
-        pass
+        self.transferFA12(sp.self_address, self.data.administrator,
+                          params.amount, params.tokenAddress)
 
+    def verifySweepFA12(self, tokenAddress):  # Override
+        pass
 
     """    
         A public function to sweep accidental FA2 transfers to this contract. Tokens are sent to admin
@@ -46,9 +49,11 @@ class SweepTokens(TransferTokens.TransferTokens):
     """
     @sp.entry_point
     def sweepFA2(self, params):
-        sp.set_type(params, sp.TRecord(amount = sp.TNat, tokenAddress = sp.TAddress, id = sp.TNat))
+        sp.set_type(params, sp.TRecord(amount=sp.TNat,
+                    tokenAddress=sp.TAddress, id=sp.TNat))
         self.verifySweepFA2(params.tokenAddress, params.id)
-        self.transferFA2(sp.self_address, self.data.administrator, params.amount, params.tokenAddress, params.id)
-        
-    def verifySweepFA2(self, tokenAddress, id): # Override
+        self.transferFA2(sp.self_address, self.data.administrator,
+                         params.amount, params.tokenAddress, params.id)
+
+    def verifySweepFA2(self, tokenAddress, id):  # Override
         pass

@@ -287,17 +287,18 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         borrowerBalance = self.data.balances[borrower].balance
         liquidatorBalance = self.data.balances[liquidator].balance
 
-        borrowerTokensNew =  self.sub_nat_nat(borrowerBalance, seizeTokens)
+        borrowerTokensNew = self.sub_nat_nat(borrowerBalance, seizeTokens)
 
         protocolSeizeTokens = sp.local("protocolSeizeTokens", self.mul_nat_exp(
             seizeTokens, self.makeExp(self.data.protocolSeizeShareMantissa)))
 
-        liquidatorSeizeTokens = self.sub_nat_nat(seizeTokens, protocolSeizeTokens.value)
+        liquidatorSeizeTokens = self.sub_nat_nat(
+            seizeTokens, protocolSeizeTokens.value)
 
         exchangeRate = self.makeExp(self.exchangeRateStoredImpl())
 
         protocolSeizeAmount = self.mulScalarTruncate(
-                exchangeRate, protocolSeizeTokens.value)
+            exchangeRate, protocolSeizeTokens.value)
 
         totalReservesNew = self.add_nat_nat(self.data.totalReserves,
                                             protocolSeizeAmount)
