@@ -20,6 +20,8 @@ TAccountSnapshot: Container for account balance information
 """
 TAccountSnapshot = sp.TRecord(account=sp.TAddress, cTokenBalance=sp.TNat, borrowBalance=sp.TNat, exchangeRateMantissa=sp.TNat)
 
+TSeize = sp.TRecord(liquidator=sp.TAddress, borrower=sp.TAddress, seizeTokens=sp.TNat)
+
 TValidateRepayParams = sp.TRecord(repayAmount=sp.TNat, closeFactorMantissa=sp.TNat, account=sp.TAddress).layout(("repayAmount", ("closeFactorMantissa", "account")))
 
 class CTokenInterface(sp.Contract):
