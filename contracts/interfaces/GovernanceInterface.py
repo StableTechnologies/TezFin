@@ -16,7 +16,6 @@ class GovernanceInterface(sp.Contract):
     def setPendingGovernance(self, pendingAdminAddress):
         pass
 
-
     """    
         Accept a new governance for the Governor
 
@@ -25,7 +24,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def acceptGovernance(self, unusedArg):
         pass
-
 
     """    
         Sets a new pending governance for the specified Comptroller or CToken address
@@ -38,7 +36,6 @@ class GovernanceInterface(sp.Contract):
     def setContractGovernance(self, params):
         pass
 
-
     """    
         Accept a new governance for the specified Comptroller or CToken address
 
@@ -47,7 +44,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def acceptContractGovernance(self, contractAddress):
         pass
-
 
     # CToken functions
 
@@ -62,7 +58,6 @@ class GovernanceInterface(sp.Contract):
     def setComptroller(self, params):
         pass
 
-
     """    
         Accrues interest and updates the interest rate model
 
@@ -73,7 +68,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def setInterestRateModel(self, params):
         pass
-    
 
     """    
         accrues interest and sets a new reserve factor for the protocol
@@ -85,7 +79,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def setReserveFactor(self, params):
         pass
-    
 
     """    
         Accrues interest and reduces reserves by transferring to admin
@@ -97,7 +90,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def reduceReserves(self, params):
         pass
-
 
     # Comptroller functions
 
@@ -112,7 +104,6 @@ class GovernanceInterface(sp.Contract):
     def setPriceOracle(self, params):
         pass
 
-
     """    
         Sets the closeFactor used when liquidating borrows
 
@@ -123,7 +114,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def setCloseFactor(self, params):
         pass
-
 
     """    
         Sets the collateralFactor for a market
@@ -138,7 +128,6 @@ class GovernanceInterface(sp.Contract):
     def setCollateralFactor(self, params):
         pass
 
-
     """    
         Sets liquidationIncentive
 
@@ -149,7 +138,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def setLiquidationIncentive(self, params):
         pass
-
 
     """    
         Add the market to the markets mapping and set it as listed
@@ -164,7 +152,6 @@ class GovernanceInterface(sp.Contract):
     def supportMarket(self, params):
         pass
 
-
     """    
         Disable the supported market
 
@@ -175,7 +162,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def disableMarket(self, params):
         pass
-
 
     """    
         Set the given borrow cap for the given cToken market. Borrowing that brings total borrows to or above borrow cap will revert.
@@ -190,7 +176,6 @@ class GovernanceInterface(sp.Contract):
     def setMarketBorrowCap(self, params):
         pass
 
-
     """    
         Pause or activate the mint of given CToken
 
@@ -203,7 +188,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def setMintPaused(self, params):
         pass
-
 
     """    
         Pause or activate the borrow of given CToken
@@ -218,7 +202,6 @@ class GovernanceInterface(sp.Contract):
     def setBorrowPaused(self, params):
         pass
 
-
     """    
         Pause or activate the transfer of CTokens
 
@@ -229,7 +212,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def setTransferPaused(self, params):
         pass
-
 
         """    
         # Set the number of blocks since the last accrue interest update is valid
@@ -242,7 +224,6 @@ class GovernanceInterface(sp.Contract):
     def setAccrualIntPeriodRelevance(self, params):
         pass
 
-
     """    
         # Set the number of blocks since the last update until the price is considered valid
 
@@ -253,7 +234,6 @@ class GovernanceInterface(sp.Contract):
     @sp.entry_point
     def setPricePeriodRelevance(self, params):
         pass
-
 
     """    
         # Set the number of blocks since the last update until the liquidity is considered valid

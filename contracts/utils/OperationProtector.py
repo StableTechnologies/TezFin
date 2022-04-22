@@ -1,7 +1,9 @@
 import smartpy as sp
 
-OPErrors = sp.io.import_script_from_url("file:contracts/errors/OperationProtectorErrors.py")
+OPErrors = sp.io.import_script_from_url(
+    "file:contracts/errors/OperationProtectorErrors.py")
 EC = OPErrors.ErrorCodes
+
 
 class CTokenOperations:
     GENERIC = sp.nat(0)
@@ -20,11 +22,13 @@ class CTokenOperations:
     GET_CASH = sp.nat(13)
     TRANSFER = sp.nat(14)
 
+
 class ComptrollerOperations:
     GENERIC = sp.nat(0)
     EXIT_MARKET = sp.nat(1)
     UPDATE_PRICE = sp.nat(2)
     GET_LIQUIDITY = sp.nat(3)
+
 
 class OperationProtector(sp.Contract):
     def activateNewOp(self, op):
@@ -47,11 +51,11 @@ class OperationProtector(sp.Contract):
         self.verifyActiveOp(op)
         self.finishOp(op)
 
-    @sp.entry_point(lazify = True)
+    @sp.entry_point(lazify=True)
     def hardResetOp(self, params):
         sp.set_type(params, sp.TUnit)
         self.verifyAdministrator()
         self.data.activeOperations = sp.set([])
 
-    def verifyAdministrator(self): # override
+    def verifyAdministrator(self):  # override
         pass

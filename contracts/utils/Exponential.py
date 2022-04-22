@@ -3,7 +3,8 @@
 
 import smartpy as sp
 
-MathErrors = sp.io.import_script_from_url("file:contracts/errors/MathErrors.py")
+MathErrors = sp.io.import_script_from_url(
+    "file:contracts/errors/MathErrors.py")
 EC = MathErrors.ErrorCodes
 
 """
@@ -17,7 +18,8 @@ TExp = sp.TRecord(mantissa=sp.TNat)
 class Exponential(sp.Contract):
     def __init__(self, **extra_storage):
         scale = int(1e18)
-        self.init(expScale=sp.nat(scale), halfExpScale=sp.nat(scale // 2), **extra_storage)
+        self.init(expScale=sp.nat(scale), halfExpScale=sp.nat(
+            scale // 2), **extra_storage)
 
     """    
         Constructs TExp from the given number value, without applying expScale
@@ -27,10 +29,10 @@ class Exponential(sp.Contract):
             value: TNat
         return: TExp
     """
+
     def makeExp(self, value):
         sp.set_type(value, sp.TNat)
         return sp.record(mantissa=value)
-
 
     """    
         Constructs TExp from the given number value, applying expScale
@@ -40,10 +42,10 @@ class Exponential(sp.Contract):
             value: TNat
         return: TExp
     """
+
     def toExp(self, value):
         sp.set_type(value, sp.TNat)
         return self.makeExp(value * self.data.expScale)
-
 
     """    
         Truncates the given exp to a whole number value.
@@ -53,10 +55,10 @@ class Exponential(sp.Contract):
             exp: TExp
         return: TNat
     """
+
     def truncate(self, exp):
         sp.set_type(exp, TExp)
         return exp.mantissa // self.data.expScale
-
 
     """
         Multiply an Exp by a scalar, then truncate to return an unsigned integer.
@@ -66,10 +68,10 @@ class Exponential(sp.Contract):
             scalar: TNat
         return: TNat
     """
+
     def mulScalarTruncate(self, a, scalar):
         sp.set_type(a, TExp)
         return self.truncate(self.mul_exp_nat(a, scalar))
-
 
     """
         Multiply an Exp by a scalar, truncate, then add an to an unsigned integer, returning an unsigned integer.
@@ -80,12 +82,12 @@ class Exponential(sp.Contract):
             addend: TNat
         return: TNat
     """
+
     def mulScalarTruncateAdd(self, a, scalar, addend):
         sp.set_type(a, TExp)
         sp.set_type(scalar, sp.TNat)
         sp.set_type(addend, sp.TNat)
         return self.mulScalarTruncate(a, scalar) + addend
-
 
     """    
         Multiply two Exp, round up to 1e-18, returning a new exponential.
@@ -95,12 +97,12 @@ class Exponential(sp.Contract):
             b: TExp
         return: TExp
     """
+
     def mulExpRounded(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
         mul_rounded = a.mantissa * b.mantissa + self.data.halfExpScale
         return self.makeExp(mul_rounded // self.data.expScale)
-
 
     """    
         Checks if first Exp is less than second Exp.
@@ -110,11 +112,11 @@ class Exponential(sp.Contract):
             b: TExp
         return: bool
     """
+
     def lessThanExp(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
         return a.mantissa < b.mantissa
-
 
     """    
         Checks if left Exp <= right Exp.
@@ -124,12 +126,11 @@ class Exponential(sp.Contract):
             b: TExp
         return: bool
     """
+
     def lessThanOrEqualExp(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
         return a.mantissa <= b.mantissa
-
-
 
     #  Raw operations
 
@@ -139,6 +140,7 @@ class Exponential(sp.Contract):
             b: TExp
         return: TExp
     """
+
     def add_exp_exp(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
@@ -150,6 +152,7 @@ class Exponential(sp.Contract):
             b: TNat
         return: TExp
     """
+
     def add_exp_nat(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, sp.TNat)
@@ -167,13 +170,13 @@ class Exponential(sp.Contract):
         sp.set_type(b, sp.TNat)
         return a + b
 
-
     """    
         params: 
             a: TExp
             b: TExp
         return: TExp
     """
+
     def sub_exp_exp(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
@@ -185,10 +188,11 @@ class Exponential(sp.Contract):
             b: TNat
         return: TNat
     """
+
     def sub_nat_nat(self, a, b):
         sp.set_type(a, sp.TNat)
         sp.set_type(b, sp.TNat)
-        return sp.as_nat(a - b, message = EC.SUBTRACTION_UNDERFLOW)
+        return sp.as_nat(a - b, message=EC.SUBTRACTION_UNDERFLOW)
 
     """    
         params: 
@@ -196,6 +200,7 @@ class Exponential(sp.Contract):
             b: TExp
         return: TExp
     """
+
     def mul_exp_exp(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
@@ -207,6 +212,7 @@ class Exponential(sp.Contract):
             b: TNat
         return: TExp
     """
+
     def mul_exp_nat(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, sp.TNat)
@@ -218,6 +224,7 @@ class Exponential(sp.Contract):
             b: TExp
         return: TNat
     """
+
     def mul_nat_exp(self, a, b):
         sp.set_type(a, sp.TNat)
         sp.set_type(b, TExp)
@@ -229,6 +236,7 @@ class Exponential(sp.Contract):
             b: TExp
         return: TExp
     """
+
     def div_exp_exp(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
@@ -241,6 +249,7 @@ class Exponential(sp.Contract):
             b: TNat
         return: TExp
     """
+
     def div_exp_nat(self, a, b):
         sp.set_type(a, TExp)
         sp.set_type(b, sp.TNat)
@@ -253,6 +262,7 @@ class Exponential(sp.Contract):
             b: TExp
         return: TNat
     """
+
     def div_nat_exp(self, a, b):
         sp.set_type(a, sp.TNat)
         sp.set_type(b, TExp)

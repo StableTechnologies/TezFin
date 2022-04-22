@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { marketAction } from '../../reduxContent/market/actions';
 
 import { disableCollateralizeTokenAction } from '../../util/modalActions';
+import { useDisableTokenErrorText } from '../../util/modalHooks';
+
 import InitializeModal from '../StatusModal/InitializeModal';
 import PendingModal from '../StatusModal/PendingModal';
 import DashboardModal from '../DashboardModal';
@@ -38,6 +40,8 @@ const DisableCollateralModal = (props) => {
     const [error, setError] = useState('');
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
+
+    const buttonOne = useDisableTokenErrorText(tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -134,7 +138,9 @@ const DisableCollateralModal = (props) => {
                 tokenDetails = {tokenDetails}
                 onClick = {onClick}
                 handleClickTabOne = {disableToken}
-                buttonOne = "Disable Token"
+                buttonOne={buttonOne.text}
+                errorText={buttonOne.errorText}
+                disabled={buttonOne.disabled}
                 btnSub = {classes.btnSub}
                 extraPadding = {classes.collateralizePadding}
                 collateralize

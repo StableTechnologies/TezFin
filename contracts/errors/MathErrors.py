@@ -1,4 +1,5 @@
 class ErrorCodes:
-    DIVISION_BY_ZERO = "DIVISION_BY_ZERO" # Division by zero
-    SUBTRACTION_UNDERFLOW = "SUBTRACTION_UNDERFLOW" # Subtraction underflow
-    ADDITION_OVERFLOW = "ADDITION_OVERFLOW"  # Addition overflow
+    # Division by zero
+    DIVISION_BY_ZERO = "DIVISION_BY_ZERO"  
+    # Subtraction underflow
+    SUBTRACTION_UNDERFLOW = "SUBTRACTION_UNDERFLOW" 

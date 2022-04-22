@@ -18,13 +18,18 @@ TAccountSnapshot: Container for account balance information
     borrowBalance: Borrow balance of the account
     exchangeRateMantissa: Exchange rate mantissa
 """
-TAccountSnapshot = sp.TRecord(account=sp.TAddress, cTokenBalance=sp.TNat, borrowBalance=sp.TNat, exchangeRateMantissa=sp.TNat)
+TAccountSnapshot = sp.TRecord(account=sp.TAddress, cTokenBalance=sp.TNat,
+                              borrowBalance=sp.TNat, exchangeRateMantissa=sp.TNat)
 
-TSeize = sp.TRecord(liquidator=sp.TAddress, borrower=sp.TAddress, seizeTokens=sp.TNat)
+TSeize = sp.TRecord(liquidator=sp.TAddress,
+                    borrower=sp.TAddress, seizeTokens=sp.TNat)
 
-TLiquidate = sp.TRecord(borrower=sp.TAddress, repayAmount=sp.TNat, cTokenCollateral=sp.TAddress)
+TLiquidate = sp.TRecord(borrower=sp.TAddress,
+                        repayAmount=sp.TNat, cTokenCollateral=sp.TAddress)
 
-TValidateRepayParams = sp.TRecord(repayAmount=sp.TNat, closeFactorMantissa=sp.TNat, account=sp.TAddress).layout(("repayAmount", ("closeFactorMantissa", "account")))
+TValidateRepayParams = sp.TRecord(repayAmount=sp.TNat, closeFactorMantissa=sp.TNat, account=sp.TAddress).layout(
+    ("repayAmount", ("closeFactorMantissa", "account")))
+
 
 class CTokenInterface(sp.Contract):
 
@@ -41,7 +46,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def mint(self, params):
         pass
-    
 
     """    
         Sender redeems cTokens in exchange for the underlying asset
@@ -60,7 +64,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def redeem(self, params):
         pass
-    
 
     """    
         Sender redeems cTokens in exchange for a specified amount of underlying asset
@@ -79,7 +82,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def redeemUnderlying(self, params):
         pass
-    
 
     """    
         Sender borrows assets from the protocol to their own address
@@ -96,7 +98,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def borrow(self, params):
         pass
-    
 
     """    
         Sender repays their own borrow
@@ -109,7 +110,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def repayBorrow(self, params):
         pass
-    
 
     """    
         Sender repays a borrow belonging to borrower
@@ -124,7 +124,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def repayBorrowBehalf(self, params):
         pass
-
 
     """    
         Transfer `value` tokens from `from_` to `to_`
@@ -143,7 +142,6 @@ class CTokenInterface(sp.Contract):
     def transfer(self, params):
         pass
 
-
     """    
         Approve `spender` to transfer up to `amount` from `sp.sender`
 
@@ -154,7 +152,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def approve(self, params):
         pass
-
 
     """    
         Get the current allowance from `owner` for `spender`
@@ -169,7 +166,6 @@ class CTokenInterface(sp.Contract):
     def getAllowance(self, params):
         pass
 
-
     """    
         Get the CToken balance of the account specified in `params`
 
@@ -180,7 +176,6 @@ class CTokenInterface(sp.Contract):
     @sp.utils.view(sp.TNat)
     def getBalance(self, params):
         pass
-
 
     """    
         Get the underlying balance of the account specified in `params`
@@ -196,7 +191,6 @@ class CTokenInterface(sp.Contract):
     def getBalanceOfUnderlying(self, params):
         pass
 
-
     """    
         Get total supply of the CToken
 
@@ -207,7 +201,6 @@ class CTokenInterface(sp.Contract):
     @sp.utils.view(sp.TNat)
     def getTotalSupply(self, params):
         pass
-
 
     """    
         Get a snapshot of the account's balances, and the cached exchange rate
@@ -222,7 +215,6 @@ class CTokenInterface(sp.Contract):
     def getAccountSnapshot(self, params):
         pass
 
-
     """    
         Updates storage value of the current per-block borrow interest rate for this cToken, scaled by 1e18
 
@@ -232,7 +224,6 @@ class CTokenInterface(sp.Contract):
     def updateBorrowRatePerBlock(self, params):
         pass
 
-
     """    
         Updates storage value of the current per-block supply interest rate for this cToken, scaled by 1e18
 
@@ -241,7 +232,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def updateSupplyRatePerBlock(self, params):
         pass
-
 
     """    
         Return the borrow balance of account based on stored data
@@ -253,7 +243,6 @@ class CTokenInterface(sp.Contract):
     @sp.utils.view(sp.TNat)
     def borrowBalanceStored(self, params):
         pass
-
 
     """    
         Calculates the exchange rate from the underlying to the CToken
@@ -269,7 +258,6 @@ class CTokenInterface(sp.Contract):
     def exchangeRateStored(self, params):
         pass
 
-
     """    
         Get cash balance of this cToken in the underlying asset
 
@@ -280,7 +268,6 @@ class CTokenInterface(sp.Contract):
     @sp.utils.view(sp.TNat)
     def getCash(self, params):
         pass
-
 
     """    
         Applies accrued interest to total borrows and reserves.
@@ -294,7 +281,6 @@ class CTokenInterface(sp.Contract):
     def accrueInterest(self, params):
         pass
 
-
     """    
         Sets a new pending governance for the market
 
@@ -305,7 +291,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def setPendingGovernance(self, pendingAdminAddress):
         pass
-
 
     """    
         Accept a new governance for the market
@@ -318,7 +303,6 @@ class CTokenInterface(sp.Contract):
     def acceptGovernance(self, unusedArg):
         pass
 
-
     """    
         Remove pending governance for the market
 
@@ -329,7 +313,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def removePendingGovernance(self, unusedArg):
         pass
-
 
     """    
         Sets a new comptroller for the market
@@ -342,7 +325,6 @@ class CTokenInterface(sp.Contract):
     def setComptroller(self, comptrollerAddress):
         pass
 
-
     """    
         Accrues interest and updates the interest rate model using _setInterestRateModelFresh
 
@@ -353,7 +335,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def setInterestRateModel(self, interestRateModelAddress):
         pass
-    
 
     """    
         accrues interest and sets a new reserve factor for the protocol
@@ -365,7 +346,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def setReserveFactor(self, newReserveFactor):
         pass
-    
 
     """    
         Accrues interest and adds reserves by transferring from admin
@@ -375,7 +355,6 @@ class CTokenInterface(sp.Contract):
     @sp.entry_point
     def addReserves(self, amount):
         pass
-    
 
     """    
         Accrues interest and reduces reserves by transferring to admin
