@@ -426,7 +426,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                                     t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
 
         sp.verify(borrowComptroller == collateralComptroller,
-                  EC.CMPT_INSUFFICIENT_SHORTFALL)
+                  EC.CMPT_COMPTROLLER_MISMATCH)
 
         sp.result(True)
 

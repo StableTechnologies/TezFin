@@ -26,5 +26,5 @@ class ErrorCodes:
     CT_INTEREST_INVALID	= "CT_INTEREST_INVALID" # Accrued interest is already invalid
     CT_INTEREST_OLD = "CT_INTEREST_OLD" # Accrued interest is too old
 
-    CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION = "CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION" # comptroller rejected seze call
+    CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION = "CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION" # comptroller rejected seize call
     CT_LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER = "CT_LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER" # liquidator and borrower addresses same in seize token call
