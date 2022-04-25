@@ -93,7 +93,7 @@ const AllMarketTokenTable = (props) => {
                                         </span>
                                     </TableCell>
                                 </TableRow>
-                                : <TableSkeleton cell={6}/>
+                                : <TableSkeleton index={data.title} cell={6}/>
                             }
                         </>
                     ))}
