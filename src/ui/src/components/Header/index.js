@@ -17,6 +17,7 @@ import questionCircle from '../../assets/questionCircle.svg';
 
 import { supplyCompositionAction } from '../../reduxContent/supplyComposition/actions';
 import { borrowCompositionAction } from '../../reduxContent/borrowComposition/actions';
+import { LightTooltip } from '../StackedBars/style.tsx';
 
 const Header = () => {
     const classes = useStyles();
@@ -39,7 +40,12 @@ const Header = () => {
                 <Grid item xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>
                       Net APY: 0.00% {' '}
-                        <img src={questionCircle} alt={'questionIcon'} className={classes.netAPYImg} />
+                        <LightTooltip
+                            title="Difference of Annual Percentage Yield earned and paid."
+                            placement="bottom"
+                        >
+                            <img src={questionCircle} alt={'questionIcon'} className={classes.netAPYImg} />
+                        </LightTooltip>
                     </Typography>
                 </Grid>
             </Grid>
