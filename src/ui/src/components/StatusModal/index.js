@@ -17,7 +17,8 @@ const StatusModal = (props) => {
     } = props;
 
     return (
-        <Dialog open={open} onClose={closBtn && close} className={classes.root}>
+        // eslint-disable-next-line no-unused-expressions
+        <Dialog open={open} onClose={ () => { closBtn && close(); }} className={classes.root}>
             {closBtn && <CloseButton onClick={close}/>}
             <DialogTitle className={classes.title}>
                 {title}
