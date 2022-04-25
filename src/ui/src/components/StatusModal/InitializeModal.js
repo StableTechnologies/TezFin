@@ -7,13 +7,12 @@ import confirmGif from '../../assets/confirm.gif';
 
 const InitializeModal = (props) => {
     const {
-        open, close
+        open
     } = props;
 
     return (
         <StatusModal
             open={open}
-            close={close}
             title='Constructing Transaction'
             gifSrc={confirmGif}
             tokenText= 'Kindly wait while the operation is being constructed.'

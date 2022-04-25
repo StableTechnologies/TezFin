@@ -12,7 +12,7 @@ import { useStyles } from './style';
 
 const TableSkeleton = (props) => {
     const classes = useStyles();
-    const { cell, key } = props;
+    const { cell, index } = props;
     const cellArr = [];
 
     // eslint-disable-next-line no-plusplus
@@ -21,15 +21,15 @@ const TableSkeleton = (props) => {
     }
 
     return (
-        <TableRow key={key} className={classes.root}>
+        <TableRow key={index} className={classes.root}>
             <TableCell>
                 <Box className={classes.cellConOne}>
                     <Skeleton variant="circular" className={classes.cellOneImg} />
                     <Skeleton variant="text" className={classes.cellText} />
                 </Box>
             </TableCell>
-            {cellArr.map(() => (
-                <TableCell>
+            {cellArr.map((x) => (
+                <TableCell key={x}>
                     <Box className={classes.cellConTwo}>
                         <Skeleton variant="text" width="70%" />
                     </Box>

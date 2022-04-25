@@ -50,7 +50,7 @@ const useStyles = makeStyles({
     },
     hashLink: {
         textDecoration: 'none',
-        color: '#007cb3'
+        color: '#2F80ED'
     }
 
 });

@@ -23,7 +23,7 @@ const Composition = (props) => {
             <Box className={classes.progressBar}>
                 {supplyBar
                     ? <StackedBars composition={data} />
-                    : <ToolTipProgressBars value={data.borrowUtilization} backgroundColor={progressBarColor} height='16px'/>
+                    : <ToolTipProgressBars value={data.borrowUtilization && data.borrowUtilization.toNumber()} backgroundColor={progressBarColor} height='16px'/>
                 }
             </Box>
             <Box className={classes.box}>
@@ -36,8 +36,8 @@ const Composition = (props) => {
                             <Typography className={classes.statsTitle}> {dataTitle} </Typography>
                             <Typography className={classes.statsValue}>
                                 ${(
-                                    ((data.supplying > 0) && nFormatter(data.supplying))
-                                    || ((data.borrowing > 0) && nFormatter(data.borrowing))
+                                    ((data.supplying > 0) && nFormatter(data.supplying, 2))
+                                    || ((data.borrowing > 0) && nFormatter(data.borrowing, 2))
                                 )
                                 || '0.00'
                                 }

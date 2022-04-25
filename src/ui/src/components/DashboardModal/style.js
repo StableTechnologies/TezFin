@@ -61,7 +61,12 @@ export const useStyles = makeStyles({
     img: {
         width: '1.5rem',
         height: '1.5rem',
-        margin: '0 .5rem -.3rem 0'
+        margin: '0 .5rem -.3rem 0',
+        '@media(max-width: 501px)': {
+            width: '1rem',
+            height: '1rem',
+            margin: '0 4px -3px 0'
+        }
     },
     imgTitle: {
         display: 'inline-block'
@@ -119,7 +124,10 @@ export const useStyles = makeStyles({
         fontSize: '1.25rem',
         fontWeight: '500',
         lineHeight: '1.875rem',
-        textTransform: 'unset'
+        textTransform: 'unset',
+        '@media(max-width: 501px)': {
+            width: '100%'
+        }
     },
     modalTextRight: {
         whiteSpace: 'nowrap',
@@ -146,10 +154,10 @@ export const useStyles = makeStyles({
         fontSize: '1.25rem',
         fontWeight: '300',
         lineHeight: '30px',
+        // '@media(max-width: 501px)': {
+        //     fontSize: '1rem'
+        // },
         '@media(max-width: 501px)': {
-            fontSize: '1rem'
-        },
-        '@media(max-width: 376px)': {
             fontSize: '0.875rem'
         },
         '@media(max-width: 320px)': {

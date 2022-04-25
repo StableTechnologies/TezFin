@@ -82,11 +82,11 @@ const Nav = () => {
                         {tezAccount && shorten(10, 8, tezAccount)} {' '}
                         <img src={CopyIcon} alt="copy icon" className={classes.popoverImg} />
                     </Button>
-                    <Button onClick={addWallet} className={classes.popoverBtn} disableRipple>
+                    <Button onClick={() => { addWallet(); setPopover(null); }} className={classes.popoverBtn} disableRipple>
                         <img src={ExchangeIcon} alt="change icon" className={classes.popoverImg} />
                         {' '} Change Wallet
                     </Button>
-                    <Button onClick={disconnectWallet} className={classes.popoverBtn} disableRipple>
+                    <Button onClick={() => { disconnectWallet(); setPopover(null); }} className={classes.popoverBtn} disableRipple>
                         <img src={DisconnectIcon} alt="disconnect icon" className={classes.popoverImg} />
                         {' '} Disconnect Wallet
                     </Button>

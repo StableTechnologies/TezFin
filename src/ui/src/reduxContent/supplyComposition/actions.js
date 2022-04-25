@@ -26,7 +26,7 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
                 title: x.title,
                 usdPrice: x.usdPrice,
                 balanceUnderlying: x.balanceUnderlying,
-                balanceUnderlyingUsd: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title]),
+                balanceUnderlyingUsd: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title], decimals[x.title]),
                 color: tokenColor[x.title],
                 collateral: x.collateral,
                 collateralFactor: new BigNumber(x.collateralFactor).toNumber(),
@@ -38,7 +38,7 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
 
         supplying = assets.reduce((a, b) => a + b.balanceUnderlyingUsd, 0);
         assets.map((x) => {
-            x.rate = ((x.balanceUnderlyingUsd / supplying) * 100);
+            x.rate = new BigNumber(new BigNumber(x.balanceUnderlyingUsd).dividedBy(BigNumber(supplying))).multipliedBy(100).toNumber();
             if (x.collateral) {
                 x.collateralUsd = x.balanceUnderlyingUsd;
                 x.totalCollateralUnderlying = new BigNumber(x.collateralUsd).multipliedBy(new BigNumber(x.collateralFactor)).toNumber();
