@@ -62,7 +62,11 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
     if (tokenDetails.collateral) {
         pendingCollateralizedUsd = new BigNumber(collateralized).minus(new BigNumber(tokenValueUsd)).toNumber();
     }
+
     const pendingSupplyingUsdLimit = new BigNumber(pendingSupplyingUsd).multipliedBy(
+        new BigNumber(tokenDetails.collateralFactor)
+    ).toNumber();
+    const pendingCollateralizedUsdLimit = new BigNumber(pendingCollateralizedUsd).multipliedBy(
         new BigNumber(tokenDetails.collateralFactor)
     ).toNumber();
 
@@ -70,9 +74,9 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
         if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
             setDisabled(true);
             setErrorText('You cannot withdraw an amount greater than the amount you supply.');
-        } else if ((borrowing > pendingSupplyingUsdLimit) || (tokenDetails.collateral && borrowing > pendingCollateralizedUsd)) {
+        } else if ((borrowing > pendingSupplyingUsdLimit) || (tokenDetails.collateral && borrowing > pendingCollateralizedUsdLimit)) {
             setDisabled(true);
-            setErrorText('You must repay your borrowed amounts before you can withdraw.');
+            setErrorText('You must repay your borrowed amounts before you can withdraw your funds.');
         } else {
             setErrorText('');
             setDisabled(false);
@@ -118,6 +122,9 @@ export const useDisableTokenErrorText = (tokenDetails) => {
         new BigNumber(tokenDetails.usdPrice)
     ).toNumber(), decimals[tokenDetails.title], decimals[tokenDetails.title]);
     const pendingCollateralizedUsd = new BigNumber(collateralized).minus(new BigNumber(tokenValueUsd)).toNumber();
+    const pendingCollateralizedUsdLimit = new BigNumber(pendingCollateralizedUsd).multipliedBy(
+        new BigNumber(tokenDetails.collateralFactor)
+    ).toNumber();
 
     let isBorrowed;
     useEffect(() => {
@@ -134,7 +141,7 @@ export const useDisableTokenErrorText = (tokenDetails) => {
         if (isBorrowed) {
             setErrorText('You cannot disable collateral on the same asset you borrowed. Please repay your balance first.');
             setDisabled(true);
-        } else if (borrowing > pendingCollateralizedUsd) {
+        } else if (borrowing > pendingCollateralizedUsdLimit) {
             setErrorText('You cannot disable collateral if it causes your borrowed amount to go beyond the collateral ratio. Please repay some of your borrowed amount first.');
             setDisabled(true);
         } else {
