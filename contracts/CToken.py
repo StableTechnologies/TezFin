@@ -317,9 +317,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
         The sender liquidates the borrowers collateral.
         The collateral seized is transferred to the liquidator.
-        * @param borrower The borrower of this cToken to be liquidated
-        * @param cTokenCollateral The market in which to seize collateral from the borrower
-        * @param repayAmount The amount of the underlying borrowed asset to repay
+        @param borrower The borrower of this cToken to be liquidated
+        @param cTokenCollateral The market in which to seize collateral from the borrower
+        @param repayAmount The amount of the underlying borrowed asset to repay
 
         need to perform accrue interest before calling this
     """
