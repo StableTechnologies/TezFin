@@ -55,3 +55,9 @@ class ErrorCodes:
     CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION = "CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION"
     # liquidator and borrower addresses same in seize token call
     CT_LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER = "CT_LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER"
+    # liquodate op rejected by comptroller
+    CT_LIQUIDATE_COMPTROLLER_REJECTION = "CT_LIQUIDATE_COMPTROLLER_REJECTION"
+    # liquidator and borrower addresses same in liquidate token call
+    CT_LIQUIDATE_LIQUIDATOR_IS_BORROWER = "CT_LIQUIDATE_LIQUIDATOR_IS_BORROWER"
+    # repay amount in liquidate call <= 0
+    CT_LIQUIDATE_CLOSE_AMOUNT_IS_INVALID = "CT_LIQUIDATE_CLOSE_AMOUNT_IS_INVALID"

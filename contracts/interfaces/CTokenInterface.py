@@ -24,6 +24,9 @@ TAccountSnapshot = sp.TRecord(account=sp.TAddress, cTokenBalance=sp.TNat,
 TSeize = sp.TRecord(liquidator=sp.TAddress,
                     borrower=sp.TAddress, seizeTokens=sp.TNat)
 
+TLiquidate = sp.TRecord(borrower=sp.TAddress,
+                        repayAmount=sp.TNat, cTokenCollateral=sp.TAddress)
+
 TValidateRepayParams = sp.TRecord(repayAmount=sp.TNat, closeFactorMantissa=sp.TNat, account=sp.TAddress).layout(
     ("repayAmount", ("closeFactorMantissa", "account")))
 
