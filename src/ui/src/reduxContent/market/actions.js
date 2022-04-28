@@ -45,6 +45,9 @@ export const allMarketAction = (account, markets) => (dispatch) => {
             token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
             token.supplyRate = markets[token.assetType].supply.rate.toString();
             token.borrowRate = markets[token.assetType].borrow.rate.toString();
+            token.exchangeRate = new BigNumber(markets[token.assetType].exchangeRate).toNumber();
+            token.reserves = new BigNumber(markets[token.assetType].reserves).toNumber();
+            token.cash = new BigNumber(markets[token.assetType].cash).toNumber();
             token.walletBalance = '';
             token.collateralFactor = new BigNumber(markets[token.assetType].collateralFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed();
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
@@ -63,7 +66,7 @@ export const allMarketAction = (account, markets) => (dispatch) => {
  * @returns suppliedMarket
  */
 export const suppliedMarketAction = (markets) => (dispatch) => {
-    const suppliedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, collateralFactor, supply }) => ({
+    const suppliedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, collateralFactor, exchangeRate, reserves, cash, marketSize, totalBorrowed, supply }) => ({
         assetType,
         banner,
         title,
@@ -71,6 +74,11 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
         usdPrice,
         walletBalance,
         collateralFactor,
+        exchangeRate,
+        reserves,
+        cash,
+        marketSize,
+        totalBorrowed,
         ...supply
     }));
 

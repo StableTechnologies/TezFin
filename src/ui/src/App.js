@@ -14,6 +14,7 @@ import Header from './components/Header';
 import Home from './components/Home';
 // eslint-disable-next-line import/no-unresolved
 import Dashboard from './components/Dashboard';
+import DebugDashboard from './components/DebuggingDashboard.tsx';
 import Footer from './components/Footer';
 
 import { addWalletAction } from './reduxContent/addWallet/actions';
@@ -60,6 +61,9 @@ const App = () => {
                 <Switch>
                     <Route exact path='/dashboard'>
                         <Dashboard />
+                    </Route>
+                    <Route exact path='/debugDashboard'>
+                        <DebugDashboard />
                     </Route>
                     {/* <Route exact path="/market"></Route> */}
                     {/* <Route exact path="/about"></Route> */}
