@@ -42,7 +42,7 @@ const DebugDashboard = () => {
     }, [dispatch, account, markets]);
 
     return (
-        <Grid container className={classes.dashboard}>
+        <Grid container className={classes.dashboard} marginTop='1rem'>
             <TableContainer className={`${classes.root} ${classes.tableCon}`}>
                 <Table>
                     <TableHead>
