@@ -130,6 +130,7 @@ const DebugDashboard = () => {
                             <TableCell align="right"> Total Supply </TableCell>
                             <TableCell align="right"> Total Borrows </TableCell>
                             <TableCell align="right"> Exchange Rate </TableCell>
+                            <TableCell align="right"> collateral Factor </TableCell>
                             <TableCell align="right"> Reserves </TableCell>
                             <TableCell align="right"> Reserve Factor </TableCell>
                             <TableCell align="right" className={classes.collateralPadding}>
@@ -183,6 +184,7 @@ const DebugDashboard = () => {
                                         </span>
                                     </TableCell>
                                     <TableCell align='right'>{data.exchangeRate}</TableCell>
+                                    <TableCell align='right'>{data.collateralFactor}</TableCell>
                                     <TableCell align='right'>{data.reserves}</TableCell>
                                     <TableCell align='right'>{data.reserveFactor}</TableCell>
                                     <TableCell align="right" className={classes.switchPadding}>
