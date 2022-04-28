@@ -14,7 +14,7 @@ import Header from './components/Header';
 import Home from './components/Home';
 // eslint-disable-next-line import/no-unresolved
 import Dashboard from './components/Dashboard';
-import DebugDashboard from './components/DebuggingDashboard.tsx';
+import DebugDashboard from './components/Debug/DebuggingDashboard';
 import Footer from './components/Footer';
 
 import { addWalletAction } from './reduxContent/addWallet/actions';
