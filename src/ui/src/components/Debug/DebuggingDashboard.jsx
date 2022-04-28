@@ -17,6 +17,7 @@ import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
+import * as SW from '@mui/material/Switch';
 
 import { BigNumber } from 'bignumber.js';
 import { decimals, TezosLendingPlatform } from 'tezoslendingplatformjs';
@@ -28,12 +29,10 @@ import Switch from '../Switch';
 // import Tez from './assets/largeXTZ.svg';
 
 import { useStyles } from '../Dashboard/style';
-import { allMarketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
-// import { addWalletAction } from '../../reduxContent/addWallet/actions';
 
 const DebugDashboard = () => {
     const classes = useStyles();
-    const dispatch = useDispatch();
+    const marketData = [];
 
     const [address, setAddress] = useState('');
     const [account, setAccount] = useState('');
@@ -50,8 +49,6 @@ const DebugDashboard = () => {
     };
 
     const fetchData = async () => {
-        const getMarkets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
-        setMarkets(getMarkets);
         if (address) {
             const getAccount = await TezosLendingPlatform.GetAccount(address, markets, comptroller, protocolAddresses, server);
             setAccount(getAccount);
@@ -63,7 +60,7 @@ const DebugDashboard = () => {
             setBorrowedMarket(getBorrowedMarket);
         }
     };
-    const marketData = [];
+
     // eslint-disable-next-line array-callback-return
     Object.entries(markets).map((x) => {
         marketData.push({
@@ -95,18 +92,12 @@ const DebugDashboard = () => {
                 y.borrowRate = x[1].rate;
             }
         });
-        console.log('yyyyyyyyyyyyyyyyyy', y);
-        console.log('marketDatamarketData', marketData);
         return marketData;
     });
 
-    console.log('marketData@Debug', marketData);
-
     useEffect(() => {
         init();
-        // fetchData();
-    }, []);
-    console.log('markets@Debug', markets);
+    }, [comptroller, protocolAddresses, server]);
 
     return (
         <Grid container className={classes.dashboard} marginTop='1rem'>
@@ -127,6 +118,7 @@ const DebugDashboard = () => {
                             <TableCell align="right"> Balance(Supply) </TableCell>
                             <TableCell align="right"> Balance(Borrow) </TableCell>
                             <TableCell align="right"> Cash </TableCell>
+                            <TableCell align="right"> Current Price </TableCell>
                             <TableCell align="right"> Total Supply </TableCell>
                             <TableCell align="right"> Total Borrows </TableCell>
                             <TableCell align="right"> Exchange Rate </TableCell>
@@ -139,9 +131,8 @@ const DebugDashboard = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {(Object.entries(suppliedMarket).length > 0) && marketData.map((data) => (
+                        {(marketData.length > 0) && marketData.map((data) => (
                             <>
-                                {console.log('dataaaaaaaaaaaaa', data)}
                                 <TableRow key={data.title}>
                                     <TableCell> ꜰ{data.title} </TableCell>
                                     <TableCell align="right"> { data.supplyRate ? truncateNum(data.supplyRate) : 0}% </TableCell>
@@ -163,8 +154,16 @@ const DebugDashboard = () => {
                                         </span>
                                     </TableCell>
                                     <TableCell align="right">
+                                        <span>
+                                            {(data.cash > 0) ? nFormatter(decimalify(data.cash.toString(), decimals[data.title])) : '0'} {' '} {data.title}
+                                        </span> <br/>
                                         <span className={classes.faintFont}>
                                             ${(data.cash > 0) ? nFormatter(decimalify((data.cash * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <span className={classes.faintFont}>
+                                            ${(data.usdPrice > 0) ? data.usdPrice : '0.00'}
                                         </span>
                                     </TableCell>
                                     <TableCell align="right">
@@ -188,7 +187,7 @@ const DebugDashboard = () => {
                                     <TableCell align='right'>{data.reserves}</TableCell>
                                     <TableCell align='right'>{data.reserveFactor}</TableCell>
                                     <TableCell align="right" className={classes.switchPadding}>
-                                        <Switch data={data} />
+                                        {data.collateral ? <Switch data={data} /> : <SW.default />}
                                     </TableCell>
                                 </TableRow>
                             </>
