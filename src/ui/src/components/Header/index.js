@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 
-import Nav from './nav';
 import Composition from './composition';
 
 import { HeaderCon, classes1, useStyles } from './style';
@@ -35,7 +34,6 @@ const Header = () => {
 
     return (
         <HeaderCon className={classes1.root}>
-            <Nav />
             <Grid container>
                 <Grid item xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>

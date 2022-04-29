@@ -10,12 +10,13 @@ import { allMarketAction, marketAction } from './reduxContent/market/actions';
 
 import './App.css';
 
+import Nav from './components/Header/nav';
 import Header from './components/Header';
 import Home from './components/Home';
-// eslint-disable-next-line import/no-unresolved
 import Dashboard from './components/Dashboard';
+import DebugDashboard from './components/Debug';
 import Market from './components/Market/index.tsx';
-import DebugDashboard from './components/Debug/DebuggingDashboard.jsx';
+
 import Footer from './components/Footer';
 
 import { addWalletAction } from './reduxContent/addWallet/actions';
@@ -57,10 +58,11 @@ const App = () => {
     return (
         <Router>
             <Grid className="App">
-                <Header />
+                <Nav />
                 {/* <Home /> */}
                 <Switch>
                     <Route exact path='/dashboard'>
+                        <Header />
                         <Dashboard />
                     </Route>
                     <Route exact path='/market' component={Market} />
