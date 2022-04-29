@@ -14,6 +14,9 @@ export const useStyles = makeStyles({
             overflow: 'hidden'
         }
     },
+    navCon: {
+        backgroundColor: '#F9FAFC'
+    },
     tezHeaderCon: {
         paddingLeft: '2.6875rem',
         paddingTop: '1.625rem',
@@ -312,7 +315,7 @@ export const HeaderCon = styled('div')(() => ({
         backgroundColor: '#F9FAFC',
         paddingBottom: '3.0625rem',
         '@media(min-width: 1024px)': {
-            height: '391px'
+            height: '308.34px'
         }
     }
 }));
