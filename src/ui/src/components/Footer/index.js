@@ -19,7 +19,7 @@ const Footer = () => {
     return (
         <Grid className={classes.root}>
             <Grid container className={`${classes.footerCon}`}>
-                <Grid item xs={4} sm={3} md={6} alignSelf="center">
+                <Grid item xs={4} sm={3} md={2} alignSelf="center">
                     <Typography>
                         <IconButton disableRipple>
                             <img
@@ -31,7 +31,7 @@ const Footer = () => {
                         {new Date().getFullYear()} TezFin{' '}
                     </Typography>
                 </Grid>
-                <Grid item xs={8} sm={6} md={4} textAlign="end">
+                <Grid item xs={8} sm={6} md={8} textAlign="end">
                     <NavLink
                         to="dashboard"
                         className={classes.footerLink}
@@ -48,14 +48,6 @@ const Footer = () => {
                         {' '}
             Market{' '}
                     </NavLink>
-                    <NavLink
-                        to="about"
-                        className={classes.footerLink}
-                        activeClassName={classes.activeLink}
-                    >
-                        {' '}
-            About{' '}
-                    </NavLink>
                     <Link
                         href="https://stabletech.upvoty.com"
                         target="_blank"
@@ -64,6 +56,14 @@ const Footer = () => {
                     >
             Feature Request
                     </Link>
+                    <NavLink
+                        to="about"
+                        className={classes.footerLink}
+                        activeClassName={classes.activeLink}
+                    >
+                        {' '}
+            About{' '}
+                    </NavLink>
                 </Grid>
                 <Grid item xs={12} sm={3} md={2} textAlign="end">
                     <Link

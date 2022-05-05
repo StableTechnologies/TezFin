@@ -41,7 +41,7 @@ export const useStyles = makeStyles({
         letterSpacing: '0.005em',
         textAlign: 'left',
         textDecoration: 'none',
-        marginLeft: '2.0625rem',
+        marginLeft: '1.0625rem',
         '@media(min-width: 968px)': {
             fontSize: '0.875rem'
         },
