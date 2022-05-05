@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
-import { Typography } from '@mui/material';
+import { Typography, Hidden } from '@mui/material';
 
 import Composition from './composition';
 
@@ -25,7 +25,9 @@ const Header = () => {
     const { supplyComposition } = useSelector((state) => state.supplyComposition);
     const { borrowComposition } = useSelector((state) => state.borrowComposition);
     const account = useSelector((state) => state.addWallet.account);
-    const { suppliedMarkets, borrowedMarkets } = useSelector((state) => state.market);
+    const { suppliedMarkets, borrowedMarkets } = useSelector(
+        (state) => state.market
+    );
 
     useEffect(() => {
         dispatch(supplyCompositionAction(suppliedMarkets));
@@ -34,38 +36,42 @@ const Header = () => {
 
     return (
         <HeaderCon className={classes1.root}>
-            <Grid container>
-                <Grid item xs={12} className={classes.netAPY}>
+            <Grid container className={classes.netAPY}>
+                <Grid item sx={{ display: { xl: 'none', xs: 'none' } }} xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>
-                      Net APY: 0.00% {' '}
+            Net APY: 0.00%{' '}
                         <LightTooltip
                             title="Difference of Annual Percentage Yield earned and paid."
                             placement="bottom"
                         >
-                            <img src={questionCircle} alt={'questionIcon'} className={classes.netAPYImg} />
+                            <img
+                                src={questionCircle}
+                                alt={'questionIcon'}
+                                className={classes.netAPYImg}
+                            />
                         </LightTooltip>
                     </Typography>
                 </Grid>
             </Grid>
             <Grid container>
                 <Composition
-                    title = "Supply Composition"
-                    data = {supplyComposition}
-                    dataIcon = {supplyingIcon}
-                    dataTitle = "Supplying"
-                    dataLimitIcon = {collateralizedIcon}
-                    dataLimitTitle = "Collateralized"
+                    title="Supply Composition"
+                    data={supplyComposition}
+                    dataIcon={supplyingIcon}
+                    dataTitle="Supplying"
+                    dataLimitIcon={collateralizedIcon}
+                    dataLimitTitle="Collateralized"
                     gridClass={classes.compositionOne}
                     progressBarColor={classes.supplyBarColor} // add class
                     supplyBar
                 />
                 <Composition
-                    title = "Borrow Limit"
-                    data = {borrowComposition}
-                    dataIcon = {borrowingIcon}
-                    dataTitle = "Borrowing"
-                    dataLimitIcon = {borrowLimitIcon}
-                    dataLimitTitle = "Borrow limit"
+                    title="Borrow Limit"
+                    data={borrowComposition}
+                    dataIcon={borrowingIcon}
+                    dataTitle="Borrowing"
+                    dataLimitIcon={borrowLimitIcon}
+                    dataLimitTitle="Borrow limit"
                     gridClass={classes.compositionTwo}
                     progressBarColor={classes.borrowBarColor} // add class
                 />
