@@ -22,29 +22,75 @@ const Footer = () => {
                 <Grid item xs={4} sm={3} md={6} alignSelf="center">
                     <Typography>
                         <IconButton disableRipple>
-                            <img src={copyright} alt="discord-icon" className={classes.copyrightIcon}/>
-                        </IconButton> {' '}
-                        {new Date().getFullYear()} TezFin </Typography>
+                            <img
+                                src={copyright}
+                                alt="discord-icon"
+                                className={classes.copyrightIcon}
+                            />
+                        </IconButton>{' '}
+                        {new Date().getFullYear()} TezFin{' '}
+                    </Typography>
                 </Grid>
                 <Grid item xs={8} sm={6} md={4} textAlign="end">
-                    <NavLink to="dashboard" className={classes.footerLink} activeClassName={classes.activeLink}> Dashboard </NavLink>
-                    <NavLink to="market" className={classes.footerLink} activeClassName={classes.activeLink}> Market </NavLink>
-                    <NavLink to="about" className={classes.footerLink} activeClassName={classes.activeLink}> About </NavLink>
+                    <NavLink
+                        to="dashboard"
+                        className={classes.footerLink}
+                        activeClassName={classes.activeLink}
+                    >
+                        {' '}
+            Dashboard{' '}
+                    </NavLink>
+                    <NavLink
+                        to="market"
+                        className={classes.footerLink}
+                        activeClassName={classes.activeLink}
+                    >
+                        {' '}
+            Market{' '}
+                    </NavLink>
+                    <NavLink
+                        to="about"
+                        className={classes.footerLink}
+                        activeClassName={classes.activeLink}
+                    >
+                        {' '}
+            About{' '}
+                    </NavLink>
+                    <Link
+                        href="https://stabletech.upvoty.com"
+                        target="_blank"
+                        rel="noopener"
+                        className={classes.footerLink}
+                    >
+            Feature Request
+                    </Link>
                 </Grid>
                 <Grid item xs={12} sm={3} md={2} textAlign="end">
-                    <Link href="https://twitter.com/TezosFinance" target="_blank" rel="noopener">
+                    <Link
+                        href="https://twitter.com/TezosFinance"
+                        target="_blank"
+                        rel="noopener"
+                    >
                         <IconButton disableRipple>
-                            <img src={twitter} alt="twitter-icon" className={classes.icon}/>
+                            <img src={twitter} alt="twitter-icon" className={classes.icon} />
                         </IconButton>
                     </Link>
-                    <Link href="https://discord.com/invite/FRw2vgc6" target="_blank" rel="noopener">
+                    <Link
+                        href="https://discord.com/invite/FRw2vgc6"
+                        target="_blank"
+                        rel="noopener"
+                    >
                         <IconButton disableRipple>
-                            <img src={discord} alt="discord-icon" className={classes.icon}/>
+                            <img src={discord} alt="discord-icon" className={classes.icon} />
                         </IconButton>
                     </Link>
                     <Link href="https://t.me/TezFin" target="_blank" rel="noopener">
                         <IconButton disableRipple>
-                            <img src={telegram} alt="telegram-icon" className={classes.icon}/>
+                            <img
+                                src={telegram}
+                                alt="telegram-icon"
+                                className={classes.icon}
+                            />
                         </IconButton>
                     </Link>
                 </Grid>
