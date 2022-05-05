@@ -21,8 +21,6 @@ export const useStyles = makeStyles({
     footerCon: {
         height: '3.1875rem',
         paddingTop: '1.25rem',
-        paddingLeft: '2.6875rem',
-        paddingRight: '2.5rem',
         fontSize: '1rem',
         fontWeight: '300',
         lineHeight: '1.875rem',
