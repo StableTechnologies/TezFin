@@ -36,7 +36,7 @@ const Header = () => {
 
     return (
         <HeaderCon className={classes1.root}>
-            <Grid container >
+            <Grid container className={classes.netAPY}>
                 <Grid item sx={{ display: { xl: 'none', xs: 'none' } }} xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>
             Net APY: 0.00%{' '}
