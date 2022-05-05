@@ -96,7 +96,7 @@ const SuppliedTokenTable = (props) => {
                 <TableHead>
                     <TableRow>
                         <TableCell> Token </TableCell>
-                        <TableCell align="right"> APY/Earned </TableCell>
+                        <TableCell align="right"> APY </TableCell>
                         <TableCell align="right"> Balance </TableCell>
                         <TableCell align="right" className={classes.collateralPadding}>
                             Collateral {' '}
