@@ -17,6 +17,8 @@ import Dashboard from './components/Dashboard';
 import DebugDashboard from './components/Debug';
 import Market from './components/Market/index.tsx';
 
+import DisclaimerModal from './components/DisclaimerModal';
+
 import Footer from './components/Footer';
 
 import { addWalletAction } from './reduxContent/addWallet/actions';
@@ -59,6 +61,7 @@ const App = () => {
         <Router>
             <Grid className="App">
                 <Nav />
+	    <DisclaimerModal onClose={()=>{console.log('closed'); }} />
                 {/* <Home /> */}
                 <Switch>
                     <Route exact path='/dashboard'>
