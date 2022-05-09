@@ -37,32 +37,28 @@ const Footer = () => {
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
-                        {' '}
-            Dashboard{' '}
+                        Dashboard
                     </NavLink>
                     <NavLink
                         to="market"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
-                        {' '}
-            Market{' '}
+                        Market
                     </NavLink>
-                    <Link
-                        href="https://stabletech.upvoty.com"
-                        target="_blank"
-                        rel="noopener"
+                    <NavLink
+                        to="feedback"
                         className={classes.footerLink}
+                        activeClassName={classes.activeLink}
                     >
-            Feature Request
-                    </Link>
+                        Feedback
+                    </NavLink>
                     <NavLink
                         to="about"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
-                        {' '}
-            About{' '}
+                        About
                     </NavLink>
                 </Grid>
                 <Grid item xs={12} sm={3} md={2} textAlign="end">

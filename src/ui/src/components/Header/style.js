@@ -25,7 +25,7 @@ export const useStyles = makeStyles({
         }
     },
     tezHeader: {
-        width: '16.875rem',
+        width: 'max-content',
         height: '3.142rem',
         '@media(max-width: 768px)': {
             width: '10rem'
