@@ -21,16 +21,16 @@ export const useStyles = makeStyles({
     footerCon: {
         height: '3.1875rem',
         paddingTop: '1.25rem',
+        paddingLeft: '2.6875rem',
+        paddingRight: '2.5rem',
         fontSize: '1rem',
         fontWeight: '300',
         lineHeight: '1.875rem',
         letterSpacing: '0.005em',
         borderTop: '1px solid rgba(0, 0, 0, 0.45)',
-        '@media(max-width: 768px)': {
-            paddingRight: '1rem'
-        },
         '@media(max-width: 501px)': {
-            paddingLeft: '1rem'
+            paddingLeft: '0.5rem',
+            paddingRight: '0.5rem'
         }
     },
     footerLink: {
