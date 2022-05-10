@@ -27,16 +27,27 @@ export const useSupplyErrorText = (tokenValue, limit) => {
     return { text, errorText, disabled };
 };
 
-export const useBorrowErrorText = (tokenValue, limit) => {
+export const useBorrowErrorText = (tokenValue, limit, tokenDetails) => {
     const [text, setText] = useState('Borrow');
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
 
+    const marketSize = decimalify(tokenDetails.marketSize.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title]);
+    const totalBorrowed = decimalify(tokenDetails.totalBorrowed.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title]);
+    const availableBorrowAmount = new BigNumber(marketSize).minus(new BigNumber(totalBorrowed)).toNumber();
+
     useEffect(() => {
-        if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
+        if ((Number(tokenValue) > 0) && (Number(tokenValue) > availableBorrowAmount)) {
+            setErrorText('You cannot borrow more than the amount available on the market.');
+            setDisabled(true);
+        } else if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
             setText('Insufficient Collateral');
             setErrorText('You must supply assets as collateral to increase your borrow limit.');
             setDisabled(true);
+        } else {
+            setText('Borrow');
+            setErrorText('');
+            setDisabled(false);
         }
         return () => {
             setText('Borrow');
