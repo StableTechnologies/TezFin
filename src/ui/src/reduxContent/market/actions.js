@@ -63,11 +63,12 @@ export const allMarketAction = (account, markets) => (dispatch) => {
  * @returns suppliedMarket
  */
 export const suppliedMarketAction = (markets) => (dispatch) => {
-    const suppliedTokens = markets.map(({ assetType, banner, title, logo, usdPrice, walletBalance, collateralFactor, supply }) => ({
+    const suppliedTokens = markets.map(({ assetType, banner, title, logo, fLogo, usdPrice, walletBalance, collateralFactor, supply }) => ({
         assetType,
         banner,
         title,
         logo,
+        fLogo,
         usdPrice,
         walletBalance,
         collateralFactor,

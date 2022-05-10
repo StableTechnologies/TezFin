@@ -19,7 +19,6 @@ import SupplyModal from '../SupplyModal';
 import CollateralizeModal from '../CollateralizeModal';
 import DisableCollateralModal from '../DisableCollateralModal';
 
-import Tez from '../../assets/largeXTZ.svg';
 import questionCircleIcon from '../../assets/questionCircle.svg';
 
 // eslint-disable-next-line object-curly-newline
@@ -123,7 +122,7 @@ const SuppliedTokenTable = (props) => {
                     {suppliedData && suppliedData.map((data) => (
                         <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                             <TableCell>
-                                <img src={Tez} alt={`${data.title}-Icon`} className={classes.img} />
+                                <img src={data.fLogo} alt={`${data.title}-Icon`} className={classes.img} />
                                 <Typography className={classes.tokenName}>
                                     {' '} ꜰ{data.title}
                                 </Typography>
