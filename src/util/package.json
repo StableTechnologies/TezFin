@@ -8,7 +8,7 @@
     "start": "node ./build/src/index.js",
     "build": "tsc",
     "package": "rm -rf ./build && tsc",
-    "test": "npm run build && clear && npm run start",
+    "test": "mocha test/test.ts",
     "reinstall": "rm -rf ./node_modules ./build && npm i"
   },
   "author": "",
@@ -24,6 +24,7 @@
   "dependencies": {
     "big-integer": "^1.6.51",
     "bignumber.js": "9.0.1",
+    "chai": "^4.3.6",
     "conseiljs": "5.1.0",
     "jsonpath-plus": "^6.0.1"
   }
