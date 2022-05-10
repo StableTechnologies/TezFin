@@ -47,7 +47,7 @@ const BorrowModal = (props) => {
     const [currrentTab, setCurrrentTab] = useState('');
     const [limit, setLimit] = useState('');
 
-    const buttonOne = useBorrowErrorText(tokenValue, limit);
+    const buttonOne = useBorrowErrorText(tokenValue, limit, tokenDetails);
     const buttonTwo = useRepayErrorText(tokenValue, limit);
 
     const handleOpenInitialize = () => setInitializeModal(true);

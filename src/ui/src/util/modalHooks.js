@@ -32,8 +32,17 @@ export const useBorrowErrorText = (tokenValue, limit, tokenDetails) => {
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
 
-    const marketSize = decimalify(tokenDetails.marketSize.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title]);
-    const totalBorrowed = decimalify(tokenDetails.totalBorrowed.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title]);
+    const { allMarkets } = useSelector((state) => state.market);
+
+    let marketSize;
+    let totalBorrowed;
+    // eslint-disable-next-line array-callback-return
+    allMarkets.map((x) => {
+        if (x.assetType === tokenDetails.assetType) {
+            marketSize = decimalify(x.marketSize.toString(), decimals[x.title], decimals[x.title]);
+            totalBorrowed = decimalify(x.totalBorrowed.toString(), decimals[x.title], decimals[x.title]);
+        }
+    });
     const availableBorrowAmount = new BigNumber(marketSize).minus(new BigNumber(totalBorrowed)).toNumber();
 
     useEffect(() => {
