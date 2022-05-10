@@ -204,7 +204,7 @@ export namespace FToken {
      * @param storage
      */
     export function GetExchangeRate(storage: Storage): number {
-        return 0.95; // TODO: CToken.exchangeRateAdjusted
+	    return _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply);
     }
 
     /*
@@ -295,6 +295,32 @@ export namespace FToken {
         const poolRateDenominator = _scale.multiply(_scale);
 
         return poolRateNumerator.divide(poolRateDenominator);
+    }
+
+
+    /**
+     *
+     * @param adjustment TODO 
+     * @param initialExhangeRateMantissa  initial exchangeRate's mantissa 
+     * @param balance User's underlying balance
+     * @param borrows Total amount of borrowed assets of a given collateral token.
+     * @param reserves Reserves of the collateral token.
+     * @param TotalSupply Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
+     * @returns
+     */
+    function _calcExchangeRateAdjusted(adjustment, initialExhangeRateMantissa, balance, borrows, reserves, totalSupply) {
+	    
+	    if (bigInt(totalSupply).greater(0)) {
+		    const _cash = bigInt(balance).minus(adjustment);
+		    const _num = _cash.add(borrows).minus(reserves);
+		    // div by zero checked above 
+		    const _exchangeRate = _num.divide(totalSupply);
+		    return _exchangeRate;
+
+	    } else {
+		    return initialExhangeRateMantissa;
+	    }
+
     }
 
     /**
