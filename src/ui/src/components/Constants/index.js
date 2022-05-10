@@ -5,21 +5,26 @@ import USDtz from '../../assets/USDtz.svg';
 import XTZ from '../../assets/XTZ.svg';
 // import ctez from '../../assets/ctez.svg';
 // import kUSD from '../../assets/kUSD.svg';
+import fBTCtz from '../../assets/fbtctz.svg';
+import fEthtz from '../../assets/fethtz.svg';
+import fUSDtz from '../../assets/fusdtz.svg';
+import fXTZ from '../../assets/fXTZ.svg';
+// import fCtez from '../../assets/fctez.svg';
 
 export const tokens = [
     {
-        title: 'BTCtz', logo: BTCtz, banner: 'BTCtz', assetType: AssetType.BTC
+        title: 'BTCtz', logo: BTCtz, fLogo: fBTCtz, banner: 'BTCtz', assetType: AssetType.BTC
     },
     {
-        title: 'ETHtz', logo: Ethtz, banner: 'ETH Tez', assetType: AssetType.ETH
+        title: 'ETHtz', logo: Ethtz, fLogo: fEthtz, banner: 'ETH Tez', assetType: AssetType.ETH
     },
     {
-        title: 'XTZ', logo: XTZ, banner: 'Tez', assetType: AssetType.XTZ
+        title: 'XTZ', logo: XTZ, fLogo: fXTZ, banner: 'Tez', assetType: AssetType.XTZ
     },
     //   { title: 'kUSD', logo: kUSD, banner: 'kUSD', assetType: '' },
     //   { title: 'CTez', logo: ctez, banner: 'CTez', assetType: '' },
     {
-        title: 'USDtz', logo: USDtz, banner: 'USDtz', assetType: AssetType.USD
+        title: 'USDtz', logo: USDtz, fLogo: fUSDtz, banner: 'USDtz', assetType: AssetType.USD
     }
 ];
 export const tokenColor = {
