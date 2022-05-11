@@ -309,7 +309,7 @@ export namespace FToken {
      * @returns
      */
     function _calcExchangeRateAdjusted(adjustment, initialExhangeRateMantissa, balance, borrows, reserves, totalSupply) {
-	    
+	    const _adjustment = bigInt(adjustment);
 	    if (bigInt(totalSupply).greater(0)) {
 		    const _cash = bigInt(balance).minus(adjustment);
 		    const _num = _cash.add(borrows).minus(reserves);
