@@ -203,7 +203,7 @@ export namespace FToken {
      *
      * @param storage
      */
-    export function GetExchangeRate(storage: Storage): number {
+    export function GetExchangeRate(storage: Storage): BigNumber {
 	    return _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply);
     }
 
@@ -314,7 +314,7 @@ export namespace FToken {
 		    const _cash = bigInt(balance).minus(adjustment);
 		    const _num = _cash.add(borrows).minus(reserves);
 		    // div by zero checked above 
-		    const _exchangeRate = _num.divide(totalSupply);
+		    const _exchangeRate = new BigNumber(_num.toString()).div(totalSupply.toString());
 		    return _exchangeRate;
 
 	    } else {
