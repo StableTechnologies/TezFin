@@ -199,7 +199,7 @@ export namespace FToken {
     }
 
     /*
-     * @description TODO
+     * @description given an Ftoken Storage, it returns the exchangeRate with 0 adjustment
      *
      * @param storage
      */
@@ -299,16 +299,19 @@ export namespace FToken {
 
 
     /**
+     * @description Calculates the exchange rate based on the formula :
+     * ( underlyingBalance + totalBorrows - reserves ) / totalSupply 
      *
      * @param adjustment TODO 
-     * @param initialExhangeRateMantissA  initial exchangeRate's mantissa 
+     * @param initialExhangeRateMantissa  initial exchangeRate's mantissa 
      * @param balance User's underlying balance
      * @param borrows Total amount of borrowed assets of a given collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param TotalSupply Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
+     * @param totalSupply total supply of the Ftoken.
+     * @param expScale the scale all the mantissa's are in .
      * @returns
      */
-    function _calcExchangeRateAdjusted(adjustment, initialExhangeRateMantissa, balance, borrows, reserves, totalSupply, expScale ) {
+	function _calcExchangeRateAdjusted(adjustment, initialExhangeRateMantissa, balance, borrows, reserves, totalSupply, expScale ): BigNumber {
 	    const _adjustment = bigInt(adjustment);
 	    if (bigInt(totalSupply).greater(0)) {
 		    const _cash = bigInt(balance).minus(adjustment);
@@ -318,7 +321,7 @@ export namespace FToken {
 		    const _exchangeRate = new BigNumber(_num.toString()).div(totalSupply.toString());
 			    return _exchangeRate; }
 			    else {
-				    return _zero;
+				    return new BigNumber(_zero.toString());
 			    }
 
 	    } else {
