@@ -60,7 +60,7 @@ describe("getExchangeRate(storage)", function () {
         totalBorrows: 0,
         totalReserves: 0,
         initialExchangeRateMantissa: 1,
-        expScale: 3,
+        expScale: 1,
       },
       expected: 1.0,
     },
@@ -71,7 +71,7 @@ describe("getExchangeRate(storage)", function () {
         totalBorrows: 50,
         totalReserves: 0,
         initialExchangeRateMantissa: 1,
-        expScale: 3,
+        expScale: 1,
       },
       expected: 1.0,
     },
@@ -81,8 +81,8 @@ describe("getExchangeRate(storage)", function () {
         currentCash: 500,
         totalBorrows: 510,
         totalReserves: 1,
-        initialExchangeRateMantissa: 1,
-        expScale: 3,
+        initialExchangeRateMantissa: 10,
+        expScale: 10,
       },
       expected: 1.009,
     },
@@ -92,11 +92,22 @@ describe("getExchangeRate(storage)", function () {
         currentCash: 964,
         totalBorrows: 5100,
         totalReserves: 10,
-        initialExchangeRateMantissa: 1,
-        expScale: 3,
+        initialExchangeRateMantissa: 100,
+        expScale: 100,
       },
       expected: 1.009,
     },
+    {
+      args: {
+        totalSupply: 0,
+        currentCash: 1,
+        totalBorrows: 1,
+        totalReserves: 0,
+        initialExchangeRateMantissa: 234,
+        expScale: 100,
+      },
+      expected: 2.34,
+    }
   ];
 
   tests.forEach((test: ExchangeRateTest) => {
