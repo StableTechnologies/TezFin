@@ -200,7 +200,7 @@ export namespace FToken {
     }
 
     /*
-     * @description Given a token storage,it returns the  exchangeRate with 0 adjustment 
+     * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
      *
      * @param storage
      */
@@ -211,9 +211,8 @@ export namespace FToken {
 	    const log10 = Decimal.log(10);
 	    const decimalPlaces = expS.div(log10);
 
-	    //const decimalPlaces = (log(storage.expScale) / log(10)).toFixed();
 	    const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
-		return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
+	    return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
     }
 
     /*
@@ -326,13 +325,8 @@ export namespace FToken {
 		    const _cash = bigInt(balance).minus(adjustment);
 		    const _num = _cash.add(borrows).minus(reserves);
 		    const _zero = bigInt(0);
-		    if (_num.notEquals(_zero)) {
 		    const _exchangeRate = new BigNumber(_num.toString()).div(totalSupply.toString());
-			    return _exchangeRate; 
-		     }	    else {
-				    return new BigNumber(_zero.toString());
-			    }
-
+		    return _exchangeRate; 
 	    } else {
 		    return new BigNumber(initialExhangeRateMantissa.toString()).div(expScale.toString());
 	    }
