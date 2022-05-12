@@ -16,7 +16,8 @@ export const useStyles = makeStyles({
                 height: '3.5rem'
             },
             '& .MuiTableCell-root': {
-                color: '#BDBDBD',
+                color: '#000',
+                opacity: '0.6',
                 fontSize: '.875rem',
                 fontWeight: '500',
                 lineHeight: '26px'
@@ -31,8 +32,9 @@ export const useStyles = makeStyles({
             },
             '& .MuiTableCell-root': {
                 color: '#000',
+                opacity: '0.87',
                 fontStyle: 'normal',
-                fontWeight: '300',
+                fontWeight: '400',
                 fontSize: '1rem',
                 lineHeight: '30px'
             }
@@ -75,7 +77,7 @@ export const useStyles = makeStyles({
     },
     cellContent: {
         fontStyle: 'normal',
-        fontWeight: '300',
+        fontWeight: '400',
         fontSize: '1rem',
         lineHeight: '30px'
     },

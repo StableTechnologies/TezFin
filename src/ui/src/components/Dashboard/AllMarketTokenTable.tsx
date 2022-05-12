@@ -67,7 +67,7 @@ const AllMarketTokenTable = (props) => {
                                         <Typography className={classes.tokenName}> {' '} {data.title} </Typography>
                                     </TableCell>
                                     <TableCell align="right">
-                                        <span>
+                                        <span className={classes.clearFont}>
                                             {(data.marketSize > 0) ? nFormatter(decimalify(data.marketSize.toString(), decimals[data.title])) : '0'} {' '} {data.title}
                                         </span> <br/>
                                         <span className={classes.faintFont}>
@@ -75,17 +75,17 @@ const AllMarketTokenTable = (props) => {
                                         </span>
                                     </TableCell>
                                     <TableCell align="right">
-                                        <span>
+                                        <span className={classes.clearFont}>
                                             {(data.totalBorrowed > 0) ? nFormatter(decimalify(data.totalBorrowed.toString(), decimals[data.title])) : '0'} {' '} {data.title}
                                         </span> <br/>
                                         <span className={classes.faintFont}>
                                                 ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
                                         </span>
                                     </TableCell>
-                                    <TableCell align="right"> {(data.supplyRate > 0) ? truncateNum(data.supplyRate) : '0'}% </TableCell>
-                                    <TableCell align="right"> {(data.borrowRate > 0) ? truncateNum(data.borrowRate) : '0'}% </TableCell>
+                                    <TableCell align="right" className={classes.clearFont}> {(data.supplyRate > 0) ? truncateNum(data.supplyRate) : '0'}% </TableCell>
+                                    <TableCell align="right" className={classes.clearFont}> {(data.borrowRate > 0) ? truncateNum(data.borrowRate) : '0'}% </TableCell>
                                     <TableCell align="right">
-                                        <span>
+                                        <span className={classes.clearFont}>
                                             {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : '0'} {data.title}
                                         </span> <br/>
                                         <span className={classes.faintFont}>

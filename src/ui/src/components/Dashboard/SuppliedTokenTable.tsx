@@ -127,9 +127,9 @@ const SuppliedTokenTable = (props) => {
                                     {' '} ꜰ{data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right"> {truncateNum(data.rate)}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}> {truncateNum(data.rate)}% </TableCell>
                             <TableCell align="right">
-                                <span>
+                                <span className={classes.clearFont}>
                                     {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0.00'} {data.title}
                                 </span> <br/>
                                 <span className={classes.faintFont}>
