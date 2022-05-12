@@ -6,6 +6,7 @@ import { InterestRateModel } from './contracts/InterestRateModel';
 import { JSONPath } from 'jsonpath-plus';
 import { ProtocolAddresses } from './types';
 import bigInt from 'big-integer';
+import Decimal from 'decimal.js';
 
 export namespace FToken {
     /*
@@ -203,8 +204,16 @@ export namespace FToken {
      *
      * @param storage
      */
-    export function GetExchangeRate(storage: Storage): BigNumber {
-	    return _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
+	export function GetExchangeRate(storage: Storage): BigNumber {
+	
+
+	    const expS = Decimal.log(storage.expScale.toString());
+	    const log10 = Decimal.log(10);
+	    const decimalPlaces = expS.div(log10);
+
+	    //const decimalPlaces = (log(storage.expScale) / log(10)).toFixed();
+	    const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
+		return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
     }
 
     /*

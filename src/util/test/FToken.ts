@@ -6,16 +6,17 @@ const expect = require("chai").expect;
 
 interface ExchangeRateTest {
   args: ExchangeRateArgs;
-  expected: number;
+  desc: string;
+  expected: number | string;
 }
 
 interface ExchangeRateArgs {
-  totalSupply: number;
-  totalBorrows: number;
-  initialExchangeRateMantissa: number;
-  totalReserves: number;
-  currentCash: number;
-  expScale: number;
+  totalSupply: number | string;
+  totalBorrows: number | string;
+  initialExchangeRateMantissa: number | string;
+  totalReserves: number | string;
+  currentCash: number | string;
+  expScale: number | string;
 }
 
 function getStorage(args: ExchangeRateArgs): FToken.Storage {
@@ -54,8 +55,9 @@ function getExchangeRate(args: ExchangeRateArgs): BigNumber {
 describe("getExchangeRate(storage)", function () {
   const tests: ExchangeRateTest[] = [
     {
+      desc: "Test case from issue #132",
       args: {
-        totalSupply: 100,
+        totalSupply: "100",
         currentCash: 100,
         totalBorrows: 0,
         totalReserves: 0,
@@ -65,6 +67,7 @@ describe("getExchangeRate(storage)", function () {
       expected: 1.0,
     },
     {
+      desc: "Test case from issue #132",
       args: {
         totalSupply: 100,
         currentCash: 50,
@@ -76,28 +79,43 @@ describe("getExchangeRate(storage)", function () {
       expected: 1.0,
     },
     {
+      desc: "Test case from issue #132 scaled expScale/initialExchangeRateMantissa by 1000 for 3 decimal places",
       args: {
         totalSupply: 1000,
         currentCash: 500,
         totalBorrows: 510,
         totalReserves: 1,
-        initialExchangeRateMantissa: 10,
-        expScale: 10,
+        initialExchangeRateMantissa: 1000,
+        expScale: 1000,
       },
       expected: 1.009,
     },
     {
+      desc: "Test case from issue #132 scaled by 1000",
       args: {
         totalSupply: 6000,
         currentCash: 964,
         totalBorrows: 5100,
         totalReserves: 10,
-        initialExchangeRateMantissa: 100,
-        expScale: 100,
+        initialExchangeRateMantissa: 1000,
+        expScale: 1000,
       },
       expected: 1.009,
     },
     {
+      desc: "Testing property when the numerator is zero",
+      args: {
+        totalSupply: 1000,
+        currentCash: 100,
+        totalBorrows: 0,
+        totalReserves: 100,
+        initialExchangeRateMantissa: 234,
+        expScale: 100,
+      },
+      expected: 0,
+    },
+    {
+      desc: "Testing property division by zero and retuning initialExhangeRate when totla supply is 0",
       args: {
         totalSupply: 0,
         currentCash: 1,
@@ -107,11 +125,51 @@ describe("getExchangeRate(storage)", function () {
         expScale: 100,
       },
       expected: 2.34,
-    }
+    },
+    {
+      desc: "Test case, data from BTC FToken storage ",
+      args: {
+        totalSupply: 4396775725,
+        currentCash: 4398793844,
+        totalBorrows: 1057953,
+        totalReserves: 0,
+	initialExchangeRateMantissa: '1000000000000000000',
+        expScale: '1000000000000000000'
+      },
+	    expected: '1.000699619947069281'
+    },
+    {
+      desc: "Test case, data from ETH FToken storage ",
+      args: {
+	      totalSupply: '106113817386805698284' ,
+        currentCash: '98981987064168614410',
+        totalBorrows: '7716971958727265793',
+        totalReserves: 0,
+        initialExchangeRateMantissa: '1000000000000000000',
+        expScale: '1000000000000000000',
+      },
+      expected: '1.005514283158405524',
+    },
+    {
+      desc: "Test case, data from USD FToken storage ",
+      args: {
+	      totalSupply: '21769247144' ,
+        currentCash: '1347030412',
+        totalBorrows: '22601098095',
+        totalReserves: 0,
+        initialExchangeRateMantissa: '1000000000000000000',
+        expScale: '1000000000000000000',
+      },
+      expected: '1.100089881316843761',
+    },
   ];
 
   tests.forEach((test: ExchangeRateTest) => {
-    it(`
+    it(`-------------------------------------------------------------
+
+          ${test.desc}
+
+
 	  The Exchange Rate calculated: ${getExchangeRate(test.args)}
 
 	  -----------Formula ----------
