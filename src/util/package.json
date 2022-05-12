@@ -8,7 +8,7 @@
     "start": "node ./build/src/index.js",
     "build": "tsc",
     "package": "rm -rf ./build && tsc",
-    "test": "npm run build && clear && npm run start",
+    "test": "ts-mocha test/**",
     "reinstall": "rm -rf ./node_modules ./build && npm i"
   },
   "author": "",
@@ -18,12 +18,16 @@
     "@types/node-fetch": "^3.0.3",
     "loglevel": "^1.7.1",
     "node-fetch": "^3.2.0",
+    "ts-mocha": "^10.0.0",
     "typescript": "^4.4.3"
   },
   "dependencies": {
     "big-integer": "^1.6.51",
     "bignumber.js": "9.0.1",
+    "chai": "^4.3.6",
     "conseiljs": "5.1.0",
-    "jsonpath-plus": "^6.0.1"
+    "decimal.js": "^10.3.1",
+    "jsonpath-plus": "^6.0.1",
+    "mathjs": "^10.5.3"
   }
 }

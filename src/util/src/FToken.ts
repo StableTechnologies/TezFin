@@ -6,6 +6,7 @@ import { InterestRateModel } from './contracts/InterestRateModel';
 import { JSONPath } from 'jsonpath-plus';
 import { ProtocolAddresses } from './types';
 import bigInt from 'big-integer';
+import Decimal from 'decimal.js';
 
 export namespace FToken {
     /*
@@ -199,12 +200,19 @@ export namespace FToken {
     }
 
     /*
-     * @description TODO
+     * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
      *
      * @param storage
      */
-    export function GetExchangeRate(storage: Storage): number {
-        return 0.95; // TODO: CToken.exchangeRateAdjusted
+	export function GetExchangeRate(storage: Storage): BigNumber {
+	
+
+	    const expS = Decimal.log(storage.expScale.toString());
+	    const log10 = Decimal.log(10);
+	    const decimalPlaces = expS.div(log10);
+
+	    const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
+	    return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
     }
 
     /*
@@ -295,6 +303,34 @@ export namespace FToken {
         const poolRateDenominator = _scale.multiply(_scale);
 
         return poolRateNumerator.divide(poolRateDenominator);
+    }
+
+
+    /**
+     * @description Calculates the exchange rate based on the formula :
+     * ( underlyingBalance + totalBorrows - reserves ) / totalSupply 
+     *
+     * @param adjustment TODO 
+     * @param initialExhangeRateMantissa  Initial exchangeRate's mantissa 
+     * @param balance User's underlying balance
+     * @param borrows Total amount of borrowed assets of a given collateral token.
+     * @param reserves Reserves of the collateral token.
+     * @param totalSupply Total supply of the Ftoken.
+     * @param expScale The scale all the mantissa's are in.
+     * @returns
+     */
+	function _calcExchangeRateAdjusted(adjustment: number, initialExhangeRateMantissa: bigInt.BigInteger, balance: bigInt.BigInteger, borrows: bigInt.BigInteger, reserves: bigInt.BigInteger, totalSupply: bigInt.BigInteger, expScale: bigInt.BigInteger ): BigNumber {
+	    const _adjustment = bigInt(adjustment);
+	    if (bigInt(totalSupply).greater(0)) {
+		    const _cash = bigInt(balance).minus(adjustment);
+		    const _num = _cash.add(borrows).minus(reserves);
+		    const _zero = bigInt(0);
+		    const _exchangeRate = new BigNumber(_num.toString()).div(totalSupply.toString());
+		    return _exchangeRate; 
+	    } else {
+		    return new BigNumber(initialExhangeRateMantissa.toString()).div(expScale.toString());
+	    }
+
     }
 
     /**
