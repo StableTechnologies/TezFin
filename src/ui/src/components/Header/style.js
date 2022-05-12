@@ -48,6 +48,7 @@ export const useStyles = makeStyles({
         lineHeight: '1.875',
         letterSpacing: '0.005em',
         color: '#000',
+        opacity: '0.87',
         '@media(min-width: 501px)': {
             '&:hover': {
                 borderBottom: '1px solid #000'
@@ -118,6 +119,8 @@ export const useStyles = makeStyles({
         }
     },
     compositionTitle: {
+        color: '#000',
+        opacity: '0.87',
         fontSize: '1.25rem',
         fontWeight: '500',
         lineHeight: '30px'
@@ -178,7 +181,8 @@ export const useStyles = makeStyles({
         }
     },
     statsTitle: {
-        color: '#BDBDBD',
+        color: '#000',
+        opacity: '0.6',
         fontSize: '0.875rem',
         lineHeight: '26px',
         '@media(max-width: 376px)': {
@@ -192,6 +196,7 @@ export const useStyles = makeStyles({
         fontSize: '1.25rem',
         lineHeight: '30px',
         color: '#000',
+        opacity: '0.87',
         '@media(max-width: 1200px)': {
             fontSize: '1.125rem'
         },
@@ -271,6 +276,7 @@ export const useStyles = makeStyles({
     connectedWallet: {
         border: '.5px solid #828282',
         color: '#000',
+        opacity: '0.87',
         '&:hover': {
             background: 'transparent'
         }
@@ -298,6 +304,7 @@ export const useStyles = makeStyles({
     },
     copyText: {
         color: '#000',
+        opacity: '0.87',
         fontWeight: '400',
         fontSize: '1.25rem',
         paddingLeft: '1rem'
@@ -322,6 +329,7 @@ export const HeaderCon = styled('div')(() => ({
 export const Title = styled('p')(() => ({
     [`&.${classes1.content}`]: {
         color: '#000',
+        opacity: '0.87',
         fontSize: '52px',
         fontWeight: 'bold',
         lineHeight: '70px',

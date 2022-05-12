@@ -148,15 +148,15 @@ export const useStyles = makeStyles({
         height: '1.5rem'
     },
     faintFont: {
-        color: '#828282'
+        color: '#000',
+        opacity: '0.6'
     },
     modalText: {
+        color: '#000',
+        opacity: '0.87',
         fontSize: '1.25rem',
         fontWeight: '300',
         lineHeight: '30px',
-        // '@media(max-width: 501px)': {
-        //     fontSize: '1rem'
-        // },
         '@media(max-width: 501px)': {
             fontSize: '0.875rem'
         },
@@ -196,6 +196,7 @@ export const useStyles = makeStyles({
     },
     inputText: {
         color: '#000',
+        opacity: '0.87',
         fontSize: '40px',
         fontWeight: 300,
         textAlign: 'center',
@@ -205,7 +206,8 @@ export const useStyles = makeStyles({
         padding: '0',
         boxSizing: 'border-box',
         '&::placeholder': {
-            color: '#BDBDBD'
+            color: '#000',
+            opacity: '0,6'
         },
         '@media(max-width: 501px)': {
             fontSize: '2rem'
@@ -234,7 +236,8 @@ export const useStyles = makeStyles({
     },
     errorText: {
         marginTop: '0.5625rem',
-        color: '#000000AB',
+        color: '#000',
+        opacity: '0.87',
         textAlign: 'left',
         fontWeight: '300',
         fontSize: '1rem',

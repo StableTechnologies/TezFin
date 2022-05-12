@@ -9,15 +9,14 @@ export const useStyles = makeStyles({
         '& .MuiTabs-flexContainer': {
             borderBottom: '2px solid #E0E0E0'
         },
-        '& .MuiButtonBase-root-MuiTab-root': {
-            // width: '50%',
-        },
         '& .MuiButtonBase-root.Mui-selected': {
-            color: '#000'
+            color: '#000',
+            opacity: '0.87'
         },
         '& .MuiButtonBase-root': {
             width: '50%',
-            color: '#BDBDBD',
+            color: '#000',
+            opacity: '0.6',
             textTransform: 'none',
             fontSize: '1rem',
             fontWeight: '700',
