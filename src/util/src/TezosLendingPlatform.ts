@@ -11,6 +11,8 @@ import bigInt from 'big-integer';
 import log from 'loglevel';
 import { tokenNames } from './const';
 
+import { BigNumber } from 'bignumber.js';
+
 export namespace TezosLendingPlatform {
     /*
      * @description TODO: convert mantissa to number
@@ -163,16 +165,21 @@ export namespace TezosLendingPlatform {
      *
      * @param
      */
-    export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: bigInt.BigInteger }> {
+    export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: BigNumber }> {
         let balances = {};
 
+		    //dummy change
+		    const temp = bigInt('100000000000');
         await Promise.all(Object.keys(markets).map(async (asset) => {
             switch (markets[asset].asset.underlying.tokenStandard) {
                 case TokenStandard.XTZ: // native asset
-                    balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
+
+
+			    balances[asset] = FToken.ApplyExchangeRate(await GetUnderlyingBalanceXTZ(address, server), markets[asset].storage);
                     break;
                 default: // contract-based assets
-                    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
+
+			    balances[asset] = FToken.ApplyExchangeRate(await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server), markets[asset].storage);
                     break;
             }
         }));

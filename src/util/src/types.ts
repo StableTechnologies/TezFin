@@ -3,6 +3,7 @@ import { AssetType, TokenStandard } from "enum";
 import { FToken } from './FToken';
 import { InterestRateModel } from "./contracts/InterestRateModel";
 
+import { BigNumber } from 'bignumber.js';
 /*
     * @description
     *
@@ -194,7 +195,7 @@ export type MarketMap = { [assetType: string]: Market }
     */
 export interface Account {
     address: string;
-    underlyingBalances: { [asset: string]: bigInt.BigInteger };
+    underlyingBalances: { [asset: string]: BigNumber };
     marketBalances: FToken.BalanceMap;
     totalSupplyingUsd: bigInt.BigInteger;
     totalCollateralUsd: bigInt.BigInteger;
