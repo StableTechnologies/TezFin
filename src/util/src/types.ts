@@ -2,6 +2,7 @@ import { AssetType, TokenStandard } from "enum";
 
 import { FToken } from './FToken';
 import { InterestRateModel } from "./contracts/InterestRateModel";
+import { BigNumber } from 'bignumber.js';
 
 /*
     * @description
@@ -174,7 +175,7 @@ export interface Market {
     currentPrice: bigInt.BigInteger;
     reserveFactor: number;
     collateralFactor: number;
-    exchangeRate: number;
+    exchangeRate: BigNumber;
     storage: FToken.Storage;
     rateModel: InterestRateModel.Storage;
 }
