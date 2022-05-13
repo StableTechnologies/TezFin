@@ -25,7 +25,6 @@ import Tabulator from '../Tabs';
 import CloseButton from '../CloseButton';
 import CustomizedProgressBars from '../ProgressBar';
 
-import Tez from '../../assets/largeXTZ.svg';
 import { useStyles } from './style';
 import LightTooltip from './LightTooltip';
 
@@ -89,7 +88,7 @@ const DashboardModal = (props) => {
                 </DialogTitle>
                 {(!visibility || collateralize)
                     && <DialogContent>
-                        <img src={Tez} alt="logo" className={classes.tezImg} />
+                        <img src={tokenDetails.fLogo} alt="logo" className={classes.tezImg} />
                     </DialogContent>
                 }
                 {(visibility && !collateralize)

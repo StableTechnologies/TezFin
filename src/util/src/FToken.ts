@@ -204,6 +204,7 @@ export namespace FToken {
      *
      * @param storage
      */
+<<<<<<< HEAD
 	export function ApplyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
 	
 
@@ -215,6 +216,8 @@ export namespace FToken {
      *
      * @param storage
      */
+=======
+>>>>>>> main
 	export function GetExchangeRate(storage: Storage): BigNumber {
 	
 
@@ -344,6 +347,7 @@ export namespace FToken {
 
     }
 
+<<<<<<< HEAD
     /**
      * @description Applies the exchange rate and returns underlying based on the formula :
      *
@@ -359,6 +363,8 @@ export namespace FToken {
 		return underlyingBalance;
     }
 
+=======
+>>>>>>> main
     /**
      *
      * @param rate Periodic (per-block) interest rate.

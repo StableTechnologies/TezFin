@@ -27,16 +27,36 @@ export const useSupplyErrorText = (tokenValue, limit) => {
     return { text, errorText, disabled };
 };
 
-export const useBorrowErrorText = (tokenValue, limit) => {
+export const useBorrowErrorText = (tokenValue, limit, tokenDetails) => {
     const [text, setText] = useState('Borrow');
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
 
+    const { allMarkets } = useSelector((state) => state.market);
+
+    let marketSize;
+    let totalBorrowed;
+    // eslint-disable-next-line array-callback-return
+    allMarkets.map((x) => {
+        if (x.assetType === tokenDetails.assetType) {
+            marketSize = decimalify(x.marketSize.toString(), decimals[x.title], decimals[x.title]);
+            totalBorrowed = decimalify(x.totalBorrowed.toString(), decimals[x.title], decimals[x.title]);
+        }
+    });
+    const availableBorrowAmount = new BigNumber(marketSize).minus(new BigNumber(totalBorrowed)).toNumber();
+
     useEffect(() => {
-        if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
+        if ((Number(tokenValue) > 0) && (Number(tokenValue) > availableBorrowAmount)) {
+            setErrorText('You cannot borrow more than the amount available on the market.');
+            setDisabled(true);
+        } else if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
             setText('Insufficient Collateral');
             setErrorText('You must supply assets as collateral to increase your borrow limit.');
             setDisabled(true);
+        } else {
+            setText('Borrow');
+            setErrorText('');
+            setDisabled(false);
         }
         return () => {
             setText('Borrow');

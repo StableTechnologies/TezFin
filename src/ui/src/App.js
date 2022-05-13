@@ -61,20 +61,21 @@ const App = () => {
         <Router>
             <Grid className="App">
                 <Nav />
-	    <DisclaimerModal onClose={()=>{console.log('closed'); }} />
-                {/* <Home /> */}
+                <DisclaimerModal />
                 <Switch>
                     <Route exact path='/dashboard'>
                         <Header />
                         <Dashboard />
                     </Route>
+                    <Route exact path='/feedback'>
+                        <Grid sx={{ width: '100%', height: '100vh' }}>
+                            <iframe src="https://stabletech.upvoty.com" width='100%' height='100%' />
+                        </Grid>
+                    </Route>
                     <Route exact path='/market' component={Market} />
                     <Route exact path='/debugDashboard'>
                         <DebugDashboard />
                     </Route>
-                    {/* <Route exact path="/market"></Route> */}
-                    {/* <Route exact path="/about"></Route> */}
-                    {/* <Route exact path="/"> <Home /> </Route> */}
                     <Route exact path={['/', '/dashboard']}> <Home /> </Route>
                 </Switch>
                 <Footer />

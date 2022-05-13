@@ -45,7 +45,8 @@ export const useStyles = makeStyles({
                 height: '3.5rem'
             },
             '& .MuiTableCell-root': {
-                color: '#BDBDBD',
+                color: '#000',
+                opacity: '0.6',
                 fontSize: '.875rem',
                 '@media(min-width: 768px)': {
                     minWidth: '5.5625rem'
@@ -69,7 +70,7 @@ export const useStyles = makeStyles({
                 }
             },
             '& .MuiTableCell-root': {
-                fontWeight: '300',
+                fontWeight: '400',
                 '@media(min-width: 1200px)': {
                     fontSize: '1rem'
                 },
@@ -117,8 +118,10 @@ export const useStyles = makeStyles({
     },
     tokenName: {
         display: 'inline',
+        color: '#000',
+        opacity: '0.87',
         fontSize: '1rem',
-        fontWeight: '300',
+        fontWeight: '400',
         letterSpacing: '0.005em',
         lineHeight: '1.875rem',
         '@media(max-width: 1200px)': {
@@ -128,8 +131,14 @@ export const useStyles = makeStyles({
             fontSize: '0.75rem'
         }
     },
+    clearFont: {
+        color: '#000',
+        opacity: '0.87',
+        fontWeight: '400'
+    },
     faintFont: {
-        color: '#828282',
+        color: '#000',
+        opacity: '0.6',
         fontWeight: '400'
     },
     dashboard: {
@@ -171,23 +180,17 @@ export const useStyles = makeStyles({
         }
     },
     tableTitle: {
+        color: '#000',
+        opacity: '0.87',
         padding: ' 1.5rem 0 .5rem',
         fontSize: '1.25rem',
         fontWeight: '500',
         lineHeight: '30px'
     },
-    tableTitleTwo: {
-        color: '#BDBDBD',
-        padding: ' 36px 0 .5rem 8px',
-        fontSize: '0.875rem',
-        fontWeight: '500',
-        lineHeight: '26px',
-        letterSpacing: '0.05em'
-    },
     emptyStateText: {
         color: '#000',
         fontSize: '1rem',
-        fontWeight: '300',
+        fontWeight: '400',
         lineHeight: '30px',
         letterSpacing: '0.005em',
         '@media(min-width: 768px)': {
