@@ -152,8 +152,6 @@ const SupplyModal = (props) => {
             <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} errType={errType} />
             <DashboardModal
                 APYText={`${tokenDetails.title} Variable APY Rate`}
-                Limit="Borrow Limit"
-                LimitUsed="Borrow Limit Used"
                 CurrentStateText="Currently Supplying"
                 open={open}
                 close={close}

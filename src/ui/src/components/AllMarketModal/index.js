@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { marketAction } from '../../reduxContent/market/actions';
@@ -27,7 +28,8 @@ const AllMarketModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
     const { server } = useSelector((state) => state.nodes.tezosNode);
-    const { borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
 
     const publicKeyHash = account.address;
 
@@ -48,6 +50,8 @@ const AllMarketModal = (props) => {
     const [tokenValue, setTokenValue] = useState('');
     const [currrentTab, setCurrrentTab] = useState('');
     const [limit, setLimit] = useState('');
+    const [pendingLimit, setPendingLimit] = useState('');
+    const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
     const buttonOne = useSupplyErrorText(tokenValue, limit);
     const buttonTwo = useBorrowErrorText(tokenValue, limit, tokenDetails);
@@ -146,6 +150,20 @@ const AllMarketModal = (props) => {
         };
     }, [currrentTab, tokenDetails, tokenValue]);
 
+    useEffect(() => {
+        if ((currrentTab === 'two') && (tokenValue > 0)) {
+            const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+            const pendingBorrowing = borrowing + tokenValueUsd;
+            const pendingBorrowLimit = totalCollateral - pendingBorrowing;
+            setPendingLimit(pendingBorrowLimit);
+            setPendingLimitUsed(new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100));
+        }
+        return () => {
+            setPendingLimit('');
+            setPendingLimitUsed('');
+        };
+    }, [tokenValue, currrentTab]);
+
     return (
         <>
             <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
@@ -155,8 +173,6 @@ const AllMarketModal = (props) => {
             <DashboardModal
                 APYText={`${tokenDetails.title} Variable APY Rate`}
                 APYTextTwo="Borrow APY"
-                Limit="Borrow Limit"
-                LimitUsed="Borrow Limit Used"
                 CurrentStateText= "Currently Supplying"
                 CurrentStateTextTwo= "Currently Borrowing"
                 open={open}
@@ -181,6 +197,8 @@ const AllMarketModal = (props) => {
                 maxAmount= {maxAmount}
                 errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
                 disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                pendingLimit={(currrentTab === 'two') ? pendingLimit : false}
+                pendingLimitUsed={(currrentTab === 'two') ? pendingLimitUsed : false}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
             />
         </>
