@@ -340,7 +340,7 @@ export namespace TezosLendingPlatform {
             if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
-                    balanceUnderlying: balances[asset].supplyBalanceUnderlying,
+                    balanceUnderlying: FToken.ApplyExchangeRate(balances[asset].supplyBalanceUnderlying , markets[asset].storage),
                     balanceUsd: balances[asset].supplyBalanceUsd!,
                     collateral: balances[asset].collateral!
                 };
@@ -349,7 +349,7 @@ export namespace TezosLendingPlatform {
                 // TODO: what values to display when no account connected?
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
-                    balanceUnderlying: bigInt(0),
+                    balanceUnderlying: new BigNumber(0),
                     balanceUsd: bigInt(0),
                     collateral: false
                 };

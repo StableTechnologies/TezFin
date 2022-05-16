@@ -207,8 +207,16 @@ export namespace FToken {
      export function ApplyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
 	
 
-            const exchangeRate = GetExchangeRate(storage);
-		return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
+	    // testign change delete after 
+
+	     //const e = new BigNumber(2);
+	    // const exchangeRate = e;//  GetExchangeRate(storage);
+
+	     //delete above lines and replace with:
+	     // 
+	      const exchangeRate = GetExchangeRate(storage);
+
+	    return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
     }
 
     /*

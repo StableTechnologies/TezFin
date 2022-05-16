@@ -33,7 +33,7 @@ export interface BorrowComposition {
     */
 export interface SupplyMarket {
     rate: number;
-    balanceUnderlying: bigInt.BigInteger;
+    balanceUnderlying: BigNumber;
     balanceUsd: bigInt.BigInteger;
     collateral: boolean;
 }
