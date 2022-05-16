@@ -4,7 +4,6 @@ import { FToken } from './FToken';
 import { InterestRateModel } from "./contracts/InterestRateModel";
 import { BigNumber } from 'bignumber.js';
 
-import { BigNumber } from 'bignumber.js';
 /*
     * @description
     *

@@ -204,21 +204,19 @@ export namespace FToken {
      *
      * @param storage
      */
-<<<<<<< HEAD
-	export function ApplyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
+     export function ApplyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
 	
 
             const exchangeRate = GetExchangeRate(storage);
 		return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
     }
+
     /*
      * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
      *
      * @param storage
      */
-=======
->>>>>>> main
-	export function GetExchangeRate(storage: Storage): BigNumber {
+     export function GetExchangeRate(storage: Storage): BigNumber {
 	
 
 	    const expS = Decimal.log(storage.expScale.toString());
@@ -347,7 +345,6 @@ export namespace FToken {
 
     }
 
-<<<<<<< HEAD
     /**
      * @description Applies the exchange rate and returns underlying based on the formula :
      *
@@ -363,8 +360,6 @@ export namespace FToken {
 		return underlyingBalance;
     }
 
-=======
->>>>>>> main
     /**
      *
      * @param rate Periodic (per-block) interest rate.

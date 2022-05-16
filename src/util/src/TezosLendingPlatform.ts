@@ -168,8 +168,6 @@ export namespace TezosLendingPlatform {
     export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: BigNumber }> {
         let balances = {};
 
-		    //dummy change
-		    const temp = bigInt('100000000000');
         await Promise.all(Object.keys(markets).map(async (asset) => {
             switch (markets[asset].asset.underlying.tokenStandard) {
                 case TokenStandard.XTZ: // native asset
