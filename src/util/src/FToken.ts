@@ -206,10 +206,10 @@ export namespace FToken {
      * @param storage The FToken storage 
      * @returns underlyingBalance as BigNumber
      */
-     export function ApplyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
+     export function applyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
 	
 
-	    const exchangeRate = GetExchangeRate(storage);
+	    const exchangeRate = getExchangeRate(storage);
 
 	    return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
     }
@@ -220,7 +220,7 @@ export namespace FToken {
      * @param storage The FToken storage 
      * @returns exchangeRate as BigNumber
      */
-     export function GetExchangeRate(storage: Storage): BigNumber {
+     export function getExchangeRate(storage: Storage): BigNumber {
 	
 
 	    const expScale = Decimal.log(storage.expScale.toString());
@@ -440,7 +440,7 @@ export namespace FToken {
 
     /*
      * @description
-     *
+     *https://github.com/StableTechnologies/TezFin/pull/165
      * @parameters
      */
     export function parseBalanceResult(balanceInfo: any, currentIndex: bigInt.BigInteger, assetType: AssetType): Balance {

@@ -60,7 +60,7 @@ export namespace TezosLendingPlatform {
             reserves: fToken.totalReserves,
             reserveFactor: 0, // TODO
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
-            exchangeRate: FToken.GetExchangeRate(fToken),
+            exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
             rateModel: rateModel
         } as Market;
@@ -177,11 +177,11 @@ export namespace TezosLendingPlatform {
                 case TokenStandard.XTZ: // native asset
 
 
-			    balances[asset] = FToken.ApplyExchangeRate(await GetUnderlyingBalanceXTZ(address, server), markets[asset].storage);
+			    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceXTZ(address, server), markets[asset].storage);
                     break;
                 default: // contract-based assets
 
-			    balances[asset] = FToken.ApplyExchangeRate(await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server), markets[asset].storage);
+			    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server), markets[asset].storage);
                     break;
             }
         }));
@@ -344,7 +344,7 @@ export namespace TezosLendingPlatform {
             if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
-                    balanceUnderlying: FToken.ApplyExchangeRate(balances[asset].supplyBalanceUnderlying , markets[asset].storage),
+                    balanceUnderlying: FToken.applyExchangeRate(balances[asset].supplyBalanceUnderlying , markets[asset].storage),
                     balanceUsd: balances[asset].supplyBalanceUsd!,
                     collateral: balances[asset].collateral!
                 };

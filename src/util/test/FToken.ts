@@ -49,7 +49,7 @@ function getStorage(args: ExchangeRateArgs): FToken.Storage {
 
 function getExchangeRate(args: ExchangeRateArgs): BigNumber {
   const _storage: FToken.Storage = getStorage(args);
-  return FToken.GetExchangeRate(_storage);
+  return FToken.getExchangeRate(_storage);
 }
 
 describe("getExchangeRate(storage)", function () {
