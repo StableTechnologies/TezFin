@@ -23,7 +23,7 @@ export const testnetAddresses: ProtocolAddresses = {
         KT1WC7EcqpgBLAvPUYfPyqXK3VzbNyL5u7uE: AssetType.XTZ,
         KT1W9X5pycLErzEdyKoEk7gbdJzySMwwKE5y: AssetType.ETH,
         KT1Dqhd6A7qTcwZo66VuGpUwT4FG6HCwFvoN: AssetType.USD,
-        KT1B19pzNU1z31kExGa5VBuU8jZLXSoEdUdZ: AssetType.BTC,
+        KT1B19pzNU1z31kExGa5VBuU8jZLXSoEdUdZ: AssetType.BTC
     },
     underlying: {
         "ETH": {
@@ -62,7 +62,7 @@ export const testnetAddresses: ProtocolAddresses = {
         XTZ: "KT1VWpGJ5bXuPt3QPq2Bwg8at5PZhuP4MHb1",
         ETH: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
         BTC: "KT1VDPqzMy9XJ4fjoFuTyM61cY7CFqDRS1zR",
-        USD: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
+        USD: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR"
     },
     governance: "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
     oracleMap: {
@@ -96,7 +96,7 @@ export const mainnetAddresses: ProtocolAddresses = {
         KT1WC7EcqpgBLAvPUYfPyqXK3VzbNyL5u7uE: AssetType.XTZ,
         KT1W9X5pycLErzEdyKoEk7gbdJzySMwwKE5y: AssetType.ETH,
         KT1Dqhd6A7qTcwZo66VuGpUwT4FG6HCwFvoN: AssetType.USD,
-        KT1B19pzNU1z31kExGa5VBuU8jZLXSoEdUdZ: AssetType.BTC,
+        KT1B19pzNU1z31kExGa5VBuU8jZLXSoEdUdZ: AssetType.BTC
     },
     underlying: {
         "ETH": {
@@ -135,7 +135,7 @@ export const mainnetAddresses: ProtocolAddresses = {
         XTZ: "KT1VWpGJ5bXuPt3QPq2Bwg8at5PZhuP4MHb1",
         ETH: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
         BTC: "KT1VDPqzMy9XJ4fjoFuTyM61cY7CFqDRS1zR",
-        USD: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
+        USD: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR"
     },
     governance: "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
     oracleMap: {
