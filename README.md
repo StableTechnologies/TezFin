@@ -86,3 +86,28 @@ npm install
 ```
 
 > To deploy a specific contract run the corresponding script in [shell_scripts](deploy/shell_scripts)
+
+
+## Build and Run UI
+
+1. Build Util
+
+```sh
+cd src/util
+npm install
+```
+
+2. Build UI
+```sh
+cd src/ui
+npm install
+```
+
+2. Run
+
+```sh
+cd src/ui
+npm start
+```
+
+
