@@ -440,7 +440,7 @@ export namespace FToken {
 
     /*
      * @description
-     *https://github.com/StableTechnologies/TezFin/pull/165
+     *
      * @parameters
      */
     export function parseBalanceResult(balanceInfo: any, currentIndex: bigInt.BigInteger, assetType: AssetType): Balance {
