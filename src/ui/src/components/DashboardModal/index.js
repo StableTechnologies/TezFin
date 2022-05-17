@@ -32,23 +32,19 @@ const DashboardModal = (props) => {
     const classes = useStyles();
 
     const {
-        open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, Limit,
-        LimitUsed, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
+        open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
         collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
-        maxAction, maxAmount, getProps, disabled, errorText
+        maxAction, maxAmount, getProps, disabled, errorText, pendingLimit, pendingLimitUsed
     } = props;
 
     const [tabValue, setTabValue] = useState('one');
     const [tokenValue, setTokenValue] = useState('');
+    const [limit, setLimit] = useState('');
+    const [limitUsed, setLimitUsed] = useState('');
 
     const { address } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
-
-    let borrowLimitUsed;
-    if (borrowing && totalCollateral) {
-        borrowLimitUsed = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
-    }
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -67,6 +63,11 @@ const DashboardModal = (props) => {
             getProps(tokenValue, tabValue);
         }
     }, [tokenValue, tabValue]);
+
+    useEffect(() => {
+        setLimit(borrowLimit);
+        setLimitUsed(new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100));
+    }, [borrowing, borrowLimit]);
 
     return (
         <React.Fragment>
@@ -185,18 +186,23 @@ const DashboardModal = (props) => {
                 }
                 <DialogContent className={classes.limit}>
                     <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {Limit} </Grid>
+                        <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit </Grid>
                         <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {/* ${(tokenDetails.borrowLimit > 0) ? nFormatter(tokenDetails.borrowLimit, 2) : '0.00'} */}
-                            ${(borrowLimit > 0) ? nFormatter(borrowLimit, 2) : '0.00'}
+                            ${pendingLimit
+                                ? ((pendingLimit > 0) ? nFormatter(pendingLimit, 2) : '0.00')
+                                : ((limit > 0) ? nFormatter(limit, 2) : '0.00')
+                            }
                         </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogContent className={classes.limitUsed}>
                     <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> {LimitUsed} </Grid>
+                        <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit Used </Grid>
                         <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {(borrowLimitUsed > 0) ? ((borrowLimitUsed > 100) ? 100 : truncateNum(borrowLimitUsed)) : '0'}%
+                            {pendingLimitUsed
+                                ? ((pendingLimitUsed > 0) ? ((pendingLimitUsed > 100) ? 100 : truncateNum(pendingLimitUsed)) : '0')
+                                : ((limitUsed > 0) ? ((limitUsed > 100) ? 100 : truncateNum(limitUsed)) : '0')
+                            }%
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -204,7 +210,7 @@ const DashboardModal = (props) => {
                     <Grid container>
                         <Grid item xs={12}>
                             <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars value={Number(borrowLimitUsed)} height="8px"/>
+                                <CustomizedProgressBars value={pendingLimitUsed ? Number(pendingLimitUsed) : Number(limitUsed)} height="8px"/>
                             </Box>
                         </Grid>
                     </Grid>
