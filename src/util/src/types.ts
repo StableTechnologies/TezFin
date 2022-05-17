@@ -33,7 +33,7 @@ export interface BorrowComposition {
     */
 export interface SupplyMarket {
     rate: number;
-    balanceUnderlying: bigInt.BigInteger;
+    balanceUnderlying: BigNumber;
     balanceUsd: bigInt.BigInteger;
     collateral: boolean;
 }
@@ -195,7 +195,7 @@ export type MarketMap = { [assetType: string]: Market }
     */
 export interface Account {
     address: string;
-    underlyingBalances: { [asset: string]: bigInt.BigInteger };
+    underlyingBalances: { [asset: string]: BigNumber };
     marketBalances: FToken.BalanceMap;
     totalSupplyingUsd: bigInt.BigInteger;
     totalCollateralUsd: bigInt.BigInteger;
