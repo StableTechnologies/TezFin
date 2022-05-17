@@ -148,9 +148,9 @@ class ComptrollerInterface(sp.Contract):
 
         return: TInt - the account liquidity. Shows shortfall when return value < 0
     """
-    @sp.entry_point
-    def getHypoAccountLiquidity(self, params):
-        pass
+    # @sp.entry_point
+    # def getHypoAccountLiquidity(self, params):
+    #     pass
 
     """    
         Sets a new pending governance for the market

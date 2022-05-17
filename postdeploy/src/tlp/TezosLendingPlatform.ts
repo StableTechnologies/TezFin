@@ -84,16 +84,16 @@ export namespace TezosLendingPlatform {
      */
     export const granadanetAddresses: ProtocolAddresses = {
         fTokens: {
-            BTC: "KT1WS9wxA8SPw3YZQSiu2MbAmgGkQCm5Qwdv",
-            XTZ: "KT1Ls44WK9uycR41rMvwTiAVNsRCfgMiCyft",
-            ETH: "KT1WkkQmWssgLiEKUqVY1cAgyxddhQzsTCSi",
-            USD: "KT1R9RDqwa1iYUEp4mPo2xFUvZYLCBGCmQfd",
+            "BTC": "KT1B19pzNU1z31kExGa5VBuU8jZLXSoEdUdZ",
+            "XTZ": "KT1WC7EcqpgBLAvPUYfPyqXK3VzbNyL5u7uE",
+            "ETH": "KT1W9X5pycLErzEdyKoEk7gbdJzySMwwKE5y",
+            "USD": "KT1Dqhd6A7qTcwZo66VuGpUwT4FG6HCwFvoN"
         },
         fTokensReverse: {
-            KT1Ls44WK9uycR41rMvwTiAVNsRCfgMiCyft: AssetType.XTZ,
-            KT1WkkQmWssgLiEKUqVY1cAgyxddhQzsTCSi: AssetType.ETH,
-            KT1R9RDqwa1iYUEp4mPo2xFUvZYLCBGCmQfd: AssetType.USD,
-            KT1WS9wxA8SPw3YZQSiu2MbAmgGkQCm5Qwdv: AssetType.BTC,
+            KT1WC7EcqpgBLAvPUYfPyqXK3VzbNyL5u7uE: AssetType.XTZ,
+            KT1W9X5pycLErzEdyKoEk7gbdJzySMwwKE5y: AssetType.ETH,
+            KT1Dqhd6A7qTcwZo66VuGpUwT4FG6HCwFvoN: AssetType.USD,
+            KT1B19pzNU1z31kExGa5VBuU8jZLXSoEdUdZ: AssetType.BTC,
         },
         underlying: {
             ETH: {
@@ -119,12 +119,12 @@ export namespace TezosLendingPlatform {
                 assetType: AssetType.XTZ,
             },
         },
-        comptroller: "KT1AZHZwsyRh8JqLoKf1by5Nngty7zLUxnyC",
+        comptroller: "KT1JpZdDmrVvDhQDaJ6jb3hKUL98ZWzE9jwk",
         interestRateModel: {
-            XTZ: "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw",
-            ETH: "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw",
-            BTC: "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw",
-            USD: "KT1Fpg2mmLQji79fMh4RXU9hDnHSx4YoNHUw",
+            XTZ: "KT1VWpGJ5bXuPt3QPq2Bwg8at5PZhuP4MHb1",
+            ETH: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
+            BTC: "KT1VDPqzMy9XJ4fjoFuTyM61cY7CFqDRS1zR",
+            USD: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
         },
         governance: "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
         oracleMap: 18599,
