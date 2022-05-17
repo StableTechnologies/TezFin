@@ -199,10 +199,11 @@ export namespace FToken {
         return bigInt(0); // storage.supply.totalSupply.minus(storage.borrow.totalBorrows.minus(storage.totalReserves));
     }
 
-    /*
+    /**
      * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
      *
-     * @param storage
+     * @param ftokenBalance The ammount of FTokens
+     * @param storage The FToken storage 
      */
      export function ApplyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
 	
@@ -212,17 +213,17 @@ export namespace FToken {
 	    return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
     }
 
-    /*
+    /**
      * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
      *
-     * @param storage
+     * @param storage The FToken storage 
      */
      export function GetExchangeRate(storage: Storage): BigNumber {
 	
 
-	    const expS = Decimal.log(storage.expScale.toString());
+	    const expScale = Decimal.log(storage.expScale.toString());
 	    const log10 = Decimal.log(10);
-	    const decimalPlaces = expS.div(log10);
+	    const decimalPlaces = expScale.div(log10);
 
 	    const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
 	    return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))

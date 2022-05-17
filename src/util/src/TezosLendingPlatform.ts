@@ -160,10 +160,13 @@ export namespace TezosLendingPlatform {
         return balances;
     }
 
-    /*
-     * @description
+    /**
+     * @description Provides the underlying balance per asset class after the 
+     *  application of the exchange rate for an address
      *
-     * @param
+     * @param markets Map of protocol markets
+     * @param address Account address
+     * @param server Tezos node
      */
     export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: BigNumber }> {
         let balances = {};
