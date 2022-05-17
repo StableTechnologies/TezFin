@@ -321,27 +321,27 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         return: TInt - the account liquidity. Shows shortfall when return value < 0
     """
-    @sp.entry_point
-    def getHypoAccountLiquidity(self, params):
-        sp.set_type(params, CMPTInterface.TGetAccountLiquidityParams)
-        self.updateAllAssetPrices()
-        self.accrueAllAssetInterests()
-        sp.transfer((params.data, params.callback), sp.mutez(
-            0), sp.self_entry_point("returnHypoAccountLiquidity"))
+    # @sp.entry_point
+    # def getHypoAccountLiquidity(self, params):
+    #     sp.set_type(params, CMPTInterface.TGetAccountLiquidityParams)
+    #     self.updateAllAssetPrices()
+    #     self.accrueAllAssetInterests()
+    #     sp.transfer((params.data, params.callback), sp.mutez(
+    #         0), sp.self_entry_point("returnHypoAccountLiquidity"))
 
-    @sp.utils.view(sp.TInt)
-    def returnHypoAccountLiquidity(self, params):
-        sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
-        liquidity = self.getHypoAccountLiquidityInternal(params)
-        sp.result(liquidity)
+    # @sp.utils.view(sp.TInt)
+    # def returnHypoAccountLiquidity(self, params):
+    #     sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
+    #     liquidity = self.getHypoAccountLiquidityInternal(params)
+    #     sp.result(liquidity)
 
-    def getHypoAccountLiquidityInternal(self, params):
-        sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
-        calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(cTokenModify=sp.some(
-            params.cTokenModify), account=params.account, redeemTokens=params.redeemTokens, borrowAmount=params.borrowAmount))).value
-        liquidity = sp.compute(
-            calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
-        return liquidity
+    # def getHypoAccountLiquidityInternal(self, params):
+    #     sp.set_type(params, CMPTInterface.TAccountLiquidityParams)
+    #     calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(cTokenModify=sp.some(
+    #         params.cTokenModify), account=params.account, redeemTokens=params.redeemTokens, borrowAmount=params.borrowAmount))).value
+    #     liquidity = sp.compute(
+    #         calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
+    #     return liquidity
 
     def getAccountLiquidityInternal(self, account):
         calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(
