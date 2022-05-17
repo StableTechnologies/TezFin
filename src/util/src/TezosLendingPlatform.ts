@@ -167,6 +167,7 @@ export namespace TezosLendingPlatform {
      * @param markets Map of protocol markets
      * @param address Account address
      * @param server Tezos node
+     * @returns underlyingBalances as a map of asset -> underlyingBalance
      */
     export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: BigNumber }> {
         let balances = {};

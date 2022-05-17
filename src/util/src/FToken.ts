@@ -204,6 +204,7 @@ export namespace FToken {
      *
      * @param ftokenBalance The ammount of FTokens
      * @param storage The FToken storage 
+     * @returns underlyingBalance as BigNumber
      */
      export function ApplyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
 	
@@ -217,6 +218,7 @@ export namespace FToken {
      * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
      *
      * @param storage The FToken storage 
+     * @returns exchangeRate as BigNumber
      */
      export function GetExchangeRate(storage: Storage): BigNumber {
 	
@@ -331,7 +333,7 @@ export namespace FToken {
      * @param reserves Reserves of the collateral token.
      * @param totalSupply Total supply of the Ftoken.
      * @param expScale The scale all the mantissa's are in.
-     * @returns
+     * @returns exchangeRate as BigNumber
      */
 	function _calcExchangeRateAdjusted(adjustment: number, initialExhangeRateMantissa: bigInt.BigInteger, balance: bigInt.BigInteger, borrows: bigInt.BigInteger, reserves: bigInt.BigInteger, totalSupply: bigInt.BigInteger, expScale: bigInt.BigInteger ): BigNumber {
 	    const _adjustment = bigInt(adjustment);
@@ -355,7 +357,7 @@ export namespace FToken {
      * @param ftokenBalance Amount of FTokens a user has
      * @param exchangeRate  The exchange rate for the token.
      * @param expScale The scale all the mantissa's are in.
-     * @returns
+     * @returns underlyingBalance  as BigNumber
      */
 	function _calcApplyExchangeRate(ftokenBalance: bigInt.BigInteger, exchangeRate: BigNumber, expScale: bigInt.BigInteger ): BigNumber {
 		const underlyingBalance = new BigNumber(ftokenBalance.toString()).multipliedBy(exchangeRate);
