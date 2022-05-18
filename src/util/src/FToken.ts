@@ -7,7 +7,7 @@ import { JSONPath } from 'jsonpath-plus';
 import { ProtocolAddresses, UnderlyingAsset } from './types';
 import bigInt from 'big-integer';
 import Decimal from 'decimal.js';
-import { TezosLendingPlatform } from 'TezosLendingPlatform';
+import { TezosLendingPlatform } from './TezosLendingPlatform';
 
 export namespace FToken {
     /*
