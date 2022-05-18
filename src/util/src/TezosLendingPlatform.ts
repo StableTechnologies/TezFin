@@ -79,7 +79,7 @@ export namespace TezosLendingPlatform {
             const fTokenAddress = protocolAddresses.fTokens[asset];
             const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
             try {
-                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server, fTokenType);
+                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]],  server, fTokenType);
                 const rateModel = await InterestRateModel.GetStorage(server, protocolAddresses.interestRateModel[asset]);
                 const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracleMap[protocolAddresses.fTokensReverse[fTokenAddress]], server)
                 markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel, oraclePrice);

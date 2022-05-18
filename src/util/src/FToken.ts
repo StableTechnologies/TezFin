@@ -4,9 +4,10 @@ import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, KeyStore, Signer, T
 import { BigNumber } from 'bignumber.js';
 import { InterestRateModel } from './contracts/InterestRateModel';
 import { JSONPath } from 'jsonpath-plus';
-import { ProtocolAddresses } from './types';
+import { ProtocolAddresses, UnderlyingAsset } from './types';
 import bigInt from 'big-integer';
 import Decimal from 'decimal.js';
+import { TezosLendingPlatform } from 'TezosLendingPlatform';
 
 export namespace FToken {
     /*
@@ -48,7 +49,7 @@ export namespace FToken {
      * @param
      * @param
      */
-    export async function GetStorage(fTokenAddress: string, server: string, type: TokenStandard): Promise<Storage> {
+    export async function GetStorage(fTokenAddress: string, underlying: UnderlyingAsset, server: string, type: TokenStandard): Promise<Storage> {
         switch (type) {
             case TokenStandard.FA12: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
@@ -56,7 +57,7 @@ export namespace FToken {
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[2].prim', json: storageResult })[0];
                 const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
                 const protocolSeizeShareMantissa = JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0];
-                
+                const cash = await TezosLendingPlatform.GetUnderlyingBalanceToken(underlying, fTokenAddress, server);
                 // TODO: implement numSuppliers and numBorrowers
                 // get numSuppliers
                 // const suppliersQuery = makeSuppliersQuery(balancesMapId);
@@ -85,7 +86,7 @@ export namespace FToken {
                     reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
                     reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0]),
                     totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
-                    currentCash: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0])
+                    currentCash: cash
                 };
             }
             case TokenStandard.FA2: {
@@ -94,7 +95,7 @@ export namespace FToken {
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[1].prim', json: storageResult })[0];
                 const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
                 const protocolSeizeShareMantissa = JSONPath({ path: '$.args[0].args[1].args[2].int', json: storageResult })[0];
-                
+                const cash = await TezosLendingPlatform.GetUnderlyingBalanceToken(underlying, fTokenAddress, server);
                 // TODO: implement numSuppliers and numBorrowers
                 // get numSuppliers
                 // const suppliersQuery = makeSuppliersQuery(balancesMapId);
@@ -123,7 +124,7 @@ export namespace FToken {
                     reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0]),
                     reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
                     totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
-                    currentCash: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0])
+                    currentCash: cash
                 };
             }
             case TokenStandard.XTZ: {
