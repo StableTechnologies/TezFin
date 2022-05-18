@@ -316,7 +316,10 @@ export const useStyles = makeStyles({
         fontSize: '1rem',
         lineHeight: '30px',
         paddingTop: '1.25rem',
-        textAlign: 'center'
+        textAlign: 'center',
+        '@media(max-width: 501px)': {
+            fontSize: '0.625rem'
+        }
     }
 });
 
