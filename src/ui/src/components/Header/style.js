@@ -308,6 +308,15 @@ export const useStyles = makeStyles({
         fontWeight: '400',
         fontSize: '1.25rem',
         paddingLeft: '1rem'
+    },
+    networkType: {
+        color: '#000',
+        opacity: '0.87',
+        fontWeight: '400',
+        fontSize: '1rem',
+        lineHeight: '30px',
+        paddingTop: '1.25rem',
+        textAlign: 'center'
     }
 });
 

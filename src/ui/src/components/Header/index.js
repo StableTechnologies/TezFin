@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
-import { Typography, Hidden } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import Composition from './composition';
 
@@ -18,13 +18,18 @@ import { supplyCompositionAction } from '../../reduxContent/supplyComposition/ac
 import { borrowCompositionAction } from '../../reduxContent/borrowComposition/actions';
 import { LightTooltip } from '../StackedBars/style.tsx';
 
+// eslint-disable-next-line import/no-dynamic-require
+const config = require(`../../library/${process.env.REACT_APP_ENV || 'prod'}-network-config.json`);
+
 const Header = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const { network } = config.infra.conseilServer;
 
     const { supplyComposition } = useSelector((state) => state.supplyComposition);
     const { borrowComposition } = useSelector((state) => state.borrowComposition);
     const account = useSelector((state) => state.addWallet.account);
+
     const { suppliedMarkets, borrowedMarkets } = useSelector(
         (state) => state.market
     );
@@ -36,10 +41,15 @@ const Header = () => {
 
     return (
         <HeaderCon className={classes1.root}>
+            <Typography className={classes.networkType}>
+                { (network !== 'mainnet')
+                            && `Note: Tezfin is currently operating on the Tezos test network ${network}.`
+                }
+            </Typography>
             <Grid container className={classes.netAPY}>
                 <Grid item sx={{ display: { xl: 'none', xs: 'none' } }} xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>
-            Net APY: 0.00%{' '}
+                        Net APY: 0.00%{' '}
                         <LightTooltip
                             title="Difference of Annual Percentage Yield earned and paid."
                             placement="bottom"
