@@ -370,6 +370,24 @@ export namespace FToken {
 		const underlyingBalance = new BigNumber(ftokenBalance.toString()).multipliedBy(exchangeRate);
 		return underlyingBalance;
     }
+    
+     /**
+     * @description Takes the exponential scale and returns the implied precision as number :
+     *
+     *  precision = log(e)(expScale) / log(e)
+     *
+     * @param expScale The scale all the mantissa's are in.
+     * @returns precision as number
+     */
+     export  function getPrecision(expScale: bigInt.BigInteger): number {
+
+	    const _expScale = Decimal.log(expScale.toString());
+	    const log10 = Decimal.log(10);
+	    const decimalPlaces = _expScale.div(log10).round();
+
+	    return parseInt(decimalPlaces.toString())
+
+	}
 
     /**
      *
@@ -380,6 +398,12 @@ export namespace FToken {
     function _calcAnnualizedRate(rate, scale, annualPeriods = 1051920) {
         const base = bigInt(scale).plus(rate);
         const decimalBase = new BigNumber(base.toString()).div(scale.toString());
+	//dummy change remove below  
+	console.log("scale",scale.toString());
+	const precision = (scale.toString().length - 2) * 2;
+	console.log("precision",precision);
+	// remove above
+
         BigNumber.config({ POW_PRECISION: (scale.toString().length - 1) * 2 });
         return decimalBase.pow(annualPeriods).multipliedBy(100).toNumber();
     }

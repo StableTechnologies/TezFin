@@ -3,6 +3,54 @@ import { BigNumber } from "bignumber.js";
 import bigInt from "big-integer";
 
 const expect = require("chai").expect;
+interface GetPrecisionTest {
+  expScale: number | string;
+  expected: number | string;
+}
+
+const precisionTests: GetPrecisionTest[] = [
+  {
+    expScale: "100",
+    expected: 2,
+  },
+  {
+    expScale: "10",
+    expected: 1,
+  },
+  {
+    expScale: "1000000000000000000",
+    expected: 18,
+  },
+  {
+    expScale: "1",
+    expected: 0,
+  },
+];
+
+function getPrecision(test: GetPrecisionTest): number{
+	return FToken.getPrecision(bigInt(test.expScale));
+}
+
+precisionTests.forEach((test: GetPrecisionTest) => {
+    it(`-------------------------------------------------------------
+
+
+
+	  Exponential Scale: ${test.expScale.toString()}
+	  The precision calculation: 
+        * log's base is 10
+
+	  -----------Formula ----------
+	
+	log(${test.expScale}) / log(10)
+
+	  -----------Formula ----------
+        
+	should equal expected: ${test.expected}`, function () {
+      const res = getPrecision(test);
+      expect(res).to.equal(test.expected);
+    });
+});
 
 interface ExchangeRateTest {
   args: ExchangeRateArgs;
