@@ -25,14 +25,12 @@ const Header = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { network } = config.infra.conseilServer;
+    const networkType = network.charAt(0).toUpperCase() + network.slice(1);
 
     const { supplyComposition } = useSelector((state) => state.supplyComposition);
     const { borrowComposition } = useSelector((state) => state.borrowComposition);
     const account = useSelector((state) => state.addWallet.account);
-
-    const { suppliedMarkets, borrowedMarkets } = useSelector(
-        (state) => state.market
-    );
+    const { suppliedMarkets, borrowedMarkets } = useSelector((state) => state.market);
 
     useEffect(() => {
         dispatch(supplyCompositionAction(suppliedMarkets));
@@ -43,7 +41,7 @@ const Header = () => {
         <HeaderCon className={classes1.root}>
             <Typography className={classes.networkType}>
                 { (network !== 'mainnet')
-                            && `Note: Tezfin is currently operating on the Tezos test network ${network}.`
+                            && `Note: Tezfin is currently operating on the Tezos test network ${networkType}.`
                 }
             </Typography>
             <Grid container className={classes.netAPY}>
