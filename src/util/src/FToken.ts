@@ -374,7 +374,7 @@ export namespace FToken {
      /**
      * @description Takes the exponential scale and returns the implied precision as number :
      *
-     *  precision = log(e)(expScale) / log(e)
+     *  precision = log(expScale) / log(logBase)
      *
      * @param expScale The scale all the mantissa's are in.
      * @returns precision as number
