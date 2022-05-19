@@ -320,10 +320,7 @@ export const classes1 = {
 export const HeaderCon = styled('div')(() => ({
     [`&.${classes1.root}`]: {
         backgroundColor: '#F9FAFC',
-        paddingBottom: '3.0625rem',
-        '@media(min-width: 1024px)': {
-            height: '308.34px'
-        }
+        paddingBottom: '3.0625rem'
     }
 }));
 export const Title = styled('p')(() => ({

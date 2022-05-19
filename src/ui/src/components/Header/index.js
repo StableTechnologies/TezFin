@@ -3,9 +3,10 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
-import { Typography, Hidden } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import Composition from './composition';
+import Banner from '../Banner';
 
 import { HeaderCon, classes1, useStyles } from './style';
 import supplyingIcon from '../../assets/supplyingIcon.svg';
@@ -53,6 +54,7 @@ const Header = () => {
                     </Typography>
                 </Grid>
             </Grid>
+            <Banner />
             <Grid container>
                 <Composition
                     title="Supply Composition"
