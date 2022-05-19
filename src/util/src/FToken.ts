@@ -243,7 +243,7 @@ export namespace FToken {
      *
      * @param storage
      */
-    export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
+    export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): BigNumber {
         const _blockRate = _calcSupplyRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate, storage.reserveFactorMantissa);
 
         return _calcAnnualizedRate(_blockRate, irStorage.scale);
@@ -254,7 +254,7 @@ export namespace FToken {
      *
      * @param storage
      */
-    export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
+    export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): BigNumber {
         const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
 
         return _calcAnnualizedRate(_blockRate, irStorage.scale);
@@ -395,17 +395,17 @@ export namespace FToken {
      * @param annualPeriods 365.25*24*60*2.
      * @returns Annual rate as a percentage.
      */
-    function _calcAnnualizedRate(rate, scale, annualPeriods = 1051920) {
+	function _calcAnnualizedRate(rate: bigInt.BigInteger, scale: bigInt.BigInteger, annualPeriods = 1051920): BigNumber {
         const base = bigInt(scale).plus(rate);
         const decimalBase = new BigNumber(base.toString()).div(scale.toString());
 	//dummy change remove below  
 	console.log("scale",scale.toString());
-	const precision = (scale.toString().length - 2) * 2;
+		const precision = getPrecision(scale);
 	console.log("precision",precision);
 	// remove above
 
         BigNumber.config({ POW_PRECISION: (scale.toString().length - 1) * 2 });
-        return decimalBase.pow(annualPeriods).multipliedBy(100).toNumber();
+        return decimalBase.pow(annualPeriods).multipliedBy(100);
     }
 
     /*
