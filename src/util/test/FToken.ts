@@ -1,4 +1,5 @@
 import { FToken } from "../src/FToken";
+import { InterestRateModel } from "../src/contracts/InterestRateModel";
 import { BigNumber } from "bignumber.js";
 import bigInt from "big-integer";
 
@@ -27,12 +28,12 @@ const precisionTests: GetPrecisionTest[] = [
   },
 ];
 
-function getPrecision(test: GetPrecisionTest): number{
-	return FToken.getPrecision(bigInt(test.expScale));
+function getPrecision(test: GetPrecisionTest): number {
+  return FToken.getPrecision(bigInt(test.expScale));
 }
 
 precisionTests.forEach((test: GetPrecisionTest) => {
-    it(`-------------------------------------------------------------
+  it(`-------------------------------------------------------------
 
 
 
@@ -47,9 +48,121 @@ precisionTests.forEach((test: GetPrecisionTest) => {
 	  -----------Formula ----------
         
 	should equal expected: ${test.expected}`, function () {
-      const res = getPrecision(test);
-      expect(res).to.equal(test.expected);
+    const res = getPrecision(test);
+    expect(res).to.equal(test.expected);
+  });
+});
+
+interface APYtest {
+  args: APYargs;
+  desc: string;
+  expected: {
+    borrowAPY: number | string;
+    supplyAPY: number | string;
+  };
+}
+
+interface APYargs {
+  supplyRatePerBlock: number | string;
+  borrowRatePerBlock: number | string;
+  annualPeriod: number | string;
+  expScale: number | string;
+  interestRateModel: {
+    blockRate: number | string;
+    blockMultiplier: number | string;
+    scale: number | string;
+  };
+}
+
+function getStorageApyTest(
+  args: APYargs
+): [FToken.Storage, InterestRateModel.Storage] {
+  const fTokenStorage: FToken.Storage = {
+    accrualBlockNumber: 0,
+    administrator: "",
+    balancesMapId: 0,
+    supply: {
+      totalSupply: bigInt(0),
+      supplyRatePerBlock: bigInt(args.supplyRatePerBlock),
+    },
+    borrow: {
+      totalBorrows: bigInt(0),
+      borrowIndex: bigInt(0),
+      borrowRateMaxMantissa: bigInt(0),
+      borrowRatePerBlock: bigInt(args.borrowRatePerBlock),
+    },
+    comptrollerAddress: "",
+    expScale: bigInt(args.expScale),
+    halfExpScale: bigInt(0),
+    initialExchangeRateMantissa: bigInt(0),
+    interestRateModel: "",
+    pendingAdministrator: "",
+    reserveFactorMantissa: bigInt(0),
+    reserveFactorMaxMantissa: bigInt(0),
+    totalReserves: bigInt(0),
+    currentCash: bigInt(0),
+  };
+
+  const interestRateModelStorage: InterestRateModel.Storage = {
+    blockRate: bigInt(args.interestRateModel.blockRate),
+    blockMultiplier: bigInt(args.interestRateModel.blockMultiplier),
+    scale: bigInt(args.interestRateModel.blockRate),
+  };
+
+  return [fTokenStorage, interestRateModelStorage];
+}
+
+function getBorrowRate(args: APYargs): BigNumber {
+  const _storage = getStorageApyTest(args);
+  const ftokenStorage: FToken.Storage = _storage[0];
+  const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
+
+  return FToken.GetBorrowRate(ftokenStorage, interestRateModelStorage);
+}
+
+describe("APY calculation GetBorrowRate/GetSupplyRate", function () {
+  const tests: APYtest[] = [
+    {
+      desc: "Test case from USD FToken storage",
+      args: {
+        supplyRatePerBlock: "0",
+        borrowRatePerBlock: "5000000000000",
+        annualPeriod: "1051920",
+        expScale: "1000000000000000000",
+        interestRateModel: {
+          blockRate: "840000000000",
+          blockMultiplier: "180000000000",
+          scale: "1000000000000000000",
+        },
+      },
+      expected: {
+        borrowAPY: "5.256",
+        supplyAPY: "0",
+      },
+    },
+  ];
+
+  tests.forEach((test: APYtest) => {
+    it(`-------------------------------------------------------------
+
+          ${test.desc}
+
+
+	  The Borrow Rate calculated: ${getBorrowRate(test.args)}
+
+	  -----------Formula ----------
+	  APYborrow = (borrowRatePerBlock = ${new BigNumber(
+      test.args.borrowRatePerBlock
+    ).div(test.args.expScale)}) * (annualPeriod = ${test.args.annualPeriod})
+
+	  -----------Formula ----------
+        
+	should equal expected: ${test.expected.borrowAPY}`, function () {
+      const res = getBorrowRate(test.args);
+      const _expected = new BigNumber(test.expected.borrowAPY.toString());
+      expect(res.eq(_expected)).to.equal(true);
     });
+  });
 });
 
 interface ExchangeRateTest {
@@ -181,34 +294,34 @@ describe("getExchangeRate(storage)", function () {
         currentCash: 4398793844,
         totalBorrows: 1057953,
         totalReserves: 0,
-	initialExchangeRateMantissa: '1000000000000000000',
-        expScale: '1000000000000000000'
+        initialExchangeRateMantissa: "1000000000000000000",
+        expScale: "1000000000000000000",
       },
-	    expected: '1.000699619947069281'
+      expected: "1.000699619947069281",
     },
     {
       desc: "Test case, data from ETH FToken storage ",
       args: {
-	      totalSupply: '106113817386805698284' ,
-        currentCash: '98981987064168614410',
-        totalBorrows: '7716971958727265793',
+        totalSupply: "106113817386805698284",
+        currentCash: "98981987064168614410",
+        totalBorrows: "7716971958727265793",
         totalReserves: 0,
-        initialExchangeRateMantissa: '1000000000000000000',
-        expScale: '1000000000000000000',
+        initialExchangeRateMantissa: "1000000000000000000",
+        expScale: "1000000000000000000",
       },
-      expected: '1.005514283158405524',
+      expected: "1.005514283158405524",
     },
     {
       desc: "Test case, data from USD FToken storage ",
       args: {
-	      totalSupply: '21769247144' ,
-        currentCash: '1347030412',
-        totalBorrows: '22601098095',
+        totalSupply: "21769247144",
+        currentCash: "1347030412",
+        totalBorrows: "22601098095",
         totalReserves: 0,
-        initialExchangeRateMantissa: '1000000000000000000',
-        expScale: '1000000000000000000',
+        initialExchangeRateMantissa: "1000000000000000000",
+        expScale: "1000000000000000000",
       },
-      expected: '1.100089881316843761',
+      expected: "1.100089881316843761",
     },
   ];
 
