@@ -38,7 +38,7 @@ const AllMarketModal = (props) => {
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
-    const [maxAmount, setMaxAmount] = useState('');
+    const [useMaxAmount, setUseMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [opGroup, setOpGroup] = useState('');
@@ -48,7 +48,7 @@ const AllMarketModal = (props) => {
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
-    const [currrentTab, setCurrrentTab] = useState('');
+    const [currentTab, setCurrentTab] = useState('');
     const [limit, setLimit] = useState('');
     const [pendingLimit, setPendingLimit] = useState('');
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
@@ -77,7 +77,7 @@ const AllMarketModal = (props) => {
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
-    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
+    useEffect(() => setAmount(undecimalify(useMaxAmount, decimals[tokenDetails.title])), [useMaxAmount]);
 
     useEffect(() => {
         if (opGroup) {
@@ -140,18 +140,20 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
         setAmount('');
-        setMaxAmount('');
+        setUseMaxAmount('');
     }, [close]);
 
     useEffect(() => {
-        marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        marketsMaxAction(currentTab, tokenDetails, borrowLimit, setLimit);
+        setUseMaxAmount(limit);
+
         return () => {
             setLimit('');
         };
-    }, [currrentTab, tokenDetails, tokenValue]);
+    }, [currentTab, tokenDetails, tokenValue, limit]);
 
     useEffect(() => {
-        if ((currrentTab === 'two') && (tokenValue > 0)) {
+        if ((currentTab === 'two') && (tokenValue > 0)) {
             const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
             const pendingBorrowing = borrowing + tokenValueUsd;
             const pendingBorrowLimit = totalCollateral - pendingBorrowing;
@@ -162,7 +164,7 @@ const AllMarketModal = (props) => {
             setPendingLimit('');
             setPendingLimitUsed('');
         };
-    }, [tokenValue, currrentTab]);
+    }, [tokenValue, currentTab]);
 
     return (
         <>
@@ -193,13 +195,12 @@ const AllMarketModal = (props) => {
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
                 inputBtnTextTwo = "90% Limit"
-                maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
-                maxAmount= {maxAmount}
-                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
-                pendingLimit={(currrentTab === 'two') ? pendingLimit : false}
-                pendingLimitUsed={(currrentTab === 'two') ? pendingLimitUsed : false}
-                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
+                useMaxAmount= {useMaxAmount}
+                errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
+                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                pendingLimit={(currentTab === 'two') ? pendingLimit : false}
+                pendingLimitUsed={(currentTab === 'two') ? pendingLimitUsed : false}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
             />
         </>
     );
