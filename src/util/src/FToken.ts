@@ -270,80 +270,96 @@ export namespace FToken {
     }
 
     /**
+     * @description  Calculates the borrowRatePerBlock matissa as per the contract code using the fomula:
+     *
+     *  borrowRatePerBlock = (utilizationRate * blockMultiplier / scale) + blockBaseRate
      *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
-     * @param blockMultiplier Rate line slope, order of magnitude of scale.
-     * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
-     * @returns
+     * @param scale  the exponential scale all the mantissa's are in
+     * @param blockmultiplier rate line slope, order of magnitude of scale.
+     * @param blockbaserate per-block interest rate, order of magnitude of scale.
+     * @returns borrowrateperblock as bigint.biginteger
      */
-    function _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate) {
-        const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
+	function _calcBorrowRate(loans: bigint.biginteger, balance: bigint.biginteger, reserves: bigint.biginteger, scale: bigint.biginteger, blockMultiplier: bigint.biginteger, blockBaseRate: bigint.biginteger): bigInt.BigInteger {
 
-        const _blockMultiplier = bigInt(blockMultiplier);
-        const _blockBaseRate = bigInt(blockBaseRate);
-        const _scale = bigInt(scale);
+		const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
 
-        const r = utilizationRate.multiply(_blockMultiplier).divide(_scale).plus(_blockBaseRate);
+		const _blockMultiplier = bigInt(blockMultiplier);
+		const _blockBaseRate = bigInt(blockBaseRate);
+		const _scale = bigInt(scale);
 
-        return r;
+		return utilizationRate.multiply(_blockMultiplier).divide(_scale).plus(_blockBaseRate);
+
     }
 
     /**
+     * @description Calculates the utilizationRate as per the contract code using this formula:
+     *
+     *  utilizationRate = (loan * scale) / ( balance + loans - reserves)
      *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
-     * @returns
+     * @param scale  The exponential scale all the matissa's are in
+     * @returns utilizationRate as BigInteger
      */
-	function _calcUtilizationRate(loans, balance, reserves, scale): bigInt.BigInteger {
-        const _loans = bigInt(loans);
+	function _calcUtilizationRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger): bigInt.BigInteger {
 
-        if (_loans.eq(0)) { return bigInt.zero; }
+		const _loans = bigInt(loans);
 
-        const _balance = bigInt(balance);
-        const _reserves = bigInt(reserves);
-        const _scale = bigInt(scale);
+		if (_loans.eq(0)) { return bigInt.zero; }
 
-	const _divisor = _balance.plus(_loans).minus(_reserves);
+		const _balance = bigInt(balance);
+		const _reserves = bigInt(reserves);
+		const _scale = bigInt(scale);
 
-        if (_divisor.eq(0)) { return bigInt.zero; }
+		const _divisor = _balance.plus(_loans).minus(_reserves);
 
-        const utilizationRate = _loans.multiply(_scale).divide(_divisor);
+		if (_divisor.eq(0)) { return bigInt.zero; }
 
-        return utilizationRate;
+		const utilizationRate = _loans.multiply(_scale).divide(_divisor);
+
+		return utilizationRate;
     }
 
     /**
+     * @description  Calculates the supplyRatePerBlock matissa using the fomula below
      *
+     *    oneMinusReserveFactor = scale - reserveFactor
+     *
+     *    rateToPool = borrowRate * oneMinusReserveFactor / scale
+     *
+     *    supplyRatePerBlock =  rateToPool * utilizationRate / poolRateDenominator          
+     *    
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
+     * @param scale  The exponential scale all the matissa's are in
      * @param blockMultiplier Rate line slope, order of magnitude of scale.
      * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
      * @param reserveFactor Reserve share order of magnitude of scale.
-     * @returns
+     * @returns supplyRatePerBlock as bigInt.BigInteger
      */
-    function _calcSupplyRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate, reserveFactor) {
+    function _calcSupplyRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger, blockMultiplier: bigInt.BigInteger, blockBaseRate: bigInt.BigInteger, reserveFactor: bigInt.BigInteger): bigInt.BigInteger {
         const _scale = bigInt(scale)
 
         const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
         const borrowRate = _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate)
-        const poolShare = _scale.minus(reserveFactor);
+        const oneMinusReserveFactor = _scale.minus(reserveFactor);
 
-        const poolRateNumerator = borrowRate.multiply(poolShare).multiply(utilizationRate);
-        const poolRateDenominator = _scale.multiply(_scale);
+        const rateToPool = borrowRate.multiply(oneMinusReserveFactor).divide(scale);
 
-        return poolRateNumerator.divide(poolRateDenominator);
+
+        return rateToPool.multiply(utilizationRate).divide(scale);
+
     }
 
 
     /**
      * @description Calculates the exchange rate based on the formula :
+     *
      * ( underlyingBalance + totalBorrows - reserves ) / totalSupply 
      *
      * @param adjustment TODO 
