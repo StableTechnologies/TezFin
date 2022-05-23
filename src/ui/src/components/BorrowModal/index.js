@@ -49,12 +49,11 @@ const BorrowModal = (props) => {
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
     const [currentTab, setCurrentTab] = useState('');
-    const [limit, setLimit] = useState('');
     const [pendingLimit, setPendingLimit] = useState('');
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useBorrowErrorText(tokenValue, limit, tokenDetails);
-    const buttonTwo = useRepayErrorText(tokenValue, limit);
+    const buttonOne = useBorrowErrorText(tokenValue, useMaxAmount, tokenDetails);
+    const buttonTwo = useRepayErrorText(tokenValue, useMaxAmount);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -144,13 +143,12 @@ const BorrowModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setLimit);
-        setUseMaxAmount(limit);
+        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
 
         return () => {
-            setLimit('');
+            setUseMaxAmount('');
         };
-    }, [currentTab, tokenDetails, tokenValue, limit]);
+    }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
         const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();

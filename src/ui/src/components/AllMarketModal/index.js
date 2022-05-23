@@ -49,12 +49,11 @@ const AllMarketModal = (props) => {
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
     const [currentTab, setCurrentTab] = useState('');
-    const [limit, setLimit] = useState('');
     const [pendingLimit, setPendingLimit] = useState('');
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useSupplyErrorText(tokenValue, limit);
-    const buttonTwo = useBorrowErrorText(tokenValue, limit, tokenDetails);
+    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
+    const buttonTwo = useBorrowErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -144,13 +143,12 @@ const AllMarketModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        marketsMaxAction(currentTab, tokenDetails, borrowLimit, setLimit);
-        setUseMaxAmount(limit);
+        marketsMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
 
         return () => {
-            setLimit('');
+            setUseMaxAmount('');
         };
-    }, [currentTab, tokenDetails, tokenValue, limit]);
+    }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
         if ((currentTab === 'two') && (tokenValue > 0)) {

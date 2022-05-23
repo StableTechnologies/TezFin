@@ -45,10 +45,9 @@ const SupplyModal = (props) => {
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
     const [currentTab, setCurrentTab] = useState('');
-    const [limit, setLimit] = useState('');
 
-    const buttonOne = useSupplyErrorText(tokenValue, limit);
-    const buttonTwo = useWithdrawErrorText(tokenValue, limit, tokenDetails);
+    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
+    const buttonTwo = useWithdrawErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -138,13 +137,12 @@ const SupplyModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        supplyingMaxAction(currentTab, tokenDetails, setLimit);
-        setUseMaxAmount(limit);
+        supplyingMaxAction(currentTab, tokenDetails, setUseMaxAmount);
 
         return () => {
-            setLimit('');
+            setUseMaxAmount('');
         };
-    }, [currentTab, tokenDetails, tokenValue, limit]);
+    }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     return (
         <>
