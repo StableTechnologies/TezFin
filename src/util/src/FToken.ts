@@ -5,7 +5,7 @@ import { BigNumber } from 'bignumber.js';
 import { InterestRateModel } from './contracts/InterestRateModel';
 import { JSONPath } from 'jsonpath-plus';
 import { ProtocolAddresses, UnderlyingAsset } from './types';
-import bigInt from 'big-integer';
+import bigInt from "big-integer";
 import Decimal from 'decimal.js';
 import { TezosLendingPlatform } from './TezosLendingPlatform';
 
@@ -280,9 +280,9 @@ export namespace FToken {
      * @param scale  the exponential scale all the mantissa's are in
      * @param blockmultiplier rate line slope, order of magnitude of scale.
      * @param blockbaserate per-block interest rate, order of magnitude of scale.
-     * @returns borrowrateperblock as bigint.biginteger
+     * @returns borrowrateperblock as bigInt.BigInteger
      */
-	function _calcBorrowRate(loans: bigint.biginteger, balance: bigint.biginteger, reserves: bigint.biginteger, scale: bigint.biginteger, blockMultiplier: bigint.biginteger, blockBaseRate: bigint.biginteger): bigInt.BigInteger {
+	function _calcBorrowRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger, blockMultiplier: bigInt.BigInteger, blockBaseRate: bigInt.BigInteger): bigInt.BigInteger {
 
 		const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
 
