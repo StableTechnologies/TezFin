@@ -29,7 +29,7 @@ const precisionTests: GetPrecisionTest[] = [
         expected: 0
     },
     {
-        expScale: '0', 
+        expScale: '0',
         expected: 0
     }
 ];
@@ -206,12 +206,13 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
           ${test.desc}
 
 	  -----------Formula ----------
-	  APYborrow = borrowRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
+	  AYPborrow = borrowRatePerBlock * (annualPeriod = ${test.args.annualPeriod}) 
+	  AYPborrow% = AYPborrow * 100 / expScale
 
 	  -----------Formula ----------
         
-	  The Borrow Rate calculated: ${getBorrowRate(test.args)}
-	should equal expected: ${test.expected.borrowAPY}`, () => {
+	  The APYBorrow% calculated: ${getBorrowRate(test.args)}
+	  should equal expected: ${test.expected.borrowAPY}`, () => {
             const res = getBorrowRate(test.args);
             const _expected = new BigNumber(test.expected.borrowAPY.toString());
             expect(res.eq(_expected)).to.equal(true);
@@ -226,10 +227,12 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 	  -----------Formula ----------
 	  APYsupply = supplyRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
 
+	  AYPsupply% = AYPborrow * 100 / expScale
+
 	  -----------Formula ----------
         
-	  The Supply Rate calculated: ${getSupplyRate(test.args)}
-	should equal expected: ${test.expected.supplyAPY}`, () => {
+	  The APYsupply rate calculated: ${getSupplyRate(test.args)}
+	  should equal expected: ${test.expected.supplyAPY}`, () => {
             const res = getSupplyRate(test.args);
             const _expected = new BigNumber(test.expected.supplyAPY.toString());
             expect(res.eq(_expected)).to.equal(true);
