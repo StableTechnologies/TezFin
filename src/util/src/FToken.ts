@@ -396,17 +396,17 @@ export namespace FToken {
 	    const log10 = Decimal.log(10);
 	    const decimalPlaces = _expScale.div(log10).round();
 
-	    return parseInt(decimalPlaces.toString())
+	     return parseInt(decimalPlaces.toString());
 
 	}
 
     /**
-     *
-     * @param rate Periodic (per-block) interest rate.
+     * @description Calculates the APY from the Supply or Borrow rate
+     * @param rate Periodic (per-block) supply or borrow interest rate.
      * @param annualPeriods 365.25*24*60*2.
-     * @returns Annual rate as a percentage.
+     * @returns annual rate as a percentage.
      */
-	function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): BigNumber {
+     function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): BigNumber {
         const _precision = getPrecision(expScale);
 	const _rate = new BigNumber(rate.toString());//.div(expScale.toString());
 	const _annualPeriods = new BigNumber(annualPeriods);
@@ -414,8 +414,7 @@ export namespace FToken {
         const apyPercent = _apyRate.multipliedBy(100);
 
 
-        return apyPercent //_apyBorrow.div(expScale.toString()).decimalPlaces(_precision);
-        //return _apyBorrow.div(expScale.toString()).decimalPlaces(_precision);
+	     return apyPercent;
     }
 
     /*
