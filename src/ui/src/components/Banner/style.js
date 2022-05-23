@@ -4,7 +4,7 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles({
     bannerCon: {
         background: '#FF8E021A',
-        margin: '0 2.5rem 2.125rem',
+        margin: '0 2.5rem 0',
         padding: '1rem 1rem 1rem 2rem',
         width: 'auto',
         '@media(min-width: 1200px)': {
@@ -29,5 +29,13 @@ export const useStyles = makeStyles({
     },
     warningCon: {
         marginRight: '1rem'
+    },
+    warningICon: {
+        width: '2rem',
+        height: '2rem',
+        '@media(max-width: 501px)': {
+            width: '1.25rem',
+            height: '1.25rem'
+        }
     }
 });

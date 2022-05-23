@@ -315,10 +315,11 @@ export const useStyles = makeStyles({
         fontWeight: '400',
         fontSize: '1rem',
         lineHeight: '30px',
-        paddingTop: '1.25rem',
+        padding: '1.25rem 0 1rem',
         textAlign: 'center',
         '@media(max-width: 501px)': {
-            fontSize: '0.625rem'
+            fontSize: '0.625rem',
+            paddingBottom: '0.5rem'
         }
     }
 });
