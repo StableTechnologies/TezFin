@@ -33,7 +33,7 @@
     "networkBlockTime": 31,
     "delay": 7,
     "revealAccount": false,
-    "protocolAddressesPath": "../TezFinBuild/deploy_result/deploy.json",
+    "protocolAddressesPath": "./e2e/deploy_result/deploy.json",
     "tx": {
         "amount": 0,
         "fee": 1000000,

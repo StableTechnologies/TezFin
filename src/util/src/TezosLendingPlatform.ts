@@ -203,6 +203,19 @@ export namespace TezosLendingPlatform {
         }
     }
 
+    // Only valid for specific tokens
+    export async function PopulateTokenBalanceMapIDs(underlying: { [assetType: string]: UnderlyingAsset }, server: string){
+        Object.keys(underlying).forEach(async(asset)=>{
+            const storage = await TezosNodeReader.getContractStorage(server, underlying[asset].address!);
+            if (underlying[asset].tokenStandard === TokenStandard.FA12) {
+                underlying[asset].balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
+            } else if (underlying[asset].tokenStandard === TokenStandard.FA2) {
+                underlying[asset].balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
+            }
+        })
+        return underlying;
+    }
+
     /*
      * @description
      *
@@ -215,7 +228,7 @@ export namespace TezosLendingPlatform {
         if (underlying.balancesMapId === undefined) { // need to get balancesMapId from underlying asset contract's storage
             try {
                 log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`);
-                const storage = TezosNodeReader.getContractStorage(server, underlying.address!);
+                const storage = await TezosNodeReader.getContractStorage(server, underlying.address!);
                 if (underlying.tokenStandard === TokenStandard.FA12) { // TODO: this is not a good heuristic
                     underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].int', json: storage })[0]);
                 } else if (underlying.tokenStandard === TokenStandard.FA2) {

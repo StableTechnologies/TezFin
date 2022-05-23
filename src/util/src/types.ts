@@ -1,4 +1,4 @@
-import { AssetType, TokenStandard } from "enum";
+import { AssetType, TokenStandard } from "./enum";
 
 import { FToken } from './FToken';
 import { InterestRateModel } from "./contracts/InterestRateModel";

@@ -1,13 +1,13 @@
 import { KeyStore, Signer, TezosConseilClient, Tzip7ReferenceTokenHelper, MultiAssetTokenHelper} from 'conseiljs';
-import { TezosLendingPlatform, FToken, Comptroller } from './tlp';
+import { TezosLendingPlatform, FToken, Comptroller, AssetType, ProtocolAddresses } from 'tezoslendingplatformjs';
 import log from 'loglevel';
 import * as config from '../config/config.json';
-import { statOperation } from './index';
+import { statOperation } from './util';
 
-export async function mint(asset: TezosLendingPlatform.AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
+export async function mint(asset: AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     let mint: FToken.MintPair = {
         underlying: asset,
-        amount: (asset == TezosLendingPlatform.AssetType.XTZ ? 1000000 : 1) * config.mintAmount
+        amount: (asset == AssetType.XTZ ? 1000000 : 1) * config.mintAmount
     };
     log.info(`mint ${asset} parameters: ${JSON.stringify(mint)}`);
     const mintOpId = await TezosLendingPlatform.Mint(mint, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
@@ -15,10 +15,10 @@ export async function mint(asset: TezosLendingPlatform.AssetType, keystore: KeyS
     statOperation(mintResult);
 }
 
-export async function redeem(asset: TezosLendingPlatform.AssetType, comptroller: Comptroller.Storage, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, keystore: KeyStore, signer: Signer) {
+export async function redeem(asset: AssetType, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, keystore: KeyStore, signer: Signer) {
     const redeem: FToken.RedeemPair = {
-        underlying: asset as TezosLendingPlatform.AssetType,
-        amount: (asset == TezosLendingPlatform.AssetType.XTZ ? 1000000 : 1) * config.redeemAmount
+        underlying: asset as AssetType,
+        amount: (asset == AssetType.XTZ ? 1000000 : 1) * config.redeemAmount
     };
     log.info(`redeem ${asset} parameters: ${JSON.stringify(redeem)}`);
     const redeemETHOpId = await TezosLendingPlatform.Redeem(redeem, comptroller, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
@@ -26,21 +26,21 @@ export async function redeem(asset: TezosLendingPlatform.AssetType, comptroller:
     statOperation(redeemETHResult);
 }
 
-export async function borrow(asset: TezosLendingPlatform.AssetType, comptroller: Comptroller.Storage, protocolAddresses: TezosLendingPlatform.ProtocolAddresses, keystore: KeyStore, signer: Signer) {
+export async function borrow(asset: AssetType, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, keystore: KeyStore, signer: Signer) {
     const borrow: FToken.BorrowPair = {
-        underlying: asset as TezosLendingPlatform.AssetType,
-        amount: (asset == TezosLendingPlatform.AssetType.XTZ ? 1000000 : 1) * config.borrowAmount
+        underlying: asset as AssetType,
+        amount: (asset == AssetType.XTZ ? 1000000 : 1) * config.borrowAmount
     };
     log.info(`borrow ${asset} parameters: ${JSON.stringify(borrow)}`);
-    const borrowOpId = await TezosLendingPlatform.Borrow(borrow, comptroller, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
+    const borrowOpId = await TezosLendingPlatform.Borrow(borrow, comptroller, protocolAddresses, config.tezosNode, signer, keystore);
     const borrowResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, borrowOpId, config.delay, config.networkBlockTime);
     statOperation(borrowResult);
 }
 
-export async function repayBorrow(asset: TezosLendingPlatform.AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
+export async function repayBorrow(asset: AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     let repayBorrow: FToken.RepayBorrowPair = {
         underlying: asset,
-        amount: (asset == TezosLendingPlatform.AssetType.XTZ ? 1000000 : 1) * config.repayBorrowAmount
+        amount: (asset == AssetType.XTZ ? 1000000 : 1) * config.repayBorrowAmount
     };
     log.info(`repayBorrow ${asset} parameters: ${JSON.stringify(repayBorrow)}`);
     const repayBorrowOpId = await TezosLendingPlatform.RepayBorrow(repayBorrow, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);

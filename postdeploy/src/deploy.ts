@@ -1,28 +1,29 @@
 import * as config from '../config/config.json';
 
-import { Governance, TezosLendingPlatform } from './tlp';
+import { AssetType, Governance, ProtocolAddresses, TokenStandard } from 'tezoslendingplatformjs';
 import { KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper } from 'conseiljs';
 
 import log from 'loglevel';
-import { statOperation } from './index';
+import { statOperation } from './util';
 
-export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
+export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, mint = false) {
     for (const asset of config.supportMarket)
-        await supportMarket(asset.name as TezosLendingPlatform.AssetType, asset.priceExp, keystore, signer, protocolAddresses);
+        await supportMarket(asset.name as AssetType, asset.priceExp, keystore, signer, protocolAddresses);
     for (const asset of config.unpauseMarkets)
-        await unpauseMarkets(asset as TezosLendingPlatform.AssetType, keystore, signer, protocolAddresses);
+        await unpauseMarkets(asset as AssetType, keystore, signer, protocolAddresses);
     // mint underlyings
-    // for (const asset of config.tokenMint)
-    //     await tokenMint(asset, keystore!, signer!, protocolAddresses!);
+    if (mint)
+        for (const asset of config.tokenMint)
+            await tokenMint(asset, keystore!, signer!, protocolAddresses!);
 }
 
-export async function tokenMint(asset: string, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
-    if (TezosLendingPlatform.assetTypeToStandard(asset as TezosLendingPlatform.AssetType) === TezosLendingPlatform.TokenStandard.FA12) {
+export async function tokenMint(asset: string, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
+    if (protocolAddresses.underlying[asset].tokenStandard === TokenStandard.FA12) {
         log.info(`minting ${10000 * config.mintAmount} ${asset} tokens`);
         const tokenMintOpId = await Tzip7ReferenceTokenHelper.mint(config.tezosNode, signer, keystore, protocolAddresses.underlying[asset].address!, config.tx.fee, keystore.publicKeyHash, 100000000000000 * config.mintAmount);
         const tokenMintResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, tokenMintOpId, config.delay, config.networkBlockTime);
         statOperation(tokenMintResult);
-    } else if (TezosLendingPlatform.assetTypeToStandard(asset as TezosLendingPlatform.AssetType) === TezosLendingPlatform.TokenStandard.FA2) {
+    } else if (protocolAddresses.underlying[asset].tokenStandard === TokenStandard.FA2) {
         log.info(`minting ${10000 * config.mintAmount} ${asset} tokens`);
         const tokenMintOpId = await MultiAssetTokenHelper.mint(config.tezosNode, protocolAddresses.underlying[asset].address!, signer, keystore, config.tx.fee, keystore.publicKeyHash, 100000000000000 * config.mintAmount, {}, protocolAddresses.underlying[asset].tokenId!);
         const tokenMintResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, tokenMintOpId, config.delay, config.networkBlockTime);
@@ -30,7 +31,7 @@ export async function tokenMint(asset: string, keystore: KeyStore, signer: Signe
     }
 }
 
-async function supportMarket(asset: TezosLendingPlatform.AssetType, priceExp: number, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
+async function supportMarket(asset: AssetType, priceExp: number, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     // supportMarket
     log.info(`supportMarket ${asset}`);
     const supportMarket: Governance.SupportMarketPair = {
@@ -46,7 +47,7 @@ async function supportMarket(asset: TezosLendingPlatform.AssetType, priceExp: nu
     const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, supportMarketOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
-async function unpauseMarkets(asset: TezosLendingPlatform.AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: TezosLendingPlatform.ProtocolAddresses) {
+async function unpauseMarkets(asset: AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     // setMintPaused
     log.info(`setMintPaused: ${asset}`);
     const setMintPaused: Governance.SetMintPausedPair = {
@@ -73,7 +74,7 @@ async function unpauseMarkets(asset: TezosLendingPlatform.AssetType, keystore: K
     await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, setBorrowPausedOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
-async function SetPrice(asset: TezosLendingPlatform.AssetType, price: number, priceOracleAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+async function SetPrice(asset: AssetType, price: number, priceOracleAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
     const entrypoint = 'setPrice';
     const parameters = `{"prim": "Pair", "args": [{"string": "${asset}"}, {"int": "${price}"}]} `;
     const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, priceOracleAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);

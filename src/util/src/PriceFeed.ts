@@ -2,7 +2,7 @@ import { TezosMessageUtils, TezosNodeReader } from 'conseiljs';
 
 import { AssetType } from './enum';
 import { JSONPath } from 'jsonpath-plus';
-import { OracleMap } from 'types';
+import { OracleMap } from './types';
 import bigInt from 'big-integer';
 
 export namespace PriceFeed {
