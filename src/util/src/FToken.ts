@@ -308,11 +308,13 @@ export namespace FToken {
         const _reserves = bigInt(reserves);
         const _scale = bigInt(scale);
 
-	const _divisor = _balance.plus(_loans).minus(reserves);
+	const _divisor = _balance.plus(_loans).minus(_reserves);
 
-        const urate = _loans.multiply(_scale).divide(_divisor);
+        if (_divisor.eq(0)) { return bigInt.zero; }
 
-        return urate;
+        const utilizationRate = _loans.multiply(_scale).divide(_divisor);
+
+        return utilizationRate;
     }
 
     /**
