@@ -30,7 +30,7 @@ export const useStyles = makeStyles({
     warningCon: {
         marginRight: '1rem'
     },
-    warningICon: {
+    warningIcon: {
         width: '2rem',
         height: '2rem',
         '@media(max-width: 501px)': {

@@ -12,7 +12,7 @@ const Banner = () => {
     return (
         <Grid container flexWrap='nowrap' className={classes.bannerCon} >
             <Grid item className={classes.warningCon}>
-                <img src={warning} alt='warning-icon' className={classes.warningICon} />
+                <img src={warning} alt='warning-icon' className={classes.warningIcon} />
             </Grid>
             <Grid item>
                 <Typography className={classes.bannerText}> Please Use Caution. </Typography>
