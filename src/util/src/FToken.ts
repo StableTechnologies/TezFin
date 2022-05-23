@@ -238,10 +238,14 @@ export namespace FToken {
 	    return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
     }
 
-    /*
-     * @description The rate calculation here is based on the getSupplyRate function of the InterestRateModel contract.
+    /**
+     * @description  The rate calculation here is based on the getBorrowRate function of the InterestRateModel contract.
+     *               once the RateMantissa is calculated, The APY mantissa  extracted  and converted to its decimal form
+     *               and multiplied by 100 to get APY percent.
      *
-     * @param storage
+     * @param storage FToken storage.
+     * @param irStorage InterestRateModel storage.
+     * @returns borrowAPY as percent
      */
     export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): BigNumber {
         const _blockRate = _calcSupplyRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate, storage.reserveFactorMantissa);
@@ -249,10 +253,14 @@ export namespace FToken {
         return _calcAnnualizedRate(_blockRate, irStorage.scale);
     }
 
-    /*
+    /**
      * @description  The rate calculation here is based on the getBorrowRate function of the InterestRateModel contract.
+     *               once the RateMantissa is calculated, The APY mantissa  extracted  and converted to its decimal form
+     *               and multiplied by 100 to get APY percent.
      *
-     * @param storage
+     * @param storage FToken storage.
+     * @param irStorage InterestRateModel storage.
+     * @returns borrowAPY as percent
      */
     export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): BigNumber {
 	    
