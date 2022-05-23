@@ -6,6 +6,7 @@ import { InterestRateModel } from '../src/contracts/InterestRateModel';
 const { expect } = require('chai');
 
 interface GetPrecisionTest {
+  desc?: string;
   expScale: number | string;
   expected: number | string;
 }
@@ -28,7 +29,7 @@ const precisionTests: GetPrecisionTest[] = [
         expected: 0
     },
     {
-        expScale: '', // this state causes an error
+        expScale: '0', 
         expected: 0
     }
 ];
@@ -41,10 +42,11 @@ precisionTests.forEach((test: GetPrecisionTest) => {
     it(`-------------------------------------------------------------
 
 
+          ${test.desc}
 
 	  Exponential Scale: ${test.expScale.toString()}
 	  The precision calculation: 
-        * log's base is 10
+        * expScale base is 10
 
 	  -----------Formula ----------
 	

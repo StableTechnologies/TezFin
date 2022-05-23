@@ -392,12 +392,16 @@ export namespace FToken {
      /**
      * @description Takes the exponential scale and returns the implied precision as number :
      *
-     *  precision = log(expScale) / log(logBase)
+     *  precision = log(expScale) / log(expBase = 10)
+     *
+     *  note: 0 or -ve expScale value returns 0
      *
      * @param expScale The scale all the mantissa's are in.
      * @returns precision as number
      */
      export function getPrecision(expScale: bigInt.BigInteger): number {
+
+	    if (expScale.lesserOrEquals(0)) {return 0;}
 	    const _expScale = Decimal.log(expScale.toString());
 	    const log10 = Decimal.log(10);
 	    const decimalPlaces = _expScale.div(log10).round();
