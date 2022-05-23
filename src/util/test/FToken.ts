@@ -139,6 +139,46 @@ describe("APY calculation GetBorrowRate/GetSupplyRate", function () {
       desc: "Test case from USD FToken storage",
       args: {
         reserveFactorMantissa: "0",
+        currentCash: "28000000000",
+        totalBorrows: "0",
+        totalReserves: "0",
+        annualPeriod: "1051920",
+        expScale: "1000000000000000000",
+        interestRateModel: {
+          blockRate: "840000000000",
+          blockMultiplier: "180000000000",
+          scale: "1000000000000000000",
+        },
+      },
+      expected: {
+        borrowAPY: "88.36128",
+        supplyAPY: "0",
+      },
+    },
+    {
+      desc: "with currentCash = totalBorrows = totalReserves = 10400000000",
+      args: {
+        reserveFactorMantissa: "0",
+        currentCash: "10400000000",
+        totalBorrows: "10400000000",
+        totalReserves: "10400000000",
+        annualPeriod: "1051920",
+        expScale: "1000000000000000000",
+        interestRateModel: {
+          blockRate: "840000000000",
+          blockMultiplier: "180000000000",
+          scale: "1000000000000000000",
+        },
+      },
+      expected: {
+        borrowAPY: "107.29584",
+        supplyAPY: "107.29584",
+      },
+    },
+	  {
+      desc: "Test case from USD FToken storage",
+      args: {
+        reserveFactorMantissa: "0",
         currentCash: "10400000000",
         totalBorrows: "10400000000",
         totalReserves: "0",
@@ -154,7 +194,7 @@ describe("APY calculation GetBorrowRate/GetSupplyRate", function () {
         borrowAPY: "97.82856",
         supplyAPY: "48.91428",
       },
-    },
+    }
   ];
 
   tests.forEach((test: APYtest) => {
