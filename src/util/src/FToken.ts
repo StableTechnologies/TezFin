@@ -255,6 +255,7 @@ export namespace FToken {
      * @param storage
      */
     export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): BigNumber {
+	    
         const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
 
         return _calcAnnualizedRate(_blockRate, irStorage.scale);
@@ -290,7 +291,7 @@ export namespace FToken {
      * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
      * @returns
      */
-    function _calcUtilizationRate(loans, balance, reserves, scale) {
+	function _calcUtilizationRate(loans, balance, reserves, scale): bigInt.BigInteger {
         const _loans = bigInt(loans);
 
         if (_loans.eq(0)) { return bigInt.zero; }
@@ -299,9 +300,11 @@ export namespace FToken {
         const _reserves = bigInt(reserves);
         const _scale = bigInt(scale);
 
-        const r = _loans.multiply(_scale).divide(_balance.plus(_loans).subtract(_reserves));
+	const _divisor = _balance.plus(_loans).minus(reserves);
 
-        return r;
+        const urate = _loans.multiply(_scale).divide(_divisor);
+
+        return urate;
     }
 
     /**
@@ -395,17 +398,16 @@ export namespace FToken {
      * @param annualPeriods 365.25*24*60*2.
      * @returns Annual rate as a percentage.
      */
-	function _calcAnnualizedRate(rate: bigInt.BigInteger, scale: bigInt.BigInteger, annualPeriods = 1051920): BigNumber {
-        const base = bigInt(scale).plus(rate);
-        const decimalBase = new BigNumber(base.toString()).div(scale.toString());
-	//dummy change remove below  
-	console.log("scale",scale.toString());
-		const precision = getPrecision(scale);
-	console.log("precision",precision);
-	// remove above
+	function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): BigNumber {
+        const _precision = getPrecision(expScale);
+	const _rate = new BigNumber(rate.toString());//.div(expScale.toString());
+	const _annualPeriods = new BigNumber(annualPeriods);
+	const _apyRate = _rate.multipliedBy(annualPeriods).div(expScale.toString()).decimalPlaces(_precision);
+        const apyPercent = _apyRate.multipliedBy(100);
 
-        BigNumber.config({ POW_PRECISION: (scale.toString().length - 1) * 2 });
-        return decimalBase.pow(annualPeriods).multipliedBy(100);
+
+        return apyPercent //_apyBorrow.div(expScale.toString()).decimalPlaces(_precision);
+        //return _apyBorrow.div(expScale.toString()).decimalPlaces(_precision);
     }
 
     /*

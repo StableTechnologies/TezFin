@@ -26,6 +26,10 @@ const precisionTests: GetPrecisionTest[] = [
     expScale: "1",
     expected: 0,
   },
+  {
+    expScale: "", // this state causes an error
+    expected: 0,
+  },
 ];
 
 function getPrecision(test: GetPrecisionTest): number {
@@ -63,9 +67,11 @@ interface APYtest {
 }
 
 interface APYargs {
-  supplyRatePerBlock: number | string;
-  borrowRatePerBlock: number | string;
+  reserveFactorMantissa: number | string;
   annualPeriod: number | string;
+  currentCash: number | string;
+  totalBorrows: number | string;
+  totalReserves: number | string;
   expScale: number | string;
   interestRateModel: {
     blockRate: number | string;
@@ -83,13 +89,13 @@ function getStorageApyTest(
     balancesMapId: 0,
     supply: {
       totalSupply: bigInt(0),
-      supplyRatePerBlock: bigInt(args.supplyRatePerBlock),
+      supplyRatePerBlock: bigInt(0),
     },
     borrow: {
-      totalBorrows: bigInt(0),
+      totalBorrows: bigInt(args.totalBorrows),
       borrowIndex: bigInt(0),
       borrowRateMaxMantissa: bigInt(0),
-      borrowRatePerBlock: bigInt(args.borrowRatePerBlock),
+      borrowRatePerBlock: bigInt(0),
     },
     comptrollerAddress: "",
     expScale: bigInt(args.expScale),
@@ -97,16 +103,16 @@ function getStorageApyTest(
     initialExchangeRateMantissa: bigInt(0),
     interestRateModel: "",
     pendingAdministrator: "",
-    reserveFactorMantissa: bigInt(0),
+    reserveFactorMantissa: bigInt(args.reserveFactorMantissa),
     reserveFactorMaxMantissa: bigInt(0),
-    totalReserves: bigInt(0),
-    currentCash: bigInt(0),
+    totalReserves: bigInt(args.totalReserves),
+    currentCash: bigInt(args.currentCash),
   };
 
   const interestRateModelStorage: InterestRateModel.Storage = {
     blockRate: bigInt(args.interestRateModel.blockRate),
     blockMultiplier: bigInt(args.interestRateModel.blockMultiplier),
-    scale: bigInt(args.interestRateModel.blockRate),
+    scale: bigInt(args.interestRateModel.scale),
   };
 
   return [fTokenStorage, interestRateModelStorage];
@@ -119,14 +125,23 @@ function getBorrowRate(args: APYargs): BigNumber {
 
   return FToken.GetBorrowRate(ftokenStorage, interestRateModelStorage);
 }
+function getSupplyRate(args: APYargs): BigNumber {
+  const _storage = getStorageApyTest(args);
+  const ftokenStorage: FToken.Storage = _storage[0];
+  const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
+
+  return FToken.GetSupplyRate(ftokenStorage, interestRateModelStorage);
+}
 
 describe("APY calculation GetBorrowRate/GetSupplyRate", function () {
   const tests: APYtest[] = [
     {
       desc: "Test case from USD FToken storage",
       args: {
-        supplyRatePerBlock: "0",
-        borrowRatePerBlock: "5000000000000",
+        reserveFactorMantissa: "0",
+        currentCash: "10400000000",
+        totalBorrows: "10400000000",
+        totalReserves: "0",
         annualPeriod: "1051920",
         expScale: "1000000000000000000",
         interestRateModel: {
@@ -136,8 +151,8 @@ describe("APY calculation GetBorrowRate/GetSupplyRate", function () {
         },
       },
       expected: {
-        borrowAPY: "5.256",
-        supplyAPY: "0",
+        borrowAPY: "97.82856",
+        supplyAPY: "48.91428",
       },
     },
   ];
@@ -147,19 +162,33 @@ describe("APY calculation GetBorrowRate/GetSupplyRate", function () {
 
           ${test.desc}
 
-
-	  The Borrow Rate calculated: ${getBorrowRate(test.args)}
-
 	  -----------Formula ----------
-	  APYborrow = (borrowRatePerBlock = ${new BigNumber(
-      test.args.borrowRatePerBlock
-    ).div(test.args.expScale)}) * (annualPeriod = ${test.args.annualPeriod})
+	  APYborrow = borrowRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
 
 	  -----------Formula ----------
         
+	  The Borrow Rate calculated: ${getBorrowRate(test.args)}
 	should equal expected: ${test.expected.borrowAPY}`, function () {
       const res = getBorrowRate(test.args);
       const _expected = new BigNumber(test.expected.borrowAPY.toString());
+      expect(res.eq(_expected)).to.equal(true);
+    });
+  });
+
+  tests.forEach((test: APYtest) => {
+    it(`-------------------------------------------------------------
+
+          ${test.desc}
+
+	  -----------Formula ----------
+	  APYsupply = supplyRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
+
+	  -----------Formula ----------
+        
+	  The Supply Rate calculated: ${getSupplyRate(test.args)}
+	should equal expected: ${test.expected.supplyAPY}`, function () {
+      const res = getSupplyRate(test.args);
+      const _expected = new BigNumber(test.expected.supplyAPY.toString());
       expect(res.eq(_expected)).to.equal(true);
     });
   });
