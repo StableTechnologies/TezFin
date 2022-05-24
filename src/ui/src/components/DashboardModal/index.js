@@ -42,9 +42,11 @@ const DashboardModal = (props) => {
     const [limit, setLimit] = useState('');
     const [limitUsed, setLimitUsed] = useState('');
 
-    const { address } = useSelector((state) => state.addWallet.account);
+    const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+
+    const tezBalance = underlyingBalances['XTZ'];
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -240,7 +242,11 @@ const DashboardModal = (props) => {
                                         }
                                         {(tabValue === 'two' && buttonTwo === 'Repay')
                                          && <Typography className={classes.errorText}>
-                                             {errorText}
+                                             {errorText
+                                                ? errorText
+                                                : (new BigNumber(tezBalance).lt(0.25))
+                                                    && 'Your XTZ balance is low. You may soon not be able to process any new operation if you do not add XTZ to your wallet.'
+                                             }
                                          </Typography>
                                         }
                                     </>
