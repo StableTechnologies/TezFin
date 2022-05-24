@@ -179,11 +179,71 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             }
         },
 	  {
-            desc: 'Test case from USD FToken storage',
+            desc: 'Test case from USD FToken storage with 1k lent, 1 borrowed',
             args: {
                 reserveFactorMantissa: '0',
-                currentCash: '10400000000',
-                totalBorrows: '10400000000',
+                currentCash: '1000000000000000000000',
+                totalBorrows:'1000000000000000000',
+                totalReserves: '0',
+                annualPeriod: '1051920',
+                expScale: '1000000000000000000',
+                interestRateModel: {
+                    blockRate: '840000000000',
+                    blockMultiplier: '180000000000',
+                    scale: '1000000000000000000'
+                }
+            },
+            expected: {
+                borrowAPY: '88.380195644269368',
+                supplyAPY: '.088291903666968'
+            }
+	  },
+	  {
+            desc: 'Test case from USD FToken storage with 1k lent, 10 borrowed',
+            args: {
+                reserveFactorMantissa: '0',
+                currentCash: '1000000000000000000000',
+                totalBorrows:'10000000000000000000',
+                totalReserves: '0',
+                annualPeriod: '1051920',
+                expScale: '1000000000000000000',
+                interestRateModel: {
+                    blockRate: '840000000000',
+                    blockMultiplier: '180000000000',
+                    scale: '1000000000000000000'
+                }
+            },
+            expected: {
+                borrowAPY: '88.548750891002664',
+                supplyAPY: '.876720305846304'
+            }
+        },
+	  {
+            desc: 'Test case from USD FToken storage with 1k lent, 100 borrowed',
+            args: {
+                reserveFactorMantissa: '0',
+                currentCash: '1000000000000000000000',
+                totalBorrows:'100000000000000000000',
+                totalReserves: '0',
+                annualPeriod: '1051920',
+                expScale: '1000000000000000000',
+                interestRateModel: {
+                    blockRate: '840000000000',
+                    blockMultiplier: '180000000000',
+                    scale: '1000000000000000000'
+                }
+            },
+            expected: {
+                borrowAPY: '90.082603636296696',
+                supplyAPY: '8.189327603261448'
+            }
+        },
+	  {
+            desc: 'Test case from USD FToken storage with 1k lent, 1k borrowed',
+            args: {
+                reserveFactorMantissa: '0',
+                currentCash: '1000000000000000000000',
+                totalBorrows:'1000000000000000000000',
                 totalReserves: '0',
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
@@ -198,6 +258,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 supplyAPY: '48.91428'
             }
         }
+	    
     ];
 
     tests.forEach((test: APYtest) => {
