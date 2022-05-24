@@ -34,7 +34,7 @@ const SupplyModal = (props) => {
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
-    const [maxAmount, setMaxAmount] = useState('');
+    const [useMaxAmount, setUseMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [opGroup, setOpGroup] = useState('');
@@ -44,11 +44,10 @@ const SupplyModal = (props) => {
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
-    const [currrentTab, setCurrrentTab] = useState('');
-    const [limit, setLimit] = useState('');
+    const [currentTab, setCurrentTab] = useState('');
 
-    const buttonOne = useSupplyErrorText(tokenValue, limit);
-    const buttonTwo = useWithdrawErrorText(tokenValue, limit, tokenDetails);
+    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
+    const buttonTwo = useWithdrawErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -71,7 +70,7 @@ const SupplyModal = (props) => {
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
-    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
+    useEffect(() => setAmount(undecimalify(useMaxAmount, decimals[tokenDetails.title])), [useMaxAmount]);
 
     useEffect(() => {
         if (opGroup) {
@@ -134,15 +133,16 @@ const SupplyModal = (props) => {
 
     useEffect(() => {
         setAmount('');
-        setMaxAmount('');
+        setUseMaxAmount('');
     }, [close]);
 
     useEffect(() => {
-        supplyingMaxAction(currrentTab, tokenDetails, setLimit);
+        supplyingMaxAction(currentTab, tokenDetails, setUseMaxAmount);
+
         return () => {
-            setLimit('');
+            setUseMaxAmount('');
         };
-    }, [currrentTab, tokenDetails]);
+    }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     return (
         <>
@@ -169,11 +169,10 @@ const SupplyModal = (props) => {
                 setAmount={(e) => { setAmount(e); }}
                 inputBtnTextOne = "Use Max"
                 inputBtnTextTwo = "Use Max"
-                maxAction={(tabValue) => supplyingMaxAction(tabValue, tokenDetails, setMaxAmount)}
-                maxAmount= {maxAmount}
-                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
-                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
+                useMaxAmount= {useMaxAmount}
+                errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
+                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
             />
         </>
     );
