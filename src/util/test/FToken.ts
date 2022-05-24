@@ -183,7 +183,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             args: {
                 reserveFactorMantissa: '0',
                 currentCash: '1000000000000000000000',
-                totalBorrows:'1000000000000000000',
+                totalBorrows: '1000000000000000000',
                 totalReserves: '0',
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
@@ -203,7 +203,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             args: {
                 reserveFactorMantissa: '0',
                 currentCash: '1000000000000000000000',
-                totalBorrows:'10000000000000000000',
+                totalBorrows: '10000000000000000000',
                 totalReserves: '0',
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
@@ -223,7 +223,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             args: {
                 reserveFactorMantissa: '0',
                 currentCash: '1000000000000000000000',
-                totalBorrows:'100000000000000000000',
+                totalBorrows: '100000000000000000000',
                 totalReserves: '0',
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
@@ -243,7 +243,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             args: {
                 reserveFactorMantissa: '0',
                 currentCash: '1000000000000000000000',
-                totalBorrows:'1000000000000000000000',
+                totalBorrows: '1000000000000000000000',
                 totalReserves: '0',
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
@@ -258,7 +258,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 supplyAPY: '48.91428'
             }
         }
-	    
+
     ];
 
     tests.forEach((test: APYtest) => {
