@@ -1,34 +1,46 @@
 import * as config from '../config/config.json';
 
 import { AssetType, Governance, ProtocolAddresses, TokenStandard } from 'tezoslendingplatformjs';
-import { KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper } from 'conseiljs';
-
+import { KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosConstants, TezosContractUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper } from 'conseiljs';
+import BigNumber from "bignumber.js"
 import log from 'loglevel';
 import { statOperation } from './util';
 
-export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, mint = false) {
+export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     for (const asset of config.supportMarket)
         await supportMarket(asset.name as AssetType, asset.priceExp, keystore, signer, protocolAddresses);
     for (const asset of config.unpauseMarkets)
         await unpauseMarkets(asset as AssetType, keystore, signer, protocolAddresses);
-    // mint underlyings
-    if (mint)
-        for (const asset of config.tokenMint)
-            await tokenMint(asset, keystore!, signer!, protocolAddresses!);
 }
 
-export async function tokenMint(asset: string, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
+export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, address: string, amount:number){
+    for (const asset of config.tokenMint)
+        await tokenMint(asset, keystore!, signer!, protocolAddresses!, address, amount);
+}
+
+export async function tokenMint(asset: string, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, address: string, mintAmount: number, gas: number = 800_000, freight: number = 20_000) {
+    let payload = ""
+    log.info(`minting ${mintAmount} ${asset} tokens to ${address}`);
+    const amount = new BigNumber(10).pow(protocolAddresses.underlying[asset].decimals).multipliedBy(mintAmount).toFixed();
     if (protocolAddresses.underlying[asset].tokenStandard === TokenStandard.FA12) {
-        log.info(`minting ${10000 * config.mintAmount} ${asset} tokens`);
-        const tokenMintOpId = await Tzip7ReferenceTokenHelper.mint(config.tezosNode, signer, keystore, protocolAddresses.underlying[asset].address!, config.tx.fee, keystore.publicKeyHash, 100000000000000 * config.mintAmount);
-        const tokenMintResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, tokenMintOpId, config.delay, config.networkBlockTime);
-        statOperation(tokenMintResult);
+        payload = `(Pair "${address}" ${amount.toString()})`
     } else if (protocolAddresses.underlying[asset].tokenStandard === TokenStandard.FA2) {
-        log.info(`minting ${10000 * config.mintAmount} ${asset} tokens`);
-        const tokenMintOpId = await MultiAssetTokenHelper.mint(config.tezosNode, protocolAddresses.underlying[asset].address!, signer, keystore, config.tx.fee, keystore.publicKeyHash, 100000000000000 * config.mintAmount, {}, protocolAddresses.underlying[asset].tokenId!);
-        const tokenMintResult = await TezosConseilClient.awaitOperationConfirmation(config.conseilServer, config.conseilServer.network, tokenMintOpId, config.delay, config.networkBlockTime);
-        statOperation(tokenMintResult);
+        payload = `(Pair (Pair "${address}" ${amount.toString()}) (Pair {Elt "" 0x32} 0))`
     }
+    const head = await TezosNodeReader.getBlockHead(config.tezosNode)
+    const result = await TezosNodeWriter.sendContractInvocationOperation(
+        config.tezosNode, signer, keystore, protocolAddresses.underlying[asset].address!, 0, config.tx.fee,
+        freight, gas,
+        "mint",
+        payload,
+        TezosParameterFormat.Michelson,
+        TezosConstants.HeadBranchOffset,
+        true
+    );
+    const tokenMintOpId = result["operationGroupID"]
+        .replace(/"/g, "")
+        .replace(/\n/, "");
+    const tokenMintResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, tokenMintOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 async function supportMarket(asset: AssetType, priceExp: number, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {

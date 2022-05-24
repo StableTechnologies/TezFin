@@ -213,7 +213,6 @@ export namespace Comptroller {
      */
     export function DataRelevanceOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
-        console.log('lll', collaterals)
         // updateAccountLiquidityWithView
         const updateAccountLiquidity: Comptroller.UpdateAccountLiquidityPair = { address: pkh };
         const updateAccountLiquidityOp = Comptroller.UpdateAccountLiquidityOperation(updateAccountLiquidity, counter, protocolAddresses.comptroller, pkh, gas, freight);
@@ -234,7 +233,7 @@ export namespace Comptroller {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);

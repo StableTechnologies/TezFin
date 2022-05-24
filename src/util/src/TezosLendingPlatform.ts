@@ -1,6 +1,6 @@
 import { Account, BorrowComposition, BorrowMarket, BorrowMarketModal, Market, MarketData, MarketMap, ProtocolAddresses, SupplyComposition, SupplyMarket, SupplyMarketModal, UnderlyingAsset, UnderlyingAssetMetadata } from './types';
 import { AssetType, TokenStandard } from './enum';
-import { KeyStore, MultiAssetTokenHelper, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction, Tzip7ReferenceTokenHelper, UpdateOperator } from 'conseiljs';
+import { KeyStore, MultiAssetTokenHelper, registerFetch, registerLogger, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction, Tzip7ReferenceTokenHelper, UpdateOperator } from 'conseiljs';
 
 import { Comptroller } from './Comptroller';
 import { FToken } from './FToken';
@@ -8,9 +8,9 @@ import { InterestRateModel } from './contracts/InterestRateModel';
 import { JSONPath } from 'jsonpath-plus';
 import { PriceFeed } from './PriceFeed';
 import bigInt from 'big-integer';
-import log from 'loglevel';
 import { tokenNames } from './const';
-
+import log, { LogLevelDesc } from 'loglevel';
+import fetch from 'node-fetch';
 import { BigNumber } from 'bignumber.js';
 
 export namespace TezosLendingPlatform {
@@ -21,6 +21,13 @@ export namespace TezosLendingPlatform {
      */
     export function ConvertFromMantissa(mantissa: bigInt.BigInteger): bigInt.BigInteger {
         return bigInt(mantissa);
+    }
+
+    export function initConseil(logLevel: LogLevelDesc,) {
+        const logger = log.getLogger('conseiljs');
+        logger.setLevel(logLevel as LogLevelDesc, false);
+        registerLogger(logger);
+        registerFetch(fetch);
     }
 
     /*
@@ -79,7 +86,7 @@ export namespace TezosLendingPlatform {
             const fTokenAddress = protocolAddresses.fTokens[asset];
             const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
             try {
-                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]],  server, fTokenType);
+                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]], server, fTokenType);
                 const rateModel = await InterestRateModel.GetStorage(server, protocolAddresses.interestRateModel[asset]);
                 const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracleMap[protocolAddresses.fTokensReverse[fTokenAddress]], server)
                 markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel, oraclePrice);
@@ -177,11 +184,11 @@ export namespace TezosLendingPlatform {
                 case TokenStandard.XTZ: // native asset
 
 
-			    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceXTZ(address, server), markets[asset].storage);
+                    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceXTZ(address, server), markets[asset].storage);
                     break;
                 default: // contract-based assets
 
-			    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server), markets[asset].storage);
+                    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server), markets[asset].storage);
                     break;
             }
         }));
@@ -206,6 +213,7 @@ export namespace TezosLendingPlatform {
     // Only valid for specific tokens
     export async function PopulateTokenBalanceMapIDs(underlying: { [assetType: string]: UnderlyingAsset }, server: string){
         Object.keys(underlying).forEach(async(asset)=>{
+            if (underlying[asset].tokenStandard === TokenStandard.XTZ) return;
             const storage = await TezosNodeReader.getContractStorage(server, underlying[asset].address!);
             if (underlying[asset].tokenStandard === TokenStandard.FA12) {
                 underlying[asset].balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
@@ -357,7 +365,7 @@ export namespace TezosLendingPlatform {
             if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
-                    balanceUnderlying: FToken.applyExchangeRate(balances[asset].supplyBalanceUnderlying , markets[asset].storage),
+                    balanceUnderlying: FToken.applyExchangeRate(balances[asset].supplyBalanceUnderlying, markets[asset].storage),
                     balanceUsd: balances[asset].supplyBalanceUsd!,
                     collateral: balances[asset].collateral!
                 };
@@ -561,7 +569,7 @@ export namespace TezosLendingPlatform {
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         const ops: Transaction[] = MintOpGroup(mint, protocolAddresses, keystore.publicKeyHash, gas, freight);
         // prep operation
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
@@ -592,7 +600,7 @@ export namespace TezosLendingPlatform {
         const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
         const ops: Transaction[] = RedeemOpGroup(redeem, collaterals, protocolAddresses, keystore.publicKeyHash);
         // prep operation
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
@@ -620,20 +628,14 @@ export namespace TezosLendingPlatform {
      * @param
      */
     export async function Borrow(borrow: FToken.BorrowPair, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore): Promise<string> {
-        console.log('ddd', borrow, comptroller, protocolAddresses)
 
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
-        console.log('dd1', collaterals)
 
         const ops: Transaction[] = BorrowOpGroup(borrow, collaterals, protocolAddresses, keystore.publicKeyHash);
-        console.log('dd2', ops)
-
         // prep operation
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
-
-        console.log('dd3', opGroup)
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
 
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
@@ -672,7 +674,7 @@ export namespace TezosLendingPlatform {
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         const ops: Transaction[] = RepayBorrowOpGroup(repayBorrow, protocolAddresses, keystore.publicKeyHash, gas, freight);
         // prep operation
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
@@ -703,7 +705,7 @@ export namespace TezosLendingPlatform {
         const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
         const ops: Transaction[] = EnterMarketsOpGroup(enterMarkets, collaterals, protocolAddresses, keystore.publicKeyHash, fee);
         // prep operation
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
@@ -734,7 +736,7 @@ export namespace TezosLendingPlatform {
         const collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, server);
         const ops: Transaction[] = ExitMarketOpGroup(exitMarket, collaterals, protocolAddresses, keystore.publicKeyHash, gas, freight);
         // prep operation
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);

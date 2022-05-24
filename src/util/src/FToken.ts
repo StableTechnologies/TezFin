@@ -493,7 +493,7 @@ export namespace FToken {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         let ops: Transaction[] = AccrueInterestOpGroup(markets, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);

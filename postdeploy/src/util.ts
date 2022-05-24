@@ -11,79 +11,88 @@ import { JSONPath } from "jsonpath-plus";
 import fetch from 'node-fetch';
 import fs from 'fs';
 
-let keystore: KeyStore | undefined = undefined;
-let signer: Signer | undefined = undefined;
-let protocolAddresses: ProtocolAddresses | undefined = undefined;
-
 export async function initConseil() {
     log.setLevel(config.loglevel as LogLevelDesc);
     const logger = log.getLogger('conseiljs');
     logger.setLevel(config.loglevel as LogLevelDesc, false);
     registerLogger(logger);
     registerFetch(fetch);
+    TezosLendingPlatform.initConseil(config.loglevel as LogLevelDesc)
 }
 
-export async function initKeystore() {
+export async function initKeystore(keystoreConfig: any = undefined): Promise<{
+    keystore: KeyStore;
+    signer: Signer;
+}> {
     log.debug(`Reading faucet wallet file`);
     // const keystoreJSON = JSON.parse(fs.readFileSync(config.keystorePath, 'utf8'));
-
-    keystore = await KeyStoreUtils.restoreIdentityFromFundraiser(config.keystore.mnemonic.join(' '), config.keystore.email, config.keystore.password, config.keystore.pkh);
-    signer = await SoftSigner.createSigner(TezosMessageUtils.writeKeyWithHint(keystore.secretKey, 'edsk'));
+    if (keystoreConfig == null) {
+        keystoreConfig = config.keystore
+    }
+    let keystore = await KeyStoreUtils.restoreIdentityFromFundraiser(keystoreConfig.mnemonic.join(' '), keystoreConfig.email, keystoreConfig.password, keystoreConfig.pkh);
+    let signer = await SoftSigner.createSigner(TezosMessageUtils.writeKeyWithHint(keystore.secretKey, 'edsk'));
 
     if (config.revealAccount) {
         log.info(`Activating account.`);
-        const activateNodeResult = await TezosNodeWriter.sendIdentityActivationOperation(config.tezosNode, signer, keystore, config.keystore.activation_code);
+        const activateNodeResult = await TezosNodeWriter.sendIdentityActivationOperation(config.tezosNode, signer, keystore, keystoreConfig.activation_code);
         statOperation(activateNodeResult);
         log.info(`Revealing Account.`);
         const revealNodeResult = await TezosNodeWriter.sendKeyRevealOperation(config.tezosNode, signer, keystore);
         statOperation(revealNodeResult);
     }
+    return { keystore, signer }
 }
 
-async function demo1() {
-    // supply
-    for (const mint of config.mint)
-        await FTokenHelper.mint(mint as AssetType, keystore!, signer!, protocolAddresses!);
-    // collateralize
-    if (config.enterMarkets.length > 0)
-        await ComptrollerHelper.enterMarkets(config.enterMarkets as AssetType[], keystore!, signer!, protocolAddresses!);
+async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, signer1: Signer, protocolAddresses:ProtocolAddresses) {
+    // supply FOR USER 0
+    for (const mint of ["ETH"])
+        await FTokenHelper.mint(mint as AssetType, 10, keystore!, signer!, protocolAddresses!);
+    // supply FOR USER 1
+    for (const mint of ["USD",])
+        await FTokenHelper.mint(mint as AssetType, 5000, keystore1!, signer1!, protocolAddresses!);
+    // collateralize for user 1
+    await ComptrollerHelper.enterMarkets(["USD"] as AssetType[], keystore1!, signer1!, protocolAddresses!);
     // get comptroller
     const comptroller = await Comptroller.GetStorage(protocolAddresses!.comptroller, protocolAddresses!, config.tezosNode, config.conseilServer as ConseilServerInfo);
-    // borrow
-    for (const borrow of config.borrow)
-        await FTokenHelper.borrow(borrow as AssetType, comptroller, protocolAddresses!, keystore!, signer!);
+    // borrow for user 1
+    for (const borrow of ["ETH"])
+        await FTokenHelper.borrow(borrow as AssetType, 1, comptroller, protocolAddresses!, keystore1!, signer1!);
     // repay loan
-    for (const repayBorrow of config.repayBorrow)
-        await FTokenHelper.repayBorrow(repayBorrow as AssetType, keystore!, signer!, protocolAddresses!);
-    // redeem supplied tokens
-    for (const redeem of config.redeem)
-        await FTokenHelper.redeem(redeem as AssetType, comptroller, protocolAddresses!, keystore!, signer!);
+    for (const repayBorrow of ["ETH"])
+        await FTokenHelper.repayBorrow(repayBorrow as AssetType, 2, keystore1!, signer1!, protocolAddresses!);
+    // redeem supplied tokens for user 0
+    for (const redeem of ["ETH"])
+        await FTokenHelper.redeem(redeem as AssetType, 1, comptroller, protocolAddresses!, keystore!, signer!);
+    // redeem supplied tokens for user 1
+    for (const redeem of ["USD"])
+        await FTokenHelper.redeem(redeem as AssetType, 5000, comptroller, protocolAddresses!, keystore1!, signer1!);
     // exit markets
-    for (const asset of config.exitMarket)
-        await ComptrollerHelper.exitMarket(asset as AssetType, keystore!, signer!, protocolAddresses!);
+    await ComptrollerHelper.exitMarket("USD" as AssetType, keystore1!, signer1!, protocolAddresses!);
 }
 
 export async function deploy() {
     await initConseil();
-    await initKeystore();
+    const { keystore, signer } = await initKeystore();
     // protocolAddresses = parseProtocolAddress(config.protocolAddressesPath);
-    protocolAddresses = testnetAddresses;
+    const protocolAddresses = testnetAddresses;
     log.info(`protocolAddresses: ${JSON.stringify(protocolAddresses!)}`);
 
     await DeployHelper.postDeploy(keystore!, signer!, protocolAddresses!);
-
-    // await demo1();
+    // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash, config.mintAmount);
 }
 
 export async function deployE2E() {
     await initConseil();
-    await initKeystore();
+    const { keystore, signer } = await initKeystore();
+    const { keystore: keystore1, signer: signer1 } = await initKeystore(config.keystore1);
     const protocolAddresses = await parseProtocolAddress(config.protocolAddressesPath);
     log.info(`protocolAddresses: ${JSON.stringify(protocolAddresses!)}`);
 
-    await DeployHelper.postDeploy(keystore!, signer!, protocolAddresses!);
+    // await DeployHelper.postDeploy(keystore!, signer!, protocolAddresses!);
+    // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash, 10000);
+    // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore1.publicKeyHash, 10000);
 
-    // await demo1();
+    await test(keystore, signer, keystore1, signer1, protocolAddresses);
 }
 
 
