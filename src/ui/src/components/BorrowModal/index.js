@@ -38,7 +38,7 @@ const BorrowModal = (props) => {
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
-    const [maxAmount, setMaxAmount] = useState('');
+    const [useMaxAmount, setUseMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [opGroup, setOpGroup] = useState('');
@@ -48,13 +48,12 @@ const BorrowModal = (props) => {
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
-    const [currrentTab, setCurrrentTab] = useState('');
-    const [limit, setLimit] = useState('');
+    const [currentTab, setCurrentTab] = useState('');
     const [pendingLimit, setPendingLimit] = useState('');
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useBorrowErrorText(tokenValue, limit, tokenDetails);
-    const buttonTwo = useRepayErrorText(tokenValue, limit);
+    const buttonOne = useBorrowErrorText(tokenValue, useMaxAmount, tokenDetails);
+    const buttonTwo = useRepayErrorText(tokenValue, useMaxAmount);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -77,7 +76,7 @@ const BorrowModal = (props) => {
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
-    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
+    useEffect(() => setAmount(undecimalify(useMaxAmount, decimals[tokenDetails.title])), [useMaxAmount]);
 
     useEffect(() => {
         if (opGroup) {
@@ -140,24 +139,25 @@ const BorrowModal = (props) => {
 
     useEffect(() => {
         setAmount('');
-        setMaxAmount('');
+        setUseMaxAmount('');
     }, [close]);
 
     useEffect(() => {
-        borrowingMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
+
         return () => {
-            setLimit('');
+            setUseMaxAmount('');
         };
-    }, [currrentTab, tokenDetails]);
+    }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
         const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
         let pendingBorrowing = 0;
         if (tokenValue > 0) {
-            if (currrentTab === 'one') {
+            if (currentTab === 'one') {
                 pendingBorrowing = borrowing + tokenValueUsd;
             }
-            if (currrentTab === 'two') {
+            if (currentTab === 'two') {
                 pendingBorrowing = borrowing - tokenValueUsd;
             }
             const pendingBorrowLimit = totalCollateral - pendingBorrowing;
@@ -169,7 +169,7 @@ const BorrowModal = (props) => {
             setPendingLimit('');
             setPendingLimitUsed('');
         };
-    }, [tokenValue, currrentTab]);
+    }, [tokenValue, currentTab]);
 
     return (
         <>
@@ -195,13 +195,12 @@ const BorrowModal = (props) => {
                 setAmount={(e) => { setAmount(e); }}
                 inputBtnTextOne = "90% Limit"
                 inputBtnTextTwo = "Use Max"
-                maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
-                maxAmount= {maxAmount}
-                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                useMaxAmount= {useMaxAmount}
+                errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
+                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 pendingLimit={pendingLimit}
                 pendingLimitUsed={pendingLimitUsed}
-                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
             />
         </>
     );

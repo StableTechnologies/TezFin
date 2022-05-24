@@ -34,7 +34,7 @@ const DashboardModal = (props) => {
     const {
         open, close, tokenDetails, handleClickTabOne, handleClickTabTwo, labelOne, labelTwo, APYText, APYTextTwo, buttonOne, buttonTwo, btnSub, btnSubTwo, inkBarStyle, inkBarStyleTwo, visibility, headerText, setAmount,
         collateralize, extraPadding, CurrentStateText, CurrentStateTextTwo, mainModal, inputBtnTextOne, inputBtnTextTwo,
-        maxAction, maxAmount, getProps, disabled, errorText, pendingLimit, pendingLimitUsed
+        useMaxAmount, getProps, disabled, errorText, pendingLimit, pendingLimitUsed
     } = props;
 
     const [tabValue, setTabValue] = useState('one');
@@ -53,10 +53,6 @@ const DashboardModal = (props) => {
     useEffect(() => {
         setTokenValue('');
     }, [close]);
-
-    useEffect(() => {
-        setTokenValue(maxAmount);
-    }, [maxAmount]);
 
     useEffect(() => {
         if (getProps) {
@@ -110,7 +106,7 @@ const DashboardModal = (props) => {
                             />
                             <Button
                                 className={classes.inputBtn}
-                                onClick={() => { maxAction(tabValue); }}
+                                onClick={() => setTokenValue(useMaxAmount)}
                                 disabled={!address && true}
                                 disableRipple
                             >
