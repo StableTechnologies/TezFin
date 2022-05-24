@@ -45,6 +45,7 @@ const Header = () => {
                             && `Note: Tezfin is currently operating on the Tezos test network ${networkType}.`
                 }
             </Typography>
+            <Banner />
             <Grid container className={classes.netAPY}>
                 <Grid item sx={{ display: { xl: 'none', xs: 'none' } }} xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>
@@ -62,7 +63,6 @@ const Header = () => {
                     </Typography>
                 </Grid>
             </Grid>
-            <Banner />
             <Grid container>
                 <Composition
                     title="Supply Composition"
