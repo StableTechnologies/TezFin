@@ -34,7 +34,6 @@ jobs:
         cache: 'npm'
     - run: cd src/util
     - run: npm ci
-    - run: npm run build --if-present
     - run: npm test
     - run: cd ../src/ui
     - run: npm ci
