@@ -268,7 +268,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 
 	  -----------Formula ----------
 	  AYPborrow = borrowRatePerBlock * (annualPeriod = ${test.args.annualPeriod}) 
-	  AYPborrow% = AYPborrow * 100 / expScale
+	  AYPborrow% = AYPborrow / expScale
 
 	  -----------Formula ----------
         
@@ -288,7 +288,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 	  -----------Formula ----------
 	  APYsupply = supplyRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
 
-	  AYPsupply% = AYPborrow * 100 / expScale
+	  AYPsupply% = AYPborrow  / expScale
 
 	  -----------Formula ----------
         
