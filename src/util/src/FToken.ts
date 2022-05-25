@@ -301,19 +301,15 @@ export namespace FToken {
      * @returns utilizationRate as BigInteger
      */
 	function _calcUtilizationRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger): bigInt.BigInteger {
-	    const _loans = bigInt(loans);
 
-	    if (_loans.eq(0)) { return bigInt.zero; }
+	    if (loans.lesserOrEquals(0)) { return bigInt.zero; }
 
-	    const _balance = bigInt(balance);
-	    const _reserves = bigInt(reserves);
-	    const _scale = bigInt(scale);
 
-	    const _divisor = _balance.plus(_loans).minus(_reserves);
+	    const divisor = balance.plus(loans).minus(reserves);
 
-	    if (_divisor.eq(0)) { return bigInt.zero; }
+	    if (divisor.eq(0)) { return bigInt.zero; }
 
-	    const utilizationRate = _loans.multiply(_scale).divide(_divisor);
+	    const utilizationRate = loans.multiply(scale).divide(divisor);
 
 	    return utilizationRate;
 	}
