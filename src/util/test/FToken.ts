@@ -154,7 +154,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '88.36128',
+                borrowAPY: '.8836128',
                 supplyAPY: '0'
             }
         },
@@ -174,8 +174,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '107.29584',
-                supplyAPY: '107.29584'
+                borrowAPY: '1.0729584',
+                supplyAPY: '1.0729584'
             }
         },
 	  {
@@ -194,8 +194,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '88.380195644269368',
-                supplyAPY: '.088291903666968'
+                borrowAPY: '.88380195644269368',
+                supplyAPY: '.00088291903666968'
             }
 	  },
 	  {
@@ -214,8 +214,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '88.548750891002664',
-                supplyAPY: '.876720305846304'
+                borrowAPY: '.88548750891002664',
+                supplyAPY: '.00876720305846304'
             }
         },
 	  {
@@ -234,8 +234,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '90.082603636296696',
-                supplyAPY: '8.189327603261448'
+                borrowAPY: '.90082603636296696',
+                supplyAPY: '.08189327603261448'
             }
         },
 	  {
@@ -254,8 +254,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '97.82856',
-                supplyAPY: '48.91428'
+                borrowAPY: '.9782856',
+                supplyAPY: '.4891428'
             }
         }
 

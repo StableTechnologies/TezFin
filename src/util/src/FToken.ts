@@ -420,9 +420,9 @@ export namespace FToken {
          const _rate = new BigNumber(rate.toString());// .div(expScale.toString());
          const _annualPeriods = new BigNumber(annualPeriods);
          const _apyRate = _rate.multipliedBy(annualPeriods).div(expScale.toString()).decimalPlaces(_precision);
-         const apyPercent = _apyRate.multipliedBy(100);
+         //const apyPercent = _apyRate.multipliedBy(100);
 
-	     return apyPercent;
+	     return _apyRate;
      }
 
     /*
