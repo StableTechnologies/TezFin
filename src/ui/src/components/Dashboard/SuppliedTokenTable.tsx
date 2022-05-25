@@ -22,7 +22,7 @@ import DisableCollateralModal from '../DisableCollateralModal';
 import questionCircleIcon from '../../assets/questionCircle.svg';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';
+import { decimalify, formatTokenData, nFormatter, truncateNum, displayPercent } from '../../util';
 
 import { useStyles } from './style';
 
@@ -127,7 +127,7 @@ const SuppliedTokenTable = (props) => {
                                     {' '} ꜰ{data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {truncateNum(data.rate)}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}> {truncateNum(displayPercent(data.rate))}% </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
                                     {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0.00'} {data.title}

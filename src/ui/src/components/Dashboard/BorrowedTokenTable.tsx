@@ -14,7 +14,7 @@ import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';
+import { decimalify, formatTokenData, nFormatter, truncateNum, displayPercent } from '../../util';
 
 import TableSkeleton from '../Skeleton';
 import BorrowModal from '../BorrowModal';
@@ -94,7 +94,7 @@ const BorrowedTokenTable = (props) => {
                                     {' '} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {truncateNum(data.rate)}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}> {truncateNum(displayPercent(data.rate))}% </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
                                     {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}

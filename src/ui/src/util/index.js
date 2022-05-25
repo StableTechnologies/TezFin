@@ -235,3 +235,16 @@ export const nFormatter = (num, formatDecimals = 4) => {
 
 	return formattedNum + suffix[i].symbol;
 };
+
+/**
+ * @description THis function takes at percentage ratio in string format
+ *  e.g. '.5' and the percent '50' 
+ *
+ *  @returns PercentageRatio formatted as percent for display
+ */
+
+export const displayPercent = (percentRatio) => {
+	let number = new BigNumber(percentRatio).multipliedBy(100);
+	return number.toString();
+
+}
