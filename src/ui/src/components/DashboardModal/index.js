@@ -42,9 +42,11 @@ const DashboardModal = (props) => {
     const [limit, setLimit] = useState('');
     const [limitUsed, setLimitUsed] = useState('');
 
-    const { address } = useSelector((state) => state.addWallet.account);
+    const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+
+    const tezBalance = decimalify(underlyingBalances.XTZ.toString(), decimals.XTZ);
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -69,23 +71,25 @@ const DashboardModal = (props) => {
         <React.Fragment>
             <Dialog open={open} onClose={close} className={classes.root}>
                 <CloseButton onClick={close} />
-                <DialogTitle>
-                    <div>
-                        <img src={tokenDetails.logo} alt="logo" className={classes.img} />
-                        <LightTooltip
-                            title={ tokenDetails.walletBalance ? `${tokenDetails.walletBalance}  ${tokenDetails.banner}` : ''}
-                            placement="bottom"
-                        >
-                            <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                                {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
-                                {' '} {tokenDetails.banner}
-                            </Typography>
-                        </LightTooltip>
-                    </div>
-                </DialogTitle>
+                {!collateralize
+                    && <DialogTitle>
+                          <div>
+                              <img src={tokenDetails.logo} alt="logo" className={classes.img} />
+                              <LightTooltip
+                                  title={ tokenDetails.walletBalance ? `${tokenDetails.walletBalance}  ${tokenDetails.banner}` : ''}
+                                  placement="bottom"
+                              >
+                                  <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+                                      {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
+                                      {' '} {tokenDetails.banner}
+                                  </Typography>
+                              </LightTooltip>
+                          </div>
+                    </DialogTitle>
+                }
                 {(!visibility || collateralize)
-                    && <DialogContent>
-                        <img src={tokenDetails.fLogo} alt="logo" className={classes.tezImg} />
+                    && <DialogContent className={classes.fTokenImgCon}>
+                        <img src={tokenDetails.fLogo} alt="logo" className={classes.fTokenImg} />
                     </DialogContent>
                 }
                 {(visibility && !collateralize)
@@ -115,45 +119,49 @@ const DashboardModal = (props) => {
                             </Button>
                         </form>
                     </DialogContent>
-                    : <DialogContent className={`${classes.padding0} ${extraPadding}`}>
-                        <DialogContentText> {headerText} </DialogContentText>
+                    : <DialogContent className={`${extraPadding}`}>
+                        <DialogContentText className={classes.margin0}> {headerText} </DialogContentText>
                     </DialogContent>
                 }
-                {collateralize ? ''
-                    : <>
-                        <Tabulator inkBarStyle={mainModal ? ((tabValue === 'one') ? inkBarStyle : inkBarStyleTwo) : inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
-                        <DialogContent className={classes.CurrentState}>
-                            <Grid container justifyContent="space-between">
-                                <Grid item sm={7}>
-                                    {mainModal
-                                        ? <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                                            {tabValue === 'one' && CurrentStateText}
-                                            {tabValue === 'two' && CurrentStateTextTwo}
-                                        </Typography>
-                                        : <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {CurrentStateText} </Typography>
-                                    }
-                                </Grid>
-                                {mainModal
-                                    ? <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                        {(tabValue === 'one') && (
-                                            (tokenDetails.supply.balanceUnderlying > 0)
-                                                ? nFormatter(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
-                                                : '0'
-                                        )}
-                                        {(tabValue === 'two') && (
-                                            (tokenDetails.borrow.balanceUnderlying > 0)
-                                                ? nFormatter(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
-                                                : '0'
-                                        )}
-                                        {' '} {tokenDetails.title}
-                                    </Grid>
-                                    : <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                        {nFormatter(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))} {' '} {tokenDetails.title}
-                                    </Grid>
-                                }
+                <>
+                {collateralize
+                    ? ''
+                    : <Tabulator inkBarStyle={mainModal ? ((tabValue === 'one') ? inkBarStyle : inkBarStyleTwo) : inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
+                }
+                <DialogContent className={classes.CurrentState}>
+                    <Grid container justifyContent="space-between">
+                        <Grid item sm={7}>
+                            {mainModal
+                                ? <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+                                    {tabValue === 'one' && CurrentStateText}
+                                    {tabValue === 'two' && CurrentStateTextTwo}
+                                </Typography>
+                                : <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {CurrentStateText} </Typography>
+                            }
+                        </Grid>
+                        {mainModal
+                            ? <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                                {(tabValue === 'one') && (
+                                    (tokenDetails.supply.balanceUnderlying > 0)
+                                        ? nFormatter(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
+                                        : '0'
+                                )}
+                                {(tabValue === 'two') && (
+                                    (tokenDetails.borrow.balanceUnderlying > 0)
+                                        ? nFormatter(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
+                                        : '0'
+                                )}
+                                {' '} {tokenDetails.title}
                             </Grid>
-                        </DialogContent>
-                        <DialogContent className={classes.apyRate}>
+                            : <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                                {nFormatter(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))} {' '} {tokenDetails.title}
+                            </Grid>
+                        }
+                    </Grid>
+                </DialogContent>
+                {collateralize
+                    ? ''
+                    : <DialogContent className={classes.apyRate}>
                             <Grid container justifyContent="space-between">
                                 <Grid item sm={9}>
                                     <img src={tokenDetails.logo} alt="logo" className={classes.img} />
@@ -177,9 +185,9 @@ const DashboardModal = (props) => {
                                     </Grid>
                                 }
                             </Grid>
-                        </DialogContent>
-                    </>
+                    </DialogContent>
                 }
+                </>
                 <DialogContent className={classes.limit}>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit </Grid>
@@ -242,6 +250,12 @@ const DashboardModal = (props) => {
                                          && <Typography className={classes.errorText}>
                                              {errorText}
                                          </Typography>
+                                        }
+                                        {(new BigNumber(tezBalance).lt(0.25))
+                                          && <Typography className={classes.errorText}>
+                                              Your XTZ balance is low. You may soon not be able to process any new operation if you don't add XTZ to your wallet.
+                                          </Typography>
+
                                         }
                                     </>
                                     : <>

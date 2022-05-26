@@ -25,6 +25,7 @@ export const useStyles = makeStyles({
             fontSize: '1rem',
             lineHeight: '1.875rem',
             letterSpacing: '0.05em',
+            textAlign: 'left',
             '@media(min-width: 1024px)': {
                 margin: '1.25rem 3.125rem',
                 padding: '0'
@@ -71,7 +72,11 @@ export const useStyles = makeStyles({
     imgTitle: {
         display: 'inline-block'
     },
-    tezImg: {
+    fTokenImgCon: {
+        marginTop: '1rem',
+        overflow: 'visible !important'
+    },
+    fTokenImg: {
         width: '5rem',
         height: '5rem',
         '@media(max-width: 501px)': {
@@ -243,5 +248,8 @@ export const useStyles = makeStyles({
         fontSize: '1rem',
         lineHeight: '1.5rem',
         letterSpacing: '0.005em'
+    },
+    margin0: {
+        margin: '0 !important'
     }
 });
