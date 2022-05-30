@@ -129,7 +129,7 @@ const DisableCollateralModal = (props) => {
             <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} errType={errType} />
             <DashboardModal
                 headerText = "This asset will no longer be used towards your borrowing limit, and can’t be seized in liquidation."
-                APYText = {`${tokenDetails.title} Variable APY Rate`}
+                CurrentStateText= "Currently Supplying"
                 amountText = "Wallet Balance"
                 open = {open}
                 close = {close}
