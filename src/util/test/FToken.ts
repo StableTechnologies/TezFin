@@ -188,14 +188,14 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '840000000000',
-                    blockMultiplier: '180000000000',
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '.88380195644269368',
-                supplyAPY: '.00088291903666968'
+                borrowAPY: '.00104895104836896',
+                supplyAPY: '.00000104790271752'
             }
 	  },
 	  {
@@ -208,14 +208,14 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '840000000000',
-                    blockMultiplier: '180000000000',
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '.88548750891002664',
-                supplyAPY: '.00876720305846304'
+                borrowAPY: '.00148514851415232',
+                supplyAPY: '.00001470444044256'
             }
         },
 	  {
@@ -228,14 +228,14 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '840000000000',
-                    blockMultiplier: '180000000000',
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '.90082603636296696',
-                supplyAPY: '.08189327603261448'
+                borrowAPY: '.00545454545299128',
+                supplyAPY: '.000495867767688720'
             }
         },
 	  {
@@ -248,14 +248,14 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '840000000000',
-                    blockMultiplier: '180000000000',
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '.9782856',
-                supplyAPY: '.4891428'
+                borrowAPY: '.02549999999922984',
+                supplyAPY: '.01274999999908896'
             }
         }
 
