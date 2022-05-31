@@ -211,10 +211,12 @@ export namespace Comptroller {
      * @param gas
      * @param freight
      */
-    export function DataRelevanceOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+    export function DataRelevanceOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, targetAddress:string= "", gas: number = 800_000, freight: number = 20_000): Transaction[] {
         let ops: Transaction[] = [];
         // updateAccountLiquidityWithView
-        const updateAccountLiquidity: Comptroller.UpdateAccountLiquidityPair = { address: pkh };
+        let updateAccountLiquidity: Comptroller.UpdateAccountLiquidityPair = { address: pkh };
+        if(targetAddress!=="")
+        updateAccountLiquidity.address = targetAddress;
         const updateAccountLiquidityOp = Comptroller.UpdateAccountLiquidityOperation(updateAccountLiquidity, counter, protocolAddresses.comptroller, pkh, gas, freight);
         ops.push(updateAccountLiquidityOp);
         return ops;
@@ -232,7 +234,7 @@ export namespace Comptroller {
     export async function DataRelevance(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);
+        let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses, counter, keystore.publicKeyHash);
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);

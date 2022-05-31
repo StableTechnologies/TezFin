@@ -277,6 +277,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                            params.borrower, params.seizeTokens)
 
     def seizeInternal(self, seizerToken, liquidator, borrower, seizeTokens):
+        self.addAddressIfNecessary(liquidator)
         seizeAllowed = sp.view("seizeAllowed", self.data.comptroller, sp.record(cTokenCollateral=sp.self_address, cTokenBorrowed=seizerToken),
                                t=sp.TBool).open_some("INVALID SEIZE ALLOWED VIEW")
         sp.verify(seizeAllowed, EC.CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION)
@@ -359,7 +360,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         borrowerBalance = sp.view("balanceOf", cTokenCollateral, borrower,
                                   t=sp.TNat).open_some("INVALID BALANCE OF VIEW")
 
-        sp.verify(borrowerBalance > seizeTokens, "LIQUIDATE_SEIZE_TOO_MUCH")
+        sp.verify(borrowerBalance >= seizeTokens, "LIQUIDATE_SEIZE_TOO_MUCH")
 
         destination = sp.contract(
             CTI.TSeize, cTokenCollateral, "seize").open_some()
@@ -450,7 +451,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         return: The number of tokens owned by `params`
     """
-    @sp.utils.view(sp.TNat)
+    @sp.onchain_view()
     def balanceOf(self, params):
         sp.result(self.data.balances[params].balance)
 

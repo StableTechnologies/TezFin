@@ -21,7 +21,7 @@
     },
     "Comptroller": {
         "closeFactorMantissa": 1000000000000000000,
-        "liquidationIncentiveMantissa": 0,
+        "liquidationIncentiveMantissa": 1000000000000000000,
         "dependencies": [
             "Governance",
             "PriceOracle"

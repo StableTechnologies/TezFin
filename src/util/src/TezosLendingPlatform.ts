@@ -508,10 +508,10 @@ export namespace TezosLendingPlatform {
      * @param gas
      * @param freight
      */
-    export function permissionOperation(params: FToken.MintPair | FToken.RepayBorrowPair, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] | undefined {
-        const underlying: UnderlyingAsset = protocolAddresses.underlying[params.underlying] == undefined
+    export function permissionOperation(asset: AssetType, amount:number, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] | undefined {
+        const underlying: UnderlyingAsset = protocolAddresses.underlying[asset] == undefined
             ? { assetType: AssetType.XTZ, tokenStandard: TokenStandard.XTZ, decimals: 6 }
-            : protocolAddresses.underlying[params.underlying];
+            : protocolAddresses.underlying[asset];
         switch (underlying.tokenStandard) {
             case TokenStandard.FA12:
                 // fa12 approval operation
@@ -519,11 +519,11 @@ export namespace TezosLendingPlatform {
                     // fa12 approved balance is depleted, so no need to invoke again to cancel
                     undefined :
                     // fa12 approve balance
-                    [Tzip7ReferenceTokenHelper.ApproveBalanceOperation(0, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, pkh, 0, gas, freight), Tzip7ReferenceTokenHelper.ApproveBalanceOperation(params.amount, protocolAddresses.fTokens[params.underlying], counter, underlying.address!, pkh, 0, gas, freight)];
+                    [Tzip7ReferenceTokenHelper.ApproveBalanceOperation(0, protocolAddresses.fTokens[asset], counter, underlying.address!, pkh, 0, gas, freight), Tzip7ReferenceTokenHelper.ApproveBalanceOperation(amount, protocolAddresses.fTokens[asset], counter, underlying.address!, pkh, 0, gas, freight)];
             case TokenStandard.FA2:
                 const updateOperator: UpdateOperator = {
                     owner: pkh,
-                    operator: protocolAddresses.fTokens[params.underlying],
+                    operator: protocolAddresses.fTokens[asset],
                     tokenid: underlying.tokenId!
                 };
                 return cancelPermission ?
@@ -547,13 +547,37 @@ export namespace TezosLendingPlatform {
         // accrue interest operation
         ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // get permissions from underlying asset
-        let permissionOp = permissionOperation(mint, false, protocolAddresses, 0, pkh);
+        let permissionOp = permissionOperation(mint.underlying, mint.amount, false, protocolAddresses, 0, pkh);
         if (permissionOp != undefined)
             ops.push(...permissionOp);
         // mint operation
         ops.push(FToken.MintOperation(mint, 0, protocolAddresses.fTokens[mint.underlying], pkh, gas, freight));
         // remove permissions from underlying asset
-        let removePermissionOp = permissionOperation(mint, true, protocolAddresses, 0, pkh);
+        let removePermissionOp = permissionOperation(mint.underlying, mint.amount, true, protocolAddresses, 0, pkh);
+        if (removePermissionOp != undefined)
+            ops.push(...removePermissionOp);
+        return ops;
+    }
+
+    /*
+     * Construct the operation group for liquidating fTokens.
+     *
+     * @param
+     */
+    export function LiquidateOpGroup(details: FToken.LiquidateDetails, protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] {
+        details.supplyCollateral = details.supplyCollateral.toUpperCase() as AssetType;
+        details.seizeCollateral = details.seizeCollateral.toUpperCase() as AssetType;
+        let ops: Transaction[] = [];
+        // accrue interest operation
+        ops = ops.concat(Comptroller.DataRelevanceOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, details.borrower));
+        // get permissions from underlying asset
+        let permissionOp = permissionOperation(details.supplyCollateral, details.amount, false, protocolAddresses, 0, pkh);
+        if (permissionOp != undefined)
+            ops.push(...permissionOp);
+        // mint operation
+        ops.push(FToken.LiquidateOperation(details, 0, protocolAddresses, pkh, gas, freight));
+        // remove permissions from underlying asset
+        let removePermissionOp = permissionOperation(details.supplyCollateral, details.amount, true, protocolAddresses, 0, pkh);
         if (removePermissionOp != undefined)
             ops.push(...removePermissionOp);
         return ops;
@@ -568,6 +592,22 @@ export namespace TezosLendingPlatform {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         const ops: Transaction[] = MintOpGroup(mint, protocolAddresses, keystore.publicKeyHash, gas, freight);
+        // prep operation
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
+        // send operation
+        const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
+        return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
+    }
+
+    /*
+     * Construct and invoke the operation group for minting fTokens (supplying underlying).
+     *
+     * @param
+     */
+    export async function Liquidate(details: FToken.LiquidateDetails, protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+        // get account counter
+        const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
+        const ops: Transaction[] = LiquidateOpGroup(details, protocolAddresses, keystore.publicKeyHash, gas, freight);
         // prep operation
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
@@ -652,13 +692,13 @@ export namespace TezosLendingPlatform {
         // accrue interest operation
         ops = ops.concat(FToken.AccrueInterestOpGroup(Object.keys(protocolAddresses.fTokens) as AssetType[], protocolAddresses, 0, pkh, gas, freight));
         // get permissions from underlying asset
-        let permissionOp = permissionOperation(repayBorrow, false, protocolAddresses, 0, pkh);
+        let permissionOp = permissionOperation(repayBorrow.underlying, repayBorrow.amount, false, protocolAddresses, 0, pkh);
         if (permissionOp != undefined)
             ops.push(...permissionOp);
         // repayBorrow operation
         ops.push(FToken.RepayBorrowOperation(repayBorrow, 0, protocolAddresses.fTokens[repayBorrow.underlying], pkh, gas, freight));
         // remove permissions from underlying asset
-        let removePermissionOp = permissionOperation(repayBorrow, true, protocolAddresses, 0, pkh);
+        let removePermissionOp = permissionOperation(repayBorrow.underlying, repayBorrow.amount, true, protocolAddresses, 0, pkh);
         if (removePermissionOp != undefined)
             ops.push(...removePermissionOp);
         return ops;

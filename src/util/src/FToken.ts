@@ -134,7 +134,7 @@ export namespace FToken {
                 const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
                 const spendableBalance = await TezosNodeReader.getSpendableBalanceForAccount(server, fTokenAddress);
                 const protocolSeizeShareMantissa = JSONPath({ path: '$.args[0].args[1].args[2].int', json: storageResult })[0];
-                
+
                 // TODO: implement numSuppliers and numBorrowers
                 // get numSuppliers
                 // const suppliersQuery = makeSuppliersQuery(balancesMapId);
@@ -213,12 +213,12 @@ export namespace FToken {
      * @param storage The FToken storage 
      * @returns underlyingBalance as BigNumber
      */
-     export function applyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
-	
+    export function applyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
 
-	    const exchangeRate = getExchangeRate(storage);
 
-	    return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
+        const exchangeRate = getExchangeRate(storage);
+
+        return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
     }
 
     /**
@@ -227,15 +227,15 @@ export namespace FToken {
      * @param storage The FToken storage 
      * @returns exchangeRate as BigNumber
      */
-     export function getExchangeRate(storage: Storage): BigNumber {
-	
+    export function getExchangeRate(storage: Storage): BigNumber {
 
-	    const expScale = Decimal.log(storage.expScale.toString());
-	    const log10 = Decimal.log(10);
-	    const decimalPlaces = expScale.div(log10);
 
-	    const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
-	    return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
+        const expScale = Decimal.log(storage.expScale.toString());
+        const log10 = Decimal.log(10);
+        const decimalPlaces = expScale.div(log10);
+
+        const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows, storage.totalReserves, storage.supply.totalSupply, storage.expScale);
+        return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
     }
 
     /*
@@ -342,17 +342,17 @@ export namespace FToken {
      * @param expScale The scale all the mantissa's are in.
      * @returns exchangeRate as BigNumber
      */
-	function _calcExchangeRateAdjusted(adjustment: number, initialExhangeRateMantissa: bigInt.BigInteger, balance: bigInt.BigInteger, borrows: bigInt.BigInteger, reserves: bigInt.BigInteger, totalSupply: bigInt.BigInteger, expScale: bigInt.BigInteger ): BigNumber {
-	    const _adjustment = bigInt(adjustment);
-	    if (bigInt(totalSupply).greater(0)) {
-		    const _cash = bigInt(balance).minus(adjustment);
-		    const _num = _cash.add(borrows).minus(reserves);
-		    const _zero = bigInt(0);
-		    const _exchangeRate = new BigNumber(_num.toString()).div(totalSupply.toString());
-		    return _exchangeRate; 
-	    } else {
-		    return new BigNumber(initialExhangeRateMantissa.toString()).div(expScale.toString());
-	    }
+    function _calcExchangeRateAdjusted(adjustment: number, initialExhangeRateMantissa: bigInt.BigInteger, balance: bigInt.BigInteger, borrows: bigInt.BigInteger, reserves: bigInt.BigInteger, totalSupply: bigInt.BigInteger, expScale: bigInt.BigInteger): BigNumber {
+        const _adjustment = bigInt(adjustment);
+        if (bigInt(totalSupply).greater(0)) {
+            const _cash = bigInt(balance).minus(adjustment);
+            const _num = _cash.add(borrows).minus(reserves);
+            const _zero = bigInt(0);
+            const _exchangeRate = new BigNumber(_num.toString()).div(totalSupply.toString());
+            return _exchangeRate;
+        } else {
+            return new BigNumber(initialExhangeRateMantissa.toString()).div(expScale.toString());
+        }
 
     }
 
@@ -366,9 +366,9 @@ export namespace FToken {
      * @param expScale The scale all the mantissa's are in.
      * @returns underlyingBalance  as BigNumber
      */
-	function _calcApplyExchangeRate(ftokenBalance: bigInt.BigInteger, exchangeRate: BigNumber, expScale: bigInt.BigInteger ): BigNumber {
-		const underlyingBalance = new BigNumber(ftokenBalance.toString()).multipliedBy(exchangeRate);
-		return underlyingBalance;
+    function _calcApplyExchangeRate(ftokenBalance: bigInt.BigInteger, exchangeRate: BigNumber, expScale: bigInt.BigInteger): BigNumber {
+        const underlyingBalance = new BigNumber(ftokenBalance.toString()).multipliedBy(exchangeRate);
+        return underlyingBalance;
     }
 
     /**
@@ -426,10 +426,10 @@ export namespace FToken {
      * @param
      */
     export const normalizeToIndex = {
-        supply : function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
+        supply: function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
             return amount;
         },
-        borrow : function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
+        borrow: function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
             if (bigInt(prevIndex).eq(0)) { return bigInt(0); }
             return amount.multiply(currentIndex.divide(prevIndex));
         }
@@ -510,6 +510,17 @@ export namespace FToken {
     }
 
     /*
+    * Liquidate entrypoint parameters
+    *
+    */
+    export interface LiquidateDetails {
+        supplyCollateral: AssetType;
+        seizeCollateral: AssetType;
+        borrower: string;
+        amount: number;
+    }
+
+    /*
      * Convert MintPair to Michelson string
      *
      * @param
@@ -535,6 +546,14 @@ export namespace FToken {
         const xtzAmount = mint.underlying == AssetType.XTZ ? mint.amount : 0;
 
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, xtzAmount, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
+    }
+
+    export function LiquidateOperation(details: LiquidateDetails, counter: number, protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction {
+        const entrypoint = 'liquidateBorrow';
+        const parameters = `(Pair "${details.borrower}"(Pair "${protocolAddresses.fTokens[details.seizeCollateral]}" ${details.amount}))`;
+        const xtzAmount = details.supplyCollateral == AssetType.XTZ ? details.amount : 0;
+
+        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, protocolAddresses.fTokens[details.supplyCollateral], xtzAmount, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
     }
 
     /*

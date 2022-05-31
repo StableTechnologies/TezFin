@@ -24,12 +24,12 @@ node ./deploy/deploy_script/deploy_e2e.js
 && echo "CompileGovernance.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy_e2e.js
 
-($1 compile ./deploy/compile_targets/CompileComptroller.py ./e2e/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
-&& echo "CompileComptroller.py was successfully compiled" || echo
-node ./deploy/deploy_script/deploy_e2e.js
-
 ($1 compile ./deploy/compile_targets/CompileIRMs.py ./e2e/compiled_contracts --purge --protocol granada)\
 && echo "CompileIRMs.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy_e2e.js
+
+($1 compile ./deploy/compile_targets/CompileComptroller.py ./e2e/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
+&& echo "CompileComptroller.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy_e2e.js
 
 ($1 compile ./deploy/compile_targets/CompileCBTCtz.py ./e2e/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
