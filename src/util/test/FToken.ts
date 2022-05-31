@@ -181,7 +181,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 	  {
             desc: 'Test case from USD FToken storage with 1k lent, 1 borrowed',
             args: {
-                reserveFactorMantissa: '0',
+                reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
                 totalBorrows: '1000000000000000000',
                 totalReserves: '0',
@@ -195,13 +195,13 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             },
             expected: {
                 borrowAPY: '.00104895104836896',
-                supplyAPY: '.00000104790271752'
+                supplyAPY: '.0000010468550052'
             }
 	  },
 	  {
             desc: 'Test case from USD FToken storage with 1k lent, 10 borrowed',
             args: {
-                reserveFactorMantissa: '0',
+                reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
                 totalBorrows: '10000000000000000000',
                 totalReserves: '0',
@@ -215,13 +215,13 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             },
             expected: {
                 borrowAPY: '.00148514851415232',
-                supplyAPY: '.00001470444044256'
+                supplyAPY: '.00001468973565288'
             }
         },
 	  {
             desc: 'Test case from USD FToken storage with 1k lent, 100 borrowed',
             args: {
-                reserveFactorMantissa: '0',
+                reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
                 totalBorrows: '100000000000000000000',
                 totalReserves: '0',
@@ -235,13 +235,13 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             },
             expected: {
                 borrowAPY: '.00545454545299128',
-                supplyAPY: '.000495867767688720'
+                supplyAPY: '.00049537189996416'
             }
         },
 	  {
             desc: 'Test case from USD FToken storage with 1k lent, 1k borrowed',
             args: {
-                reserveFactorMantissa: '0',
+                reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
                 totalBorrows: '1000000000000000000000',
                 totalReserves: '0',
@@ -255,7 +255,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             },
             expected: {
                 borrowAPY: '.02549999999922984',
-                supplyAPY: '.01274999999908896'
+                supplyAPY: '.01273724999865648'
             }
         }
 

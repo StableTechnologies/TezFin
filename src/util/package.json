@@ -8,7 +8,7 @@
     "start": "node ./build/src/index.js",
     "build": "tsc",
     "package": "rm -rf ./build && tsc",
-    "test": "ts-mocha test/**",
+    "test": "npx ts-mocha test/**",
     "reinstall": "rm -rf ./node_modules ./build && npm i"
   },
   "author": "",
@@ -16,6 +16,8 @@
   "devDependencies": {
     "@types/node": "^16.10.3",
     "@types/node-fetch": "^3.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.25.0",
+    "eslint-plugin-import": "^2.26.0",
     "loglevel": "^1.7.1",
     "node-fetch": "^3.2.0",
     "ts-mocha": "^10.0.0",
