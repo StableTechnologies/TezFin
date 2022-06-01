@@ -69,7 +69,7 @@ const App = () => {
                     </Route>
                     <Route exact path='/feedback'>
                         <Grid sx={{ width: '100%', height: '100vh' }}>
-                            <iframe src="https://stabletech.upvoty.com" width='100%' height='100%' />
+                            <iframe src="https://tezfin.upvoty.com/" width='100%' height='100%' />
                         </Grid>
                     </Route>
                     <Route exact path='/market' component={Market} />

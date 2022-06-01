@@ -7,6 +7,12 @@ import { useSelector } from 'react-redux';
 
 import { decimalify } from './index';
 
+/**
+ * This function is used to ensure a user enters a valid amount to supply.
+ *
+ * @param tokenValue amount to be supplied.
+ * @param limit Max amount a user is able to supply in a transaction.
+ */
 export const useSupplyErrorText = (tokenValue, limit) => {
     const [text, setText] = useState('Supply');
     const [errorText, setErrorText] = useState('');
@@ -27,6 +33,13 @@ export const useSupplyErrorText = (tokenValue, limit) => {
     return { text, errorText, disabled };
 };
 
+/**
+ * This function is used to ensure a user enters a valid amount to borrow.
+ *
+ * @param tokenValue amount to be borrowed.
+ * @param limit Max amount a user is able to borrow in a transaction.
+ * @param tokenDetails Underlying asset data.
+ */
 export const useBorrowErrorText = (tokenValue, limit, tokenDetails) => {
     const [text, setText] = useState('Borrow');
     const [errorText, setErrorText] = useState('');
@@ -68,6 +81,13 @@ export const useBorrowErrorText = (tokenValue, limit, tokenDetails) => {
     return { text, errorText, disabled };
 };
 
+/**
+ * This function is used to ensure a user enters a valid amount to redeem.
+ *
+ * @param tokenValue amount to be redeemed.
+ * @param limit Max amount a user is able to redeem in a transaction.
+ * @param tokenDetails Underlying asset data.
+ */
 export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
     const text = 'Withdraw';
     const [errorText, setErrorText] = useState('');
@@ -110,6 +130,12 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
     return { text, errorText, disabled };
 };
 
+/**
+ * This function is used to ensure a user enters a valid amount to repay.
+ *
+ * @param tokenValue amount to be repaid.
+ * @param limit Max amount a user is able to repay in a transaction.
+ */
 export const useRepayErrorText = (tokenValue, limit) => {
     const [text, setText] = useState('Repay');
     const [errorText, setErrorText] = useState('');
@@ -129,6 +155,11 @@ export const useRepayErrorText = (tokenValue, limit) => {
     return { text, errorText, disabled };
 };
 
+/**
+ * This function is used to ensure a user is allowed to disable a token.
+ *
+ * @param tokenDetails Underlying asset data.
+ */
 export const useDisableTokenErrorText = (tokenDetails) => {
     const text = 'Disable Token';
     const [errorText, setErrorText] = useState('');

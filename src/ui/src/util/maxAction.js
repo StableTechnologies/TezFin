@@ -4,6 +4,14 @@ import { decimals } from 'tezoslendingplatformjs';
 
 import { decimalify } from './index';
 
+/**
+ * This function is used to get the max amount a user is able to supply/withdraw in a transaction.
+ *
+ * @param tabValue Current tab value.
+ * @param tokenDetails Token data.
+ * @param borrowLimit Borrow limit of a user.
+ * @param setMaxAmount Sets the max amount.
+ */
 export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
     if (tabValue === 'one') {
         if (tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()) {
@@ -19,6 +27,14 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
     }
 };
 
+/**
+ * This function is used to get the max amount a user is able to borrow/rrepay in a transaction.
+ *
+ * @param tabValue Current tab value.
+ * @param tokenDetails Token data.
+ * @param borrowLimit Borrow limit of a user.
+ * @param setMaxAmount Sets the max amount.
+ */
 export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
     if (tabValue === 'one') {
         const limit = new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
@@ -32,6 +48,14 @@ export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAm
     }
 };
 
+/**
+ * This function is used to get the max amount a user is able to supply/borrow in a transaction.
+ *
+ * @param tabValue Current tab value.
+ * @param tokenDetails Token data.
+ * @param borrowLimit Borrow limit of a user.
+ * @param setMaxAmount Sets the max amount.
+ */
 export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
     if (tabValue === 'one') {
         if (tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()) {

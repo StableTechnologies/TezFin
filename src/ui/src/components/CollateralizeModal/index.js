@@ -124,7 +124,7 @@ const CollateralizeModal = (props) => {
             <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} errType={errType} />
             <DashboardModal
                 headerText="Collateralizing an asset increases your borrowing limit. Please use caution as this can also subject your assets to being seized in liquidation."
-                APYText={`${tokenDetails.title} xxVariable APY Rate`}
+                CurrentStateText= "Currently Supplying"
                 amountText="Wallet Balance"
                 open={open}
                 close={close}
