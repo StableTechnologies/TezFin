@@ -179,7 +179,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             }
         },
 	  {
-            desc: 'Test case from USD FToken storage with 1k lent, 1 borrowed',
+            desc: 'Test case with 1k lent, 1 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
@@ -199,7 +199,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             }
 	  },
 	  {
-            desc: 'Test case from USD FToken storage with 1k lent, 10 borrowed',
+            desc: 'Test case with 1k lent, 10 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
@@ -219,7 +219,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             }
         },
 	  {
-            desc: 'Test case from USD FToken storage with 1k lent, 100 borrowed',
+            desc: 'Test case with 1k lent, 100 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
@@ -239,7 +239,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
             }
         },
 	  {
-            desc: 'Test case from USD FToken storage with 1k lent, 1k borrowed',
+            desc: 'Test case with 1k lent, 1k borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
                 currentCash: '1000000000000000000000',
