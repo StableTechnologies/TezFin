@@ -227,16 +227,18 @@ export namespace FToken {
      * @param storage The FToken storage 
      * @returns exchangeRate as BigNumber
      */
-     export function getExchangeRate(storage: Storage): BigNumber {
+     export function getExchangeRate(storage: Storage): bigInt.BigInteger {
 	
 
 	    const expScale = Decimal.log(storage.expScale.toString());
 	    const log10 = Decimal.log(10);
 	    const decimalPlaces = expScale.div(log10);
 
-	    const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
-	    return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
-    }
+	    const exchangeRate =  _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows , storage.totalReserves, storage.supply.totalSupply, storage.expScale);
+            console.log("exchangeRate: ", exchangeRate.toString())
+	    //return new BigNumber(exchangeRate.toString()).div(expScale.toString())
+	    return exchangeRate
+        }
 
     /*
      * @description The rate calculation here is based on the getSupplyRate function of the InterestRateModel contract.
@@ -342,16 +344,23 @@ export namespace FToken {
      * @param expScale The scale all the mantissa's are in.
      * @returns exchangeRate as BigNumber
      */
-	function _calcExchangeRateAdjusted(adjustment: number, initialExhangeRateMantissa: bigInt.BigInteger, balance: bigInt.BigInteger, borrows: bigInt.BigInteger, reserves: bigInt.BigInteger, totalSupply: bigInt.BigInteger, expScale: bigInt.BigInteger ): BigNumber {
-	    const _adjustment = bigInt(adjustment);
+
+	function _calcExchangeRateAdjusted(adjustment: number, initialExhangeRateMantissa: bigInt.BigInteger, balance: bigInt.BigInteger, borrows: bigInt.BigInteger, reserves: bigInt.BigInteger, totalSupply: bigInt.BigInteger, expScale: bigInt.BigInteger ): bigInt.BigInteger {
+		console.log('cash', balance.toString());
+		console.log('borrows', borrows.toString());
+		console.log('reserves', reserves.toString());
+		console.log('totalSupply', totalSupply.toString());
 	    if (bigInt(totalSupply).greater(0)) {
-		    const _cash = bigInt(balance).minus(adjustment);
-		    const _num = _cash.add(borrows).minus(reserves);
-		    const _zero = bigInt(0);
-		    const _exchangeRate = new BigNumber(_num.toString()).div(totalSupply.toString());
-		    return _exchangeRate; 
-	    } else {
-		    return new BigNumber(initialExhangeRateMantissa.toString()).div(expScale.toString());
+		    const _cash = balance.minus(adjustment);
+		    const _num = _cash.add(borrows).minus(reserves).multiply(expScale);
+		    const _exchangeRate = _num.divide(totalSupply);
+
+	            console.log('_exchangeRate', _exchangeRate.toString());
+		    //return new BigNumber(_exchangeRate.toString()).div(expScale.toString());
+		    return _exchangeRate;
+              } else {
+		    return initialExhangeRateMantissa;
+		    // return new BigNumber(initialExhangeRateMantissa.toString()).div(expScale.toString());
 	    }
 
     }
@@ -366,10 +375,14 @@ export namespace FToken {
      * @param expScale The scale all the mantissa's are in.
      * @returns underlyingBalance  as BigNumber
      */
-	function _calcApplyExchangeRate(ftokenBalance: bigInt.BigInteger, exchangeRate: BigNumber, expScale: bigInt.BigInteger ): BigNumber {
-		const underlyingBalance = new BigNumber(ftokenBalance.toString()).multipliedBy(exchangeRate);
-		return underlyingBalance;
-    }
+	function _calcApplyExchangeRate(ftokenBalance: bigInt.BigInteger, exchangeRate: bigInt.BigInteger, expScale: bigInt.BigInteger ): BigNumber {
+		const underlyingBalance = ftokenBalance.multiply(exchangeRate);
+		const underlyingBalanceDecimal =  new BigNumber(underlyingBalance.toString()).dividedBy(expScale.toString());
+		console.log('ftokenBalance: ', ftokenBalance.toString())
+		console.log('underlyingBalance: ', underlyingBalance.toString())
+		console.log('underlyingBalanceDecimal: ', underlyingBalanceDecimal.toString())
+		return underlyingBalanceDecimal;
+    }           
 
     /**
      *
