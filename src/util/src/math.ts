@@ -1,6 +1,9 @@
 import bigInt from "big-integer";
 import { BigNumber } from 'bignumber.js';
 
+export namespace math {
+
+
 /*
     * @description Interface for exponentialy scaled numbers
     *
@@ -9,7 +12,13 @@ import { BigNumber } from 'bignumber.js';
     * @param expScale
     */
 
-type scaledNumber = 
+export interface ExpNum {
+	mantissa: bigInt.BigInteger,
+	decimal: BigNumber,
+	expScale: bigInt.BigInteger,
+}
+
+export type scaledNumber = 
 	{t: "MantissaWithScale" , mantissa: bigInt.BigInteger, expScale: bigInt.BigInteger}
 	| {t: "DecimalWithScale" , decimal: BigNumber, expScale: bigInt.BigInteger}
 
@@ -30,11 +39,7 @@ export function decimalWithScale(decimal: BigNumber, expScale: bigInt.BigInteger
 	}
 }
 
-export interface ExpNum {
-	mantissa: bigInt.BigInteger,
-	decimal: BigNumber,
-	expScale: bigInt.BigInteger,
-}
+
 
 
 export function toExpNum(numWithScale: scaledNumber): ExpNum {
@@ -81,3 +86,5 @@ export function subExp(a: ExpNum, b: ExpNum): ExpNum{
 	return toExpNum(mantissaWithScale(aSubb, a.expScale))
 }
 
+
+}
