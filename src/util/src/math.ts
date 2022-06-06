@@ -19,13 +19,13 @@ export interface ExpNum {
 }
 
 export type scaledNumber = 
-	{t: "MantissaWithScale" , mantissa: bigInt.BigInteger, expScale: bigInt.BigInteger}
-	| {t: "DecimalWithScale" , decimal: BigNumber, expScale: bigInt.BigInteger}
+	{t: "mantissaWithScale" , mantissa: bigInt.BigInteger, expScale: bigInt.BigInteger}
+	| {t: "scaleAppliedDecimal" , decimal: BigNumber, expScale: bigInt.BigInteger}
 
 
 export function mantissaWithScale(mantissa: bigInt.BigInteger, expScale: bigInt.BigInteger): scaledNumber {
 	return {
-		t: "MantissaWithScale",
+		t: "mantissaWithScale",
 		mantissa,
 		expScale,
 	}
@@ -33,7 +33,7 @@ export function mantissaWithScale(mantissa: bigInt.BigInteger, expScale: bigInt.
 
 export function decimalWithScale(decimal: BigNumber, expScale: bigInt.BigInteger): scaledNumber {
 	return {
-		t: "DecimalWithScale",
+		t: "scaleAppliedDecimal",
 		decimal,
 		expScale,
 	}
@@ -44,13 +44,13 @@ export function decimalWithScale(decimal: BigNumber, expScale: bigInt.BigInteger
 
 export function toExpNum(numWithScale: scaledNumber): ExpNum {
 	switch (numWithScale.t) {
-		case "MantissaWithScale":
+		case "mantissaWithScale":
 			return {
 				mantissa: numWithScale.mantissa,
 				decimal: new BigNumber(numWithScale.mantissa.toString()).div(numWithScale.expScale.toString()),
 				expScale: numWithScale.expScale,
 			};
-		case "DecimalWithScale":
+		case "scaleAppliedDecimal":
 			return {
 				mantissa: bigInt(numWithScale.decimal.multipliedBy(numWithScale.expScale.toString()).toFixed(0,1).toString()),
 				decimal: numWithScale.decimal,
