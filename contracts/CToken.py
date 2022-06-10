@@ -38,9 +38,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Initial exchange rate used when minting the first CTokens
             initialExchangeRateMantissa=initialExchangeRateMantissa_,
             # Fraction of interest currently set aside for reserves
-            reserveFactorMantissa=sp.nat(0),
+            reserveFactorMantissa=sp.nat(50000000000000000), # 5%
             # protocol share for sezied asstes
-            protocolSeizeShareMantissa=sp.nat(0),
+            protocolSeizeShareMantissa=sp.nat(100000000000000), #0.01%
             # Block number that interest was last accrued at
             accrualBlockNumber=sp.nat(0),
             # Accumulator of the total earned interest rate since the opening of the market

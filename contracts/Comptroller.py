@@ -37,7 +37,7 @@ TLiquidity = sp.TRecord(
     valid=sp.TBool  # Liquidity is valid only for one user action
 )
 
-DEFAULT_COLLATERAL_FACTOR = int(9e17)  # 90 %
+DEFAULT_COLLATERAL_FACTOR = int(5e17)  # 50 %
 
 
 class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
