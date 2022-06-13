@@ -78,6 +78,8 @@ const DebugDashboard = () => {
         });
     });
 
+    const walletBalance = account.underlyingBalances || [];
+
     marketData.map((y) => {
         Object.entries(suppliedMarket).map((x) => {
             if (x[0] === y.title) {
@@ -85,6 +87,7 @@ const DebugDashboard = () => {
                 y.collateral = x[1].collateral;
                 y.supplyRate = x[1].rate;
             }
+            y.walletBalance = walletBalance[y.title].toString();
         });
         Object.entries(borrowedMarket).map((x) => {
             if (x[0] === y.title) {
@@ -128,6 +131,7 @@ const DebugDashboard = () => {
                             <TableCell align="right" className={classes.collateralPadding}>
                                 Collateral
                             </TableCell>
+                            <TableCell align="right"> Wallet </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -187,7 +191,15 @@ const DebugDashboard = () => {
                                     <TableCell align='right'>{data.reserves}</TableCell>
                                     <TableCell align='right'>{data.reserveFactor}</TableCell>
                                     <TableCell align="right" className={classes.switchPadding}>
-                                        {data.collateral ? <Switch data={data} /> : <SW.default />}
+                                        {data.collateral ? <Switch data={data} /> : <SW.default disabled />}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <span className={classes.clearFont}>
+                                            {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : '0'} {data.title}
+                                        </span> <br/>
+                                        <span className={classes.faintFont}>
+                                                ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                        </span>
                                     </TableCell>
                                 </TableRow>
                             </>

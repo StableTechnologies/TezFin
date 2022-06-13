@@ -182,8 +182,8 @@ const AllMarketModal = (props) => {
                 handleClickTabTwo={borrowToken}
                 labelOne="Supply"
                 labelTwo="Borrow"
-                buttonOne={buttonOne.text}
-                buttonTwo={buttonTwo.text}
+                buttonOne={publicKeyHash ? buttonOne.text : 'Supply'}
+                buttonTwo={publicKeyHash ? buttonTwo.text : 'Borrow'}
                 btnSub={classes.btnSub}
                 btnSubTwo={classes.btnSubTwo}
                 inkBarStyle={classes.inkBarStyle}
@@ -192,9 +192,9 @@ const AllMarketModal = (props) => {
                 visibility={true}
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
-                inputBtnTextTwo = "90% Limit"
+                inputBtnTextTwo = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
                 useMaxAmount= {useMaxAmount}
-                errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
+                errorText={publicKeyHash && ((currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText)}
                 disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 pendingLimit={(currentTab === 'two') ? pendingLimit : false}
                 pendingLimitUsed={(currentTab === 'two') ? pendingLimitUsed : false}
