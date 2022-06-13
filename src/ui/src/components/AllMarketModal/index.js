@@ -192,7 +192,7 @@ const AllMarketModal = (props) => {
                 visibility={true}
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
-                inputBtnTextTwo = "90% Limit"
+                inputBtnTextTwo = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
                 useMaxAmount= {useMaxAmount}
                 errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
                 disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
