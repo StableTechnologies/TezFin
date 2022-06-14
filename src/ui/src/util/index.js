@@ -237,14 +237,18 @@ export const nFormatter = (num, formatDecimals = 4) => {
 };
 
 /**
- * @description THis function takes at percentage ratio in string format
- *  e.g. '.5' and the percent '50' 
+ * @description THis function takes at percentage ratio as Mantissa 
+ * warning! expects the matissa to be of scale = 18
  *
- *  @returns PercentageRatio formatted as percent for display
+ * @param percentRatio : Mantissa as string
+ *
+ * @returns PercentageRatio formatted as percent for display
  */
 
 export const displayPercent = (percentRatio) => {
-	let number = new BigNumber(percentRatio).multipliedBy(100);
+	const expScale18 = bigInt(10).pow(18);
+
+	const number = new BigNumber(percentRatio).dividedBy(expScale18.toString()).multipliedBy(100);
 	return number.toString();
 
 }
