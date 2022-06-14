@@ -9,3 +9,4 @@ build
 TezFinBuild/compiled_contracts/
 /.idea/
 e2e/compiled_contracts
+data.csv

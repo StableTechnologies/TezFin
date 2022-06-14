@@ -91,6 +91,18 @@ export async function deploy() {
     // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash, config.mintAmount);
 }
 
+
+export async function batchMint(records: string[][]) {
+    await initConseil();
+    const { keystore, signer } = await initKeystore();
+    // protocolAddresses = parseProtocolAddress(config.protocolAddressesPath);
+    const protocolAddresses = testnetAddresses;
+    log.info(`protocolAddresses: ${JSON.stringify(protocolAddresses!)}`);
+
+    for(let rec of records)
+        await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, rec[0], config.mintAmount)
+}
+
 export async function deployE2E() {
     await initConseil();
     const { keystore, signer } = await initKeystore();
