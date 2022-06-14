@@ -30,7 +30,7 @@ class CXTZ(CToken.CToken):
 
     def doTransferIn(self, from_, amount):
         sp.if sp.utils.mutez_to_nat(sp.amount) > amount:
-            sp.send(from_, sp.utils.nat_to_mutez(sp.utils.mutez_to_nat(sp.amount) - amount))
+            sp.send(from_, sp.utils.nat_to_mutez(sp.as_nat(sp.utils.mutez_to_nat(sp.amount) - amount)))
         sp.else:
             sp.verify(sp.utils.mutez_to_nat(sp.amount)
                     == amount, EC.CT_INVALID_MUTEZ)
