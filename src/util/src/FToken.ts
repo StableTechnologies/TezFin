@@ -245,7 +245,7 @@ export namespace FToken {
      * @param irStorage InterestRateModel storage.
      * @returns borrowAPY as percent
      */
-    export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): BigNumber {
+    export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
         const _blockRate = _calcSupplyRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate, storage.reserveFactorMantissa);
 
         return _calcAnnualizedRate(_blockRate, irStorage.scale);
@@ -260,7 +260,7 @@ export namespace FToken {
      * @param irStorage InterestRateModel storage.
      * @returns borrowAPY as percent
      */
-    export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): BigNumber {
+    export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
         const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
 
         return _calcAnnualizedRate(_blockRate, irStorage.scale);
@@ -409,16 +409,18 @@ export namespace FToken {
      * @description Calculates the APY from the Supply or Borrow rate
      * @param rate Periodic (per-block) supply or borrow interest rate.
      * @param annualPeriods 365.25*24*60*2.
-     * @returns annual rate as a percentage.
+     * @returns annual percentage rate (not multipliedBy by 100) mantissa as BigInteger.
      */
-     function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): BigNumber {
+     function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): bigInt.BigInteger {
          const _precision = getPrecision(expScale);
          const _rate = new BigNumber(rate.toString());// .div(expScale.toString());
          const _annualPeriods = new BigNumber(annualPeriods);
          const _apyRate = _rate.multipliedBy(annualPeriods).div(expScale.toString()).decimalPlaces(_precision);
+	 const apyrate = rate.multiply(annualPeriods);
+	 //const trunc = apyrate.divide(expScale);
          //const apyPercent = _apyRate.multipliedBy(100);
 
-	     return _apyRate;
+	 return apyrate;
      }
 
     /*
