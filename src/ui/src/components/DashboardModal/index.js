@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
+import { TezosNodeReader } from 'conseiljs';
 
 import Box from '@mui/material/Box';
 import { Button, Typography } from '@mui/material';
@@ -41,16 +42,24 @@ const DashboardModal = (props) => {
     const [tokenValue, setTokenValue] = useState('');
     const [limit, setLimit] = useState('');
     const [limitUsed, setLimitUsed] = useState('');
+    const [isKeyRevealed, setKeyRevealed] = useState('');
 
     const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
 
-    const tezBalance = decimalify(underlyingBalances.XTZ.toString(), decimals.XTZ);
+    const tezBalance = decimalify(underlyingBalances?.XTZ.toString(), decimals.XTZ);
+    const isDisabled = !(tokenValue > 0 && address) || disabled;
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
+
+    useEffect(async () => {
+        const response = await TezosNodeReader.isManagerKeyRevealedForAccount(server, address);
+        setKeyRevealed(response);
+    }, [address]);
 
     useEffect(() => {
         setTokenValue('');
@@ -73,18 +82,18 @@ const DashboardModal = (props) => {
                 <CloseButton onClick={close} />
                 {!collateralize
                     && <DialogTitle>
-                          <div>
-                              <img src={tokenDetails.logo} alt="logo" className={classes.img} />
-                              <LightTooltip
-                                  title={ tokenDetails.walletBalance ? `${tokenDetails.walletBalance}  ${tokenDetails.banner}` : ''}
-                                  placement="bottom"
-                              >
-                                  <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                                      {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
-                                      {' '} {tokenDetails.banner}
-                                  </Typography>
-                              </LightTooltip>
-                          </div>
+                        <div>
+                            <img src={tokenDetails.logo} alt="logo" className={classes.img} />
+                            <LightTooltip
+                                title={ tokenDetails.walletBalance ? `${tokenDetails.walletBalance}  ${tokenDetails.banner}` : ''}
+                                placement="bottom"
+                            >
+                                <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+                                    {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
+                                    {' '} {tokenDetails.banner}
+                                </Typography>
+                            </LightTooltip>
+                        </div>
                     </DialogTitle>
                 }
                 {(!visibility || collateralize)
@@ -124,44 +133,44 @@ const DashboardModal = (props) => {
                     </DialogContent>
                 }
                 <>
-                {collateralize
-                    ? ''
-                    : <Tabulator inkBarStyle={mainModal ? ((tabValue === 'one') ? inkBarStyle : inkBarStyleTwo) : inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
-                }
-                <DialogContent className={classes.CurrentState}>
-                    <Grid container justifyContent="space-between">
-                        <Grid item sm={7}>
+                    {collateralize
+                        ? ''
+                        : <Tabulator inkBarStyle={mainModal ? ((tabValue === 'one') ? inkBarStyle : inkBarStyleTwo) : inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
+                    }
+                    <DialogContent className={classes.CurrentState}>
+                        <Grid container justifyContent="space-between">
+                            <Grid item sm={7}>
+                                {mainModal
+                                    ? <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
+                                        {tabValue === 'one' && CurrentStateText}
+                                        {tabValue === 'two' && CurrentStateTextTwo}
+                                    </Typography>
+                                    : <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {CurrentStateText} </Typography>
+                                }
+                            </Grid>
                             {mainModal
-                                ? <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                                    {tabValue === 'one' && CurrentStateText}
-                                    {tabValue === 'two' && CurrentStateTextTwo}
-                                </Typography>
-                                : <Typography className={`${classes.modalText} ${classes.imgTitle}`}> {CurrentStateText} </Typography>
+                                ? <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                                    {(tabValue === 'one') && (
+                                        (tokenDetails.supply.balanceUnderlying > 0)
+                                            ? nFormatter(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
+                                            : '0'
+                                    )}
+                                    {(tabValue === 'two') && (
+                                        (tokenDetails.borrow.balanceUnderlying > 0)
+                                            ? nFormatter(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
+                                            : '0'
+                                    )}
+                                    {' '} {tokenDetails.title}
+                                </Grid>
+                                : <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                                    {nFormatter(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))} {' '} {tokenDetails.title}
+                                </Grid>
                             }
                         </Grid>
-                        {mainModal
-                            ? <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                {(tabValue === 'one') && (
-                                    (tokenDetails.supply.balanceUnderlying > 0)
-                                        ? nFormatter(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
-                                        : '0'
-                                )}
-                                {(tabValue === 'two') && (
-                                    (tokenDetails.borrow.balanceUnderlying > 0)
-                                        ? nFormatter(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
-                                        : '0'
-                                )}
-                                {' '} {tokenDetails.title}
-                            </Grid>
-                            : <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                {nFormatter(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))} {' '} {tokenDetails.title}
-                            </Grid>
-                        }
-                    </Grid>
-                </DialogContent>
-                {collateralize
-                    ? ''
-                    : <DialogContent className={classes.apyRate}>
+                    </DialogContent>
+                    {collateralize
+                        ? ''
+                        : <DialogContent className={classes.apyRate}>
                             <Grid container justifyContent="space-between">
                                 <Grid item sm={9}>
                                     <img src={tokenDetails.logo} alt="logo" className={classes.img} />
@@ -185,8 +194,8 @@ const DashboardModal = (props) => {
                                     </Grid>
                                 }
                             </Grid>
-                    </DialogContent>
-                }
+                        </DialogContent>
+                    }
                 </>
                 <DialogContent className={classes.limit}>
                     <Grid container textAlign="justify" justifyContent="space-between">
@@ -203,7 +212,7 @@ const DashboardModal = (props) => {
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit Used </Grid>
                         <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {pendingLimitUsed
+                            {(address && pendingLimitUsed)
                                 ? ((pendingLimitUsed > 0) ? ((pendingLimitUsed > 100) ? 100 : truncateNum(pendingLimitUsed)) : '0')
                                 : ((limitUsed > 0) ? ((limitUsed > 100) ? 100 : truncateNum(limitUsed)) : '0')
                             }%
@@ -214,7 +223,7 @@ const DashboardModal = (props) => {
                     <Grid container>
                         <Grid item xs={12}>
                             <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars value={pendingLimitUsed ? Number(pendingLimitUsed) : Number(limitUsed)} height="8px"/>
+                                <CustomizedProgressBars value={(address && pendingLimitUsed) ? Number(pendingLimitUsed) : Number(limitUsed)} height="8px"/>
                             </Box>
                         </Grid>
                     </Grid>
@@ -231,14 +240,14 @@ const DashboardModal = (props) => {
                                         <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disabled>
                                             {buttonOne}
                                         </Button>
-                                        <Typography className={classes.errorText}>
+                                        <Typography className={classes.warningText}>
                                             {errorText}
                                         </Typography>
                                     </>
                                 }
                             </>
                             : <>
-                                {((tokenValue > 0 && address) && !disabled)
+                                {!isDisabled
                                     ? <>
                                         {tabValue === 'one'
                                             && <Button className={` ${classes.btnMain} ${btnSub} `} onClick={handleClickTabOne} disableRipple> {buttonOne} </Button>
@@ -247,23 +256,25 @@ const DashboardModal = (props) => {
                                             && <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub} `} onClick={handleClickTabTwo} disableRipple> {buttonTwo} </Button>
                                         }
                                         {(tabValue === 'two' && buttonTwo === 'Repay')
-                                         && <Typography className={classes.errorText}>
+                                         && <Typography className={classes.warningText}>
                                              {errorText}
                                          </Typography>
                                         }
-                                        {(new BigNumber(tezBalance).lt(0.25))
-                                          && <Typography className={classes.errorText}>
-                                              Your XTZ balance is low. You may soon not be able to process any new operation if you don't add XTZ to your wallet.
-                                          </Typography>
-
-                                        }
+                                        <Typography className={classes.warningText}>
+                                            {!isKeyRevealed
+                                                ? 'You need to perform a reveal operation with your new wallet (for example send XTZ) in order to interact with TezFin.'
+                                                : (new BigNumber(tezBalance).lt(0.25)
+                                                    && 'Your XTZ balance is low. You may soon not be able to process any new operation if you don\'t add XTZ to your wallet.'
+                                                )
+                                            }
+                                        </Typography>
                                     </>
                                     : <>
                                         <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
                                             {tabValue === 'one' && buttonOne}
                                             {tabValue === 'two' && buttonTwo}
                                         </Button>
-                                        <Typography className={classes.errorText}>
+                                        <Typography className={classes.warningText}>
                                             {errorText}
                                         </Typography>
                                     </>

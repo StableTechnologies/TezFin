@@ -25,7 +25,7 @@ export const useStyles = makeStyles({
             fontSize: '1rem',
             lineHeight: '1.875rem',
             letterSpacing: '0.05em',
-            textAlign: 'left',
+            textAlign: 'justify',
             '@media(min-width: 1024px)': {
                 margin: '1.25rem 3.125rem',
                 padding: '0'
@@ -239,15 +239,21 @@ export const useStyles = makeStyles({
             fontSize: '0.7rem'
         }
     },
-    errorText: {
+    warningText: {
         marginTop: '0.5625rem',
         color: '#000',
         opacity: '0.87',
-        textAlign: 'left',
+        textAlign: 'justify',
         fontWeight: '300',
         fontSize: '1rem',
         lineHeight: '1.5rem',
-        letterSpacing: '0.005em'
+        letterSpacing: '0.005em',
+        '@media(max-width: 501px)': {
+            fontSize: '0.875rem'
+        },
+        '@media(max-width: 320px)': {
+            fontSize: '0.75rem'
+        }
     },
     margin0: {
         margin: '0 !important'
