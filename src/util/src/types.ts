@@ -32,7 +32,7 @@ export interface BorrowComposition {
     * @param
     */
 export interface SupplyMarket {
-    rate: BigNumber;
+    rate: bigInt.BigNumber;
     balanceUnderlying: BigNumber;
     balanceUsd: bigInt.BigInteger;
     collateral: boolean;
@@ -44,7 +44,7 @@ export interface SupplyMarket {
     * @param
     */
 export interface BorrowMarket {
-    rate: BigNumber;
+    rate: bigInt.BigInteger;
     balanceUnderlying: bigInt.BigInteger;
     balanceUsd: bigInt.BigInteger;
     liquidityUnderlying: bigInt.BigInteger;
@@ -59,7 +59,7 @@ export interface BorrowMarket {
     * @param borrowLimitUsed Percentage of account's borrow limit currently used
     */
 export interface SupplyMarketModal {
-    rate?: BigNumber;
+    rate?: bigInt.BigInteger;
     borrowLimitUsd: bigInt.BigInteger;
     borrowLimitUsed: number
 }
@@ -72,7 +72,7 @@ export interface SupplyMarketModal {
     * @param borrowLimitUsed Percentage of account's borrow limit currently used
     */
 export interface BorrowMarketModal {
-    rate: BigNumber;
+    rate: bigInt.BigInteger;
     borrowBalanceUsd: bigInt.BigInteger;
     borrowLimitUsed: number;
     borrowBalance: bigInt.BigInteger;
