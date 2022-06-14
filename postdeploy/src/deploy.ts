@@ -13,10 +13,10 @@ export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAdd
         await unpauseMarkets(asset as AssetType, keystore, signer, protocolAddresses);
 }
 
-export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, address: string, amount:number){
+export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, address: string){
     let ops: Transaction[] = []
     for (const asset of config.tokenMint)
-        ops.push(tokenMint(asset, keystore!, signer!, protocolAddresses!, address, amount))
+        ops.push(tokenMint(asset, keystore!, signer!, protocolAddresses!, address, config.mintAmounts[asset]))
     const counter = await TezosNodeReader.getCounterForAccount(config.tezosNode, keystore.publicKeyHash);
     const opGroup = await TezosNodeWriter.prepareOperationGroup(config.tezosNode, keystore, counter, ops, true);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)

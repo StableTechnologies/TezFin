@@ -100,7 +100,7 @@ export async function batchMint(records: string[][]) {
     log.info(`protocolAddresses: ${JSON.stringify(protocolAddresses!)}`);
 
     for(let rec of records)
-        await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, rec[0], config.mintAmount)
+        await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, rec[0])
 }
 
 export async function deployE2E() {
@@ -111,8 +111,8 @@ export async function deployE2E() {
     log.info(`protocolAddresses: ${JSON.stringify(protoAddress!)}`);
 
     await DeployHelper.postDeploy(keystore!, signer!, protoAddress!);
-    await DeployHelper.mintFakeTokens(keystore!, signer!, protoAddress!, keystore.publicKeyHash, 10000);
-    await DeployHelper.mintFakeTokens(keystore!, signer!, protoAddress!, keystore1.publicKeyHash, 10000);
+    await DeployHelper.mintFakeTokens(keystore!, signer!, protoAddress!, keystore.publicKeyHash);
+    await DeployHelper.mintFakeTokens(keystore!, signer!, protoAddress!, keystore1.publicKeyHash);
 
     await test(keystore, signer, keystore1, signer1, protoAddress, oracle);
 }

@@ -75,6 +75,11 @@
         "USD"
     ],
     "mintAmount": 15000,
+    "mintAmounts": {
+        "ETH":10,
+        "BTC":1,
+        "USD":300
+    },
     "redeem": [
         "ETH",
         "BTC",
