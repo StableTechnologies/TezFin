@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
+import bigInt from 'big-integer';
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
@@ -70,9 +71,18 @@ const BorrowModal = (props) => {
 
     const repayBorrowToken = async () => {
         // eslint-disable-next-line no-shadow
-        const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-        setOpGroup(opGroup);
-        setEvaluationError(error);
+	    if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
+		    console.log('useMax selected');
+            // multiply the ammount by 2 to make sure all the amount is repaid
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, bigInt(amount).multiply(2).toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+	    } else {
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+	    }
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
@@ -146,7 +156,7 @@ const BorrowModal = (props) => {
         borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
 
         return () => {
-            setUseMaxAmount('');
+            // setUseMaxAmount('');
         };
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
