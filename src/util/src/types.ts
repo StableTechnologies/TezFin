@@ -146,7 +146,7 @@ export interface UnderlyingAssetMetadata {
 export interface MarketData {
     numParticipants: number;
     totalAmount: bigInt.BigInteger;
-    rate: BigNumber;
+    rate: bigInt.BigInteger;
 }
 
 /*
