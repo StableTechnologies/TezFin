@@ -29,8 +29,11 @@ class CXTZ(CToken.CToken):
             sp.send(to_, sp.utils.nat_to_mutez(amount))
 
     def doTransferIn(self, from_, amount):
-        sp.verify(sp.utils.mutez_to_nat(sp.amount)
-                  == amount, EC.CT_INVALID_MUTEZ)
+        sp.if sp.utils.mutez_to_nat(sp.amount) > amount:
+            sp.send(from_, sp.utils.nat_to_mutez(sp.utils.mutez_to_nat(sp.amount) - amount))
+        sp.else:
+            sp.verify(sp.utils.mutez_to_nat(sp.amount)
+                    == amount, EC.CT_INVALID_MUTEZ)
 
     def getMintTokens(self, mintAmount):
         # add adjustment by mintAmount due to balance being updated from the start of transaction
