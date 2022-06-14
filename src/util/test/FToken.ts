@@ -121,14 +121,14 @@ function getStorageApyTest(
     return [fTokenStorage, interestRateModelStorage];
 }
 
-function getBorrowRate(args: APYargs): BigNumber {
+function getBorrowRate(args: APYargs): bigInt.BigInteger {
     const _storage = getStorageApyTest(args);
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
 
     return FToken.GetBorrowRate(ftokenStorage, interestRateModelStorage);
 }
-function getSupplyRate(args: APYargs): BigNumber {
+function getSupplyRate(args: APYargs): bigInt.BigInteger {
     const _storage = getStorageApyTest(args);
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
@@ -235,8 +235,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 	  The APYBorrow% calculated: ${getBorrowRate(test.args)}
 	  should equal expected: ${test.expected.borrowAPY}`, () => {
             const res = getBorrowRate(test.args);
-            const _expected = new BigNumber(test.expected.borrowAPY.toString());
-            expect(res.eq(_expected)).to.equal(true);
+            const _expected = test.expected.borrowAPY;
+            expect(res.toString()).to.equal(_expected);
         });
     });
 
@@ -255,8 +255,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 	  The APYsupply rate calculated: ${getSupplyRate(test.args)}
 	  should equal expected: ${test.expected.supplyAPY}`, () => {
             const res = getSupplyRate(test.args);
-            const _expected = new BigNumber(test.expected.supplyAPY.toString());
-            expect(res.eq(_expected)).to.equal(true);
+            const _expected = test.expected.supplyAPY;
+            expect(res.toString()).to.equal(_expected);
         });
     });
 });
