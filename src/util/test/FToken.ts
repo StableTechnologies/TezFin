@@ -138,46 +138,6 @@ function getSupplyRate(args: APYargs): BigNumber {
 
 describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
     const tests: APYtest[] = [
-        {
-            desc: 'Test case from USD FToken storage',
-            args: {
-                reserveFactorMantissa: '0',
-                currentCash: '28000000000',
-                totalBorrows: '0',
-                totalReserves: '0',
-                annualPeriod: '1051920',
-                expScale: '1000000000000000000',
-                interestRateModel: {
-                    blockRate: '840000000000',
-                    blockMultiplier: '180000000000',
-                    scale: '1000000000000000000'
-                }
-            },
-            expected: {
-                borrowAPY: '.8836128',
-                supplyAPY: '0'
-            }
-        },
-        {
-            desc: 'with currentCash = totalBorrows = totalReserves = 10400000000',
-            args: {
-                reserveFactorMantissa: '0',
-                currentCash: '10400000000',
-                totalBorrows: '10400000000',
-                totalReserves: '10400000000',
-                annualPeriod: '1051920',
-                expScale: '1000000000000000000',
-                interestRateModel: {
-                    blockRate: '840000000000',
-                    blockMultiplier: '180000000000',
-                    scale: '1000000000000000000'
-                }
-            },
-            expected: {
-                borrowAPY: '1.0729584',
-                supplyAPY: '1.0729584'
-            }
-        },
 	  {
             desc: 'Test case with 1k lent, 1 borrowed',
             args: {
@@ -194,8 +154,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '.00104895104836896',
-                supplyAPY: '.0000010468550052'
+                borrowAPY: '1048951048368960',
+                supplyAPY: '1046855005200'
             }
 	  },
 	  {
@@ -214,8 +174,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '.00148514851415232',
-                supplyAPY: '.00001468973565288'
+                borrowAPY: '1485148514152320',
+                supplyAPY: '14689735652880'
             }
         },
 	  {
@@ -234,8 +194,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '.00545454545299128',
-                supplyAPY: '.00049537189996416'
+                borrowAPY: '5454545452991280',
+                supplyAPY: '495371899964160'
             }
         },
 	  {
@@ -254,8 +214,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '.02549999999922984',
-                supplyAPY: '.01273724999865648'
+                borrowAPY: '25499999999229840',
+                supplyAPY: '12737249998656480'
             }
         }
 
