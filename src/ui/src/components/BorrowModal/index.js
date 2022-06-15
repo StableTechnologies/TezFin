@@ -144,10 +144,6 @@ const BorrowModal = (props) => {
 
     useEffect(() => {
         borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
-
-        return () => {
-            setUseMaxAmount('');
-        };
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {

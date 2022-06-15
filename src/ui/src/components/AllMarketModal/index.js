@@ -144,10 +144,6 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
         marketsMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
-
-        return () => {
-            setUseMaxAmount('');
-        };
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
