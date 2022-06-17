@@ -96,7 +96,7 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
     const { supplying, collateralized } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing } = useSelector((state) => state.borrowComposition.borrowComposition);
 
-    const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+    const tokenValueUsd = decimalify((new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber()), decimals[tokenDetails.title], decimals[tokenDetails.title]);
     const pendingSupplyingUsd = new BigNumber(supplying).minus(new BigNumber(tokenValueUsd)).toNumber();
     let pendingCollateralizedUsd = collateralized;
     if (tokenDetails.collateral) {
