@@ -42,7 +42,7 @@ const DisclamerModal = (props) => {
                 className={classes.root}
             >
                 <DialogTitle className={classes.headerCon}>
-                    <div item className={classes.warningCon}>
+                    <div className={classes.warningCon}>
                         <img src={WarningIcon} alt='warning-icon' className={classes.warningIcon} />
                     </div>
                     <Typography className={classes.title}>
