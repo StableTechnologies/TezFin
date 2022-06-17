@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Box from '@mui/material/Box';
+
 import WarningIcon from '../../assets/warning.svg';
 
 import { useStyles } from './style';
@@ -13,7 +15,7 @@ import { useStyles } from './style';
 const DisclamerModal = (props) => {
     const classes = useStyles();
     const { close } = props;
-    const title = 'Please Use Caution';
+    const title = 'Please Exercise Caution';
 
     const para1 = `While the initial creators of the TezFin (Tezos Finance;
         tezos.finance) protocol have made reasonable
@@ -42,9 +44,9 @@ const DisclamerModal = (props) => {
                 className={classes.root}
             >
                 <DialogTitle className={classes.headerCon}>
-                    <div className={classes.warningCon}>
+                    <Box className={classes.warningCon}>
                         <img src={WarningIcon} alt='warning-icon' className={classes.warningIcon} />
-                    </div>
+                    </Box>
                     <Typography className={classes.title}>
                         {title}
                     </Typography>
