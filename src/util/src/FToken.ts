@@ -417,17 +417,16 @@ export namespace FToken {
     }
 
     /**
-     *
-     * @param rate Periodic (per-block) interest rate.
+     * @description Calculates the APY from the Supply or Borrow rate
+     * @param rate Periodic (per-block) supply or borrow interest rate.
      * @param annualPeriods 365.25*24*60*2.
-     * @returns Annual rate as a percentage.
+     * @returns annual percentage rate (not multipliedBy by 100) mantissa as BigInteger.
      */
-    function _calcAnnualizedRate(rate, scale, annualPeriods = 1051920) {
-        const base = bigInt(scale).plus(rate);
-        const decimalBase = new BigNumber(base.toString()).div(scale.toString());
-        BigNumber.config({ POW_PRECISION: (scale.toString().length - 1) * 2 });
-        return decimalBase.pow(annualPeriods).multipliedBy(100).toNumber();
-    }
+     function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): bigInt.BigInteger {
+	 const apyrate = rate.multiply(annualPeriods);
+
+	 return apyrate;
+     }
 
     /*
      * @description
