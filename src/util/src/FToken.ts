@@ -341,29 +341,37 @@ export namespace FToken {
 	    return utilizationRate;
 	}
 
+    
     /**
+     * @description  Calculates the supplyRatePerBlock matissa using the fomula below
+     *
+     *    oneMinusReserveFactor = scale - reserveFactor
+     *
+     *    rateToPool = borrowRate * oneMinusReserveFactor / scale
+     *
+     *    supplyRatePerBlock =  rateToPool * utilizationRate / poolRateDenominator
      *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
+     * @param scale  The exponential scale all the matissa's are in
      * @param blockMultiplier Rate line slope, order of magnitude of scale.
      * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
      * @param reserveFactor Reserve share order of magnitude of scale.
-     * @returns
+     * @returns supplyRatePerBlock as bigInt.BigInteger
      */
-    function _calcSupplyRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate, reserveFactor) {
-        const _scale = bigInt(scale)
+    function _calcSupplyRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger, blockMultiplier: bigInt.BigInteger, blockBaseRate: bigInt.BigInteger, reserveFactor: bigInt.BigInteger): bigInt.BigInteger {
+        const _scale = bigInt(scale);
 
         const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
-        const borrowRate = _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate)
-        const poolShare = _scale.minus(reserveFactor);
+        const borrowRate = _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate);
+        const oneMinusReserveFactor = _scale.minus(reserveFactor);
 
-        const poolRateNumerator = borrowRate.multiply(poolShare).multiply(utilizationRate);
-        const poolRateDenominator = _scale.multiply(_scale);
+        const rateToPool = borrowRate.multiply(oneMinusReserveFactor).divide(scale);
 
-        return poolRateNumerator.divide(poolRateDenominator);
+        return rateToPool.multiply(utilizationRate).divide(scale);
     }
+
 
 
     /**
