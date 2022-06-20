@@ -138,10 +138,6 @@ const SupplyModal = (props) => {
 
     useEffect(() => {
         supplyingMaxAction(currentTab, tokenDetails, setUseMaxAmount);
-
-        return () => {
-            setUseMaxAmount('');
-        };
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     return (

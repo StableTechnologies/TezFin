@@ -12,13 +12,14 @@ export const useStyles = makeStyles({
             color: '#000'
         },
         '& .MuiDialogTitle-root': {
+            justifyContent: 'center',
             fontFamily: 'Poppins',
             fontStyle: 'normal',
             fontWeight: '700',
             fontSize: '20px',
             lineHeight: '30px',
             color: '#000',
-            padding: '0.925rem 6.0rem 0'
+            padding: '0.925rem 4rem 0'
         },
         '& .MuiDialogContent-root': {
             padding: '10 2.5rem 2.5rem'
@@ -29,6 +30,7 @@ export const useStyles = makeStyles({
             fontWeight: '400',
             fontSize: '16px',
             lineHeight: '24px',
+            textAlign: 'justify',
             color: '#000',
             opacity: '0.87',
             padding: '1.35rem 0rem 0',
@@ -77,10 +79,10 @@ export const useStyles = makeStyles({
     headerCon: {
         display: 'flex',
         '@media(max-width: 501px)': {
-            padding: '0.925rem 3rem !important'
+            padding: '0.925rem 2rem !important'
         },
         '@media(max-width: 320px)': {
-            padding: '0.925rem 2rem !important'
+            padding: '0.925rem .5rem !important'
         }
     },
     title: {
