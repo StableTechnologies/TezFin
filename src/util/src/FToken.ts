@@ -317,26 +317,29 @@ export namespace FToken {
 	}
 
     /**
+     * @description Calculates the utilizationRate as per the contract code using this formula:
+     *
+     *  utilizationRate = (loan * scale) / ( balance + loans - reserves)
      *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
-     * @returns
+     * @param scale  The exponential scale all the matissa's are in
+     * @returns utilizationRate as BigInteger
      */
-    function _calcUtilizationRate(loans, balance, reserves, scale) {
-        const _loans = bigInt(loans);
+	function _calcUtilizationRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger): bigInt.BigInteger {
 
-        if (_loans.eq(0)) { return bigInt.zero; }
+	    if (loans.lesserOrEquals(0)) { return bigInt.zero; }
 
-        const _balance = bigInt(balance);
-        const _reserves = bigInt(reserves);
-        const _scale = bigInt(scale);
 
-        const r = _loans.multiply(_scale).divide(_balance.plus(_loans).subtract(_reserves));
+	    const divisor = balance.plus(loans).minus(reserves);
 
-        return r;
-    }
+	    if (divisor.eq(0)) { return bigInt.zero; }
+
+	    const utilizationRate = loans.multiply(scale).divide(divisor);
+
+	    return utilizationRate;
+	}
 
     /**
      *
