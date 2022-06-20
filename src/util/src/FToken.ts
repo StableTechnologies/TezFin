@@ -298,26 +298,23 @@ export namespace FToken {
     }
 
     /**
+     * @description  Calculates the borrowRatePerBlock matissa as per the contract code using the fomula:
+     *
+     *  borrowRatePerBlock = (utilizationRate * blockMultiplier / scale) + blockBaseRate
      *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param scale Token decimals, 18 for Eth, 8 for BTC, 6 for XTZ, expressed as 1e<decimals>.
-     * @param blockMultiplier Rate line slope, order of magnitude of scale.
-     * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
-     * @returns
+     * @param scale  the exponential scale all the mantissa's are in
+     * @param blockmultiplier rate line slope, order of magnitude of scale.
+     * @param blockbaserate per-block interest rate, order of magnitude of scale.
+     * @returns borrowrateperblock as bigInt.BigInteger
      */
-    function _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate) {
-        const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
+	function _calcBorrowRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger, blockMultiplier: bigInt.BigInteger, blockBaseRate: bigInt.BigInteger): bigInt.BigInteger {
+	    const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
 
-        const _blockMultiplier = bigInt(blockMultiplier);
-        const _blockBaseRate = bigInt(blockBaseRate);
-        const _scale = bigInt(scale);
-
-        const r = utilizationRate.multiply(_blockMultiplier).divide(_scale).plus(_blockBaseRate);
-
-        return r;
-    }
+	    return utilizationRate.multiply(blockMultiplier).divide(scale).plus(blockBaseRate);
+	}
 
     /**
      *
