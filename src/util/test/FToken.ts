@@ -5,60 +5,6 @@ import { InterestRateModel } from '../src/contracts/InterestRateModel';
 
 const { expect } = require('chai');
 
-interface GetPrecisionTest {
-  desc?: string;
-  expScale: number | string;
-  expected: number | string;
-}
-
-const precisionTests: GetPrecisionTest[] = [
-    {
-        expScale: '100',
-        expected: 2
-    },
-    {
-        expScale: '10',
-        expected: 1
-    },
-    {
-        expScale: '1000000000000000000',
-        expected: 18
-    },
-    {
-        expScale: '1',
-        expected: 0
-    },
-    {
-        expScale: '0',
-        expected: 0
-    }
-];
-
-function getPrecision(test: GetPrecisionTest): number {
-    return FToken.getPrecision(bigInt(test.expScale));
-}
-
-precisionTests.forEach((test: GetPrecisionTest) => {
-    it(`-------------------------------------------------------------
-
-
-          ${test.desc}
-
-	  Exponential Scale: ${test.expScale.toString()}
-	  The precision calculation: 
-        * expScale base is 10
-
-	  -----------Formula ----------
-	
-	log(${test.expScale}) / log(10)
-
-	  -----------Formula ----------
-        
-	should equal expected: ${test.expected}`, () => {
-        const res = getPrecision(test);
-        expect(res).to.equal(test.expected);
-    });
-});
 
 interface APYtest {
   args: APYargs;
