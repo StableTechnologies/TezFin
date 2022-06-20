@@ -269,15 +269,32 @@ export namespace FToken {
 
     }
 
-    /*
-     * @description  The rate calculation here is based on the getBorrowRate function of the InterestRateModel contract.
+    /**
+     * @description  The rate calculation here is based on the getBorrowRate 
+     *                function of the InterestRateModel contract.
      *
-     * @param storage
+     * @param storage FToken storage.
+     * @param irStorage InterestRateModel storage.
+     * @returns borrowRate  Mantissa as bigInt.BigInteger
      */
-    export function GetBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
+    export function getBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
+
+        return _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
+
+    }
+
+    /**
+     * @description   Once the borrowRate Mantissa is calculated, The APY mantissa
+     *                is computed and multiplied by 100 to get APY percent.
+     *
+     * @param storage FToken storage.
+     * @param irStorage InterestRateModel storage.
+     * @returns borrowAPY percent Mantissa as bigInt.BigInteger
+     */
+    export function getBorrowRateApy(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
         const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
 
-        return _calcAnnualizedRate(_blockRate, irStorage.scale);
+        return _calcAnnualizedRate(_blockRate, irStorage.scale).multiply(100);
     }
 
     /**
