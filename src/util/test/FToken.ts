@@ -64,8 +64,8 @@ interface APYtest {
   args: APYargs;
   desc: string;
   expected: {
-    borrowAPY: number | string;
-    supplyAPY: number | string;
+    borrowRate: number | string;
+    supplyRate: number | string;
   };
 }
 
@@ -126,14 +126,14 @@ function getBorrowRate(args: APYargs): bigInt.BigInteger {
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
 
-    return FToken.GetBorrowRate(ftokenStorage, interestRateModelStorage);
+    return FToken.getBorrowRate(ftokenStorage, interestRateModelStorage);
 }
 function getSupplyRate(args: APYargs): bigInt.BigInteger {
     const _storage = getStorageApyTest(args);
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
 
-    return FToken.GetSupplyRate(ftokenStorage, interestRateModelStorage);
+    return FToken.getSupplyRate(ftokenStorage, interestRateModelStorage);
 }
 
 describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
@@ -154,8 +154,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '1048951048368960',
-                supplyAPY: '1046855005200'
+                borrowRate: '997177588',
+                supplyRate: '995185'
             }
 	  },
 	  {
@@ -174,8 +174,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '1485148514152320',
-                supplyAPY: '14689735652880'
+                borrowRate: '1411845496',
+                supplyRate: '13964689'
             }
         },
 	  {
@@ -194,8 +194,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '5454545452991280',
-                supplyAPY: '495371899964160'
+                borrowRate: '5185323459',
+                supplyRate: '470921648'
             }
         },
 	  {
@@ -214,8 +214,8 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
                 }
             },
             expected: {
-                borrowAPY: '25499999999229840',
-                supplyAPY: '12737249998656480'
+                borrowRate: '24241387177',
+                supplyRate: '12108572894'
             }
         }
 
@@ -226,16 +226,11 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 
           ${test.desc}
 
-	  -----------Formula ----------
-	  AYPborrow = borrowRatePerBlock * (annualPeriod = ${test.args.annualPeriod}) 
-	  AYPborrow% = AYPborrow / expScale
-
-	  -----------Formula ----------
         
-	  The APYBorrow% calculated: ${getBorrowRate(test.args)}
-	  should equal expected: ${test.expected.borrowAPY}`, () => {
+	  The borrowRate calculated: ${getBorrowRate(test.args)}
+	  should equal expected: ${test.expected.borrowRate}`, () => {
             const res = getBorrowRate(test.args);
-            const _expected = test.expected.borrowAPY;
+            const _expected = test.expected.borrowRate;
             expect(res.toString()).to.equal(_expected);
         });
     });
@@ -245,17 +240,10 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 
           ${test.desc}
 
-	  -----------Formula ----------
-	  APYsupply = supplyRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
-
-	  AYPsupply% = AYPborrow  / expScale
-
-	  -----------Formula ----------
-        
-	  The APYsupply rate calculated: ${getSupplyRate(test.args)}
-	  should equal expected: ${test.expected.supplyAPY}`, () => {
+	  The supplyRate calculated: ${getSupplyRate(test.args)}
+	  should equal expected: ${test.expected.supplyRate}`, () => {
             const res = getSupplyRate(test.args);
-            const _expected = test.expected.supplyAPY;
+            const _expected = test.expected.supplyRate;
             expect(res.toString()).to.equal(_expected);
         });
     });
