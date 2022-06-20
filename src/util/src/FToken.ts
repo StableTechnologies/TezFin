@@ -238,15 +238,35 @@ export namespace FToken {
 	    return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
     }
 
-    /*
-     * @description The rate calculation here is based on the getSupplyRate function of the InterestRateModel contract.
+ 
+    /**
+     * @description   Once the supplyRate Mantissa is calculated, The APY mantissa
+     *                is computed and  multiplied by 100 to get APY percent.
      *
-     * @param storage
+     *
+     *
+     * @param storage FToken storage.
+     * @param irStorage InterestRateModel storage.
+     * @returns supplyApy percent Mantissa as bigInt.BigInteger
      */
-    export function GetSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): number {
+    export function getSupplyRateApy(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
         const _blockRate = _calcSupplyRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate, storage.reserveFactorMantissa);
 
-        return _calcAnnualizedRate(_blockRate, irStorage.scale);
+        return _calcAnnualizedRate(_blockRate, irStorage.scale).multiply(100);
+    }
+
+    /**
+     * @description  The rate calculation here is based on the getSupplyRate 
+     *               function of the InterestRateModel contract.
+     *
+     * @param storage FToken storage.
+     * @param irStorage InterestRateModel storage.
+     * @returns supplyRate Mantissa as bigInt.BigInteger
+     */
+    export function getSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
+
+        return _calcSupplyRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate, storage.reserveFactorMantissa);
+
     }
 
     /*
