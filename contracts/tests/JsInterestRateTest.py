@@ -36,21 +36,23 @@ def test():
 
     scenario.h3("Market State at 1k lent, 1 borrowed")
 
+    lent = sp.mul(sp.nat(1000), expScale)
+    borrowed = sp.mul(sp.nat(1), expScale)
+
     scenario.h4("Calculate BorrowRate")
-    scenario += c2.getBorrowRate(sp.record(cash=sp.nat(1000000000000000000000), 
-                                           borrows=sp.nat(1000000000000000000), 
+
+    scenario += c2.getBorrowRate(sp.record(cash=lent, 
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            cb=view_result.typed.targetNat))
 
-    # the APY rates are in decimal form in JS we have to convert them back into
-    # mantissa form  for use in tests 
 
     jsBorrowRateMantissa =  997177588 
     scenario.verify_equal(view_result.data.last , sp.some(jsBorrowRateMantissa))
 
     scenario.h3("Calculate SupplyRate")
-    scenario += c2.getSupplyRate(sp.record(cash=sp.nat(1000000000000000000000),
-                                           borrows=sp.nat(1000000000000000000),
+    scenario += c2.getSupplyRate(sp.record(cash=lent,
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            reserveFactorMantissa=reserveFactorMantissa, 
                                            cb=view_result.typed.targetNat))
@@ -59,23 +61,24 @@ def test():
     scenario.verify_equal(view_result.data.last, sp.some(jsSupplyRateMantissa))
 
     scenario.h3("Market State at 1k lent, 10 borrowed")
+    
+    lent = sp.mul(sp.nat(1000), expScale)
+    borrowed = sp.mul(sp.nat(10), expScale)
 
     scenario.h4("Calculate BorrowRate")
-    scenario += c2.getBorrowRate(sp.record(cash=sp.nat(1000000000000000000000), 
-                                           borrows=sp.nat(10000000000000000000), 
+
+    scenario += c2.getBorrowRate(sp.record(cash=lent, 
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            cb=view_result.typed.targetNat))
-
-    # the APY rates are in decimal form in JS we have to convert them back into
-    # mantissa form  for use in tests 
 
     jsBorrowRateMantissa =  1411845496 
     scenario.verify_equal(view_result.data.last , sp.some(jsBorrowRateMantissa))
 
     
     scenario.h3("Calculate SupplyRate")
-    scenario += c2.getSupplyRate(sp.record(cash=sp.nat(1000000000000000000000),
-                                           borrows=sp.nat(10000000000000000000),
+    scenario += c2.getSupplyRate(sp.record(cash=lent,
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            reserveFactorMantissa=reserveFactorMantissa, 
                                            cb=view_result.typed.targetNat))
@@ -83,25 +86,24 @@ def test():
     jsSupplyRateMantissa = 13964689
     scenario.verify_equal(view_result.data.last, sp.some(jsSupplyRateMantissa))
 
-
     scenario.h3("Market State at 1k lent , 100 borrowed")
 
+    lent = sp.mul(sp.nat(1000), expScale)
+    borrowed = sp.mul(sp.nat(100), expScale)
+
     scenario.h4("Calculate BorrowRate")
-    scenario += c2.getBorrowRate(sp.record(cash=sp.nat(1000000000000000000000), 
-                                           borrows=sp.nat(100000000000000000000), 
+
+    scenario += c2.getBorrowRate(sp.record(cash=lent, 
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            cb=view_result.typed.targetNat))
-
-    # the APY rates are in decimal form in JS we have to convert them back into
-    # mantissa form  for use in tests 
 
     jsBorrowRateMantissa =  5185323459 
     scenario.verify_equal(view_result.data.last , sp.some(jsBorrowRateMantissa))
 
-    
     scenario.h3("Calculate SupplyRate")
-    scenario += c2.getSupplyRate(sp.record(cash=sp.nat(1000000000000000000000),
-                                           borrows=sp.nat(100000000000000000000),
+    scenario += c2.getSupplyRate(sp.record(cash=lent,
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            reserveFactorMantissa=reserveFactorMantissa, 
                                            cb=view_result.typed.targetNat))
@@ -111,27 +113,27 @@ def test():
 
     scenario.h3("Market State at 1k lent , 1k borrowed")
 
+    lent = sp.mul(sp.nat(1000), expScale)
+    borrowed = sp.mul(sp.nat(1000), expScale)
+
     scenario.h4("Calculate BorrowRate")
-    scenario += c2.getBorrowRate(sp.record(cash=sp.nat(1000000000000000000000), 
-                                           borrows=sp.nat(1000000000000000000000), 
+
+    scenario += c2.getBorrowRate(sp.record(cash=lent, 
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            cb=view_result.typed.targetNat))
-
-    # the APY rates are in decimal form in JS we have to convert them back into
-    # mantissa form  for use in tests 
 
     jsBorrowRateMantissa =  24241387177 
     scenario.verify_equal(view_result.data.last , sp.some(jsBorrowRateMantissa))
 
     
     scenario.h3("Calculate SupplyRate")
-    scenario += c2.getSupplyRate(sp.record(cash=sp.nat(1000000000000000000000),
-                                           borrows=sp.nat(1000000000000000000000),
+    scenario += c2.getSupplyRate(sp.record(cash=lent,
+                                           borrows=borrowed, 
                                            reserves=sp.nat(0), 
                                            reserveFactorMantissa=reserveFactorMantissa, 
                                            cb=view_result.typed.targetNat))
+
      
     jsSupplyRateMantissa = 12108572894
     scenario.verify_equal(view_result.data.last, sp.some(jsSupplyRateMantissa))
-
-
