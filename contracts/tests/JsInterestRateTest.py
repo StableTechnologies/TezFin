@@ -1,12 +1,11 @@
+# These test cases have been added to confirm that the Js Implementation of 
+# BorrowRate and SupplyRate give the identical number for all significant digits
+# for the inputs given below
+
 import smartpy as sp
 
 IRM = sp.io.import_script_from_url("file:contracts/InterestRateModel.py")
 RV = sp.io.import_script_from_url("file:contracts/tests//utils/ResultViewer.py")
-
-
-# These test cases have been added to confirm that the Js Implementation of 
-# BorrowRate and SupplyRate give the identical number for all significant digits
-# for the inputs given below
 
 @sp.add_test(name = "Borrow_and_Supply_Rate_Js_Implementation_Test_Cases")
 def test():
