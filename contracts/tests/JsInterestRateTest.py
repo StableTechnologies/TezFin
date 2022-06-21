@@ -32,7 +32,7 @@ def test():
     view_result = RV.ViewerNat()
     scenario += view_result
 
-    scenario.h2("Test cases, to test if the JS implemetation for supply and t borrow rate is equivelant to the one in the contract for the market states below ")
+    scenario.h2("Test cases, to test if the JS implemetation for supply and  borrow rate is equivelant to the one in the contract for the market states below ")
 
     scenario.h3("Market State at 1k lent, 1 borrowed")
 

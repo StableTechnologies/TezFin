@@ -7,7 +7,157 @@ const { expect } = require('chai');
 
 
 interface APYtest {
-  args: APYargs;
+  args: InterestRateModelArgs;
+  desc: string;
+  expected: {
+    borrowAPY: number | string;
+    supplyAPY: number | string;
+  };
+}
+
+
+function getBorrowRateApy(args: InterestRateModelArgs): bigInt.BigInteger {
+    const _storage = getStorageInterestRateModelTest(args);
+    const ftokenStorage: FToken.Storage = _storage[0];
+    const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
+
+    return FToken.getBorrowRateApy(ftokenStorage, interestRateModelStorage);
+}
+function getSupplyRateApy(args: InterestRateModelArgs): bigInt.BigInteger {
+    const _storage = getStorageInterestRateModelTest(args);
+    const ftokenStorage: FToken.Storage = _storage[0];
+    const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
+
+    return FToken.getSupplyRateApy(ftokenStorage, interestRateModelStorage);
+}
+
+
+describe('APY test ', () => {
+    const tests: APYtest[] = [
+	  {
+            desc: 'Test case with 1k lent, 1 borrowed',
+            args: {
+                reserveFactorMantissa: '1000000000000000',
+                currentCash: '1000000000000000000000',
+                totalBorrows: '1000000000000000000',
+                totalReserves: '0',
+                annualPeriod: '1051920',
+                expScale: '1000000000000000000',
+                interestRateModel: {
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
+                    scale: '1000000000000000000'
+                }
+            },
+            expected: {
+                borrowAPY: '104895104836896000',
+                supplyAPY: '104685500520000'
+            }
+	  },
+	  {
+            desc: 'Test case with 1k lent, 10 borrowed',
+            args: {
+                reserveFactorMantissa: '1000000000000000',
+                currentCash: '1000000000000000000000',
+                totalBorrows: '10000000000000000000',
+                totalReserves: '0',
+                annualPeriod: '1051920',
+                expScale: '1000000000000000000',
+                interestRateModel: {
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
+                    scale: '1000000000000000000'
+                }
+            },
+            expected: {
+                borrowAPY: '148514851415232000',
+                supplyAPY: '1468973565288000'
+            }
+        },
+	  {
+            desc: 'Test case with 1k lent, 100 borrowed',
+            args: {
+                reserveFactorMantissa: '1000000000000000',
+                currentCash: '1000000000000000000000',
+                totalBorrows: '100000000000000000000',
+                totalReserves: '0',
+                annualPeriod: '1051920',
+                expScale: '1000000000000000000',
+                interestRateModel: {
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
+                    scale: '1000000000000000000'
+                }
+            },
+            expected: {
+                borrowAPY: '545454545299128000',
+                supplyAPY: '49537189996416000'
+            }
+        },
+	  {
+            desc: 'Test case with 1k lent, 1k borrowed',
+            args: {
+                reserveFactorMantissa: '1000000000000000',
+                currentCash: '1000000000000000000000',
+                totalBorrows: '1000000000000000000000',
+                totalReserves: '0',
+                annualPeriod: '1051920',
+                expScale: '1000000000000000000',
+                interestRateModel: {
+                    blockRate: '950642634',
+                    blockMultiplier: '46581489086',
+                    scale: '1000000000000000000'
+                }
+            },
+            expected: {
+                borrowAPY: '2549999999922984000',
+                supplyAPY: '1273724999865648000'
+            }
+        }
+
+    ];
+
+    tests.forEach((test: APYtest) => {
+        it(`-------------------------------------------------------------
+          ${test.desc}
+	  -----------Formula ----------
+	  AYPborrow = borrowRatePerBlock * (annualPeriod = ${test.args.annualPeriod}) 
+	  AYPborrow% = AYPborrow * 100
+	  -----------Formula ----------
+        
+	  The APYBorrow% calculated: ${getBorrowRateApy(test.args)}
+	  should equal expected: ${test.expected.borrowAPY}`, () => {
+            const res = getBorrowRateApy(test.args);
+            const _expected = test.expected.borrowAPY;
+            expect(res.toString()).to.equal(_expected);
+        });
+    });
+
+    tests.forEach((test: APYtest) => {
+        it(`-------------------------------------------------------------
+          ${test.desc}
+	  -----------Formula ----------
+	  APYsupply = supplyRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
+	  AYPsupply% = AYPborrow * 100 
+	  -----------Formula ----------
+        
+	  The APYsupply rate calculated: ${getSupplyRateApy(test.args)}
+	  should equal expected: ${test.expected.supplyAPY}`, () => {
+            const res = getSupplyRateApy(test.args);
+            const _expected = test.expected.supplyAPY;
+            expect(res.toString()).to.equal(_expected);
+        });
+    });
+});
+
+
+
+
+
+
+
+interface InterestRateModelTest {
+  args: InterestRateModelArgs;
   desc: string;
   expected: {
     borrowRate: number | string;
@@ -15,7 +165,7 @@ interface APYtest {
   };
 }
 
-interface APYargs {
+interface InterestRateModelArgs {
   reserveFactorMantissa: number | string;
   annualPeriod: number | string;
   currentCash: number | string;
@@ -29,8 +179,8 @@ interface APYargs {
   };
 }
 
-function getStorageApyTest(
-    args: APYargs
+function getStorageInterestRateModelTest(
+    args: InterestRateModelArgs 
 ): [FToken.Storage, InterestRateModel.Storage] {
     const fTokenStorage: FToken.Storage = {
         accrualBlockNumber: 0,
@@ -43,7 +193,7 @@ function getStorageApyTest(
         borrow: {
             totalBorrows: bigInt(args.totalBorrows),
             borrowIndex: bigInt(0),
-            borrowRateMaxMantissa: bigInt(0),
+            borrowRateMaxMantissa: bigInt(24241387177),
             borrowRatePerBlock: bigInt(0)
         },
         comptrollerAddress: '',
@@ -67,23 +217,23 @@ function getStorageApyTest(
     return [fTokenStorage, interestRateModelStorage];
 }
 
-function getBorrowRate(args: APYargs): bigInt.BigInteger {
-    const _storage = getStorageApyTest(args);
+function getBorrowRate(args: InterestRateModelArgs): bigInt.BigInteger {
+    const _storage = getStorageInterestRateModelTest(args);
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
 
     return FToken.getBorrowRate(ftokenStorage, interestRateModelStorage);
 }
-function getSupplyRate(args: APYargs): bigInt.BigInteger {
-    const _storage = getStorageApyTest(args);
+function getSupplyRate(args: InterestRateModelArgs): bigInt.BigInteger {
+    const _storage = getStorageInterestRateModelTest(args);
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
 
     return FToken.getSupplyRate(ftokenStorage, interestRateModelStorage);
 }
 
-describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
-    const tests: APYtest[] = [
+describe('GetBorrowRate/GetSupplyRate', () => {
+    const tests: InterestRateModelTest[] = [
 	  {
             desc: 'Test case with 1k lent, 1 borrowed',
             args: {
@@ -167,7 +317,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
 
     ];
 
-    tests.forEach((test: APYtest) => {
+    tests.forEach((test: InterestRateModelTest) => {
         it(`-------------------------------------------------------------
 
           ${test.desc}
@@ -181,7 +331,7 @@ describe('APY calculation GetBorrowRate/GetSupplyRate', () => {
         });
     });
 
-    tests.forEach((test: APYtest) => {
+    tests.forEach((test: InterestRateModelTest) => {
         it(`-------------------------------------------------------------
 
           ${test.desc}

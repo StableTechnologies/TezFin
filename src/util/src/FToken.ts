@@ -426,11 +426,10 @@ export namespace FToken {
      * @description Calculates the APY from the Supply or Borrow rate
      * @param rate Periodic (per-block) supply or borrow interest rate.
      * @param annualPeriods 365.25*24*60*2.
-     * @returns annual percentage rate (not multipliedBy by 100) mantissa as BigInteger.
+     * @returns annualrate APY rate Mantissa as BigInteger.
      */
      function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): bigInt.BigInteger {
 	 const apyrate = rate.multiply(annualPeriods);
-
 	 return apyrate;
      }
 
