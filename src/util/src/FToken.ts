@@ -292,9 +292,15 @@ export namespace FToken {
      * @returns borrowAPY percent Mantissa as bigInt.BigInteger
      */
     export function getBorrowRateApy(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
-        const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
 
+        const _blockRate = _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
+	     
+	    if (_blockRate.greaterOrEquals(storage.borrow.borrowRateMaxMantissa)){
+		    return _calcAnnualizedRate(storage.borrow.borrowRateMaxMantissa, irStorage.scale).multiply(100);
+		}
+	    
         return _calcAnnualizedRate(_blockRate, irStorage.scale).multiply(100);
+
     }
 
     /**
