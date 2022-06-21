@@ -50,7 +50,7 @@ const DashboardModal = (props) => {
     const { server } = useSelector((state) => state.nodes.tezosNode);
 
     const tezBalance = decimalify(underlyingBalances?.XTZ.toString(), decimals.XTZ);
-    const isDisabled = !isKeyRevealed || !(tokenValue > 0 && address) || disabled;
+    const isDisabled = !(tokenValue > 0 && address) || disabled;
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -212,7 +212,7 @@ const DashboardModal = (props) => {
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit Used </Grid>
                         <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {pendingLimitUsed
+                            {(address && pendingLimitUsed)
                                 ? ((pendingLimitUsed > 0) ? ((pendingLimitUsed > 100) ? 100 : truncateNum(pendingLimitUsed)) : '0')
                                 : ((limitUsed > 0) ? ((limitUsed > 100) ? 100 : truncateNum(limitUsed)) : '0')
                             }%
@@ -223,7 +223,7 @@ const DashboardModal = (props) => {
                     <Grid container>
                         <Grid item xs={12}>
                             <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars value={pendingLimitUsed ? Number(pendingLimitUsed) : Number(limitUsed)} height="8px"/>
+                                <CustomizedProgressBars value={(address && pendingLimitUsed) ? Number(pendingLimitUsed) : Number(limitUsed)} height="8px"/>
                             </Box>
                         </Grid>
                     </Grid>
@@ -260,12 +260,14 @@ const DashboardModal = (props) => {
                                              {errorText}
                                          </Typography>
                                         }
-                                        {(new BigNumber(tezBalance).lt(0.25))
-                                          && <Typography className={classes.warningText}>
-                                              Your XTZ balance is low. You may soon not be able to process any new operation if you don't add XTZ to your wallet.
-                                          </Typography>
-
-                                        }
+                                        <Typography className={classes.warningText}>
+                                            {!isKeyRevealed
+                                                ? 'You need to perform a reveal operation with your new wallet (for example send XTZ) in order to interact with TezFin.'
+                                                : (new BigNumber(tezBalance).lt(0.25)
+                                                    && 'Your XTZ balance is low. You may soon not be able to process any new operation if you don\'t add XTZ to your wallet.'
+                                                )
+                                            }
+                                        </Typography>
                                     </>
                                     : <>
                                         <Button className={` ${classes.btnMain} ${mainModal ? ((tabValue === 'one') ? btnSub : btnSubTwo) : btnSub}`} disabled>
@@ -273,10 +275,7 @@ const DashboardModal = (props) => {
                                             {tabValue === 'two' && buttonTwo}
                                         </Button>
                                         <Typography className={classes.warningText}>
-                                            {!isKeyRevealed
-                                                ? 'You need to perform a reveal operation with your new wallet (for example send XTZ) in order to interact with TezFin.'
-                                                : errorText
-                                            }
+                                            {errorText}
                                         </Typography>
                                     </>
                                 }

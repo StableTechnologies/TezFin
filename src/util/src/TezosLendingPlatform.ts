@@ -183,12 +183,11 @@ export namespace TezosLendingPlatform {
             switch (markets[asset].asset.underlying.tokenStandard) {
                 case TokenStandard.XTZ: // native asset
 
-
-                    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceXTZ(address, server), markets[asset].storage);
+			    balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
                     break;
                 default: // contract-based assets
 
-                    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server), markets[asset].storage);
+			    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
                     break;
             }
         }));
