@@ -13,7 +13,7 @@ import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
 import { decimals } from 'tezoslendingplatformjs';
-import { decimalify, nFormatter, truncateNum, displayPercent } from '../../util';
+import { decimalify, nFormatter, truncateNum } from '../../util';
 
 import AllMarketModal from '../AllMarketModal';
 import TableSkeleton from '../Skeleton';
@@ -83,8 +83,8 @@ const AllMarketTokenTable = (props) => {
                                                 ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
                                             </span>
                                         </TableCell>
-                                        <TableCell align="right" className={classes.clearFont}> {(data.supplyRate > 0) ? truncateNum(displayPercent(data.supplyRate)) : '0'}% </TableCell>
-                                        <TableCell align="right" className={classes.clearFont}> {(data.borrowRate > 0) ? truncateNum(displayPercent(data.borrowRate)) : '0'}% </TableCell>
+                                        <TableCell align="right" className={classes.clearFont}> {(data.supplyRate > 0) ? truncateNum(nFormatter(decimalify(data.supplyRate.toString(), 18))) : '0'}% </TableCell>
+                                        <TableCell align="right" className={classes.clearFont}> {(data.borrowRate > 0) ? truncateNum(nFormatter(decimalify(data.borrowRate.toString(), 18))) : '0'}% </TableCell>
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
                                                 {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : '0'} {data.title}

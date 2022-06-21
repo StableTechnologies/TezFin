@@ -96,7 +96,7 @@ const BorrowedTokenTable = (props) => {
                                     {' '} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {truncateNum(displayPercent(data.rate))}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}> {(data.rate > 0) ? truncateNum(nFormatter(decimalify(data.rate.toString(), 18))) : '0'}% </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
                                     {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
