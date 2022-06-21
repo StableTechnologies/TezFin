@@ -9,13 +9,15 @@ IRMInterface = sp.io.import_script_from_url(
 
 
 class InterestRateModel(IRMInterface.InterestRateModelInterface):
-    def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, **extra_storage):
+    def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, alpha_, **extra_storage):
         self.init(
             scale=scale_,  # must match order of reserveFactorMantissa
             # The multiplier of utilization rate that gives the slope of the interest rate
             multiplierPerBlock=multiplierPerBlock_,
             # The base interest rate which is the y-intercept when utilization rate is 0
             baseRatePerBlock=baseRatePerBlock_,
+            # hyper parameter alpha
+            alpha = alpha_, 
             **extra_storage
         )
 
@@ -62,4 +64,9 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         return ur.value
 
     def calculateBorrowRate(self, utRate):
-        return sp.compute(utRate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)
+        newURate = self.newRate(utRate)
+        return sp.compute(newURate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)
+        #return sp.compute(newURate)
+
+    def newRate(self, x):
+        return sp.compute(x * (self.data.scale + self.data.alpha) // (x + self.data.alpha))
