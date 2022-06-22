@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
-import { TezosNodeReader } from 'conseiljs';
 
 import Box from '@mui/material/Box';
 import { Button, Typography } from '@mui/material';
@@ -42,12 +41,10 @@ const DashboardModal = (props) => {
     const [tokenValue, setTokenValue] = useState('');
     const [limit, setLimit] = useState('');
     const [limitUsed, setLimitUsed] = useState('');
-    const [isKeyRevealed, setKeyRevealed] = useState('');
 
-    const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
+    const { address, underlyingBalances, isKeyRevealed } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
-    const { server } = useSelector((state) => state.nodes.tezosNode);
 
     const tezBalance = decimalify(underlyingBalances?.XTZ.toString(), decimals.XTZ);
     const isDisabled = !(tokenValue > 0 && address) || disabled;
@@ -55,11 +52,6 @@ const DashboardModal = (props) => {
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
-
-    useEffect(async () => {
-        const response = await TezosNodeReader.isManagerKeyRevealedForAccount(server, address);
-        setKeyRevealed(response);
-    }, [address]);
 
     useEffect(() => {
         setTokenValue('');
