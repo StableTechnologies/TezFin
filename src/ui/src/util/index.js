@@ -230,3 +230,4 @@ export const nFormatter = (num, formatDecimals = 4) => {
 
     return formattedNum + suffix[i].symbol;
 };
+

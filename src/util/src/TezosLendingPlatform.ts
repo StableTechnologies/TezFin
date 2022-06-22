@@ -39,13 +39,13 @@ export namespace TezosLendingPlatform {
             // numParticipants: fToken.supply.numSuppliers?,
             numParticipants: 0,
             totalAmount: fToken.supply.totalSupply,
-            rate: FToken.GetSupplyRate(fToken, rateModel)
+            rate: FToken.getSupplyRateApy(fToken, rateModel)
         };
         const borrow: MarketData = {
             // numParticipants: fToken.borrow.numBorrowers,
             numParticipants: 0,
             totalAmount: fToken.borrow.totalBorrows,
-            rate: FToken.GetBorrowRate(fToken, rateModel)
+            rate: FToken.getBorrowRateApy(fToken, rateModel)
         };
 
         return {
