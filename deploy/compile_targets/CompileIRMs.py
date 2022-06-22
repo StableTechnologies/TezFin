@@ -19,4 +19,4 @@ sp.add_compilation_target("CXTZ_IRM", IRM.InterestRateModel(
     scale_ = 1000000000000000000,
     multiplierPerBlock_ = CFG.CXTZ_IRM.multiplierPerBlock,
     baseRatePerBlock_ = CFG.CXTZ_IRM.baseRatePerBlock,
-    alpha = CFG.CXTZ_IRM.alpha))
+    alpha_ = CFG.CXTZ_IRM.alpha))
