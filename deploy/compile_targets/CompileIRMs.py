@@ -6,14 +6,17 @@ CFG = sp.io.import_script_from_url("file:deploy/compile_targets/Config.py")
 sp.add_compilation_target("CFA12_IRM", IRM.InterestRateModel(
     scale_ = 1000000000000000000,
     multiplierPerBlock_ = CFG.CFA12_IRM.multiplierPerBlock,
-    baseRatePerBlock_ = CFG.CFA12_IRM.baseRatePerBlock))
+    baseRatePerBlock_ = CFG.CFA12_IRM.baseRatePerBlock,
+    alpha_ = CFG.CFA12_IRM.alpha))
 
 sp.add_compilation_target("CFA2_IRM", IRM.InterestRateModel(
     scale_ = 1000000000000000000,
     multiplierPerBlock_ = CFG.CFA2_IRM.multiplierPerBlock,
-    baseRatePerBlock_ = CFG.CFA2_IRM.baseRatePerBlock))
+    baseRatePerBlock_ = CFG.CFA2_IRM.baseRatePerBlock,
+    alpha_ = CFG.CFA2_IRM.alpha))
 
 sp.add_compilation_target("CXTZ_IRM", IRM.InterestRateModel(
     scale_ = 1000000000000000000,
     multiplierPerBlock_ = CFG.CXTZ_IRM.multiplierPerBlock,
-    baseRatePerBlock_ = CFG.CXTZ_IRM.baseRatePerBlock))
+    baseRatePerBlock_ = CFG.CXTZ_IRM.baseRatePerBlock,
+    alpha = CFG.CXTZ_IRM.alpha))
