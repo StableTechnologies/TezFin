@@ -9,7 +9,7 @@ IRMInterface = sp.io.import_script_from_url(
 
 
 class InterestRateModel(IRMInterface.InterestRateModelInterface):
-   def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, alpha_, **extra_storage):
+    def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, alpha_, **extra_storage):
         self.init(
             scale=scale_,  # must match order of reserveFactorMantissa
             # The multiplier of utilization rate that gives the slope of the interest rate
