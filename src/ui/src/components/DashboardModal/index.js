@@ -176,12 +176,12 @@ const DashboardModal = (props) => {
                                 </Grid>
                                 {mainModal
                                     ? <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tabValue === 'one') && (tokenDetails.supplyRate ? truncateNum(tokenDetails.supplyRate) : '0')}
-                                        {(tabValue === 'two') && (tokenDetails.borrowRate ? truncateNum(tokenDetails.borrowRate) : '0')}
+                                        {(tabValue === 'one') && (tokenDetails.supplyRate ? truncateNum(decimalify(tokenDetails.supplyRate.toString(), 18)) : '0')}
+                                        {(tabValue === 'two') && (tokenDetails.borrowRate ? truncateNum(decimalify(tokenDetails.borrowRate.toString(), 18)) : '0')}
                                         {'%'}
                                     </Grid>
                                     : <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tokenDetails.rate) ? truncateNum(tokenDetails.rate) : '0'}
+                                        {(tokenDetails.rate) ? truncateNum(decimalify(tokenDetails.rate.toString(), 18)) : '0'}
                                         {'%'}
                                     </Grid>
                                 }
