@@ -71,11 +71,10 @@ const BorrowModal = (props) => {
 
     const repayBorrowToken = async () => {
         // eslint-disable-next-line no-shadow
+	     
 	    if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
-		    console.log('useMax selected');
-            // multiply the ammount by 2 to make sure all the amount is repaid
-            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, bigInt(amount).multiply(2).toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-
+		    // sending the contract total wallet underlyingBalance 
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, account.underlyingBalances[tokenDetails.assetType].value.toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
             setOpGroup(opGroup);
             setEvaluationError(error);
 	    } else {
