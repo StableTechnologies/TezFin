@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
-import { TezosNodeReader } from 'conseiljs';
 
 import Box from '@mui/material/Box';
 import { Button, Typography } from '@mui/material';
@@ -42,12 +41,10 @@ const DashboardModal = (props) => {
     const [tokenValue, setTokenValue] = useState('');
     const [limit, setLimit] = useState('');
     const [limitUsed, setLimitUsed] = useState('');
-    const [isKeyRevealed, setKeyRevealed] = useState('');
 
-    const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
+    const { address, underlyingBalances, isKeyRevealed } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
-    const { server } = useSelector((state) => state.nodes.tezosNode);
 
     const tezBalance = decimalify(underlyingBalances?.XTZ.toString(), decimals.XTZ);
     const isDisabled = !(tokenValue > 0 && address) || disabled;
@@ -55,11 +52,6 @@ const DashboardModal = (props) => {
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
-
-    useEffect(async () => {
-        const response = await TezosNodeReader.isManagerKeyRevealedForAccount(server, address);
-        setKeyRevealed(response);
-    }, [address]);
 
     useEffect(() => {
         setTokenValue('');
@@ -184,12 +176,12 @@ const DashboardModal = (props) => {
                                 </Grid>
                                 {mainModal
                                     ? <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tabValue === 'one') && (tokenDetails.supplyRate ? truncateNum(tokenDetails.supplyRate) : '0')}
-                                        {(tabValue === 'two') && (tokenDetails.borrowRate ? truncateNum(tokenDetails.borrowRate) : '0')}
+                                        {(tabValue === 'one') && (tokenDetails.supplyRate ? truncateNum(decimalify(tokenDetails.supplyRate.toString(), 18)) : '0')}
+                                        {(tabValue === 'two') && (tokenDetails.borrowRate ? truncateNum(decimalify(tokenDetails.borrowRate.toString(), 18)) : '0')}
                                         {'%'}
                                     </Grid>
                                     : <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tokenDetails.rate) ? truncateNum(tokenDetails.rate) : '0'}
+                                        {(tokenDetails.rate) ? truncateNum(decimalify(tokenDetails.rate.toString(), 18)) : '0'}
                                         {'%'}
                                     </Grid>
                                 }

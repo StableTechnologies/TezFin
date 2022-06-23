@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-unused-expressions */
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
@@ -26,7 +27,7 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
                 title: x.title,
                 usdPrice: x.usdPrice,
                 balanceUnderlying: x.balanceUnderlying,
-                balanceUnderlyingUsd: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title], decimals[x.title]),
+                balanceUnderlyingUsd: decimalify((new BigNumber(x.balanceUnderlying).multipliedBy(new BigNumber(x.usdPrice)).toNumber()), decimals[x.title], decimals[x.title]),
                 color: tokenColor[x.title],
                 collateral: x.collateral,
                 collateralFactor: new BigNumber(x.collateralFactor).toNumber(),
@@ -36,17 +37,19 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
             return suppliedMarkets;
         });
 
-        supplying = assets.reduce((a, b) => a + b.balanceUnderlyingUsd, 0);
+        supplying = assets.reduce((a, b) => new BigNumber(a).plus(BigNumber(b.balanceUnderlyingUsd)).toNumber(), 0);
+
         assets.map((x) => {
             x.rate = new BigNumber(new BigNumber(x.balanceUnderlyingUsd).dividedBy(BigNumber(supplying))).multipliedBy(100).toNumber();
             if (x.collateral) {
                 x.collateralUsd = x.balanceUnderlyingUsd;
                 x.totalCollateralUnderlying = new BigNumber(x.collateralUsd).multipliedBy(new BigNumber(x.collateralFactor)).toNumber();
             }
+            return assets;
         });
 
-        collateralized = assets.reduce((a, b) => a + b.collateralUsd, 0);
-        totalCollateral = assets.reduce((a, b) => a + b.totalCollateralUnderlying, 0);
+        collateralized = assets.reduce((a, b) => new BigNumber(a).plus(BigNumber(b.collateralUsd)).toNumber(), 0);
+        totalCollateral = assets.reduce((a, b) => new BigNumber(a).plus(BigNumber(b.totalCollateralUnderlying)).toNumber(), 0);
     }
     supplyComposition = {
         assets,

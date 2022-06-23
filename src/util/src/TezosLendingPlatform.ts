@@ -39,13 +39,13 @@ export namespace TezosLendingPlatform {
             // numParticipants: fToken.supply.numSuppliers?,
             numParticipants: 0,
             totalAmount: fToken.supply.totalSupply,
-            rate: FToken.GetSupplyRate(fToken, rateModel)
+            rate: FToken.getSupplyRateApy(fToken, rateModel)
         };
         const borrow: MarketData = {
             // numParticipants: fToken.borrow.numBorrowers,
             numParticipants: 0,
             totalAmount: fToken.borrow.totalBorrows,
-            rate: FToken.GetBorrowRate(fToken, rateModel)
+            rate: FToken.getBorrowRateApy(fToken, rateModel)
         };
 
         return {
@@ -176,12 +176,11 @@ export namespace TezosLendingPlatform {
             switch (markets[asset].asset.underlying.tokenStandard) {
                 case TokenStandard.XTZ: // native asset
 
-
-			    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceXTZ(address, server), markets[asset].storage);
+			    balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
                     break;
                 default: // contract-based assets
 
-			    balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server), markets[asset].storage);
+			    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
                     break;
             }
         }));
