@@ -53,7 +53,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             borrowRatePerBlock=sp.nat(0),
             # Current per-block supply interest rate
             supplyRatePerBlock=sp.nat(0),
-            # alpha factor for new interest rate model
+            # alpha factor for alpha interest rate model
             alpha=sp.nat(int(1e18)),
             administrator=administrator_,  # Administrator`s address for this contract
             pendingAdministrator=sp.none,  # Pending administrator`s address for this contract

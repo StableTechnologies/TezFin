@@ -16,6 +16,8 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
             multiplierPerBlock=multiplierPerBlock_,
             # The base interest rate which is the y-intercept when utilization rate is 0
             baseRatePerBlock=baseRatePerBlock_,
+            # hyper parameter alpha
+            alpha = alpha_, 
             **extra_storage
         )
 
@@ -62,4 +64,9 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         return ur.value
 
     def calculateBorrowRate(self, utRate):
-        return sp.compute(utRate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)
+        newURate = self.newRate(utRate)
+        return sp.compute(newURate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)
+        #return sp.compute(newURate)
+
+    def newRate(self, x):
+        return sp.compute(x * (self.data.scale + self.data.alpha) // (x + self.data.alpha)) 
