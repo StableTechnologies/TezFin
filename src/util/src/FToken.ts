@@ -250,7 +250,12 @@ export namespace FToken {
      * @returns supplyApy percent Mantissa as bigInt.BigInteger
      */
     export function getSupplyRateApy(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
-	    const _blockRate = getSupplyRate(storage, irStorage);
+	 const _blockRate = getSupplyRate(storage, irStorage);
+
+	 if (_blockRate.greaterOrEquals(storage.borrow.borrowRateMaxMantissa)){
+		    return _calcAnnualizedRate(storage.borrow.borrowRateMaxMantissa, irStorage.scale).multiply(100);
+		}
+
         return _calcAnnualizedRate(_blockRate, irStorage.scale).multiply(100);
     }
 
