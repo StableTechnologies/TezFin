@@ -11,16 +11,16 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         // mint underlying tokens to both users 
         await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash);
         await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore1.publicKeyHash);
-        
+
         // set initial price for all assets
         await FTokenHelper.updatePrice([{ "asset": "ETH" as AssetType, price: 2000 * Math.pow(10, 6) }, { "asset": "BTC" as AssetType, price: 20000 * Math.pow(10, 6) }, { "asset": "XTZ" as AssetType, price: 2 * Math.pow(10, 6) }], oracle, keystore!, signer!, protocolAddresses!)
-        
+
         // supply FOR USER 0
         for (const mint of ["ETH"])
             await FTokenHelper.mint(mint as AssetType, 10, keystore!, signer!, protocolAddresses!);
         // supply FOR USER 1
         for (const mint of ["USD",])
-            await FTokenHelper.mint(mint as AssetType, 7000, keystore1!, signer1!, protocolAddresses!);
+            await FTokenHelper.mint(mint as AssetType, 12000, keystore1!, signer1!, protocolAddresses!);
         // collateralize for user 1
         await ComptrollerHelper.enterMarkets(["USD"] as AssetType[], keystore1!, signer1!, protocolAddresses!);
         // get comptroller
