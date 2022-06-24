@@ -138,7 +138,7 @@ describe('APY test ', () => {
           ${test.desc}
 	  -----------Formula ----------
 	  APYsupply = supplyRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
-	  AYPsupply% = AYPborrow * 100 
+	  AYPsupply% = AYPsupply * 100 
 	  -----------Formula ----------
         
 	  The APYsupply rate calculated: ${getSupplyRateApy(test.args)}
