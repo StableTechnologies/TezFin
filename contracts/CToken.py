@@ -28,8 +28,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 accountBorrows=CTI.TBorrowSnapshot,
                 balance=sp.TNat)),  # Official record of token balances for each account
             totalSupply=sp.nat(0),  # Total number of tokens in circulation
-            # Maximum borrow rate that can ever be applied (.0005% / block)
-            borrowRateMaxMantissa=sp.nat(int(5e12)),
+            # Maximum borrow rate that can ever be applied (.0000000475% / block)
+            borrowRateMaxMantissa=sp.nat(int(47532131721)),
             # Maximum fraction of interest that can be set aside for reserves
             reserveFactorMaxMantissa=sp.nat(int(1e18)),
             comptroller=comptroller_,  # Contract which oversees inter-cToken operations
