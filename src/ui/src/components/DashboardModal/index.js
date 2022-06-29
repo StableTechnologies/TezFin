@@ -12,8 +12,6 @@ import Box from '@mui/material/Box';
 import { Button, Typography } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
@@ -89,12 +87,12 @@ const DashboardModal = (props) => {
                     </DialogTitle>
                 }
                 {(!visibility || collateralize)
-                    && <DialogContent className={classes.fTokenImgCon}>
+                    && <Box className={classes.fTokenImgCon}>
                         <img src={tokenDetails.fLogo} alt="logo" className={classes.fTokenImg} />
-                    </DialogContent>
+                    </Box>
                 }
                 {(visibility && !collateralize)
-                    ? <DialogContent className={classes.formFieldCon}>
+                    ? <Box className={classes.formFieldCon}>
                         <form className={classes.form}>
                             <TextField
                                 id="tokenValue"
@@ -119,17 +117,17 @@ const DashboardModal = (props) => {
                                 {tabValue === 'two' && inputBtnTextTwo}
                             </Button>
                         </form>
-                    </DialogContent>
-                    : <DialogContent className={`${extraPadding}`}>
-                        <DialogContentText className={classes.margin0}> {headerText} </DialogContentText>
-                    </DialogContent>
+                    </Box>
+                    : <Box className={`${extraPadding}`}>
+                        <Typography className={classes.margin0}> {headerText} </Typography>
+                    </Box>
                 }
                 <>
                     {collateralize
                         ? ''
                         : <Tabulator inkBarStyle={mainModal ? ((tabValue === 'one') ? inkBarStyle : inkBarStyleTwo) : inkBarStyle} value={tabValue} onChange={handleTabChange} labelOne={labelOne} labelTwo={labelTwo} />
                     }
-                    <DialogContent className={classes.CurrentState}>
+                    <Box className={`${classes.contentBoxOne} ${classes.borderBottom0}`}>
                         <Grid container justifyContent="space-between">
                             <Grid item sm={7}>
                                 {mainModal
@@ -159,10 +157,10 @@ const DashboardModal = (props) => {
                                 </Grid>
                             }
                         </Grid>
-                    </DialogContent>
+                    </Box>
                     {collateralize
                         ? ''
-                        : <DialogContent className={classes.apyRate}>
+                        : <Box className={classes.contentBoxOne}>
                             <Grid container justifyContent="space-between">
                                 <Grid item sm={9}>
                                     <img src={tokenDetails.logo} alt="logo" className={classes.img} />
@@ -186,10 +184,10 @@ const DashboardModal = (props) => {
                                     </Grid>
                                 }
                             </Grid>
-                        </DialogContent>
+                        </Box>
                     }
                 </>
-                <DialogContent className={classes.limit}>
+                <Box className={`${classes.contentBoxTwo} ${classes.limit}`}>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit </Grid>
                         <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
@@ -199,8 +197,8 @@ const DashboardModal = (props) => {
                             }
                         </Grid>
                     </Grid>
-                </DialogContent>
-                <DialogContent className={classes.limitUsed}>
+                </Box>
+                <Box className={`${classes.contentBoxTwo} ${classes.limitUsed}`}>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit Used </Grid>
                         <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
@@ -210,8 +208,8 @@ const DashboardModal = (props) => {
                             }%
                         </Grid>
                     </Grid>
-                </DialogContent>
-                <DialogContent className={classes.progressBarCon}>
+                </Box>
+                <Box className={`${classes.contentBoxTwo} ${classes.progressBarCon}`}>
                     <Grid container>
                         <Grid item xs={12}>
                             <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
@@ -219,7 +217,7 @@ const DashboardModal = (props) => {
                             </Box>
                         </Grid>
                     </Grid>
-                </DialogContent>
+                </Box>
                 <DialogActions sx={{ flexDirection: 'column' }}>
                     <>
                         {collateralize
