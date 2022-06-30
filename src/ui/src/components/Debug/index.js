@@ -139,8 +139,8 @@ const DebugDashboard = () => {
                             <>
                                 <TableRow key={data.title}>
                                     <TableCell> ꜰ{data.title} </TableCell>
-                                    <TableCell align="right"> { data.supplyRate ? truncateNum(data.supplyRate) : 0}% </TableCell>
-                                    <TableCell align="right"> { data.borrowRate ? truncateNum(data.borrowRate) : 0}% </TableCell>
+                                    <TableCell align="right"> {(data.supplyRate > 0) ? truncateNum(decimalify(data.supplyRate.toString(), 18)) : '0'}% </TableCell>
+                                    <TableCell align="right"> {(data.borrowRate > 0) ? truncateNum(decimalify(data.borrowRate.toString(), 18)) : '0'}% </TableCell>
                                     <TableCell align="right">
                                         <span>
                                             {(data.balanceUnderlyingSupply > 0) ? nFormatter(decimalify(data.balanceUnderlyingSupply.toString(), decimals[data.title], decimals[data.title])) : '0.00'} {data.title}
