@@ -118,8 +118,8 @@ const DashboardModal = (props) => {
                             </Button>
                         </form>
                     </Box>
-                    : <Box className={`${extraPadding}`}>
-                        <Typography className={classes.margin0}> {headerText} </Typography>
+                    : <Box className={`${classes.contentBoxOne} ${extraPadding} ${classes.borderTop0}`}>
+                        <Typography className={`${classes.headerText} ${classes.margin0}`}> {headerText} </Typography>
                     </Box>
                 }
                 <>
