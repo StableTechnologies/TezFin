@@ -112,7 +112,7 @@ export const useStyles = makeStyles({
         paddingBottom: '1.25rem !important'
     },
     limitUsed: {
-        paddingBottom: '1rem !important'
+        paddingBottom: '1.25rem !important'
     },
     progressBarCon: {
         paddingBottom: '0 !important',
