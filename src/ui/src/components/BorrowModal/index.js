@@ -189,7 +189,7 @@ const BorrowModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 setAmount={(e) => { setAmount(e); }}
-                inputBtnTextOne = "90% Limit"
+                inputBtnTextOne = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
                 inputBtnTextTwo = "Use Max"
                 useMaxAmount= {useMaxAmount}
                 errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
