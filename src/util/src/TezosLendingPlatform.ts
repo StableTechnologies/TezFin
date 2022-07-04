@@ -58,7 +58,7 @@ export namespace TezosLendingPlatform {
             borrow: borrow,
             dailyInterestPaid: bigInt('0'), // TODO: parse this
             reserves: fToken.totalReserves,
-            reserveFactor: 0, // TODO
+            reserveFactor: fToken.reserveFactorMantissa.toJSNumber(),
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
             exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
@@ -161,7 +161,7 @@ export namespace TezosLendingPlatform {
     }
 
     /**
-     * @description Provides the underlying balance per asset class after the 
+     * @description Provides the underlying balance per asset class after the
      *  application of the exchange rate for an address
      *
      * @param markets Map of protocol markets
