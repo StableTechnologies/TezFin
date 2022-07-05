@@ -16,8 +16,8 @@ TExp = sp.TRecord(mantissa=sp.TNat)
 
 
 class Exponential(sp.Contract):
-    def __init__(self, **extra_storage):
-        scale = int(1e18)
+    def __init__(self, scale, **extra_storage ):
+        # scale = int(1e18)
         self.init(expScale=sp.nat(scale), halfExpScale=sp.nat(
             scale // 2), **extra_storage)
 
