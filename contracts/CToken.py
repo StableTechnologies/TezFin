@@ -18,9 +18,10 @@ OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
 
 
 class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
-    def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
+    def __init__(self, scale, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
         Exponential.Exponential.__init__(
             self,
+            scale,
             balances=sp.big_map(tkey=sp.TAddress, tvalue=sp.TRecord(
                 # Approved token transfer amounts on behalf of others
                 approvals=sp.TMap(sp.TAddress, sp.TNat),
