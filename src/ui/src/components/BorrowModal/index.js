@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
+import bigInt from 'big-integer';
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
@@ -70,9 +71,17 @@ const BorrowModal = (props) => {
 
     const repayBorrowToken = async () => {
         // eslint-disable-next-line no-shadow
-        const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-        setOpGroup(opGroup);
-        setEvaluationError(error);
+	     
+	    if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
+		    // sending the contract total wallet underlyingBalance 
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, account.underlyingBalances[tokenDetails.assetType].value.toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+	    } else {
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+	    }
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
@@ -189,7 +198,7 @@ const BorrowModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 setAmount={(e) => { setAmount(e); }}
-                inputBtnTextOne = "90% Limit"
+                inputBtnTextOne = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
                 inputBtnTextTwo = "Use Max"
                 useMaxAmount= {useMaxAmount}
                 errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
