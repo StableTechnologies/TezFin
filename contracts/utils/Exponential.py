@@ -21,6 +21,29 @@ class Exponential(sp.Contract):
         self.init(expScale=sp.nat(scale), halfExpScale=sp.nat(
             scale // 2), **extra_storage)
 
+
+    """    
+        Constructs TExp from the given value of a diffferent scale, 
+        by readjusting it so it represents the scale set in the class 
+        initialization.
+
+
+        For example, if the current scale is 1e18 
+                callibrateScale(10,10) = Exp{mantissa: 1e18} 
+
+        params: 
+            value: TNat
+            value: TNat
+        return: TExp
+    """
+
+    def callibrateScale(self, value, value_scale):
+        sp.set_type(value, sp.TNat)
+        sp.set_type(value_scale, sp.TNat)
+        numerator = value * self.data.expScale
+        rescale = numerator // value_scale
+        return sp.record(mantissa=rescale)
+
     """    
         Constructs TExp from the given number value, without applying expScale
         For example, makeExp(15) = Exp{mantissa: 15}
