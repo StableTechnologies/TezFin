@@ -27,8 +27,9 @@ TBalanceOfParams = sp.TRecord(
 
 
 class CFA2(CToken.CToken):
-    def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, fa2_TokenAddress_, tokenId_, **extra_storage):
+    def __init__(self, scale, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, fa2_TokenAddress_, tokenId_, **extra_storage):
         CToken.CToken.__init__(self,
+                               scale,
                                comptroller_,
                                interestRateModel_,
                                initialExchangeRateMantissa_,
