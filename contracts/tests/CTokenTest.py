@@ -10,8 +10,8 @@ DataRelevance = sp.io.import_script_from_url("file:contracts/tests/utils/DataRel
 
 
 class TestCToken(CToken.CToken):
-    def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
-        CToken.CToken.__init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_,
+    def __init__(self, scale, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
+        CToken.CToken.__init__(self, scale, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_,
                                accCTokenBalance=sp.nat(0), accBorrowBalance=sp.nat(0), accExchangeRateMantissa=sp.nat(0))
 
     def getCashImpl(self):
@@ -64,7 +64,8 @@ def test():
     view_result = RV.ViewerNat()
     cmpt = CMPT.ComptrollerMock()
     irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(840000000000), supplyRate_=sp.nat(180000000000))
-    c1 = TestCToken(comptroller_=cmpt.address, 
+    c1 = TestCToken(scale = int(1e18),
+                    comptroller_=cmpt.address, 
                     interestRateModel_=irm.address, 
                     initialExchangeRateMantissa_=sp.nat(exchange_rate),
                     administrator_=admin.address)
