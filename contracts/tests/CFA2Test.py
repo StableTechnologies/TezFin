@@ -41,7 +41,8 @@ def test():
     view_result = RV.ViewerNat()
 
     exchange_rate = int(1e18)
-    c1 = CFA2.CFA2(comptroller_=cmpt.address, 
+    c1 = CFA2.CFA2(scale = int(1e18),
+                   comptroller_=cmpt.address, 
                    interestRateModel_=irm.address,
                    initialExchangeRateMantissa_=sp.nat(exchange_rate),
                    administrator_=admin.address,
