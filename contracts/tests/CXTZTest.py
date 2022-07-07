@@ -30,7 +30,8 @@ def test():
     cmpt = CMPT.ComptrollerMock()
     irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(840000000000), supplyRate_=sp.nat(180000000000))
     view_result = RV.ViewerNat()
-    c1 = CXTZ.CXTZ(comptroller_=cmpt.address, 
+    c1 = CXTZ.CXTZ(scale = int(1e18),
+                   comptroller_=cmpt.address, 
                    interestRateModel_=irm.address, 
                    administrator_=admin.address)
 
