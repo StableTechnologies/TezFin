@@ -20,6 +20,16 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         )
 
     """    
+        On chain view for  the scale of this contract
+
+        return: scale
+    """
+    
+    @sp.onchain_view()
+    def viewScale(self):
+        sp.result(self.data.scale)
+
+    """    
         Calculates the current borrow interest rate per block
 
         params: TBorrowRateParams
