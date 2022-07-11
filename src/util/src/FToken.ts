@@ -35,6 +35,7 @@ export namespace FToken {
         expScale: bigInt.BigInteger;
         halfExpScale: bigInt.BigInteger;
         initialExchangeRateMantissa: bigInt.BigInteger;
+        protocolSeizeShareMantissa: bigInt.BigInteger;
         interestRateModel: string;
         pendingAdministrator: string | undefined;
         reserveFactorMantissa: bigInt.BigInteger;
@@ -77,6 +78,7 @@ export namespace FToken {
                         borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
                         borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
                     },
+                    protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
                     comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[1].args[2].string', json: storageResult })[0],
                     expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
                     halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
@@ -115,6 +117,7 @@ export namespace FToken {
                         borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
                         borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
                     },
+                    protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
                     comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[1].args[2].string', json: storageResult })[0],
                     expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
                     halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
@@ -154,6 +157,7 @@ export namespace FToken {
                         borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
                         borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
                     },
+                    protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
                     comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[2].string', json: storageResult })[0],
                     expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
                     halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0]),
