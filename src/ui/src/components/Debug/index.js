@@ -71,12 +71,14 @@ const DebugDashboard = () => {
             supplyRate: new BigNumber(x[1].supply.rate).toNumber(),
             borrowRate: new BigNumber(x[1].borrow.rate).toNumber(),
             exchangeRate: new BigNumber(x[1].exchangeRate).toNumber(),
-            reserves: new BigNumber(x[1].reserves).toNumber(),
+            reserves: new BigNumber(x[1].reserves.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed(),
             cash: new BigNumber(x[1].cash).toNumber(),
             collateralFactor: new BigNumber(x[1].collateralFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed(),
-            reserveFactor: x[1].reserveFactor
+            reserveFactor: new BigNumber(x[1].reserveFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed()
         });
     });
+
+    const walletBalance = account.underlyingBalances || [];
 
     marketData.map((y) => {
         Object.entries(suppliedMarket).map((x) => {
@@ -85,6 +87,7 @@ const DebugDashboard = () => {
                 y.collateral = x[1].collateral;
                 y.supplyRate = x[1].rate;
             }
+            y.walletBalance = walletBalance[y.title].toString();
         });
         Object.entries(borrowedMarket).map((x) => {
             if (x[0] === y.title) {
@@ -128,6 +131,7 @@ const DebugDashboard = () => {
                             <TableCell align="right" className={classes.collateralPadding}>
                                 Collateral
                             </TableCell>
+                            <TableCell align="right"> Wallet </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -135,8 +139,8 @@ const DebugDashboard = () => {
                             <>
                                 <TableRow key={data.title}>
                                     <TableCell> ꜰ{data.title} </TableCell>
-                                    <TableCell align="right"> { data.supplyRate ? truncateNum(data.supplyRate) : 0}% </TableCell>
-                                    <TableCell align="right"> { data.borrowRate ? truncateNum(data.borrowRate) : 0}% </TableCell>
+                                    <TableCell align="right"> {(data.supplyRate > 0) ? truncateNum(decimalify(data.supplyRate.toString(), 18)) : '0'}% </TableCell>
+                                    <TableCell align="right"> {(data.borrowRate > 0) ? truncateNum(decimalify(data.borrowRate.toString(), 18)) : '0'}% </TableCell>
                                     <TableCell align="right">
                                         <span>
                                             {(data.balanceUnderlyingSupply > 0) ? nFormatter(decimalify(data.balanceUnderlyingSupply.toString(), decimals[data.title], decimals[data.title])) : '0.00'} {data.title}
@@ -187,7 +191,15 @@ const DebugDashboard = () => {
                                     <TableCell align='right'>{data.reserves}</TableCell>
                                     <TableCell align='right'>{data.reserveFactor}</TableCell>
                                     <TableCell align="right" className={classes.switchPadding}>
-                                        {data.collateral ? <Switch data={data} /> : <SW.default />}
+                                        {data.collateral ? <Switch data={data} /> : <SW.default disabled />}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <span className={classes.clearFont}>
+                                            {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : '0'} {data.title}
+                                        </span> <br/>
+                                        <span className={classes.faintFont}>
+                                                ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                        </span>
                                     </TableCell>
                                 </TableRow>
                             </>

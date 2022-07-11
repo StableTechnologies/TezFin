@@ -3,6 +3,7 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import Table from '@mui/material/Table';
@@ -27,6 +28,7 @@ const BorrowedTokenTable = (props) => {
 
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
+    const { totalCollateral } = useSelector((state: any) => state.supplyComposition.supplyComposition);
 
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);
@@ -94,7 +96,7 @@ const BorrowedTokenTable = (props) => {
                                     {' '} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {truncateNum(data.rate)}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}> {(data.rate > 0) ? truncateNum(decimalify(data.rate.toString(), 18)) : '0'}% </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
                                     {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
@@ -105,7 +107,14 @@ const BorrowedTokenTable = (props) => {
                             </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
-                                    ${(data.liquidityUnderlying > 0) ? nFormatter(decimalify((data.liquidityUnderlying * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                    {(data.balanceUnderlying > 0)
+                                        ? truncateNum(
+                                            new BigNumber(
+                                                decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title])
+                                            ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()
+                                        )
+                                        : '0'
+                                    }%
                                 </span>
                             </TableCell>
                         </TableRow>

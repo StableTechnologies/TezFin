@@ -800,7 +800,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         params: TNat - protocol seize share mantissa
     """
     @sp.entry_point(lazify=True)
-    def updateProtocolSeizeShareMantissa(self, protocolSeizeShareMantissa):
+    def updateProtocolSeizeShare(self, protocolSeizeShareMantissa):
         sp.set_type(protocolSeizeShareMantissa, sp.TNat)
         self.verifyAdministrator()
         self.data.protocolSeizeShareMantissa = protocolSeizeShareMantissa

@@ -11,6 +11,8 @@ import bigInt from 'big-integer';
 import log from 'loglevel';
 import { tokenNames } from './const';
 
+import { BigNumber } from 'bignumber.js';
+
 export namespace TezosLendingPlatform {
     /*
      * @description TODO: convert mantissa to number
@@ -37,13 +39,13 @@ export namespace TezosLendingPlatform {
             // numParticipants: fToken.supply.numSuppliers?,
             numParticipants: 0,
             totalAmount: fToken.supply.totalSupply,
-            rate: FToken.GetSupplyRate(fToken, rateModel)
+            rate: FToken.getSupplyRateApy(fToken, rateModel)
         };
         const borrow: MarketData = {
             // numParticipants: fToken.borrow.numBorrowers,
             numParticipants: 0,
             totalAmount: fToken.borrow.totalBorrows,
-            rate: FToken.GetBorrowRate(fToken, rateModel)
+            rate: FToken.getBorrowRateApy(fToken, rateModel)
         };
 
         return {
@@ -56,9 +58,9 @@ export namespace TezosLendingPlatform {
             borrow: borrow,
             dailyInterestPaid: bigInt('0'), // TODO: parse this
             reserves: fToken.totalReserves,
-            reserveFactor: 0, // TODO
+            reserveFactor: fToken.reserveFactorMantissa.toJSNumber(),
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
-            exchangeRate: FToken.GetExchangeRate(fToken),
+            exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
             rateModel: rateModel
         } as Market;
@@ -77,7 +79,7 @@ export namespace TezosLendingPlatform {
             const fTokenAddress = protocolAddresses.fTokens[asset];
             const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
             try {
-                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, server, fTokenType);
+                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]],  server, fTokenType);
                 const rateModel = await InterestRateModel.GetStorage(server, protocolAddresses.interestRateModel[asset]);
                 const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracleMap[protocolAddresses.fTokensReverse[fTokenAddress]], server)
                 markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel, oraclePrice);
@@ -158,21 +160,27 @@ export namespace TezosLendingPlatform {
         return balances;
     }
 
-    /*
-     * @description
+    /**
+     * @description Provides the underlying balance per asset class after the
+     *  application of the exchange rate for an address
      *
-     * @param
+     * @param markets Map of protocol markets
+     * @param address Account address
+     * @param server Tezos node
+     * @returns underlyingBalances as a map of asset -> underlyingBalance
      */
-    export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: bigInt.BigInteger }> {
+    export async function GetUnderlyingBalances(address: string, markets: MarketMap, server: string): Promise<{ [asset: string]: BigNumber }> {
         let balances = {};
 
         await Promise.all(Object.keys(markets).map(async (asset) => {
             switch (markets[asset].asset.underlying.tokenStandard) {
                 case TokenStandard.XTZ: // native asset
-                    balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
+
+			    balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
                     break;
                 default: // contract-based assets
-                    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
+
+			    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
                     break;
             }
         }));
@@ -335,7 +343,7 @@ export namespace TezosLendingPlatform {
             if (balances !== undefined && balances[asset] !== undefined && compare(balances[asset].supplyBalanceUnderlying)) {
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
-                    balanceUnderlying: balances[asset].supplyBalanceUnderlying,
+                    balanceUnderlying: FToken.applyExchangeRate(balances[asset].supplyBalanceUnderlying , markets[asset].storage),
                     balanceUsd: balances[asset].supplyBalanceUsd!,
                     collateral: balances[asset].collateral!
                 };
@@ -344,7 +352,7 @@ export namespace TezosLendingPlatform {
                 // TODO: what values to display when no account connected?
                 suppliedMarkets[asset] = {
                     rate: markets[asset].supply.rate,
-                    balanceUnderlying: bigInt(0),
+                    balanceUnderlying: new BigNumber(0),
                     balanceUsd: bigInt(0),
                     collateral: false
                 };

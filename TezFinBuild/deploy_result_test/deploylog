@@ -1,0 +1,61 @@
+CompileTestData.py was successfully compiled
+[INFO] Log level 3
+[ 'FA12', 'FA2' ]
+~~ deploy FA12
+[Info] Injected operation group id op8d5jhRoXzZWNQLpmK1JwzhE6jEufzNHh9SwxGpknUY1ew4G5L
+[Info] Originated contract at KT1LLL2RWrc4xi23umbq1564ej88RG6LcAoR
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+~~ deploy FA2
+[Info] Injected operation group id op81Z6Zon8dKTWXWUCEgjgLKJzYQ2UTBg1c6iCZB3xaP8hSw7y9
+[Info] Originated contract at KT1SM4x48cbemJaipLqRGZgbwfWukZEdz4jw
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+CompileGovernance.py was successfully compiled
+[INFO] Log level 3
+[ 'Governance' ]
+~~ deploy Governance
+[Info] Injected operation group id opQTWWR3ZbNsyZDguVRE3775qMMjYiny5KojQbsTfzTqVcp4ZPN
+[Info] Originated contract at KT1UUZNzmqobhGXYvsbWUjnAAeWK3de2JG2q
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+CompileComptroller.py was successfully compiled
+[INFO] Log level 3
+[ 'Comptroller' ]
+~~ deploy Comptroller
+[Info] Injected operation group id oobvHwZRtvxCgbDkYVvH8TL62vyB7JWWEcpaXLgbUWqfsZPsz5r
+[Info] Originated contract at KT1JWffF2nqDua1ATkpt9o5i8NiSX6EABiMP
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+CompileIRMs.py was successfully compiled
+[INFO] Log level 3
+[ 'CFA12_IRM', 'CFA2_IRM', 'CXTZ_IRM' ]
+~~ deploy CFA12_IRM
+[Info] Injected operation group id ooWdv2tMTJVUNarYpg16nAvDtjjuYL2YYApQSMXVvZj7jeS4SeP
+[Info] Originated contract at KT1XLYihVvuJKk4VJZVGdnPv4eo9CEEDpfHA
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+~~ deploy CFA2_IRM
+[Info] Injected operation group id opAM6xAmzHb33rHGzix7jyy2UFyDYcipjV557JgeKXnVQkWwAhu
+[Info] Originated contract at KT1TYqwzPHMwreTPGBYXVnQFgi1hDH1Fa4ge
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+~~ deploy CXTZ_IRM
+[Info] Injected operation group id opQG9GVNSfiFigiSriUmgdLasYB73SdsZUtNTwM8AyqhzyUDGJe
+[Info] Originated contract at KT1BxbwBgSAopMh17bj5UKmgbi78DsptXitc
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+CompileCFA2.py was successfully compiled
+[INFO] Log level 3
+[ 'CFA2' ]
+~~ deploy CFA2
+[Info] Injected operation group id opWLNqCig4r1Pt3d6yow9hBb2SpJL4Hv1NtdXcytobZ2PJFfHX5
+[Info] Originated contract at KT1V6CQpfxS5pRjkUzoPx5Qmi7dSBnxdWshd
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+CompileCFA12.py was successfully compiled
+[INFO] Log level 3
+[ 'CFA12' ]
+~~ deploy CFA12
+[Info] Injected operation group id oo3mf978aEdXyGt91kqgmaTC8nm3QAzStEcLiePpUjdUNZSZ915
+[Info] Originated contract at KT1UoXhx4WR7iVH3iJqSC5Md9SsNYcuFag94
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~
+CompileCXTZ.py was successfully compiled
+[INFO] Log level 3
+[ 'CXTZ' ]
+~~ deploy CXTZ
+[Info] Injected operation group id onqM9rJijEKeY33uwNfjh3i5XaR1XMgajYDXx3o29yY5J9LTzDM
+[Info] Originated contract at KT1ASC5RdufbWnFYmjuRrceXedRBSUJogdTb
+~~~~~~~~~~~SUCCESS~~~~~~~~~~~~~~

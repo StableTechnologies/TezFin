@@ -9,8 +9,8 @@ import { BigNumber } from 'bignumber.js';
 import { DAppClient } from '@airgap/beacon-sdk';
 import bigInt from 'big-integer';
 
-// const config = require(`../library/${process.env.REACT_APP_ENV || "prod"}-network-config.json`);
-const config = require('../library/dev-network-config.json');
+// eslint-disable-next-line import/no-dynamic-require
+const config = require(`../library/${process.env.REACT_APP_ENV || 'prod'}-network-config.json`);
 
 const client = new DAppClient({ name: config.dappName });
 
@@ -31,7 +31,9 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
  */
 export const getWallet = async () => {
     const { network } = config.infra.conseilServer;
-    const response = await client.requestPermissions({ network: { type: network } });
+    const response = await client.requestPermissions({
+        network: { type: network }
+    });
     const { address } = response;
 
     return { address };
@@ -72,8 +74,10 @@ export const evaluateTransaction = async (operations) => {
         } else if (address.startsWith('tz3')) {
             curve = KeyStoreCurve.SECP256R1;
         }
+
+        const activeAccount = await client.getActiveAccount();
         const keyStore = {
-            publicKey: '', // this precludes reveal operation inclusion
+            publicKey: activeAccount.publicKey,
             secretKey: '',
             publicKeyHash: address,
             curve,
@@ -108,7 +112,9 @@ export const evaluateTransaction = async (operations) => {
 export const confirmTransaction = async (opGroup) => {
     try {
         const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
-        const response = await client.requestOperation({ operationDetails: opGroup });
+        const response = await client.requestOperation({
+            operationDetails: opGroup
+        });
         return { response: { response, head: head.header.level } };
     } catch (error) {
         console.log(error);
@@ -125,13 +131,22 @@ export const confirmTransaction = async (opGroup) => {
  */
 export const verifyTransaction = async ({ response, head }) => {
     try {
-        const groupid = response.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
+        const groupid = response.transactionHash
+            .replace(/"/g, '')
+            .replace(/\n/, ''); // clean up RPC output
         const confirm = await TezosNodeReader.awaitOperationConfirmation(
             config.infra.tezosNode,
             head - 1,
             groupid,
             6
-        ).then((res) => { if (res.contents[0].metadata.operation_result.status === 'applied') { return res; } throw new Error('operation status not applied'); });
+        ).then((res) => {
+            if (
+                res.contents[0].metadata.operation_result.status === 'applied'
+            ) {
+                return res;
+            }
+            throw new Error('operation status not applied');
+        });
         return { confirm };
     } catch (error) {
         console.log(error);
@@ -145,9 +160,15 @@ export const verifyTransaction = async ({ response, head }) => {
  * @returns decimal version
  */
 export const decimalify = (val, decimals, formatDecimals = 4) => {
-    if (!val) { return val; }
+    if (!val) {
+        return val;
+    }
 
-    return Number(new BigNumber(val.toString()).div(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(formatDecimals));
+    return Number(
+        new BigNumber(val.toString())
+            .div(new BigNumber(10).pow(new BigNumber(decimals.toString())))
+            .toFixed(formatDecimals)
+    );
 };
 
 /**
@@ -156,9 +177,13 @@ export const decimalify = (val, decimals, formatDecimals = 4) => {
  * @returns decimal version
  */
 export const undecimalify = (val, decimals) => {
-    if (!val) { return val; }
+    if (!val) {
+        return val;
+    }
 
-    return new BigNumber(val.toString()).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString()))).toFixed(0);
+    return new BigNumber(val.toString())
+        .multipliedBy(new BigNumber(10).pow(new BigNumber(decimals.toString())))
+        .toFixed(0);
 };
 
 /**
@@ -174,7 +199,7 @@ export function formatTokenData(data) {
  * @param num number to truncate.
  *
  * @return truncated value.
-*/
+ */
 export const truncateNum = (num) => num.toString().match(/^-?\d+(?:\.\d{0,2})?/);
 
 /**
@@ -185,7 +210,7 @@ export const truncateNum = (num) => num.toString().match(/^-?\d+(?:\.\d{0,2})?/)
  */
 export const nFormatter = (num, formatDecimals = 4) => {
     const suffix = [
-        { value: 1, symbol: '' }, { value: 1E3, symbol: 'k' }, { value: 1E6, symbol: 'M' }, { value: 1E9, symbol: 'B' }
+        { value: 1, symbol: '' }, { value: 1e3, symbol: 'k' }, { value: 1e6, symbol: 'M' }, { value: 1e9, symbol: 'B' }
     ];
     let i;
     // eslint-disable-next-line no-plusplus
@@ -197,8 +222,12 @@ export const nFormatter = (num, formatDecimals = 4) => {
 
     let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toString();
     if (formattedNum % 1 !== 0) {
-        formattedNum = +formattedNum.slice(0, (formattedNum.toString().indexOf('.')) + (formatDecimals + 1));
+        formattedNum = +formattedNum.slice(
+            0,
+            formattedNum.toString().indexOf('.') + (formatDecimals + 1)
+        );
     }
 
     return formattedNum + suffix[i].symbol;
 };
+
