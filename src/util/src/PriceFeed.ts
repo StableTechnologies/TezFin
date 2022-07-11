@@ -1,11 +1,16 @@
-import { TezosMessageUtils, TezosNodeReader } from 'conseiljs';
+import { KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat } from 'conseiljs';
 
 import { AssetType } from './enum';
 import { JSONPath } from 'jsonpath-plus';
-import { OracleMap } from 'types';
+import { OracleMap } from './types';
 import bigInt from 'big-integer';
 
 export namespace PriceFeed {
+
+    export interface Pair {
+        asset: AssetType;
+        price: number;
+    }
 
     /**
      * Get the asset pair price from the harbinger oracle 
@@ -24,5 +29,25 @@ export namespace PriceFeed {
             json: mapResult,
         })[0]
         return bigInt(balance);
+    }
+
+    /**
+     * Set the asset pair price for tezfin oracle 
+     *
+     * @param priceList list of asset of AssetType and their corresponding price
+     * @param oracleAddress tezfin oracle address
+     */
+    export async function SetPrice(priceList: Pair[], oracleAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+        let payload = `{`
+        for (let i = 0; i < priceList.length; i++) {
+            if (i > 0) {
+                payload += "; "
+            }
+            payload += `Pair "${priceList[i].asset}-USD" ${priceList[i].price}`
+        }
+        payload += `}`;
+        console.log("paylod", payload)
+        const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, oracleAddress, 0, fee, freight, gas, "setPrice", payload, TezosParameterFormat.Michelson);
+        return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
     }
 }

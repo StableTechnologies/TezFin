@@ -5,5 +5,8 @@ postdeploy/node_modules
 node_modules
 build
 .test/
+.tests/
 TezFinBuild/compiled_contracts/
 /.idea/
+e2e/compiled_contracts
+data.csv
