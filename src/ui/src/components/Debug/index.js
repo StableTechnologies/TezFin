@@ -71,10 +71,10 @@ const DebugDashboard = () => {
             supplyRate: new BigNumber(x[1].supply.rate).toNumber(),
             borrowRate: new BigNumber(x[1].borrow.rate).toNumber(),
             exchangeRate: new BigNumber(x[1].exchangeRate).toNumber(),
-            reserves: new BigNumber(x[1].reserves).toNumber(),
+            reserves: new BigNumber(x[1].reserves.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed(),
             cash: new BigNumber(x[1].cash).toNumber(),
             collateralFactor: new BigNumber(x[1].collateralFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed(),
-            reserveFactor: x[1].reserveFactor
+            reserveFactor: new BigNumber(x[1].reserveFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed()
         });
     });
 
@@ -139,8 +139,8 @@ const DebugDashboard = () => {
                             <>
                                 <TableRow key={data.title}>
                                     <TableCell> ꜰ{data.title} </TableCell>
-                                    <TableCell align="right"> { data.supplyRate ? truncateNum(data.supplyRate) : 0}% </TableCell>
-                                    <TableCell align="right"> { data.borrowRate ? truncateNum(data.borrowRate) : 0}% </TableCell>
+                                    <TableCell align="right"> {(data.supplyRate > 0) ? truncateNum(decimalify(data.supplyRate.toString(), 18)) : '0'}% </TableCell>
+                                    <TableCell align="right"> {(data.borrowRate > 0) ? truncateNum(decimalify(data.borrowRate.toString(), 18)) : '0'}% </TableCell>
                                     <TableCell align="right">
                                         <span>
                                             {(data.balanceUnderlyingSupply > 0) ? nFormatter(decimalify(data.balanceUnderlyingSupply.toString(), decimals[data.title], decimals[data.title])) : '0.00'} {data.title}

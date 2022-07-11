@@ -5,39 +5,23 @@ export const useStyles = makeStyles({
     root: {
         '& .MuiDialog-paper': {
             maxWidth: '472px',
-            minHeight: 'auto',
             textAlign: 'center',
             borderRadius: '0',
-            color: '#000'
+            color: '#000',
+            height: 'auto',
+            maxHeight: 'calc(100% - 1rem)',
+            overflow: 'auto',
+            '@media(min-width: 900px)': {
+                maxHeight: 'calc(100% - 2.5rem)'
+            }
         },
         '& .MuiDialogTitle-root': {
             padding: '1.625rem 2.5rem 0'
         },
-        '& .MuiDialogContent-root': {
-            overflow: 'hidden',
-            padding: '0 2.5rem .5rem',
-            '@media(max-width: 501px)': {
-                padding: '0 0.5rem .5rem'
-            }
-        },
-        '& .MuiDialogContentText-root': {
-            fontWeight: '300',
-            fontSize: '1rem',
-            lineHeight: '1.875rem',
-            letterSpacing: '0.05em',
-            textAlign: 'justify',
-            '@media(min-width: 1024px)': {
-                margin: '1.25rem 3.125rem',
-                padding: '0'
-            },
-            '@media(max-width: 500px)': {
-                fontSize: '.875rem'
-            }
-        },
         '& .MuiDialogActions-root': {
             padding: '2.75rem 2.875rem',
             '@media(max-width: 768px)': {
-                padding: '30px 2.875rem'
+                padding: '1.875rem 2.875rem'
             },
             '@media(max-width: 501px)': {
                 padding: '1.875rem'
@@ -84,31 +68,43 @@ export const useStyles = makeStyles({
             height: '3rem'
         }
     },
-    CurrentState: {
+    headerText: {
+        fontWeight: '300',
+        fontSize: '1rem',
+        lineHeight: '1.875rem',
+        letterSpacing: '0.05em',
+        textAlign: 'justify',
+        color: '#000',
+        opacity: '0.6',
+        '@media(min-width: 1024px)': {
+            margin: '1.25rem 3.125rem',
+            padding: '0'
+        },
+        '@media(max-width: 500px)': {
+            fontSize: '.875rem'
+        }
+    },
+    contentBoxOne: {
         padding: '1.5625rem 2.5rem !important',
         borderTop: '2px solid #E0E0E0',
-        borderBottom: '0',
+        borderBottom: '2px solid #E0E0E0',
         textAlign: 'left',
+        '@media(max-width: 1200px)': {
+            padding: '1rem 2.5rem !important'
+        },
         '@media(max-width: 768px)': {
             padding: '1.25rem 2.5rem !important'
         },
         '@media(max-width: 501px)': {
             padding: '1.25rem 0.5rem !important',
-            borderTop: '1px solid #E0E0E0'
+            borderTop: '1px solid #E0E0E0',
+            borderBottom: '1px solid #E0E0E0'
         }
     },
-    apyRate: {
-        padding: '1.5625rem 1.5rem !important',
-        borderTop: '2px solid #E0E0E0',
-        borderBottom: '2px solid #E0E0E0',
-        textAlign: 'left',
-        margin: '0 1rem',
-        '@media(max-width: 768px)': {
-            padding: '1.25rem 1.5rem !important'
-        },
+    contentBoxTwo: {
+        padding: '0 2.5rem .5rem',
         '@media(max-width: 501px)': {
-            padding: '1.25rem 0rem !important',
-            margin: '0 0.5rem'
+            padding: '0 0.5rem .5rem'
         }
     },
     limit: {
@@ -173,7 +169,7 @@ export const useStyles = makeStyles({
         visibility: 'hidden'
     },
     formFieldCon: {
-        padding: '69px 0px 53px !important',
+        padding: '51px 0px 47px !important',
         '@media(max-width: 768px)': {
             padding: '35px 0px !important'
         },
@@ -186,9 +182,9 @@ export const useStyles = makeStyles({
         alignItems: 'center',
         justifyContent: 'space-evenly',
         paddingRight: '51px',
-        paddingLeft: '143px',
+        paddingLeft: '127px',
         '@media(max-width: 501px)': {
-            padding: '0 1rem',
+            padding: '1rem',
             justifyContent: 'start'
         }
     },
@@ -257,5 +253,11 @@ export const useStyles = makeStyles({
     },
     margin0: {
         margin: '0 !important'
+    },
+    borderBottom0: {
+        borderBottom: '0'
+    },
+    borderTop0: {
+        borderTop: '0'
     }
 });
