@@ -1,17 +1,17 @@
 {
     "CFA12_IRM": {
         "scale": 1000000000000000000,
-        "multiplierPerBlock": 46581489086,
+        "multiplierPerBlock": 76000000000,
         "baseRatePerBlock": 950642634
     },
     "CFA2_IRM": {
         "scale": 1000000000000000000,
-        "multiplierPerBlock": 46581489086,
+        "multiplierPerBlock": 76000000000,
         "baseRatePerBlock": 950642634
     },
     "CXTZ_IRM": {
         "scale": 1000000000000000000,
-        "multiplierPerBlock": 46581489086,
+        "multiplierPerBlock": 76000000000,
         "baseRatePerBlock": 950642634
     },
     "Governance": {
