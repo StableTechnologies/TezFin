@@ -16,7 +16,8 @@ class JsonDeserializer:
             return json.loads(file.read(), object_hook=lambda d: SimpleNamespace(**d))
 
 compileConfig = JsonDeserializer.Deserialize(PATH_COMPILE_CONFIG)
-deployResult = JsonDeserializer.Deserialize(PATH_DEPLOY_RESULT)
+deployResult = JsonDeserializer.Deserialize(
+    os.getenv('E2E', PATH_DEPLOY_RESULT))
 
 CFA12_IRM = compileConfig.CFA12_IRM
 CXTZ_IRM = compileConfig.CXTZ_IRM

@@ -28,8 +28,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 accountBorrows=CTI.TBorrowSnapshot,
                 balance=sp.TNat)),  # Official record of token balances for each account
             totalSupply=sp.nat(0),  # Total number of tokens in circulation
-            # Maximum borrow rate that can ever be applied (.0005% / block)
-            borrowRateMaxMantissa=sp.nat(int(5e12)),
+            # Maximum borrow rate that can ever be applied (.00000008% / block)
+            borrowRateMaxMantissa=sp.nat(int(80000000000)),
             # Maximum fraction of interest that can be set aside for reserves
             reserveFactorMaxMantissa=sp.nat(int(1e18)),
             comptroller=comptroller_,  # Contract which oversees inter-cToken operations
@@ -38,9 +38,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Initial exchange rate used when minting the first CTokens
             initialExchangeRateMantissa=initialExchangeRateMantissa_,
             # Fraction of interest currently set aside for reserves
-            reserveFactorMantissa=sp.nat(0),
+            reserveFactorMantissa=sp.nat(50000000000000000), # 5%
             # protocol share for sezied asstes
-            protocolSeizeShareMantissa=sp.nat(0),
+            protocolSeizeShareMantissa=sp.nat(100000000000000), #0.01%
             # Block number that interest was last accrued at
             accrualBlockNumber=sp.nat(0),
             # Accumulator of the total earned interest rate since the opening of the market
@@ -277,6 +277,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                            params.borrower, params.seizeTokens)
 
     def seizeInternal(self, seizerToken, liquidator, borrower, seizeTokens):
+        self.addAddressIfNecessary(liquidator)
         seizeAllowed = sp.view("seizeAllowed", self.data.comptroller, sp.record(cTokenCollateral=sp.self_address, cTokenBorrowed=seizerToken),
                                t=sp.TBool).open_some("INVALID SEIZE ALLOWED VIEW")
         sp.verify(seizeAllowed, EC.CT_LIQUIDATE_SEIZE_COMPTROLLER_REJECTION)
@@ -359,7 +360,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         borrowerBalance = sp.view("balanceOf", cTokenCollateral, borrower,
                                   t=sp.TNat).open_some("INVALID BALANCE OF VIEW")
 
-        sp.verify(borrowerBalance > seizeTokens, "LIQUIDATE_SEIZE_TOO_MUCH")
+        sp.verify(borrowerBalance >= seizeTokens, "LIQUIDATE_SEIZE_TOO_MUCH")
 
         destination = sp.contract(
             CTI.TSeize, cTokenCollateral, "seize").open_some()
@@ -450,7 +451,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         return: The number of tokens owned by `params`
     """
-    @sp.utils.view(sp.TNat)
+    @sp.onchain_view()
     def balanceOf(self, params):
         sp.result(self.data.balances[params].balance)
 

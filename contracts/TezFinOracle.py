@@ -41,12 +41,14 @@ class TezFinOracle(OracleInterface.OracleInterface):
         self.data.admin = address
 
     @sp.entry_point
-    def setPrice(self, asset, price):
+    def setPrice(self, params):
         """
             Sets the price for custom assets not supported by harbinger eg. USD
         """
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
-        self.data.overrides[asset] = (sp.now, price)
+        sp.set_type(params, sp.TList(sp.TRecord(asset=sp.TString,price=sp.TNat)))
+        sp.for item in params:
+            self.data.overrides[item.asset] = (sp.now, item.price)
 
     @sp.entry_point
     def removeAsset(self, asset):

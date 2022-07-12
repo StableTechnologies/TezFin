@@ -3,15 +3,15 @@
   "Governance": "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
   "PriceOracle": "KT1ENe4jbDE1QVG1euryp23GsAeWuEwJutQX",
   "TezFinOracle": "KT1PixVWuTe33HXbFTbjrAinP3DqSVibnN4z",
-  "Comptroller": "KT1JpZdDmrVvDhQDaJ6jb3hKUL98ZWzE9jwk",
-  "CFA12_IRM": "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
-  "CXTZ_IRM": "KT1VWpGJ5bXuPt3QPq2Bwg8at5PZhuP4MHb1",
-  "CFA2_IRM": "KT1VDPqzMy9XJ4fjoFuTyM61cY7CFqDRS1zR",
+  "Comptroller": "KT1AHeE4ccwhUYv8cCoZcLH3Qb1NncbjT5du",
+  "CFA12_IRM": "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
+  "CXTZ_IRM": "KT1Bkw1s6x3JFEnqNBMeF36B2QfszX3BJDJi",
+  "CFA2_IRM": "KT1JpWxmJkrDgxuXXVp9QcGFChRfyd9JGanN",
   "BTCtz": "KT1D11fEJQuUGn4m161mHmZ7Lkayzq4Cv6xW",
   "ETHtz": "KT1AAfsTHPnWT5cU77CUNQ2dcQNtAJ1jauPC",
   "USDtz": "KT1XA22D7DazGGefGVGyWHH9Y2MTFmiPjxq3",
-  "CBTCtz": "KT1B19pzNU1z31kExGa5VBuU8jZLXSoEdUdZ",
-  "CXTZ": "KT1WC7EcqpgBLAvPUYfPyqXK3VzbNyL5u7uE",
-  "CETHtz": "KT1W9X5pycLErzEdyKoEk7gbdJzySMwwKE5y",
-  "CUSDtz": "KT1Dqhd6A7qTcwZo66VuGpUwT4FG6HCwFvoN"
+  "CBTCtz": "KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP",
+  "CXTZ": "KT1VeuSXva7i3aae1Y3nZtSNWW2mgWMXqgQE",
+  "CETHtz": "KT1AEFHLpUMD8CFJkH1gU2TtCCMpZJdumFfn",
+  "CUSDtz": "KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37"
 }
