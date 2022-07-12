@@ -22,11 +22,13 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
     """    
         On chain view for  the scale of this contract
 
-        return: scale
+        params: sp.TUnit
+        return: The scale of this interest rate model. 
     """
     
     @sp.onchain_view()
-    def viewScale(self):
+    def viewScale(self,params):
+        sp.set_type(params, sp.TUnit)
         sp.result(self.data.scale)
 
     """    
