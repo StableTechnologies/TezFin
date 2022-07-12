@@ -756,11 +756,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
+        borrowRateRescaled = self.callibrateScale(c,interestRateScale)
         transferData = sp.record(cash=self.getCashImpl(),
                                  borrows=self.data.totalBorrows,
                                  reserves=self.data.totalReserves,
                                  cb=sp.self_entry_point("doAccrueInterest"))
-        sp.transfer(transferData, sp.mutez(0), c)
+        sp.transfer(transferData, sp.mutez(0), borrowRateRescaled)
 
     @sp.entry_point(lazify=True)
     def doAccrueInterest(self, borrowRateMantissa):
