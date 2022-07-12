@@ -33,16 +33,16 @@ class Exponential(sp.Contract):
 
         params: 
             value: TNat
-            value: TNat
+            old_scale: TNat
         return: TExp
     """
 
-    def callibrateScale(self, value, value_scale):
+    def callibrateScale(self, value, old_scale):
         sp.set_type(value, sp.TNat)
-        sp.set_type(value_scale, sp.TNat)
+        sp.set_type(old_scale, sp.TNat)
         numerator = value * self.data.expScale
-        rescale = numerator // value_scale
-        return sp.record(mantissa=rescale)
+        rescaled = numerator // old_scale
+        return sp.record(mantissa=rescaled)
 
     """    
         Constructs TExp from the given number value, without applying expScale
