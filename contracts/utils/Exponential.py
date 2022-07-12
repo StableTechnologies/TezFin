@@ -29,7 +29,7 @@ class Exponential(sp.Contract):
 
 
         For example, if the current scale is 1e18 
-                callibrateScale(10,10) = Exp{mantissa: 1e18} 
+                rescale(10,10) = Exp{mantissa: 1e18} 
 
         params: 
             value: TNat
@@ -37,7 +37,7 @@ class Exponential(sp.Contract):
         return: TExp
     """
 
-    def callibrateScale(self, value, old_scale):
+    def rescale(self, value, old_scale):
         sp.set_type(value, sp.TNat)
         sp.set_type(old_scale, sp.TNat)
         numerator = value * self.data.expScale

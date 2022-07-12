@@ -756,7 +756,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
-        borrowRateRescaled = self.callibrateScale(c,interestRateScale)
+        borrowRateRescaled = self.rescale(c,interestRateScale)
         transferData = sp.record(cash=self.getCashImpl(),
                                  borrows=self.data.totalBorrows,
                                  reserves=self.data.totalReserves,
