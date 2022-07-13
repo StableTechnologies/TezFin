@@ -75,11 +75,11 @@ const DashboardModal = (props) => {
                         <div>
                             <img src={tokenDetails.logo} alt="logo" className={classes.img} />
                             <LightTooltip
-                                title={ tokenDetails.walletBalance ? `${tokenDetails.walletBalance}  ${tokenDetails.banner}` : ''}
+                                title={ tokenDetails.walletBalance ? `${decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title])} ${tokenDetails.banner}` : ''}
                                 placement="bottom"
                             >
                                 <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                                    {tokenDetails.walletBalance ? decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title]) : '0'}
+                                    {tokenDetails.walletBalance ? nFormatter(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title])) : '0'}
                                     {' '} {tokenDetails.banner}
                                 </Typography>
                             </LightTooltip>

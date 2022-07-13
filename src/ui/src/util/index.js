@@ -164,11 +164,9 @@ export const decimalify = (val, decimals, formatDecimals = 4) => {
         return val;
     }
 
-    return Number(
-        new BigNumber(val.toString())
-            .div(new BigNumber(10).pow(new BigNumber(decimals.toString())))
-            .toFixed(formatDecimals)
-    );
+    return new BigNumber(val.toString())
+        .div(new BigNumber(10).pow(new BigNumber(decimals.toString())))
+        .toFixed(formatDecimals);
 };
 
 /**
@@ -228,6 +226,5 @@ export const nFormatter = (num, formatDecimals = 4) => {
         );
     }
 
-    return formattedNum + suffix[i].symbol;
+    return BigNumber(formattedNum).toFixed() + suffix[i].symbol;
 };
-
