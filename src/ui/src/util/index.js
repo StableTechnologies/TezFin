@@ -89,6 +89,8 @@ export const evaluateTransaction = async (operations) => {
             address
         );
 
+        console.log("operation", operations);
+        
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
