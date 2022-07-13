@@ -219,6 +219,8 @@ export const nFormatter = (num, formatDecimals = 4) => {
     }
 
     let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toString();
+    // eslint-disable-next-line no-param-reassign
+    formatDecimals = formattedNum.toString().includes('.00') ? 4 : formatDecimals;
     if (formattedNum % 1 !== 0) {
         formattedNum = +formattedNum.slice(
             0,
