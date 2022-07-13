@@ -29,7 +29,7 @@ export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, get
                 usdPrice: x.usdPrice,
                 balanceUnderlying: x.balanceUnderlying,
                 collateralFactor: new BigNumber(x.collateralFactor).toNumber(),
-                total: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title], decimals[x.title])
+                total: new BigNumber(decimalify(x.balanceUnderlying, decimals[x.title], decimals[x.title])).multipliedBy(new BigNumber(x.usdPrice))
             });
             return borrowedMarkets;
         });
