@@ -173,9 +173,11 @@ export const useDisableTokenErrorText = (tokenDetails) => {
     const { borrowing } = useSelector((state) => state.borrowComposition.borrowComposition);
     const { borrowedMarkets } = useSelector((state) => state.market);
 
-    const tokenValueUsd = (tokenDetails.balanceUnderlying > 0) && decimalify(new BigNumber(tokenDetails.balanceUnderlying).multipliedBy(
-        new BigNumber(tokenDetails.usdPrice)
-    ).toNumber(), decimals[tokenDetails.title], decimals[tokenDetails.title]);
+    const tokenValueUsd = (tokenDetails.balanceUnderlying > 0)
+        && new BigNumber(
+            decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title])
+        ).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+
     const pendingCollateralizedUsd = new BigNumber(collateralized).minus(new BigNumber(tokenValueUsd)).toNumber();
     const pendingCollateralizedUsdLimit = new BigNumber(pendingCollateralizedUsd).multipliedBy(
         new BigNumber(tokenDetails.collateralFactor)
