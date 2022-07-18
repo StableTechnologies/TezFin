@@ -71,10 +71,10 @@ const DebugDashboard = () => {
             supplyRate: new BigNumber(x[1].supply.rate).toNumber(),
             borrowRate: new BigNumber(x[1].borrow.rate).toNumber(),
             exchangeRate: new BigNumber(x[1].exchangeRate).toNumber(),
-            reserves: new BigNumber(x[1].reserves).toNumber(),
+            reserves: new BigNumber(x[1].reserves.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed(),
             cash: new BigNumber(x[1].cash).toNumber(),
             collateralFactor: new BigNumber(x[1].collateralFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed(),
-            reserveFactor: x[1].reserveFactor
+            reserveFactor: new BigNumber(x[1].reserveFactor.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed()
         });
     });
 

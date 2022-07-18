@@ -46,11 +46,11 @@ def test():
     scenario.h2("Tezfin Oracle")
     tezfinOracle = TezFinOracle(admin.address,harbinger.address)
     scenario+=tezfinOracle
-    harbinger.setPrice(asset="ETH-USD",price=13425).run(sender=alice,valid=False,now=sp.timestamp(16534534))
-    harbinger.setPrice(asset="ETH-USD",price=13425).run(sender=admin,now=sp.timestamp(16534534))
-    harbinger.setPrice(asset="BTC-USD",price=2342354345).run(sender=admin,now=sp.timestamp(16534534))
-    harbinger.setPrice(asset="XTZ-USD",price=203434).run(sender=admin,now=sp.timestamp(16534534))
-    tezfinOracle.setPrice(asset="FIN-USD",price=1000000).run(sender=admin,now=sp.timestamp(16534534))
+    harbinger.setPrice([sp.record(asset="ETH-USD",price=13425)]).run(sender=alice,valid=False,now=sp.timestamp(16534534))
+    harbinger.setPrice([sp.record(asset="ETH-USD", price=13425), sp.record(
+        asset="BTC-USD", price=2342354345)]).run(sender=admin, now=sp.timestamp(16534534))
+    harbinger.setPrice([sp.record(asset="XTZ-USD",price=203434)]).run(sender=admin,now=sp.timestamp(16534534))
+    tezfinOracle.setPrice([sp.record(asset="FIN-USD",price=1000000)]).run(sender=admin,now=sp.timestamp(16534534))
     tezfinOracle.removeAsset("FIN-USD").run(sender=admin)
     scenario.h2("Consumer Contract")
     consumer = View_consumer(tezfinOracle.address)

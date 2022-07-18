@@ -1,0 +1,17 @@
+{
+  "OriginatorAddress": "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL",
+  "Governance": "KT1TcH8Lnr7pE7dW9T4kZNfhNsVz9QKdwaME",
+  "PriceOracle": "KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj",
+  "TezFinOracle": "KT1KeS6LUPRHzkbj6kvBk9PPM39K11gMof2G",
+  "Comptroller": "KT1Mdm7gMW56XW7S8fwmhBmP83KsPEH57zgV",
+  "CFA12_IRM": "KT1SCpQwacLPPD3bEvpyWG8ARkLvdCsChQjv",
+  "CXTZ_IRM": "KT1JbXXhGLQuQc1bH2oqMjSnkXHzJdKXCxTp",
+  "CFA2_IRM": "KT1FJN2FspGkpsshrLi1Hx9GHLyaxZkfDP1u",
+  "BTCtz": "KT1T87QbpXEVgkwsNPzz8iRoah3SS3D1MDmh",
+  "ETHtz": "KT19at7rQUvyjxnZ2fBv7D9zc8rkyG7gAoU8",
+  "USDtz": "KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9",
+  "CBTCtz": "KT1AGLsTSnN5816qX2sjAyv1VqySqbmg5XKf",
+  "CXTZ": "KT1MExoUQ9d1WXyGGhmQjuv4AfuaGwFiSmip",
+  "CETHtz": "KT1P7tKK2bpb2UNkPdT7vj3QJNZ4dkwbujL5",
+  "CUSDtz": "KT1UKKJeQ7wbppyzyLWMoCSKVhFpMVPHgoPm"
+}

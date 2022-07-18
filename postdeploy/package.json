@@ -2,7 +2,7 @@
   "name": "tezfin-util",
   "version": "0.0.1-alpha",
   "description": "Utility for testing the tezfin wrapper code and contracts",
-  "main": "index.ts",
+  "private": true,
   "scripts": {
     "postinstall": "npm run build",
     "build": "rm -rf ./build/ && tsc",
@@ -12,10 +12,14 @@
   "author": "Stable Technologies",
   "license": "MIT",
   "dependencies": {
+    "bignumber.js": "^9.0.1",
     "conseiljs": "5.1.0",
     "conseiljs-softsigner": "^5.0.4",
+    "csv": "^6.1.0",
+    "jsonpath-plus": "6.0.1",
     "loglevel": "1.7.1",
-    "node-fetch": "2.6.1"
+    "node-fetch": "2.6.1",
+    "tezoslendingplatformjs": "../src/util/"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.7",

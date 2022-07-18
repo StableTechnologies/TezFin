@@ -37,7 +37,7 @@ TLiquidity = sp.TRecord(
     valid=sp.TBool  # Liquidity is valid only for one user action
 )
 
-DEFAULT_COLLATERAL_FACTOR = int(9e17)  # 90 %
+DEFAULT_COLLATERAL_FACTOR = int(5e17)  # 50 %
 
 
 class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
@@ -365,8 +365,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         priceCollateralMantissa = sp.local("priceCollateralMantissa",
                                            self.getAssetPrice(params.cTokenCollateral))
 
-        sp.verify((priceBorrowedMantissa.value.mantissa == sp.nat(0)) | (
-            priceCollateralMantissa.value.mantissa == sp.nat(0)), EC.CMPT_PRICE_ERROR)
+        sp.verify((priceBorrowedMantissa.value.mantissa != sp.nat(0)) & (
+            priceCollateralMantissa.value.mantissa != sp.nat(0)), EC.CMPT_PRICE_ERROR)
 
         exchangeRateMantissa = sp.view("exchangeRateStoredView", params.cTokenCollateral, sp.unit,
                                        t=sp.TNat).open_some("INVALID EXCHANGE RATE VIEW")
@@ -413,7 +413,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
         Determines whether a seize is allwed
 
-        return: TBool - return true if a seize is allwed
+        return: TBool - return true if a seize is allowed
     """
     @sp.onchain_view()
     def seizeAllowed(self, params):
@@ -428,31 +428,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         
         collateralComptroller = sp.view("comptroller", params.cTokenCollateral, sp.unit,
                                     t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-
-        sp.verify(borrowComptroller == collateralComptroller,
-                  EC.CMPT_INSUFFICIENT_SHORTFALL)
-
-        sp.result(True)
-
-    """
-        Determines whether a seize is allwed
-
-        return: TBool - return true if a seize is allwed
-    """
-    @sp.onchain_view()
-    def seizeAllowed(self, params):
-        sp.set_type(params, sp.TRecord(
-            cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
-        # liquidator is not used, left here for future proofing
-
-        self.verifyMarketListed(params.cTokenBorrowed)
-        self.verifyMarketListed(params.cTokenCollateral)
-
-        borrowComptroller = sp.view("comptroller", params.cTokenBorrowed, sp.unit,
-                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-
-        collateralComptroller = sp.view("comptroller", params.cTokenCollateral, sp.unit,
-                                        t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
 
         sp.verify(borrowComptroller == collateralComptroller,
                   EC.CMPT_COMPTROLLER_MISMATCH)

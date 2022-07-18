@@ -30,14 +30,38 @@
         "amount": "22841330521",
         "activation_code": "77c3e768abfdb7e389f7ccd890c091ba42b84a88"
     },
+    "keystore1":{
+        "pkh": "tz1ZDm7WEgVLtbwSbbV4zoj2wofKzBy6WNLL",
+        "mnemonic": [
+            "voice",
+            "firm",
+            "word",
+            "useless",
+            "mercy",
+            "winter",
+            "column",
+            "easily",
+            "rough",
+            "sword",
+            "dawn",
+            "hazard",
+            "stand",
+            "frog",
+            "letter"
+        ],
+        "email": "suabjmnl.raykljyk@teztnets.xyz",
+        "password": "81jCALUUkz",
+        "amount": "8531395243",
+        "activation_code": "37a8b46f2b3c691d02ac76a595a1373bc44c751e"
+    },
     "networkBlockTime": 31,
     "delay": 7,
     "revealAccount": false,
-    "protocolAddressesPath": "../TezFinBuild/deploy_result/deploy.json",
+    "protocolAddressesPath": "./e2e/deploy_result/deploy.json",
     "tx": {
         "amount": 0,
-        "fee": 1000000,
-        "gas": 500000,
+        "fee": 1500000,
+        "gas": 800000,
         "freight": 50000
     },
     "tokenMint": [
@@ -50,7 +74,12 @@
         "BTC",
         "USD"
     ],
-    "mintAmount": 10,
+    "mintAmount": 15000,
+    "mintAmounts": {
+        "ETH":100,
+        "BTC":100,
+        "USD":20000
+    },
     "redeem": [
         "ETH",
         "BTC",
