@@ -27,7 +27,7 @@ export const supplyCompositionAction = (suppliedMarkets) => async (dispatch) => 
                 title: x.title,
                 usdPrice: x.usdPrice,
                 balanceUnderlying: x.balanceUnderlying,
-                balanceUnderlyingUsd: decimalify((new BigNumber(x.balanceUnderlying).multipliedBy(new BigNumber(x.usdPrice)).toNumber()), decimals[x.title], decimals[x.title]),
+                balanceUnderlyingUsd: new BigNumber(decimalify(x.balanceUnderlying, decimals[x.title], decimals[x.title])).multipliedBy(new BigNumber(x.usdPrice)),
                 color: tokenColor[x.title],
                 collateral: x.collateral,
                 collateralFactor: new BigNumber(x.collateralFactor).toNumber(),

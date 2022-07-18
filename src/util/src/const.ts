@@ -14,16 +14,16 @@ export const decimals = {
 
 export const testnetAddresses: ProtocolAddresses = {
     fTokens: {
-        "BTC": "KT1LxnbVt3MJa2BqZhxFeXqY5xpRM4KhfF36",
-        "XTZ": "KT1At9Kvci9T8M9mm9PSuuVV5Hq9ryn6Cynu",
-        "ETH": "KT1Mn9oRzUTXZCkGuqDpZiFUzsjmvxip1o4u",
-        "USD": "KT1RGNAMV7WTe95FyicaZzjRDcLNsZUU3PKt"
+        "BTC": "KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP",
+        "XTZ": "KT1VeuSXva7i3aae1Y3nZtSNWW2mgWMXqgQE",
+        "ETH": "KT1AEFHLpUMD8CFJkH1gU2TtCCMpZJdumFfn",
+        "USD": "KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37"
     },
     fTokensReverse: {
-        KT1At9Kvci9T8M9mm9PSuuVV5Hq9ryn6Cynu: AssetType.XTZ,
-        KT1Mn9oRzUTXZCkGuqDpZiFUzsjmvxip1o4u: AssetType.ETH,
-        KT1RGNAMV7WTe95FyicaZzjRDcLNsZUU3PKt: AssetType.USD,
-        KT1LxnbVt3MJa2BqZhxFeXqY5xpRM4KhfF36: AssetType.BTC
+        KT1VeuSXva7i3aae1Y3nZtSNWW2mgWMXqgQE: AssetType.XTZ,
+        KT1AEFHLpUMD8CFJkH1gU2TtCCMpZJdumFfn: AssetType.ETH,
+        KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37: AssetType.USD,
+        KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP: AssetType.BTC
     },
     underlying: {
         "ETH": {
@@ -57,12 +57,12 @@ export const testnetAddresses: ProtocolAddresses = {
             decimals: 6
         }
     },
-    comptroller: "KT18dvj869ZhbtVRp3mQHQdvVovHRVdknTG5",
+    comptroller: "KT1AHeE4ccwhUYv8cCoZcLH3Qb1NncbjT5du",
     interestRateModel: {
-        XTZ: "KT1VWpGJ5bXuPt3QPq2Bwg8at5PZhuP4MHb1",
-        ETH: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR",
-        BTC: "KT1VDPqzMy9XJ4fjoFuTyM61cY7CFqDRS1zR",
-        USD: "KT19w4sCSmeWVoyy2HmpADfSPGM4y2rfteHR"
+        XTZ: "KT1Bkw1s6x3JFEnqNBMeF36B2QfszX3BJDJi",
+        ETH: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
+        BTC: "KT1JpWxmJkrDgxuXXVp9QcGFChRfyd9JGanN",
+        USD: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR"
     },
     governance: "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
     oracleMap: {

@@ -89,6 +89,8 @@ export const evaluateTransaction = async (operations) => {
             address
         );
 
+        console.log("operation", operations);
+        
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
@@ -164,11 +166,9 @@ export const decimalify = (val, decimals, formatDecimals = 4) => {
         return val;
     }
 
-    return Number(
-        new BigNumber(val.toString())
-            .div(new BigNumber(10).pow(new BigNumber(decimals.toString())))
-            .toFixed(formatDecimals)
-    );
+    return new BigNumber(val.toString())
+        .div(new BigNumber(10).pow(new BigNumber(decimals.toString())))
+        .toFixed(formatDecimals);
 };
 
 /**
@@ -221,6 +221,8 @@ export const nFormatter = (num, formatDecimals = 4) => {
     }
 
     let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toString();
+    // eslint-disable-next-line no-param-reassign
+    formatDecimals = formattedNum.toString().includes('.00') ? 4 : formatDecimals;
     if (formattedNum % 1 !== 0) {
         formattedNum = +formattedNum.slice(
             0,
@@ -228,6 +230,5 @@ export const nFormatter = (num, formatDecimals = 4) => {
         );
     }
 
-    return formattedNum + suffix[i].symbol;
+    return BigNumber(formattedNum).toFixed() + suffix[i].symbol;
 };
-

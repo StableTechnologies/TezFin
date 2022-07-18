@@ -1,9 +1,9 @@
 {
-  "tezosNode": "https://tezos-ithaca.cryptonomic-infra.tech:443",
+  "tezosNode": "https://rpc.ghostnet.teztnets.xyz/",
   "conseilServer": {
     "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
     "apiKey": "328ac16b-5497-4e73-a97d-45af0e83425c",
-    "network": "ithacanet"
+    "network": "ghostnet"
   },
   "originator": {
     "pkh": "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE",
