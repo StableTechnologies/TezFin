@@ -76,6 +76,10 @@ class ExponentialTestContract(Exponential.Exponential):
         sp.else:
             self.data.result = sp.nat(0)
 
+     
+    @sp.entry_point
+    def testRescale(self, value, old_scale):
+        self.data.result = self.rescale(value, old_scale).mantissa
 
 @sp.add_test(name = "Exponential_Tests")
 def test():
@@ -205,3 +209,30 @@ def test():
     scenario.h3("Left greater than right")
     scenario += c1.testLessThanOrEqualExp(a=e2, b=e1)
     scenario.verify(c1.data.result == sp.nat(0))
+
+    scenario.h2("Test rescale")
+    scenario.h3("Test for one in different scales ")
+    value = 1
+    scale = 1
+    scenario += c1.testRescale(value=value,old_scale=scale)
+    scenario.verify(c1.data.result == expScale)
+    value = 100
+    scale = 100
+    scenario += c1.testRescale(value=value,old_scale=scale)
+    scenario.verify(c1.data.result == expScale)
+    scenario.h3("Test for n in different scales ")
+    scenario.h4("Test for n in scale 1 ")
+    n=sp.nat(4)
+    scale = sp.nat(1)
+    value = n * scale
+    scenario += c1.testRescale(value=value,old_scale=scale)
+    scenario.verify(c1.data.result == n * expScale)
+    scenario.h4("Test for n in scale 1000 ")
+    n=sp.nat(8)
+    scale = sp.nat(1000)
+    value = n * scale
+    scenario += c1.testRescale(value=value,old_scale=scale)
+    scenario.verify(c1.data.result == n * expScale)
+
+
+
