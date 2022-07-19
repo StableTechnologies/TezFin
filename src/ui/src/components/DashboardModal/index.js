@@ -233,12 +233,17 @@ const DashboardModal = (props) => {
                 <Box className={`${classes.contentBoxTwo} ${classes.limitUsed}`}>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit Used </Grid>
-                        <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {(address && pendingLimitUsed)
-                                ? ((pendingLimitUsed > 0) ? ((pendingLimitUsed > 100) ? 100 : truncateNum(pendingLimitUsed)) : '0')
-                                : ((limitUsed > 0) ? ((limitUsed > 100) ? 100 : truncateNum(limitUsed)) : '0')
-                            }%
-                        </Grid>
+                        <LightTooltip
+                            title={`${(address && pendingLimitUsed) ? '' : (limitUsed > 0 ? `${limitUsed}%` : '')}`}
+                            placement="bottom"
+                        >
+                            <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
+                                {(address && pendingLimitUsed)
+                                    ? ((pendingLimitUsed > 0) ? ((pendingLimitUsed > 100) ? 100 : truncateNum(pendingLimitUsed)) : '0')
+                                    : ((limitUsed > 0) ? ((limitUsed > 100) ? 100 : `${truncateNum(limitUsed)}...`) : '0')
+                                }%
+                            </Grid>
+                        </LightTooltip>
                     </Grid>
                 </Box>
                 <Box className={`${classes.contentBoxTwo} ${classes.progressBarCon}`}>
