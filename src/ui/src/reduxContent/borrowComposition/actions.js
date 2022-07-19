@@ -21,6 +21,7 @@ export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, get
     const assets = [];
     let borrowing = 0;
     let borrowUtilization = 0;
+    let borrowLimit = 0;
 
     if (Object.keys(borrowedMarkets).length > 0) {
         borrowedMarkets.map((x) => {
@@ -33,11 +34,13 @@ export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, get
             });
             return borrowedMarkets;
         });
-
         borrowing = assets.reduce((a, b) => a + b.total, 0);
-        borrowUtilization = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
     }
-    const borrowLimit = totalCollateral - borrowing;
+    if (totalCollateral > 0) {
+        borrowUtilization = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
+        borrowLimit = totalCollateral - borrowing;
+    }
+
     const limitBalance = borrowLimit - borrowing;
     borrowComposition = {
         assets,
