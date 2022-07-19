@@ -19,6 +19,7 @@ import AllMarketModal from '../AllMarketModal';
 import TableSkeleton from '../Skeleton';
 
 import { useStyles } from './style';
+import LightTooltip from '../DashboardModal/LightTooltip';
 
 const AllMarketTokenTable = (props) => {
     const classes = useStyles();
@@ -83,8 +84,26 @@ const AllMarketTokenTable = (props) => {
                                                 ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
                                             </span>
                                         </TableCell>
-                                        <TableCell align="right" className={classes.clearFont}> {(data.supplyRate > 0) ? truncateNum(decimalify(data.supplyRate.toString(), 18)) : '0'}% </TableCell>
-                                        <TableCell align="right" className={classes.clearFont}> {(data.borrowRate > 0) ? truncateNum(decimalify(data.borrowRate.toString(), 18)) : '0'}% </TableCell>
+                                        <TableCell align="right" className={classes.clearFont}>
+                                            <LightTooltip
+                                                title={data.supplyRate > 0 ? `${decimalify(data.supplyRate, 18)}%` : ''}
+                                                placement="bottom"
+                                            >
+                                                <span>
+                                                    {(data.supplyRate > 0) ? `${truncateNum(decimalify(data.supplyRate, 18))}...` : 0}%
+                                                </span>
+                                            </LightTooltip>
+                                        </TableCell>
+                                        <TableCell align="right" className={classes.clearFont}>
+                                            <LightTooltip
+                                                title={data.borrowRate > 0 ? `${decimalify(data.borrowRate, 18)}%` : ''}
+                                                placement="bottom"
+                                            >
+                                                <span>
+                                                    {(data.borrowRate > 0) ? `${truncateNum(decimalify(data.borrowRate, 18))}...` : 0}%
+                                                </span>
+                                            </LightTooltip>
+                                        </TableCell>
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
                                                 {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : '0'} {data.title}

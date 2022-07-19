@@ -26,6 +26,7 @@ import { decimalify, formatTokenData, truncateNum } from '../../util';
 
 import { useStyles } from './style';
 import MarketTooltip from '../Tooltip';
+import LightTooltip from '../DashboardModal/LightTooltip';
 
 const SuppliedTokenTable = (props) => {
     const classes = useStyles();
@@ -128,7 +129,16 @@ const SuppliedTokenTable = (props) => {
                                     {' '} ꜰ{data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {(data.rate > 0) ? truncateNum(decimalify(data.rate.toString(), 18)) : '0'}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}>
+                                <LightTooltip
+                                    title={data.rate > 0 ? `${decimalify(data.rate, 18)}%` : ''}
+                                    placement="bottom"
+                                >
+                                    <span>
+                                        {(data.rate > 0) ? `${truncateNum(decimalify(data.rate, 18))}...` : '0'}%
+                                    </span>
+                                </LightTooltip>
+                            </TableCell>
                             <TableCell align="right">
                                 <MarketTooltip
                                     data={data.balanceUnderlying}

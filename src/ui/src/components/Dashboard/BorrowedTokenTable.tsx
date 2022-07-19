@@ -22,6 +22,7 @@ import BorrowModal from '../BorrowModal';
 
 import { useStyles } from './style';
 import MarketTooltip from '../Tooltip';
+import LightTooltip from '../DashboardModal/LightTooltip';
 
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
@@ -97,7 +98,16 @@ const BorrowedTokenTable = (props) => {
                                     {' '} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {(data.rate > 0) ? truncateNum(decimalify(data.rate.toString(), 18)) : '0'}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}>
+                                <LightTooltip
+                                    title={data.rate > 0 ? `${decimalify(data.rate, 18)}%` : ''}
+                                    placement="bottom"
+                                >
+                                    <span>
+                                        {(data.rate > 0) ? `${truncateNum(decimalify(data.rate, 18))}...` : '0'}%
+                                    </span>
+                                </LightTooltip>
+                            </TableCell>
                             <TableCell align="right">
                                 <MarketTooltip
                                     data={data.balanceUnderlying}
@@ -110,7 +120,7 @@ const BorrowedTokenTable = (props) => {
                                 <span className={classes.clearFont}>
                                     {truncateNum(
                                         new BigNumber(
-                                            decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title])
+                                            decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
                                         ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()
                                     )}%
                                 </span>

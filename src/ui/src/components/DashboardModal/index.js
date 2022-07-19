@@ -192,15 +192,28 @@ const DashboardModal = (props) => {
                                     }
                                 </Grid>
                                 {mainModal
-                                    ? <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tabValue === 'one') && (tokenDetails.supplyRate ? truncateNum(decimalify(tokenDetails.supplyRate, 18)) : '0')}
-                                        {(tabValue === 'two') && (tokenDetails.borrowRate ? truncateNum(decimalify(tokenDetails.borrowRate, 18)) : '0')}
-                                        {'%'}
-                                    </Grid>
-                                    : <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tokenDetails.rate) ? truncateNum(decimalify(tokenDetails.rate, 18)) : '0'}
-                                        {'%'}
-                                    </Grid>
+                                    ? <LightTooltip
+                                        title={`${(tabValue === 'one')
+                                            ? (tokenDetails.supplyRate > 0 ? `${decimalify(tokenDetails.supplyRate, 18)}%` : '')
+                                            : (tokenDetails.borrowRate > 0 ? `${decimalify(tokenDetails.borrowRate, 18)}%` : '')
+                                        }`}
+                                        placement="bottom"
+                                    >
+                                        <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
+                                            {(tabValue === 'one') && (tokenDetails.supplyRate > 0 ? `${truncateNum(decimalify(tokenDetails.supplyRate, 18))}...` : '0')}
+                                            {(tabValue === 'two') && (tokenDetails.borrowRate > 0 ? `${truncateNum(decimalify(tokenDetails.borrowRate, 18))}...` : '0')}
+                                            {'%'}
+                                        </Grid>
+                                    </LightTooltip>
+                                    : <LightTooltip
+                                        title={tokenDetails.rate > 0 ? `${decimalify(tokenDetails.rate, 18)}%` : ''}
+                                        placement="bottom"
+                                    >
+                                        <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
+                                            {(tokenDetails.rate) ? `${truncateNum(decimalify(tokenDetails.rate, 18))}...` : '0'}
+                                            {'%'}
+                                        </Grid>
+                                    </LightTooltip>
                                 }
                             </Grid>
                         </Box>
