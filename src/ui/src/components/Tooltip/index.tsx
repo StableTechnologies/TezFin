@@ -21,7 +21,7 @@ const MarketTooltip = (props) => {
                 </span>
             </LightTooltip> <br />
             <LightTooltip
-                title={`$${nFormatter(decimalify((dataUsd).toString(), decimals[assetType], decimals[assetType]), decimals[assetType])}`}
+                title={`$${nFormatter(decimalify((dataUsd).toString(), decimals[assetType], decimals[assetType]))}`}
                 placement="right"
             >
                 <span className={classes.faintFont}>
