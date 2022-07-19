@@ -753,20 +753,21 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def accrueInterestInternal(self, params):
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
                         entry_point="getBorrowRate").open_some()
-        interestRateScale = sp.view("viewScale",self.data.interestRateModel,
-                                    sp.unit, 
-                                    t=sp.TNat
-                                    ).open_some("INVALID COMPTROLLER VIEW")
-        borrowRateRescaled = self.rescale(c,interestRateScale)
+
         transferData = sp.record(cash=self.getCashImpl(),
                                  borrows=self.data.totalBorrows,
                                  reserves=self.data.totalReserves,
                                  cb=sp.self_entry_point("doAccrueInterest"))
-        sp.transfer(transferData, sp.mutez(0), borrowRateRescaled)
+        sp.transfer(transferData, sp.mutez(0), c)
 
     @sp.entry_point(lazify=True)
     def doAccrueInterest(self, borrowRateMantissa):
         sp.set_type(borrowRateMantissa, sp.TNat)
+        borrowScale = sp.view("viewScale",self.data.interestRateModel,
+                                    sp.unit, 
+                                    t=sp.TNat
+                                    ).open_some("INVALID COMPTROLLER VIEW")
+        borrowRateRescaled = self.rescale(c,borrowScale)
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
         sp.verify(borrowRateMantissa <=
