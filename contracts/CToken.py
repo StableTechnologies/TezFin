@@ -768,12 +768,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.entry_point(lazify=True)
     def doAccrueInterest(self, borrowRateMantissa):
         sp.set_type(borrowRateMantissa, sp.TNat)
+        self.verifyIRM()
         borrowScale = sp.view("viewScale",self.data.interestRateModel,
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
         borrowRateRescaled = self.rescale(borrowRateMantissa, borrowScale)
-        self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
         sp.verify(borrowRateRescaled <=
                   self.data.borrowRateMaxMantissa, EC.CT_INVALID_BORROW_RATE)
