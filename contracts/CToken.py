@@ -609,9 +609,14 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def setSupplyRatePerBlock(self, value):
+        supplyScale = sp.view("viewScale",self.data.interestRateModel,
+                                    sp.unit, 
+                                    t=sp.TNat
+                                    ).open_some("INVALID COMPTROLLER VIEW")
+        supplyRatePerBlock = self.rescale(value,supplyScale)
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.SUPPLY_RATE)
-        self.data.supplyRatePerBlock = value
+        self.data.supplyRatePerBlock = supplyRatePerBlock
 
     """    
         Return the borrow balance of account based on stored data
@@ -767,16 +772,16 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
-        borrowRateRescaled = self.rescale(c,borrowScale)
+        borrowRateRescaled = self.rescale(borrowRateMantissa, borrowScale)
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
-        sp.verify(borrowRateMantissa <=
+        sp.verify(borrowRateRescaled <=
                   self.data.borrowRateMaxMantissa, EC.CT_INVALID_BORROW_RATE)
         cash = self.getCashImpl()
         blockDelta = sp.as_nat(sp.level - self.data.accrualBlockNumber)
 
         simpleInterestFactor = sp.compute(self.mul_exp_nat(
-            self.makeExp(borrowRateMantissa), blockDelta))
+            self.makeExp(borrowRateRescaled), blockDelta))
         interestAccumulated = sp.compute(self.mulScalarTruncate(
             simpleInterestFactor, self.data.totalBorrows))
         self.data.totalBorrows = interestAccumulated + self.data.totalBorrows
