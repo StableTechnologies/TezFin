@@ -89,8 +89,8 @@ export const evaluateTransaction = async (operations) => {
             address
         );
 
-        console.log("operation", operations);
-        
+        console.log('operation', operations);
+
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
@@ -195,7 +195,7 @@ export function formatTokenData(data) {
 }
 
 /**
- * This function converts a number to string and truncates it to two decimals without rounding it up.
+ * This function converts a number to string and truncates it to two decimals without rounding it.
  * @param num number to truncate.
  *
  * @return truncated value.
@@ -221,14 +221,11 @@ export const nFormatter = (num, formatDecimals = 4) => {
     }
 
     let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toString();
-    // eslint-disable-next-line no-param-reassign
-    formatDecimals = formattedNum.toString().includes('.00') ? 4 : formatDecimals;
     if (formattedNum % 1 !== 0) {
         formattedNum = +formattedNum.slice(
             0,
             formattedNum.toString().indexOf('.') + (formatDecimals + 1)
         );
     }
-
     return BigNumber(formattedNum).toFixed() + suffix[i].symbol;
 };

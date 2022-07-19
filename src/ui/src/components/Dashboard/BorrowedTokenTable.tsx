@@ -15,12 +15,13 @@ import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';
+import { decimalify, formatTokenData, truncateNum } from '../../util';
 
 import TableSkeleton from '../Skeleton';
 import BorrowModal from '../BorrowModal';
 
 import { useStyles } from './style';
+import MarketTooltip from '../Tooltip';
 
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
@@ -98,23 +99,20 @@ const BorrowedTokenTable = (props) => {
                             </TableCell>
                             <TableCell align="right" className={classes.clearFont}> {(data.rate > 0) ? truncateNum(decimalify(data.rate.toString(), 18)) : '0'}% </TableCell>
                             <TableCell align="right">
-                                <span className={classes.clearFont}>
-                                    {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : '0'} {' '} {data.title}
-                                </span> <br/>
-                                <span className={classes.faintFont}>
-                                    ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
-                                </span>
+                                <MarketTooltip
+                                    data={data.balanceUnderlying}
+                                    dataUsd={new BigNumber(data.balanceUnderlying).multipliedBy(data.usdPrice).toNumber()}
+                                    assetType={data.title}
+                                    classes={classes}
+                                />
                             </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
-                                    {(data.balanceUnderlying > 0)
-                                        ? truncateNum(
-                                            new BigNumber(
-                                                decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title])
-                                            ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()
-                                        )
-                                        : '0'
-                                    }%
+                                    {truncateNum(
+                                        new BigNumber(
+                                            decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title])
+                                        ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()
+                                    )}%
                                 </span>
                             </TableCell>
                         </TableRow>
