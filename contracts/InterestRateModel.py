@@ -27,7 +27,7 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
     """
     
     @sp.onchain_view()
-    def viewScale(self,params):
+    def getScale(self,params):
         sp.set_type(params, sp.TUnit)
         sp.result(self.data.scale)
 
