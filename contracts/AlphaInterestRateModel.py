@@ -9,7 +9,7 @@ IRMInterface = sp.io.import_script_from_url(
 
 
 class InterestRateModel(IRMInterface.InterestRateModelInterface):
-    def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, alpha_, **extra_storage):
+    def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, alpha_, admin_, **extra_storage):
         self.init(
             scale=scale_,  # must match order of reserveFactorMantissa
             # The multiplier of utilization rate that gives the slope of the interest rate
@@ -18,6 +18,7 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
             baseRatePerBlock=baseRatePerBlock_,
             # hyper parameter alpha
             alpha = alpha_, 
+            admin = admin_,
             **extra_storage
         )
 
@@ -66,7 +67,22 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
     def calculateBorrowRate(self, utRate):
         newURate = self.newRate(utRate)
         return sp.compute(newURate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)
-        #return sp.compute(newURate)
 
     def newRate(self, x):
         return sp.compute(x * (self.data.scale + self.data.alpha) // (x + self.data.alpha)) 
+    
+    @sp.entry_point
+    def updateAlpha(self, alpha_):
+        sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
+        self.data.alpha = alpha_
+        
+    @sp.entry_point
+    def updateBaseRatePerBlock(self, base):
+        sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
+        self.data.baseRatePerBlock = base
+        
+    @sp.entry_point
+    def updatemMltiplierPerBlock(self, mul):
+        sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
+        self.data.multiplierPerBlock = mul
+        

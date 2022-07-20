@@ -172,20 +172,6 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
                                "setReserveFactor").open_some()
         sp.transfer(params.newReserveFactor, sp.mutez(0), contract)
         
-    """    
-    accrues interest and sets a new alpha-hyperparameter for the protocol
-    params: TRecord
-        cToken: TAddress - The address of CToken contract
-        newAlpha: TNat - New reserve factor value
-    """
-    @sp.entry_point
-    def setAlpha(self, params):
-        self.verifyAdministrator()
-        sp.set_type(params, sp.TRecord(
-            cToken=sp.TAddress, newAlpha=sp.TNat))
-        contract = sp.contract(sp.TNat, params.cToken,
-                               "updateAlpha").open_some()
-        sp.transfer(params.newAlpha, sp.mutez(0), contract)
 
     """    
         Accrues interest and reduces reserves by transferring to admin

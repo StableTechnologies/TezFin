@@ -53,8 +53,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             borrowRatePerBlock=sp.nat(0),
             # Current per-block supply interest rate
             supplyRatePerBlock=sp.nat(0),
-            # alpha factor for alpha interest rate model
-            alpha=sp.nat(int(1e18)),
+
             administrator=administrator_,  # Administrator`s address for this contract
             pendingAdministrator=sp.none,  # Pending administrator`s address for this contract
             # Set of currently active operations to protect execution flow
@@ -580,27 +579,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.BORROW_RATE)
         self.data.borrowRatePerBlock = value
-        
-    """    
-        Updates storage value of the current alpha hyper-parameter for this cToken
-        params: TUnit
-    """
-    @sp.entry_point
-    def updateAlpha(self, nalpha):
-        sp.set_type(nalpha, sp.TNat)
-        self.activateNewOp(OP.CTokenOperations.ALPHA)
-        self.updateCash()
-        sp.transfer(nalpha, sp.mutez(0), sp.self_entry_point(
-            "updateAlphaInternal"))
-
-    @sp.entry_point(lazify=True)
-    def updateAlphaInternal(self, nalpha):
-        sp.set_type(nalpha, sp.TNat)
-        self.verifyInternal()
-        self.verifyAndFinishActiveOp(OP.CTokenOperations.ALPHA)
-        self.data.alpha = nalpha
-
-
     """    
         Updates storage value of the current per-block supply interest rate for this cToken, scaled by 1e18
 
