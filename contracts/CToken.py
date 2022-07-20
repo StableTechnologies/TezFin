@@ -769,7 +769,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def doAccrueInterest(self, borrowRateMantissa):
         sp.set_type(borrowRateMantissa, sp.TNat)
         self.verifyIRM()
-        borrowScale = sp.view("viewScale",self.data.interestRateModel,
+        borrowScale = sp.view("getScale",self.data.interestRateModel,
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
