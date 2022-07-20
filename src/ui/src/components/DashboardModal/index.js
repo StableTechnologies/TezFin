@@ -24,7 +24,7 @@ import CloseButton from '../CloseButton';
 import CustomizedProgressBars from '../ProgressBar';
 
 import { useStyles } from './style';
-import LightTooltip from './LightTooltip';
+import LightTooltip from '../Tooltip/LightTooltip';
 
 const DashboardModal = (props) => {
     const classes = useStyles();
@@ -44,7 +44,7 @@ const DashboardModal = (props) => {
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
 
-    const tezBalance = decimalify(underlyingBalances?.XTZ.toString(), decimals.XTZ);
+    const tezBalance = decimalify(underlyingBalances?.XTZ, decimals.XTZ);
     const isDisabled = !(tokenValue > 0 && address) || disabled;
 
     const handleTabChange = (event, newValue) => {
@@ -75,11 +75,11 @@ const DashboardModal = (props) => {
                         <div>
                             <img src={tokenDetails.logo} alt="logo" className={classes.img} />
                             <LightTooltip
-                                title={ tokenDetails.walletBalance ? `${decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title], decimals[tokenDetails.title])} ${tokenDetails.banner}` : ''}
+                                title={ tokenDetails.walletBalance ? `${decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title], decimals[tokenDetails.title])} ${tokenDetails.banner}` : ''}
                                 placement="bottom"
                             >
                                 <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                                    {tokenDetails.walletBalance ? nFormatter(decimalify(tokenDetails.walletBalance.toString(), decimals[tokenDetails.title])) : '0'}
+                                    {tokenDetails.walletBalance ? nFormatter(decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title])) : '0'}
                                     {' '} {tokenDetails.banner}
                                 </Typography>
                             </LightTooltip>
@@ -139,22 +139,41 @@ const DashboardModal = (props) => {
                                 }
                             </Grid>
                             {mainModal
-                                ? <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                    {(tabValue === 'one') && (
-                                        (tokenDetails.supply.balanceUnderlying > 0)
-                                            ? nFormatter(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
-                                            : '0'
-                                    )}
-                                    {(tabValue === 'two') && (
-                                        (tokenDetails.borrow.balanceUnderlying > 0)
-                                            ? nFormatter(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
-                                            : '0'
-                                    )}
-                                    {' '} {tokenDetails.title}
-                                </Grid>
-                                : <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                    {nFormatter(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))} {' '} {tokenDetails.title}
-                                </Grid>
+                                ? <LightTooltip
+                                    title={`${(tabValue === 'one')
+                                        ? ((tokenDetails.supply.balanceUnderlying > 0)
+                                            ? decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title])
+                                            : 0
+                                        )
+                                        : ((tokenDetails.borrow.balanceUnderlying > 0)
+                                            ? decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title])
+                                            : 0
+                                        )
+                                    } ${tokenDetails.banner} `}
+                                    placement="bottom"
+                                >
+                                    <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                                        {(tabValue === 'one') && (
+                                            (tokenDetails.supply.balanceUnderlying > 0)
+                                                ? `${truncateNum(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))}...`
+                                                : '0'
+                                        )}
+                                        {(tabValue === 'two') && (
+                                            (tokenDetails.borrow.balanceUnderlying > 0)
+                                                ? `${truncateNum(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))}...`
+                                                : '0'
+                                        )}
+                                        {' '} {tokenDetails.title}
+                                    </Grid>
+                                </LightTooltip>
+                                : <LightTooltip
+                                    title={`${decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title])} ${tokenDetails.banner}`}
+                                    placement="bottom"
+                                >
+                                    <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
+                                        {truncateNum(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))}... {' '} {tokenDetails.title}
+                                    </Grid>
+                                </LightTooltip>
                             }
                         </Grid>
                     </Box>
@@ -173,15 +192,28 @@ const DashboardModal = (props) => {
                                     }
                                 </Grid>
                                 {mainModal
-                                    ? <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tabValue === 'one') && (tokenDetails.supplyRate ? truncateNum(decimalify(tokenDetails.supplyRate.toString(), 18)) : '0')}
-                                        {(tabValue === 'two') && (tokenDetails.borrowRate ? truncateNum(decimalify(tokenDetails.borrowRate.toString(), 18)) : '0')}
-                                        {'%'}
-                                    </Grid>
-                                    : <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
-                                        {(tokenDetails.rate) ? truncateNum(decimalify(tokenDetails.rate.toString(), 18)) : '0'}
-                                        {'%'}
-                                    </Grid>
+                                    ? <LightTooltip
+                                        title={`${(tabValue === 'one')
+                                            ? (tokenDetails.supplyRate > 0 ? `${decimalify(tokenDetails.supplyRate, 18)}%` : '')
+                                            : (tokenDetails.borrowRate > 0 ? `${decimalify(tokenDetails.borrowRate, 18)}%` : '')
+                                        }`}
+                                        placement="bottom"
+                                    >
+                                        <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
+                                            {(tabValue === 'one') && (tokenDetails.supplyRate > 0 ? `${truncateNum(decimalify(tokenDetails.supplyRate, 18))}...` : '0')}
+                                            {(tabValue === 'two') && (tokenDetails.borrowRate > 0 ? `${truncateNum(decimalify(tokenDetails.borrowRate, 18))}...` : '0')}
+                                            {'%'}
+                                        </Grid>
+                                    </LightTooltip>
+                                    : <LightTooltip
+                                        title={tokenDetails.rate > 0 ? `${decimalify(tokenDetails.rate, 18)}%` : ''}
+                                        placement="bottom"
+                                    >
+                                        <Grid item sm={3} className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`} >
+                                            {(tokenDetails.rate) ? `${truncateNum(decimalify(tokenDetails.rate, 18))}...` : '0'}
+                                            {'%'}
+                                        </Grid>
+                                    </LightTooltip>
                                 }
                             </Grid>
                         </Box>
@@ -201,12 +233,17 @@ const DashboardModal = (props) => {
                 <Box className={`${classes.contentBoxTwo} ${classes.limitUsed}`}>
                     <Grid container textAlign="justify" justifyContent="space-between">
                         <Grid item sm={6} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit Used </Grid>
-                        <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
-                            {(address && pendingLimitUsed)
-                                ? ((pendingLimitUsed > 0) ? ((pendingLimitUsed > 100) ? 100 : truncateNum(pendingLimitUsed)) : '0')
-                                : ((limitUsed > 0) ? ((limitUsed > 100) ? 100 : truncateNum(limitUsed)) : '0')
-                            }%
-                        </Grid>
+                        <LightTooltip
+                            title={`${(address && pendingLimitUsed) ? '' : (limitUsed > 0 ? `${limitUsed}%` : '')}`}
+                            placement="bottom"
+                        >
+                            <Grid item sm={6} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
+                                {(address && pendingLimitUsed)
+                                    ? ((pendingLimitUsed > 0) ? ((pendingLimitUsed > 100) ? 100 : truncateNum(pendingLimitUsed)) : '0')
+                                    : ((limitUsed > 0) ? ((limitUsed > 100) ? 100 : `${truncateNum(limitUsed)}...`) : '0')
+                                }%
+                            </Grid>
+                        </LightTooltip>
                     </Grid>
                 </Box>
                 <Box className={`${classes.contentBoxTwo} ${classes.progressBarCon}`}>

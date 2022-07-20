@@ -3,7 +3,7 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { decimals } from 'tezoslendingplatformjs';
+import BigNumber from 'bignumber.js';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -22,9 +22,11 @@ import DisableCollateralModal from '../DisableCollateralModal';
 import questionCircleIcon from '../../assets/questionCircle.svg';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';
+import { decimalify, formatTokenData, truncateNum } from '../../util';
 
 import { useStyles } from './style';
+import MarketTooltip from '../Tooltip';
+import LightTooltip from '../DashboardModal/LightTooltip';
 
 const SuppliedTokenTable = (props) => {
     const classes = useStyles();
@@ -127,14 +129,23 @@ const SuppliedTokenTable = (props) => {
                                     {' '} ꜰ{data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {(data.rate > 0) ? truncateNum(decimalify(data.rate.toString(), 18)) : '0'}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}>
+                                <LightTooltip
+                                    title={data.rate > 0 ? `${decimalify(data.rate, 18)}%` : ''}
+                                    placement="bottom"
+                                >
+                                    <span>
+                                        {(data.rate > 0) ? `${truncateNum(decimalify(data.rate, 18))}...` : '0'}%
+                                    </span>
+                                </LightTooltip>
+                            </TableCell>
                             <TableCell align="right">
-                                <span className={classes.clearFont}>
-                                    {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title])) : '0.00'} {data.title}
-                                </span> <br/>
-                                <span className={classes.faintFont}>
-                                    ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
-                                </span>
+                                <MarketTooltip
+                                    data={data.balanceUnderlying}
+                                    dataUsd={new BigNumber(data.balanceUnderlying).multipliedBy(data.usdPrice).toNumber()}
+                                    assetType={data.title}
+                                    classes={classes}
+                                />
                             </TableCell>
                             <TableCell align="right" className={classes.switchPadding}>
                                 <Switch data={data} />
