@@ -117,13 +117,21 @@ const BorrowedTokenTable = (props) => {
                                 />
                             </TableCell>
                             <TableCell align="right">
-                                <span className={classes.clearFont}>
-                                    {truncateNum(
-                                        new BigNumber(
-                                            decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
-                                        ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()
-                                    )}%
-                                </span>
+                                <LightTooltip
+                                    title={`${new BigNumber(
+                                        decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
+                                    ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()}
+                                    %`}
+                                    placement="right"
+                                >
+                                    <span className={classes.clearFont}>
+                                        {truncateNum(
+                                            new BigNumber(
+                                                decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
+                                            ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()
+                                        )}...%
+                                    </span>
+                                </LightTooltip>
                             </TableCell>
                         </TableRow>
                     ))}
