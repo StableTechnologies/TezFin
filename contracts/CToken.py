@@ -609,7 +609,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def setSupplyRatePerBlock(self, value):
-        supplyScale = sp.view("viewScale",self.data.interestRateModel,
+        supplyScale = sp.view("getScale",self.data.interestRateModel,
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
