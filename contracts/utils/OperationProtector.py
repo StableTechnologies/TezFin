@@ -21,7 +21,6 @@ class CTokenOperations:
     REDUCE_RESERVES = sp.nat(12)
     GET_CASH = sp.nat(13)
     TRANSFER = sp.nat(14)
-    ALPHA = sp.nat(15)
 
 
 class ComptrollerOperations:
