@@ -65,15 +65,16 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         return ur.value
 
     def calculateBorrowRate(self, utRate):
-        newURate = self.newRate(utRate)
-        return sp.compute(newURate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)
+        #newURate = self.newRate(utRate)
+        return sp.compute(utRate * (self.data.scale + self.data.alpha) * self.data.multiplierPerBlock // (utRate + self.data.alpha) // self.data.scale + self.data.baseRatePerBlock)
 
-    def newRate(self, x):
-        return sp.compute(x * (self.data.scale + self.data.alpha) // (x + self.data.alpha)) 
+    # def newRate(self, x):
+    #     return sp.compute(x * (self.data.scale + self.data.alpha) // (x + self.data.alpha)) 
     
     @sp.entry_point
     def updateAlpha(self, alpha_):
         sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
+        sp.verify(alpha_ >= 0)
         self.data.alpha = alpha_
         
     @sp.entry_point
@@ -82,7 +83,7 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         self.data.baseRatePerBlock = base
         
     @sp.entry_point
-    def updatemMltiplierPerBlock(self, mul):
+    def updatemMultiplierPerBlock(self, mul):
         sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
         self.data.multiplierPerBlock = mul
         
