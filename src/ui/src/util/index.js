@@ -218,7 +218,7 @@ export const roundValue = (num, decimals = 2) => BigNumber(num).toFixed(decimals
  * @returns abbreviated number in string format.
  */
 // eslint-disable-next-line default-param-last
-export const nFormatter = (num, formatDecimals = 2) => {
+export const nFormatter = (num, formatDecimals = 4) => {
     const suffix = [
         { value: 1, symbol: '' }, { value: 1e3, symbol: 'k' }, { value: 1e6, symbol: 'M' }, { value: 1e9, symbol: 'B' }
     ];
@@ -230,12 +230,12 @@ export const nFormatter = (num, formatDecimals = 2) => {
         }
     }
 
-    let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toString();
+    let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toFixed();
     if (formattedNum % 1 !== 0) {
         formattedNum = +formattedNum.slice(
             0,
             formattedNum.toString().indexOf('.') + (formatDecimals + 1)
         );
     }
-    return BigNumber(formattedNum).toFixed() + suffix[i].symbol;
+    return BigNumber(formattedNum).toString().match(/^-?\d+(?:\.\d{0,2})?/) + suffix[i].symbol;
 };
