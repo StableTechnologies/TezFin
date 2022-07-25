@@ -1,8 +1,12 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line no-use-before-define
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import { decimals } from 'tezoslendingplatformjs';
+import BigNumber from 'bignumber.js';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,7 +16,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
-import { decimals } from 'tezoslendingplatformjs';
 import { decimalify, nFormatter, roundValue } from '../../util';
 
 import AllMarketModal from '../AllMarketModal';
@@ -85,12 +88,26 @@ const AllMarketTokenTable = (props) => {
                                         </TableCell>
                                         <TableCell align="right" className={classes.clearFont}>
                                             <span>
-                                                {(data.supplyRate > 0) ? roundValue(decimalify(data.supplyRate, 18)) : 0}%
+                                                {(data.supplyRate > 0)
+                                                    // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as 0.01%)
+                                                    ? ((new BigNumber(data.supplyRate).gt(new BigNumber(10000000000000000)))
+                                                        ? roundValue(decimalify(data.supplyRate, 18))
+                                                        : '0.01'
+                                                    )
+                                                    : '0'
+                                                }%
                                             </span>
                                         </TableCell>
                                         <TableCell align="right" className={classes.clearFont}>
                                             <span>
-                                                {(data.borrowRate > 0) ? roundValue(decimalify(data.borrowRate, 18)) : 0}%
+                                                {(data.borrowRate > 0)
+                                                    // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as 0.01%)
+                                                    ? ((new BigNumber(data.supplyRate).gt(new BigNumber(10000000000000000)))
+                                                        ? roundValue(decimalify(data.borrowRate, 18))
+                                                        : '0.01'
+                                                    )
+                                                    : '0'
+                                                }%
                                             </span>
                                         </TableCell>
                                         <TableCell align="right">

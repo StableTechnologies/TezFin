@@ -1,8 +1,12 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import { decimals } from 'tezoslendingplatformjs';
+import BigNumber from 'bignumber.js';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,7 +16,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
-import { decimals } from 'tezoslendingplatformjs';
 import TableSkeleton from '../Skeleton';
 import Switch from '../Switch';
 import SupplyModal from '../SupplyModal';
@@ -130,7 +133,14 @@ const SuppliedTokenTable = (props) => {
                             </TableCell>
                             <TableCell align="right" className={classes.clearFont}>
                                 <span>
-                                    {(data.rate > 0) ? roundValue(decimalify(data.rate, 18)) : '0'}%
+                                    {(data.rate > 0)
+                                        // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as 0.01%)
+                                        ? ((new BigNumber(data.rate).gt(new BigNumber(10000000000000000)))
+                                            ? roundValue(decimalify(data.rate, 18))
+                                            : '0.01'
+                                        )
+                                        : '0'
+                                    }%
                                 </span>
                             </TableCell>
                             <TableCell align="right">
@@ -139,7 +149,7 @@ const SuppliedTokenTable = (props) => {
                                     placement="bottom"
                                 >
                                     <span className={classes.clearFont}>
-                                        {truncateNum(decimalify(data.balanceUnderlying, decimals[data.title], decimals[data.title]))}... {' '} {data.title}
+                                        {truncateNum(decimalify(data.balanceUnderlying, decimals[data.title], decimals[data.title]))} {' '} {data.title}
                                     </span>
                                 </LightTooltip>
                                 <br/>

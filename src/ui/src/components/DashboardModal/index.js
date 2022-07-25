@@ -155,12 +155,12 @@ const DashboardModal = (props) => {
                                     <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
                                         {(tabValue === 'one') && (
                                             (tokenDetails.supply.balanceUnderlying > 0)
-                                                ? `${truncateNum(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))}...`
+                                                ? truncateNum(decimalify(tokenDetails.supply.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
                                                 : '0'
                                         )}
                                         {(tabValue === 'two') && (
                                             (tokenDetails.borrow.balanceUnderlying > 0)
-                                                ? `${truncateNum(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))}...`
+                                                ? truncateNum(decimalify(tokenDetails.borrow.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))
                                                 : '0'
                                         )}
                                         {' '} {tokenDetails.title}
@@ -171,7 +171,7 @@ const DashboardModal = (props) => {
                                     placement="bottom"
                                 >
                                     <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`} >
-                                        {truncateNum(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))}... {' '} {tokenDetails.title}
+                                        {truncateNum(decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title]))} {' '} {tokenDetails.title}
                                     </Grid>
                                 </LightTooltip>
                             }

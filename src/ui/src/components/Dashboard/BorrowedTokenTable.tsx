@@ -1,8 +1,10 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
@@ -99,7 +101,14 @@ const BorrowedTokenTable = (props) => {
                             </TableCell>
                             <TableCell align="right" className={classes.clearFont}>
                                 <span>
-                                    {(data.rate > 0) ? roundValue(decimalify(data.rate, 18)) : '0'}%
+                                    {(data.rate > 0)
+                                        // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as 0.01%)
+                                        ? ((new BigNumber(data.rate).gt(new BigNumber(10000000000000000)))
+                                            ? roundValue(decimalify(data.rate, 18))
+                                            : '0.01'
+                                        )
+                                        : '0'
+                                    }%
                                 </span>
                             </TableCell>
                             <TableCell align="right">
@@ -108,7 +117,7 @@ const BorrowedTokenTable = (props) => {
                                     placement="bottom"
                                 >
                                     <span className={classes.clearFont}>
-                                        {truncateNum(decimalify(data.balanceUnderlying, decimals[data.title], decimals[data.title]))}... {' '} {data.title}
+                                        {truncateNum(decimalify(data.balanceUnderlying, decimals[data.title], decimals[data.title]))} {' '} {data.title}
                                     </span>
                                 </LightTooltip>
                                 <br/>
