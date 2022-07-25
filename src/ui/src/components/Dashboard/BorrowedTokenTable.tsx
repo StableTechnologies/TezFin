@@ -37,6 +37,13 @@ const BorrowedTokenTable = (props) => {
     const [openMktModal, setMktModal] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    const checkLimitUsed = (data) => {
+        const val = new BigNumber(
+            decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
+        ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber();
+        return (val > 0.01) ? truncateNum(val) : 0.01;
+    };
+
     const closeModal = () => {
         setMktModal(false);
     };
@@ -127,11 +134,7 @@ const BorrowedTokenTable = (props) => {
                             </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
-                                    {truncateNum(
-                                        new BigNumber(
-                                            decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
-                                        ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber()
-                                    )}%
+                                    {checkLimitUsed(data)}
                                 </span>
                             </TableCell>
                         </TableRow>
