@@ -7,8 +7,12 @@ EC = IRMErrors.ErrorCodes
 IRMInterface = sp.io.import_script_from_url(
     "file:contracts/interfaces/InterestRateModelInterface.py")
 
+#formula used for model: 
+#               borrowRate = x*multipilierPerBlock + baseRatePerBlock
+#               where x = utilizationRate*(1+alpha)/(utilizationRate + alpha)             
 
-class InterestRateModel(IRMInterface.InterestRateModelInterface):
+
+class AlphaInterestRateModel(IRMInterface.InterestRateModelInterface):
     def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, alpha_, admin_, **extra_storage):
         self.init(
             scale=scale_,  # must match order of reserveFactorMantissa
@@ -52,8 +56,8 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         utRate = self.utilizationRate(
             params.cash, params.borrows, params.reserves)
         borrowRate = self.calculateBorrowRate(utRate)
-        rateToPool = borrowRate * oneMinusReserveFactor // self.data.scale
-        result = utRate * rateToPool // self.data.scale
+        rateToPool = borrowRate * oneMinusReserveFactor 
+        result = utRate * rateToPool // self.data.scale // self.data.scale
         sp.transfer(result, sp.mutez(0), params.cb)
 
     def utilizationRate(self, cash, borrows, reserves):
@@ -83,7 +87,12 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         self.data.baseRatePerBlock = base
         
     @sp.entry_point
-    def updatemMultiplierPerBlock(self, mul):
+    def updateMultiplierPerBlock(self, mul):
         sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
         self.data.multiplierPerBlock = mul
+        
+    @sp.entry_point
+    def updateAdmin(self, newAdmin):
+        sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
+        self.data.admin = newAdmin
         

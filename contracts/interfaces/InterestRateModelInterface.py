@@ -49,3 +49,17 @@ class InterestRateModelInterface(sp.Contract):
     @sp.entry_point
     def getSupplyRate(self, params):
         pass
+    
+    
+    """ 
+        changes admin of interest rate model contract
+
+        params: new admin
+
+        return: nothing
+    """
+    
+    @sp.entry_point
+    def updateAdmin(self, newAdmin):
+        sp.set_type(newAdmin, sp.TAddress)
+        pass

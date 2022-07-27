@@ -71,6 +71,11 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         self.data.baseRatePerBlock = base
         
     @sp.entry_point
-    def updatemMltiplierPerBlock(self, mul):
+    def updatemMultiplierPerBlock(self, mul):
         sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
         self.data.multiplierPerBlock = mul
+        
+    @sp.entry_point
+    def updateAdmin(self, newAdmin):
+        sp.verify(sp.sender == self.data.admin, "NOT ADMIN")
+        self.data.admin = newAdmin
