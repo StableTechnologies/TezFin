@@ -41,7 +41,7 @@ const BorrowedTokenTable = (props) => {
         const val = new BigNumber(
             decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
         ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber();
-        return (val > 0.01) ? truncateNum(val) : 0.01;
+        return (val > 0.01) ? truncateNum(val) : '<0.01';
     };
 
     const closeModal = () => {
@@ -109,10 +109,10 @@ const BorrowedTokenTable = (props) => {
                             <TableCell align="right" className={classes.clearFont}>
                                 <span>
                                     {(data.rate > 0)
-                                        // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as 0.01%)
+                                        // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
                                         ? ((new BigNumber(data.rate).gt(new BigNumber(10000000000000000)))
                                             ? roundValue(decimalify(data.rate, 18))
-                                            : '0.01'
+                                            : '<0.01'
                                         )
                                         : '0'
                                     }%
