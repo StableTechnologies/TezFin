@@ -601,10 +601,16 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyActiveOp(OP.CTokenOperations.SUPPLY_RATE)
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
                         entry_point="getSupplyRate").open_some()
-        transferData = sp.record(cash=self.getCashImpl(),
-                                 borrows=self.data.totalBorrows,
-                                 reserves=self.data.totalReserves,
+        IRMScale = sp.view("getScale",self.data.interestRateModel,
+                                    sp.unit, 
+                                    t=sp.TNat
+                                    ).open_some("INVALID COMPTROLLER VIEW")
+
+        transferData = sp.record(cash=self.rescale(self.getCashImpl(),self.data.expScale,IRMScale),
+                                 borrows=self.rescale(self.data.totalBorrows,self.data.expScale,IRMScale),
+                                 reserves=self.rescale(self.data.totalReserves,self.data.expScale,IRMScale),
                                  cb=sp.self_entry_point("setSupplyRatePerBlock"))
+
         sp.transfer(transferData, sp.mutez(0), c)
 
     @sp.entry_point(lazify=True)
