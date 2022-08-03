@@ -78,8 +78,8 @@ class ExponentialTestContract(Exponential.Exponential):
 
      
     @sp.entry_point
-    def testRescale(self, value, old_scale):
-        self.data.result = self.rescale(value, old_scale).mantissa
+    def testRescale(self, mantissa, mantissa_scale, new_scale):
+        self.data.result = self.rescale(mantissa, mantissa_scale, new_scale)
 
 @sp.add_test(name = "Exponential_Tests")
 def test():
@@ -211,28 +211,33 @@ def test():
     scenario.verify(c1.data.result == sp.nat(0))
 
     scenario.h2("Test rescale")
-    scenario.h3("Test for one in different scales ")
-    value = 1
-    scale = 1
-    scenario += c1.testRescale(value=value,old_scale=scale)
-    scenario.verify(c1.data.result == expScale)
-    value = 100
-    scale = 100
-    scenario += c1.testRescale(value=value,old_scale=scale)
-    scenario.verify(c1.data.result == expScale)
+    scenario.h3("Test for converting one in different scales ")
+    mantissa = sp.nat(int(1e18))
+    mantissa_scale = sp.nat(int(1e18))
+    target_scale =  sp.nat(int(1e8))
+    expected =  sp.nat(int(1e8))
+    scenario += c1.testRescale(mantissa=mantissa,mantissa_scale=mantissa_scale,new_scale=target_scale)
+    scenario.verify(c1.data.result == expected)
+    target_scale =  sp.nat(int(1e12))
+    expected =  sp.nat(int(1e12))
+    scenario += c1.testRescale(mantissa=mantissa,mantissa_scale=mantissa_scale,new_scale=target_scale)
+    scenario.verify(c1.data.result == expected)
+    target_scale =  sp.nat(int(1))
+    expected =  sp.nat(int(1))
+    scenario += c1.testRescale(mantissa=mantissa,mantissa_scale=mantissa_scale,new_scale=target_scale)
+    scenario.verify(c1.data.result == expected)
+
     scenario.h3("Test for n in different scales ")
-    scenario.h4("Test for n in scale 1 ")
-    n=sp.nat(4)
-    scale = sp.nat(1)
-    value = n * scale
-    scenario += c1.testRescale(value=value,old_scale=scale)
-    scenario.verify(c1.data.result == n * expScale)
-    scenario.h4("Test for n in scale 1000 ")
-    n=sp.nat(8)
-    scale = sp.nat(1000)
-    value = n * scale
-    scenario += c1.testRescale(value=value,old_scale=scale)
-    scenario.verify(c1.data.result == n * expScale)
+    mantissa = sp.nat(int(2e18))
+    mantissa_scale = sp.nat(int(1e18))
+    target_scale =  sp.nat(int(1e8))
+    expected =  sp.nat(int(2e8))
+    scenario += c1.testRescale(mantissa=mantissa,mantissa_scale=mantissa_scale,new_scale=target_scale)
+    scenario.verify(c1.data.result == expected)
+    target_scale =  sp.nat(int(1))
+    expected =  sp.nat(int(2))
+    scenario += c1.testRescale(mantissa=mantissa,mantissa_scale=mantissa_scale,new_scale=target_scale)
+    scenario.verify(c1.data.result == expected)
 
 
 
