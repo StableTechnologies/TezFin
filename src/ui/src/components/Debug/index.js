@@ -128,6 +128,8 @@ const DebugDashboard = () => {
                             <TableCell align="right"> collateral Factor </TableCell>
                             <TableCell align="right"> Reserves </TableCell>
                             <TableCell align="right"> Reserve Factor </TableCell>
+                            <TableCell align="right"> Close Factor </TableCell>
+                            <TableCell align="right"> liquidation Incentive </TableCell>
                             <TableCell align="right" className={classes.collateralPadding}>
                                 Collateral
                             </TableCell>
@@ -190,6 +192,12 @@ const DebugDashboard = () => {
                                     <TableCell align='right'>{data.collateralFactor}</TableCell>
                                     <TableCell align='right'>{data.reserves}</TableCell>
                                     <TableCell align='right'>{data.reserveFactor}</TableCell>
+                                    <TableCell align='right'>
+                                        {new BigNumber(comptroller?.closeFactorMantissa.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed()}
+                                    </TableCell>
+                                    <TableCell align='right'>
+                                        {new BigNumber(comptroller?.liquidationIncentiveMantissa.toString()).div(new BigNumber(10).pow(new BigNumber(18))).toFixed()}
+                                    </TableCell>
                                     <TableCell align="right" className={classes.switchPadding}>
                                         {data.collateral ? <Switch data={data} /> : <SW.default disabled />}
                                     </TableCell>

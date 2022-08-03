@@ -36,8 +36,8 @@ const Composition = (props) => {
                             <Typography className={classes.statsTitle}> {dataTitle} </Typography>
                             <Typography className={classes.statsValue}>
                                 ${(
-                                    ((data.supplying > 0) && nFormatter(data.supplying, 2))
-                                    || ((data.borrowing > 0) && nFormatter(data.borrowing, 2))
+                                    ((data.supplying > 0) && nFormatter(data.supplying))
+                                    || ((data.borrowing > 0) && nFormatter(data.borrowing))
                                 )
                                 || '0.00'
                                 }
@@ -52,8 +52,8 @@ const Composition = (props) => {
                             <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                             <Typography className={classes.statsValue}>
                               ${(
-                                    ((data.collateralized > 0) && nFormatter(data.collateralized, 2))
-                                    || ((data.borrowLimit > 0) && nFormatter(data.borrowLimit, 2))
+                                    ((data.collateralized > 0) && nFormatter(data.collateralized))
+                                    || ((data.borrowLimit > 0) && nFormatter(data.borrowLimit))
                                 )
                                 || '0.00'
                                 }

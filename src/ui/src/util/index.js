@@ -89,8 +89,8 @@ export const evaluateTransaction = async (operations) => {
             address
         );
 
-        console.log("operation", operations);
-        
+        console.log('operation', operations);
+
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
@@ -195,7 +195,7 @@ export function formatTokenData(data) {
 }
 
 /**
- * This function converts a number to string and truncates it to two decimals without rounding it up.
+ * This function converts a number to string and truncates it to two decimals without rounding it.
  * @param num number to truncate.
  *
  * @return truncated value.
@@ -203,11 +203,21 @@ export function formatTokenData(data) {
 export const truncateNum = (num) => num.toString().match(/^-?\d+(?:\.\d{0,2})?/);
 
 /**
+ * This function rounds a value to a specified number of decimals.
+ * @param num number to truncate.
+ * @param decimals decimal places to round.
+ *
+ * @return formatted value.
+ */
+export const roundValue = (num, decimals = 2) => BigNumber(num).toFixed(decimals);
+
+/**
  * This function abbreviates a number and returns it as a string with it's suffix.
  * @param  num number to be abbreviated.
  * @param  formatDecimals number to decimal points.
  * @returns abbreviated number in string format.
  */
+// eslint-disable-next-line default-param-last
 export const nFormatter = (num, formatDecimals = 4) => {
     const suffix = [
         { value: 1, symbol: '' }, { value: 1e3, symbol: 'k' }, { value: 1e6, symbol: 'M' }, { value: 1e9, symbol: 'B' }
@@ -220,15 +230,12 @@ export const nFormatter = (num, formatDecimals = 4) => {
         }
     }
 
-    let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toString();
-    // eslint-disable-next-line no-param-reassign
-    formatDecimals = formattedNum.toString().includes('.00') ? 4 : formatDecimals;
+    let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toFixed();
     if (formattedNum % 1 !== 0) {
         formattedNum = +formattedNum.slice(
             0,
             formattedNum.toString().indexOf('.') + (formatDecimals + 1)
         );
     }
-
-    return BigNumber(formattedNum).toFixed() + suffix[i].symbol;
+    return BigNumber(formattedNum).toString().match(/^-?\d+(?:\.\d{0,2})?/) + suffix[i].symbol;
 };

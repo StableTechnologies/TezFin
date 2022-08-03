@@ -1,8 +1,12 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line no-use-before-define
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import { decimals } from 'tezoslendingplatformjs';
+import BigNumber from 'bignumber.js';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,8 +16,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
-import { decimals } from 'tezoslendingplatformjs';
-import { decimalify, nFormatter, truncateNum } from '../../util';
+import { decimalify, nFormatter, roundValue } from '../../util';
 
 import AllMarketModal from '../AllMarketModal';
 import TableSkeleton from '../Skeleton';
@@ -69,28 +72,50 @@ const AllMarketTokenTable = (props) => {
                                         </TableCell>
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
-                                                {(data.marketSize > 0) ? nFormatter(decimalify(data.marketSize.toString(), decimals[data.title])) : '0'} {' '} {data.title}
+                                                {(data.marketSize > 0) ? nFormatter(decimalify(data.marketSize.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
                                             </span> <br/>
                                             <span className={classes.faintFont}>
-                                                ${(data.marketSize > 0) ? nFormatter(decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                                ${(data.marketSize > 0) ? nFormatter(decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                             </span>
                                         </TableCell>
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
-                                                {(data.totalBorrowed > 0) ? nFormatter(decimalify(data.totalBorrowed.toString(), decimals[data.title])) : '0'} {' '} {data.title}
+                                                {(data.totalBorrowed > 0) ? nFormatter(decimalify(data.totalBorrowed.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
                                             </span> <br/>
                                             <span className={classes.faintFont}>
-                                                ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                                ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                             </span>
                                         </TableCell>
-                                        <TableCell align="right" className={classes.clearFont}> {(data.supplyRate > 0) ? truncateNum(decimalify(data.supplyRate.toString(), 18)) : '0'}% </TableCell>
-                                        <TableCell align="right" className={classes.clearFont}> {(data.borrowRate > 0) ? truncateNum(decimalify(data.borrowRate.toString(), 18)) : '0'}% </TableCell>
+                                        <TableCell align="right" className={classes.clearFont}>
+                                            <span>
+                                                {(data.supplyRate > 0)
+                                                    // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as 0.01%)
+                                                    ? ((new BigNumber(data.supplyRate).gt(new BigNumber(10000000000000000)))
+                                                        ? roundValue(decimalify(data.supplyRate, 18))
+                                                        : '0.01'
+                                                    )
+                                                    : '0'
+                                                }%
+                                            </span>
+                                        </TableCell>
+                                        <TableCell align="right" className={classes.clearFont}>
+                                            <span>
+                                                {(data.borrowRate > 0)
+                                                    // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as 0.01%)
+                                                    ? ((new BigNumber(data.supplyRate).gt(new BigNumber(10000000000000000)))
+                                                        ? roundValue(decimalify(data.borrowRate, 18))
+                                                        : '0.01'
+                                                    )
+                                                    : '0'
+                                                }%
+                                            </span>
+                                        </TableCell>
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
-                                                {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title])) : '0'} {data.title}
+                                                {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title], decimals[data.title])) : '0'} {data.title}
                                             </span> <br/>
                                             <span className={classes.faintFont}>
-                                                ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                                ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                             </span>
                                         </TableCell>
                                     </TableRow>
