@@ -601,14 +601,14 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyActiveOp(OP.CTokenOperations.SUPPLY_RATE)
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
                         entry_point="getSupplyRate").open_some()
-        IRMScale = sp.view("getScale",self.data.interestRateModel,
+        scaleIRM = sp.view("getScale",self.data.interestRateModel,
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
 
-        transferData = sp.record(cash=self.rescale(self.getCashImpl(),self.data.expScale,IRMScale),
-                                 borrows=self.rescale(self.data.totalBorrows,self.data.expScale,IRMScale),
-                                 reserves=self.rescale(self.data.totalReserves,self.data.expScale,IRMScale),
+        transferData = sp.record(cash=self.rescale(self.getCashImpl(),self.data.expScale,scaleIRM),
+                                 borrows=self.rescale(self.data.totalBorrows,self.data.expScale,scaleIRM),
+                                 reserves=self.rescale(self.data.totalReserves,self.data.expScale,scaleIRM),
                                  cb=sp.self_entry_point("setSupplyRatePerBlock"))
 
         sp.transfer(transferData, sp.mutez(0), c)
@@ -765,14 +765,14 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
                         entry_point="getBorrowRate").open_some()
 
-        IRMScale = sp.view("getScale",self.data.interestRateModel,
+        scaleIRM = sp.view("getScale",self.data.interestRateModel,
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
 
-        transferData = sp.record(cash=self.rescale(self.getCashImpl(),self.data.expScale,IRMScale),
-                                 borrows=self.rescale(self.data.totalBorrows,self.data.expScale,IRMScale),
-                                 reserves=self.rescale(self.data.totalReserves,self.data.expScale,IRMScale),
+        transferData = sp.record(cash=self.rescale(self.getCashImpl(),self.data.expScale,scaleIRM),
+                                 borrows=self.rescale(self.data.totalBorrows,self.data.expScale,scaleIRM),
+                                 reserves=self.rescale(self.data.totalReserves,self.data.expScale,scaleIRM),
                                  cb=sp.self_entry_point("doAccrueInterest"))
 
         sp.transfer(transferData, sp.mutez(0), c)
