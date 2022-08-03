@@ -30,17 +30,17 @@ class Exponential(sp.Contract):
 
         params: 
             mantissa: TNat
-            value_scale: TNat
+            mantissa_scale: TNat
             new_scale: TNat
         return: TNat
     """
 
-    def rescale(self, mantissa, value_scale, new_scale):
+    def rescale(self, mantissa, mantissa_scale, new_scale):
         sp.set_type(mantissa, sp.TNat)
-        sp.set_type(value_scale, sp.TNat)
+        sp.set_type(mantissa_scale, sp.TNat)
         sp.set_type(new_scale, sp.TNat)
         numerator = mantissa * new_scale
-        rescaled = numerator // value_scale
+        rescaled = numerator // mantissa_scale
         return rescaled
 
 
