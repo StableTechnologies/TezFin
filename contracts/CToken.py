@@ -785,7 +785,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
-        borrowRateRescaled = self.rescale(borrowRateMantissa, borrowScale, self.data.expScale)
+        borrowRateRescaled = self.rescale(borrowRateMantissa, borrowScale, self.data.scaleUnderlying)
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
         sp.verify(borrowRateRescaled <=
                   self.data.borrowRateMaxMantissa, EC.CT_INVALID_BORROW_RATE)
