@@ -613,7 +613,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
-        supplyRatePerBlock = self.rescale(value,supplyScale)
+        supplyRatePerBlock = self.rescale(value,supplyScale,self.data.expScale)
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.SUPPLY_RATE)
         self.data.supplyRatePerBlock = supplyRatePerBlock
