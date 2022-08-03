@@ -22,27 +22,27 @@ class Exponential(sp.Contract):
             scale // 2), **extra_storage)
 
 
+
     """    
-        Constructs TExp from the given value of a diffferent scale, 
-        by readjusting it so it represents the scale set in the class 
-        initialization.
+       Changes a value in x scale to y scale. 
 
-
-        For example, if the current scale is 1e18 
-                rescale(10,10) = Exp{mantissa: 1e18} 
+        For example,   rescaleTo(2e18,1e18,1) = 2
 
         params: 
-            value: TNat
-            old_scale: TNat
-        return: TExp
+            mantissa: TNat
+            value_scale: TNat
+            new_scale: TNat
+        return: TNat
     """
 
-    def rescale(self, value, old_scale):
-        sp.set_type(value, sp.TNat)
-        sp.set_type(old_scale, sp.TNat)
-        numerator = value * self.data.expScale
-        rescaled = numerator // old_scale
-        return sp.record(mantissa=rescaled)
+    def rescale(self, mantissa, value_scale, new_scale):
+        sp.set_type(mantissa, sp.TNat)
+        sp.set_type(value_scale, sp.TNat)
+        sp.set_type(new_scale, sp.TNat)
+        numerator = mantissa * new_scale
+        rescaled = numerator // value_scale
+        return rescaled
+
 
     """    
         Constructs TExp from the given number value, without applying expScale
