@@ -606,9 +606,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     t=sp.TNat
                                     ).open_some("INVALID COMPTROLLER VIEW")
 
-        transferData = sp.record(cash=self.rescale(self.getCashImpl(),self.data.expScale,scaleIRM),
-                                 borrows=self.rescale(self.data.totalBorrows,self.data.expScale,scaleIRM),
-                                 reserves=self.rescale(self.data.totalReserves,self.data.expScale,scaleIRM),
+        transferData = sp.record(cash=self.getCashImpl(),
+                                 borrows=self.data.totalBorrows,
+                                 reserves=self.data.totalReserves, 
                                  cb=sp.self_entry_point("setSupplyRatePerBlock"))
 
         sp.transfer(transferData, sp.mutez(0), c)
