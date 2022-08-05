@@ -121,11 +121,11 @@ class Exponential(sp.Contract):
         return: TExp
     """
 
-    def mulExpRounded(self, a, b):
+    def mulExpRounded(self, a, b, expScale=sp.nat(int(1e18))):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
         mul_rounded = a.mantissa * b.mantissa + self.data.halfExpScale
-        return self.makeExp(mul_rounded // self.data.expScale)
+        return self.makeExp(mul_rounded // expScale)
 
     """    
         Checks if first Exp is less than second Exp.
