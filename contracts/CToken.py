@@ -770,11 +770,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def doAccrueInterest(self, borrowRateMantissa):
         sp.set_type(borrowRateMantissa, sp.TNat)
         self.verifyIRM()
-        borrowScale = sp.view("getScale",self.data.interestRateModel,
+        irmScale = sp.view("getScale",self.data.interestRateModel,
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID InterestRateModel VIEW")
-        borrowRateRescaled = self.rescale(borrowRateMantissa, borrowScale, self.data.scaleUnderlying)
+        borrowRateRescaled = self.rescale(borrowRateMantissa, irmScale, self.data.scaleUnderlying)
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
         sp.verify(borrowRateRescaled <=
                   self.data.borrowRateMaxMantissa, EC.CT_INVALID_BORROW_RATE)
