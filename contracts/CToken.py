@@ -22,9 +22,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         Parameters
         ----------
         scale_ :  CToken's scale.
-        scaleUnderlying_ : Underlying's scale.
+        underlyingScale_ : Underlying's scale.
     """
-    def __init__(self, scale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
+    def __init__(self, scale_, underlyingScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
         Exponential.Exponential.__init__(
             self,
             balances=sp.big_map(tkey=sp.TAddress, tvalue=sp.TRecord(
@@ -63,7 +63,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             pendingAdministrator=sp.none,  # Pending administrator`s address for this contract
             # Set of currently active operations to protect execution flow
             activeOperations=sp.set(t=sp.TNat),
-            scaleUnderlying=scale_,
+            underlyingScale=underlyingScale_,
+            scale=scale_,
             **extra_storage
         )
 
