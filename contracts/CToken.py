@@ -773,7 +773,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         borrowScale = sp.view("getScale",self.data.interestRateModel,
                                     sp.unit, 
                                     t=sp.TNat
-                                    ).open_some("INVALID COMPTROLLER VIEW")
+                                    ).open_some("INVALID InterestRateModel VIEW")
         borrowRateRescaled = self.rescale(borrowRateMantissa, borrowScale, self.data.scaleUnderlying)
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
         sp.verify(borrowRateRescaled <=
