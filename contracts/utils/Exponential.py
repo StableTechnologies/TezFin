@@ -79,9 +79,9 @@ class Exponential(sp.Contract):
         return: TNat
     """
 
-    def truncate(self, exp):
+    def truncate(self, exp, expScale=sp.nat(int(1e18))):
         sp.set_type(exp, TExp)
-        return exp.mantissa // self.data.expScale
+        return exp.mantissa // expScale
 
     """
         Multiply an Exp by a scalar, then truncate to return an unsigned integer.
