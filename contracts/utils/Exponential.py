@@ -224,10 +224,10 @@ class Exponential(sp.Contract):
         return: TExp
     """
 
-    def mul_exp_exp(self, a, b):
+    def mul_exp_exp(self, a, b, expScale=sp.nat(int(1e18))):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
-        return self.makeExp(a.mantissa * b.mantissa // self.data.expScale)
+        return self.makeExp(a.mantissa * b.mantissa // expScale)
 
     """    
         params: 
