@@ -17,7 +17,7 @@ TExp = sp.TRecord(mantissa=sp.TNat)
 
 class Exponential(sp.Contract):
     def __init__(self, **extra_storage ):
-         scale = int(1e18)
+        scale = int(1e18)
         self.init(expScale=sp.nat(scale), halfExpScale=sp.nat(
             scale // 2), **extra_storage)
 
@@ -66,9 +66,9 @@ class Exponential(sp.Contract):
         return: TExp
     """
 
-    def toExp(self, value):
+    def toExp(self, value,expScale=sp.nat(int(1e18))):
         sp.set_type(value, sp.TNat)
-        return self.makeExp(value * self.data.expScale)
+        return self.makeExp(value * expScale)
 
     """    
         Truncates the given exp to a whole number value.
@@ -260,11 +260,11 @@ class Exponential(sp.Contract):
         return: TExp
     """
 
-    def div_exp_exp(self, a, b):
+    def div_exp_exp(self, a, b, expScale=sp.nat(int(1e18))):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
         sp.verify(b.mantissa > 0, EC.DIVISION_BY_ZERO)
-        return self.makeExp(a.mantissa * self.data.expScale // b.mantissa)
+        return self.makeExp(a.mantissa * expScale // b.mantissa)
 
     """    
         params: 
