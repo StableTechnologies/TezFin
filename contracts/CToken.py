@@ -616,14 +616,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def setSupplyRatePerBlock(self, value):
-        supplyScale = sp.view("getScale",self.data.interestRateModel,
-                                    sp.unit, 
-                                    t=sp.TNat
-                                    ).open_some("INVALID COMPTROLLER VIEW")
-        supplyRatePerBlock = self.rescale(value,supplyScale,self.data.expScale)
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.SUPPLY_RATE)
-        self.data.supplyRatePerBlock = supplyRatePerBlock
+        self.data.supplyRatePerBlock = value
 
     """    
         Return the borrow balance of account based on stored data
