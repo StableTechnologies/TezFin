@@ -17,11 +17,7 @@ TExp = sp.TRecord(mantissa=sp.TNat)
 
 class Exponential(sp.Contract):
     def __init__(self, **extra_storage ):
-        scale = int(1e18)
-        self.init(expScale=sp.nat(scale), halfExpScale=sp.nat(
-            scale // 2), **extra_storage)
-
-
+        self.init(**extra_storage)
 
     """    
        Changes a value in x scale to y scale. 
