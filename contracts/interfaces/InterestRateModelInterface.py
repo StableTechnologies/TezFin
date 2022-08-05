@@ -29,6 +29,17 @@ TSupplyRateParams = sp.TRecord(cash=sp.TNat, borrows=sp.TNat,
 class InterestRateModelInterface(sp.Contract):
 
     """    
+        On chain view for  the scale of this contract
+
+        params: sp.TUnit
+        return: The scale of this interest rate model. 
+    """
+    
+    @sp.onchain_view()
+    def getScale(self,params):
+        pass
+
+    """    
         Calculates the current borrow interest rate per block
 
         params: TBorrowRateParams
