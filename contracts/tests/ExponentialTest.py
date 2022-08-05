@@ -4,7 +4,7 @@ Exponential = sp.io.import_script_from_url("file:contracts/utils/Exponential.py"
 
 class ExponentialTestContract(Exponential.Exponential):
     def __init__(self):
-        Exponential.Exponential.__init__(self, int(1e18), result=sp.nat(0))
+        Exponential.Exponential.__init__(self, result=sp.nat(0))
 
     @sp.entry_point
     def testAddExp(self, a, b):
