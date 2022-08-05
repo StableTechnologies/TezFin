@@ -124,7 +124,7 @@ class Exponential(sp.Contract):
     def mulExpRounded(self, a, b, expScale=sp.nat(int(1e18))):
         sp.set_type(a, TExp)
         sp.set_type(b, TExp)
-        mul_rounded = a.mantissa * b.mantissa + self.data.halfExpScale
+        mul_rounded = a.mantissa * b.mantissa + (expScale // 2)
         return self.makeExp(mul_rounded // expScale)
 
     """    
@@ -286,8 +286,8 @@ class Exponential(sp.Contract):
         return: TNat
     """
 
-    def div_nat_exp(self, a, b):
+    def div_nat_exp(self, a, b, expScale=sp.nat(int(1e18))):
         sp.set_type(a, sp.TNat)
         sp.set_type(b, TExp)
         sp.verify(b.mantissa > 0, EC.DIVISION_BY_ZERO)
-        return a * self.data.expScale // b.mantissa
+        return a * expScale // b.mantissa
