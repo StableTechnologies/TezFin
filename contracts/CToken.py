@@ -18,6 +18,12 @@ OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
 
 
 class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
+    """
+        Parameters
+        ----------
+        scale_ :  CToken's scale.
+        scaleUnderlying_ : Underlying's scale.
+    """
     def __init__(self, scale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
         Exponential.Exponential.__init__(
             self,
@@ -999,7 +1005,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 self.div_nat_exp(amount, self.makeExp(exchangeRate)))
         sp.else:
             actual_amount.value = sp.compute(
-                self.mulScalarTruncate(self.makeExp(exchangeRate), amount))
+                self.mulScalarTruncate(self.
+                    makeExp(exchangeRate), amount))
         return actual_amount.value
 
     def getRedeemAmount(self, amount, isUnderlying):
