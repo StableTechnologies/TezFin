@@ -22,7 +22,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         Parameters
         ----------
         scale_ :  The expoenent used to simulate CToken's decimal points .
-        underlyingScale_ : Underlying's scale.
+        underlyingScale_ : The expoenent used to simulate the underlying assets decimal points.
     """
     def __init__(self, scale_, underlyingScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
         Exponential.Exponential.__init__(
