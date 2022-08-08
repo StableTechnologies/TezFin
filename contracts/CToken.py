@@ -37,7 +37,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Maximum borrow rate that can ever be applied (.00000008% / block)
             borrowRateMaxMantissa=self.rescale(sp.nat(int(80000000000)), sp.nat(int(1e18)), underlyingScale_),
             # Maximum fraction of interest that can be set aside for reserves
-            reserveFactorMaxMantissa=sp.nat(int(1e18)),
+            reserveFactorMaxMantissa=self.rescale(sp.nat(int(1e18)), sp.nat(int(1e18)), underlyingScale_),
             comptroller=comptroller_,  # Contract which oversees inter-cToken operations
             # Model which tells what the current interest rate should be
             interestRateModel=interestRateModel_,
