@@ -774,10 +774,10 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID InterestRateModel VIEW")
-        borrowRateRescaled = self.rescale(borrowRateMantissa, irmScale, self.data.scaleUnderlying)
+        borrowRateRescaled = self.rescale(borrowRateMantissa, irmScale, self.data.underlyingScale)
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
         sp.verify(borrowRateRescaled <=
-                  self.rescale(self.data.borrowRateMaxMantissa, sp.nat(int(1e18)), underlyingScale_), EC.CT_INVALID_BORROW_RATE)
+                  self.rescale(self.data.borrowRateMaxMantissa, sp.nat(int(1e18)), self.data.underlyingScale), EC.CT_INVALID_BORROW_RATE)
         cash = self.getCashImpl()
         blockDelta = sp.as_nat(sp.level - self.data.accrualBlockNumber)
 
@@ -786,7 +786,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         interestAccumulated = sp.compute(self.mulScalarTruncate(
             simpleInterestFactor, self.data.totalBorrows))
         self.data.totalBorrows = interestAccumulated + self.data.totalBorrows
-        self.data.totalReserves = self.mulScalarTruncateAdd(sp.record(mantissa=self.rescale(self.data.reserveFactorMantissa, sp.nat(int(1e18)),underlyingScale_)),
+        self.data.totalReserves = self.mulScalarTruncateAdd(sp.record(mantissa=self.rescale(self.data.reserveFactorMantissa, sp.nat(int(1e18)), self.data.underlyingScale)),
                                                             interestAccumulated,
                                                             self.data.totalReserves)
         self.data.borrowIndex = self.mulScalarTruncateAdd(
@@ -906,7 +906,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyInternal()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.RESERVE_FACTOR)
         self.verifyAccruedInterestRelevance()
-        sp.verify(newReserveFactor <= self.rescale(self.data.reserveFactorMaxMantissa, sp.nat(int(1e18)), underlyingScale_),
+        sp.verify(newReserveFactor <= self.rescale(self.data.reserveFactorMaxMantissa, sp.nat(int(1e18)), self.data.underlyingScale),
                   EC.CT_INVALID_RESERVE_FACTOR)
         self.data.reserveFactorMantissa = newReserveFactor
 
