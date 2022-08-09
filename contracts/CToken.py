@@ -44,7 +44,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Initial exchange rate used when minting the first CTokens
             initialExchangeRateMantissa=initialExchangeRateMantissa_,
             # Fraction of interest currently set aside for reserves
-            reserveFactorMantissa= self.rescale(sp.nat(int(50000000000000000)), sp.nat(int(1e18)),underlyingScale_), # 5%
+            reserveFactorMantissa= sp.nat(int(50000000000000000), # 5%
             # protocol share for sezied asstes
             protocolSeizeShareMantissa=sp.nat(100000000000000), #0.01%
             # Block number that interest was last accrued at
@@ -786,7 +786,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         interestAccumulated = sp.compute(self.mulScalarTruncate(
             simpleInterestFactor, self.data.totalBorrows))
         self.data.totalBorrows = interestAccumulated + self.data.totalBorrows
-        self.data.totalReserves = self.mulScalarTruncateAdd(sp.record(mantissa=self.data.reserveFactorMantissa),
+        self.data.totalReserves = self.mulScalarTruncateAdd(sp.record(mantissa=self.rescale(self.data.reserveFactorMantissa, sp.nat(int(1e18)),underlyingScale_)),
                                                             interestAccumulated,
                                                             self.data.totalReserves)
         self.data.borrowIndex = self.mulScalarTruncateAdd(
