@@ -35,7 +35,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 balance=sp.TNat)),  # Official record of token balances for each account
             totalSupply=sp.nat(0),  # Total number of tokens in circulation
             # Maximum borrow rate that can ever be applied (.00000008% / block)
-            borrowRateMaxMantissa=self.rescale(sp.nat(int(80000000000)), sp.nat(int(1e18)), underlyingScale_),
+            borrowRateMaxMantissa=sp.nat(int(80000000000)),
             # Maximum fraction of interest that can be set aside for reserves
             reserveFactorMaxMantissa=self.rescale(sp.nat(int(1e18)), sp.nat(int(1e18)), underlyingScale_),
             comptroller=comptroller_,  # Contract which oversees inter-cToken operations
@@ -777,7 +777,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         borrowRateRescaled = self.rescale(borrowRateMantissa, irmScale, self.data.scaleUnderlying)
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
         sp.verify(borrowRateRescaled <=
-                  self.data.borrowRateMaxMantissa, EC.CT_INVALID_BORROW_RATE)
+                  self.rescale(self.data.borrowRateMaxMantissa, sp.nat(int(1e18)), underlyingScale_), EC.CT_INVALID_BORROW_RATE)
         cash = self.getCashImpl()
         blockDelta = sp.as_nat(sp.level - self.data.accrualBlockNumber)
 
