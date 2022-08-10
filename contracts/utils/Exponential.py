@@ -102,11 +102,11 @@ class Exponential(sp.Contract):
         return: TNat
     """
 
-    def mulScalarTruncateAdd(self, a, scalar, addend):
+    def mulScalarTruncateAdd(self, a, scalar, addend, expScale=sp.nat(int(1e18))):
         sp.set_type(a, TExp)
         sp.set_type(scalar, sp.TNat)
         sp.set_type(addend, sp.TNat)
-        return self.mulScalarTruncate(a, scalar) + addend
+        return self.mulScalarTruncate(a, scalar, expScale) + addend
 
     """    
         Multiply two Exp, round up to 1e-18, returning a new exponential.
