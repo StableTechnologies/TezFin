@@ -88,9 +88,9 @@ class Exponential(sp.Contract):
         return: TNat
     """
 
-    def mulScalarTruncate(self, a, scalar):
+    def mulScalarTruncate(self, a, scalar, expScale=sp.nat(int(1e18))):
         sp.set_type(a, TExp)
-        return self.truncate(self.mul_exp_nat(a, scalar))
+        return self.truncate(self.mul_exp_nat(a, scalar),expScale=sp.nat(int(1e18)))
 
     """
         Multiply an Exp by a scalar, truncate, then add an to an unsigned integer, returning an unsigned integer.
