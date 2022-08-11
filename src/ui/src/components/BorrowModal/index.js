@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import bigInt from 'big-integer';
 import { BigNumber } from 'bignumber.js';
-import { decimals } from 'tezoslendingplatformjs';
+import { AssetType, decimals } from 'tezoslendingplatformjs';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -74,7 +74,16 @@ const BorrowModal = (props) => {
 	     
 	    if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
 		    // sending the contract total wallet underlyingBalance 
-            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, account.underlyingBalances[tokenDetails.assetType].value.toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+            let val = account.underlyingBalances[tokenDetails.assetType].value.toString();
+            if(tokenDetails.assetType===AssetType.XTZ){
+                const temp = new BigNumber(account.underlyingBalances[tokenDetails.assetType].value.toString()).minus(1000000)
+                if (temp.lte(0)){
+                    val ="0"
+                }else{
+                    val=temp.toString()
+                }
+            }
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, val, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
             setOpGroup(opGroup);
             setEvaluationError(error);
 	    } else {
