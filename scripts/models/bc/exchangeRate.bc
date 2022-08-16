@@ -1,0 +1,99 @@
+define btc(){
+totalsupply=4396775725;
+totalborrows=1057953;
+initialexchangeratemantissa=1000000000000000000;
+currentcash=4398793844;
+totalreserves=0;
+expscale=1000000000000000000;
+scale=18
+
+exchangerate=(currentcash + totalborrows - totalreserves) / totalsupply;
+initialexchangerate=initialexchangeratemantissa/expscale;
+print "\n BTC";
+print "\n exchangerate :"
+print exchangerate;
+print "\n initialexchangerate :"
+print initialexchangerate;
+print "\n expscale :";
+print expscale;
+scale=1
+print "\n scale Log(expScale)/log(10):";
+print (l(expscale)/l(10));
+}
+
+
+define eth(){
+totalsupply=106113817386805698284;
+totalborrows=7716971958727265793;
+initialexchangeratemantissa=1000000000000000000;
+currentcash=98981987064168614410;
+totalreserves=0;
+expscale=1000000000000000000;
+scale=20
+exchangerate=(currentcash + totalborrows - totalreserves) / totalsupply;
+initialexchangerate=initialexchangeratemantissa/expscale;
+
+scale=20
+print "\n ETH";
+print "\n exchangerate :"
+print exchangerate;
+print "\n initialexchangerate :"
+print initialexchangerate;
+print "\n expscale :";
+print expscale;
+scale=1
+print "\n scale Log(expScale)/log(10):";
+print (l(expscale)/l(10));
+}
+
+define usd(){
+totalsupply=21769247144;
+totalborrows=22601098095;
+initialexchangeratemantissa=1000000000000000000;
+currentcash=1347030412;
+totalreserves=0;
+expscale=1000000000000000000;
+scale=20
+exchangerate=(currentcash + totalborrows - totalreserves) / totalsupply;
+initialexchangerate=initialexchangeratemantissa/expscale;
+
+scale=20
+print "\n USD";
+print "\n exchangerate :"
+print exchangerate;
+print "\n initialexchangerate :"
+print initialexchangerate;
+print "\n expscale :";
+print expscale;
+scale=1
+print "\n scale Log(expScale)/log(10):";
+print (l(expscale)/l(10));
+}
+
+define usd2(){
+totalsupply=20400000000;
+totalborrows=0;
+initialexchangeratemantissa=1000000000000000000;
+currentcash=10400000000;
+totalreserves=0;
+expscale=1000000000000000000;
+scale=20
+exchangerate=(currentcash + totalborrows - totalreserves) / totalsupply;
+initialexchangerate=initialexchangeratemantissa/expscale;
+
+scale=20
+print "\n USD";
+print "\n exchangerate :"
+print exchangerate;
+print "\n initialexchangerate :"
+print initialexchangerate;
+print "\n expscale :";
+print expscale;
+scale=1
+print "\n scale Log(expScale)/log(10):";
+print (l(expscale)/l(10));
+}
+
+usd2();
+
+quit

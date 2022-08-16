@@ -1,0 +1,25 @@
+ define apytorate(apy){
+	print "convert apy : "
+	print apy
+	print "\n"
+        annualperiods=1051920;
+	scale=0;
+        rate=apy/annualperiods;
+	print "rate  : "
+	print rate
+	print "\n"
+}
+
+
+
+apytorate(1048951048368960) 
+apytorate(1046855005200) 
+apytorate(1485148514152320) 
+apytorate(14689735652880) 
+apytorate(5454545452991280) 
+apytorate(495371899964160) 
+apytorate(25499999999229840) 
+apytorate(12737249998656480) 
+
+
+

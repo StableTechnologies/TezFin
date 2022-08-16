@@ -1,0 +1,88 @@
+
+define scaleup(number){
+escale=1000000000000000000
+print "\n"
+print number * escale
+}
+
+define decimal(mantissa){
+escale=1000000000000000000
+scale = 18
+print mantissa / escale
+}
+
+decimal(104895104836896000)
+decimal(148514851415232000)
+decimal(545454545299128000)
+decimal(2549999999922984000)
+
+annualperiods=1051920;
+maxrate=80000000000;
+blockrate=950642634;
+
+
+max=annualperiods * maxrate * 100
+
+print "\n"
+print "max"
+print max
+
+print "\n"
+print "max"
+max=annualperiods * maxrate * 100
+print "\n"
+print decimal(max)
+print "\n"
+
+
+
+
+minrate=blockrate * annualperiods * 100;
+print "\n"
+print "minrate"
+print decimal(minrate)
+
+
+
+
+
+escale=1000000000000000000
+borrowratemaxmantissa=47532131721 
+baserateperblock=950642634
+multiplierperblock=46581489086
+
+
+print "\n"
+print "baseRatePerBlock"
+print  baserateperblock / escale
+print "\n"
+print "borrowratemaxmantissa"
+print  borrowratemaxmantissa / escale
+
+
+mb=(8 - 0.1) / (annualperiods * 100)
+
+print "\n"
+print  "mb"
+print "\n"
+print  mb
+print "\n"
+
+print "\n"
+print  "scalup mb"
+print "\n"
+print  scaleup(mb)
+print "\n"
+print "scaleu up"
+scaleup(5.1)
+
+
+print "\n"
+decimal(50000000000000000)
+
+
+print "\n"
+decimal(80000000000)
+
+print "\n"
+decimal(47532131721)

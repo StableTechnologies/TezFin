@@ -1,0 +1,252 @@
+define utilizationrate(cash, borrows, reserves, escale){
+	divisor=cash+borrows-reserves;
+	scale=0;
+	return (borrows * escale) / divisor;
+}
+
+define calcborrowrate(u, multiplierperblock, escale, baserateperblock) {
+	scale=0
+	borrowrate=((u * multiplierperblock) / escale) + baserateperblock;
+	return borrowrate
+}
+define calcsupplyrate(loans,balance,reserves,escale,blockmultiplier, blockbaserate, reservefactor){
+       u = utilizationrate(balance, loans, reserves, escale);
+       brate = calcborrowrate(u,blockmultiplier,escale,blockbaserate);
+       oneminusreservefactor = expscale - reservefactor;
+       scale=0;
+       ratetopool=brate * oneminusreservefactor / escale;
+       srate= u * ratetopool / escale;
+       return srate;
+}
+
+define abs(i) {
+    if (i < 0) return (-i)
+    return (i)
+}
+
+define test(lent,borrowed){
+        s=18;
+	annualperiods = 1051920;
+	expscale=1000000000000000000;
+	totalborrows=borrowed * expscale;
+	initialexchangeratemantissa=1000000000000000000;
+	currentcash=lent * expscale; 
+	totalreserves=0;
+	scle=1000000000000000000;
+	baserateperblock=(0.1 / (annualperiods * 100)) * scle;
+	multiplierperblock=((5 - 0.1) / (annualperiods * 100)) * scle;
+	reservefactormantissa=0.001 * scle;
+
+
+
+	scale=0; 
+
+	reservefactormantissa=reservefactormantissa / 1;
+	baserateperblock=baserateperblock/1;
+	multiplierperblock=multiplierperblock/1;
+
+
+	print "reservefactormantissa : ";
+	print reservefactormantissa;
+	print "\n";
+	print "baserateperblock : ";
+	print baserateperblock;
+	print "\n";
+	print "multiplierperblock : ";
+	print multiplierperblock;
+	print "\n";
+
+	print "totalborrows : ";
+	print totalborrows;
+	print "\n";
+	print "currentcash : ";
+	print currentcash;
+	print "\n";
+
+	scale=0;
+	u=utilizationrate(currentcash, totalborrows, totalreserves, expscale);
+	print "utilizationrate : ";
+	print u;
+	print "\n";
+
+	print "utilizationrate decimal: ";
+	scale=s;
+	print u / expscale;
+	scale=0;
+	print "\n";
+
+	borrowrate=calcborrowrate(u , multiplierperblock,  expscale , baserateperblock)
+	
+	print "borrow rate : ";
+	print borrowrate;
+	print "\n";
+
+	print "borrow rate  decimal: ";
+	scale=s;
+	print borrowrate / expscale;
+	scale=0;
+	print "\n";
+
+	apy = borrowrate * annualperiods;
+
+
+	print "borrow apy : ";
+	print apy;
+	print "\n";
+
+	print "borrow apy decimal: ";
+	scale=s;
+	print apy / expscale;
+	scale=0;
+	print "\n";
+
+	print "borrow apy percent: ";
+	scale=s;
+	print (apy / expscale) * 100;
+	scale=0;
+	print "\n";
+
+	supplyrate=calcsupplyrate(totalborrows , currentcash,  totalreserves , expscale, multiplierperblock, baserateperblock, reservefactormantissa);
+	
+
+	print "supply rate : ";
+	print supplyrate;
+	print "\n";
+
+	print "supply decimal: ";
+	scale=s;
+	print supplyrate / expscale;
+	scale=0;
+	print "\n";
+
+	apy = supplyrate * annualperiods;
+
+
+	print "supply apy : ";
+	print apy;
+	print "\n";
+
+	print "supply apy decimal: ";
+	scale=s;
+	print apy / expscale;
+	scale=0;
+	print "\n";
+
+	print "supply apy percent: ";
+	scale=s;
+	print (apy / expscale) * 100;
+	scale=0;
+	print "\n";
+
+}
+define test3(s){
+
+	totalborrows=12345666;
+	initialexchangeratemantissa=1000000000000000000;
+	currentcash=10400000000;
+	totalreserves=0;
+	expscale=1000000000000000000;
+	baserateperblock=840000000000;
+	scle=1000000000000000000;
+	multiplierperblock=180000000000;
+	scale=0;
+	u=utilizationrate(currentcash, totalborrows, totalreserves, expscale);
+	print "utilizationrate : ";
+	print u;
+	print "\n";
+
+	print "utilizationrate decimal: ";
+	scale=s;
+	print u / expscale;
+	scale=0;
+	print "\n";
+
+
+
+	scale=0;
+	um = u * multiplierperblock;
+	umms = um - scle;
+	print(um);
+	print "! \n";
+	print(scle);
+	print "! \n";
+	print((um - scle)/multiplierperblock);
+	print "! \n";
+	print(um - scle);
+	print "! \n";
+	print(umms);
+	print "! \n";
+	print(length(um));
+	print "! \n";
+	print(length(scle));
+	print "! \n";
+	lossprecisiondigits=abs(length(scle) - length(um));
+	lossprecisiondigitsscale = 10 ^ lossprecisiondigits;
+	print(abs(length(scle) - length(um)));
+	print "! \n";
+	print(lossprecisiondigitsscale);
+	print "! \n";
+	borrowrate=((u * multiplierperblock) / scle) + baserateperblock;
+
+	u2=((borrowrate - baserateperblock) * scle ) / multiplierperblock;
+
+	print(u - u2);
+	print "! \n";
+	print "Algebra derived utilizationrate : ";
+	print u2;
+	print "\n";
+
+
+	print "in decimal: ";
+	scale=s;
+	print u2 / expscale;
+	scale=0;
+	print "borrowrate : ";
+
+}
+
+define test2(){
+
+	totalborrows=0;
+	initialexchangeratemantissa=1000000000000000000;
+	currentcash=10400000000;
+	totalreserves=0;
+	expscale=1000000000000000000;
+
+	return utilizationrate(currentcash, totalborrows, totalreserves, expscale);
+
+}
+
+test(1000,1000);
+
+
+define shownumbers(){
+scale=18;
+brate=840000000000;
+blockmultiplier=180000000000;
+scle=1000000000000000000;
+
+print "borrow rate : ";
+print brate/scle;
+print "\n";
+
+print "blockMultiplier: ";
+print blockmultiplier/scle;
+print "\n";
+
+
+
+
+}
+
+	annualperiods = 1051920;
+	a =  104895104836896;
+
+	b = a/annualperiods;
+	print a;
+	print "\n";
+	print b;
+	print "\n";
+	print b * annualperiods;
+
+quit

@@ -1,0 +1,73 @@
+
+define utilizationrate(cash, borrows, reserves, escale){
+	divisor=cash+borrows-reserves;
+	scale=0;
+	return (borrows * escale) / divisor;
+}
+
+define calcborrowrate(u, multiplierperblock, escale, baserateperblock) {
+	scale=0
+	borrowrate=(u * multiplierperblock / escale) + baserateperblock;
+	return borrowrate
+}
+define calcsupplyrate(loans,balance,reserves,escale,blockmultiplier, blockbaserate, reservefactor){
+       u = utilizationrate(balance, loans, reserves, escale);
+       brate = calcborrowrate(u,blockmultiplier,escale,blockbaserate);
+       oneminusreservefactor = expscale - reservefactor;
+       scale=0;
+       ratetopool=brate * oneminusreservefactor / escale;
+       srate= u * ratetopool / escale;
+       return srate;
+}
+
+define abs(i) {
+    if (i < 0) return (-i)
+    return (i)
+}
+
+define test(lent,borrowed){
+        s=18;
+	annualperiods = 1051920;
+	underlyingscale=100000000;
+	expscale=1000000000000000000;
+	totalborrows=borrowed * underlyingscale;
+	initialexchangeratemantissa=1000000000000000000;
+	currentcash=lent * underlyingscale; 
+	totalreserves=0;
+	scle=1000000000000000000;
+	reservefactormantissa=0.001 * scle;
+	 
+        baserateperblock=950642634
+        multiplierperblock=76000000000
+        urate=utilizationrate(currentcash,totalborrows,0,expscale)
+	brate=calcborrowrate(urate,multiplierperblock, expscale, baserateperblock)
+        
+	print "\n";
+	print "borrowrate in IRM scale : ";
+	print brate;
+	print "\n";
+
+	scale=0; 
+	 
+	print "\n";
+	print "borrowrate in IRM scale decimal : ";
+	print brate/expscale;
+	print "\n";
+        brateunderlyingscale = (brate * underlyingscale) / expscale;
+        print "\n";
+        print "brateunderlyingscale : ";
+        print brateunderlyingscale;
+        print "\n";
+	print "\n";
+	print "totalborrows : ";
+	print totalborrows;
+	print "\n";
+	totalborrowsafterinterest = totalborrows + brateunderlyingscale;
+	print "\n";
+	print "totalborrowsafterinterest : ";
+	print totalborrowsafterinterest;
+	print "\n";
+}
+
+
+test(100,20)

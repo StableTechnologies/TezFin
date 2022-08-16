@@ -1,0 +1,222 @@
+define accountborrows(principal,index){
+	accountborrows[0] = principal;
+	accountborrows[1] = index;
+	return accountborrows
+	
+}
+
+define getprincipal(accountborrows){
+	return accountborrows[0];
+}
+define subprincipal(accountborrows,minter,principal){
+	principal=accountborrows[0]
+	principal[minter] = principal[minter] - principal;
+	accountborrows[0] = principal;
+	return  accountborrows
+}
+define addprincipal(accountborrows,minter,principal){
+	principal=accountborrows[0]
+	principal[minter] = principal[minter] + principal;
+	accountborrows[0] = principal;
+	return  accountborrows
+}
+define setprincipal(accountborrows,principal){
+	accountborrows[0] = principal;
+	return accountborrows
+}
+
+define getindex(accountborrows){
+	return accountborrows[0];
+}
+
+define addindex(accountborrows,minter,index){
+	index=accountborrows[0]
+	index[minter] = index[minter] + index;
+	accountborrows[0] = index;
+	return  accountborrows
+}
+define setindex(accountborrows,index){
+	accountborrows[0] = index;
+	return accountborrows
+}
+
+
+
+
+
+define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, underlyingscale, initialexchangeratemantissa, borrowsminters) {
+	state[0] = totalborrows;     
+	state[1] = totalsupply;
+	state[2] = totalreserves;
+	state[3] = balances;
+	state[4] = ctokenscale;
+	state[5] = underlyingscale;
+	state[6] = cash;
+	state[7]=initialexchangeratemantissa;
+	state[8]=borrowsminters; 
+	return state 
+}
+
+define getminterborrows(state){
+	return state[3];
+}
+define addminterborrows(state,minter,balance){
+	minterborrows=state[3]
+	minterborrows[minter] = minterborrows[minter] + balance;
+	state[3] = minterborrows;
+	return  state
+}
+define setminterborrows(state,minterborrows){
+	state[3] = minterborrows;
+	return state
+}
+
+
+define printstate(state) {
+       
+	totalborrows=state[0]     
+	totalsupply=state[1]
+	totalreserves=state[2]
+	balances=state[3]
+	ctokenscale=state[4]
+	underlyingscale=state[5]
+	cash=state[6]
+	initialexchangeratemantissa=state[7]
+
+	print "\n";
+	print "totalborrows                        : ";
+	print totalborrows                       ;
+	print "\n";
+	print "\n";
+	print "totalsupply                    : ";
+	print totalsupply                   ;
+	print "\n";
+	print "\n";
+	print "totalreserves                  : ";
+	print totalreserves                 ;
+	print "\n";
+	print "\n";
+	print "balances[0]                       : ";
+	print balances[0]                      ;
+	print "\n";
+	print "\n";
+	print "ctokenscale                    : ";
+	print ctokenscale                   ;
+	print "\n";
+	print "\n";
+	print "underlyingscale                : ";
+	print underlyingscale               ;
+	print "\n";
+	print "\n";
+	print "cash                           : ";
+	print cash                          ;
+	print "\n";
+	print "\n";
+	print "initialexchangeratemantissa    : ";
+	print initialexchangeratemantissa   ;
+	print "\n";
+}
+
+define toscale(int) {
+	return 10 ^ int
+}
+define getinitialexchangeratemantissa(state){
+	return state[7];
+}
+
+define setinitialexchangeratemantissa(state,initialexchangeratemantissa){
+	state[7] = initialexchangeratemantissa;
+	return state
+}
+
+define getcash(state){
+	return state[6];
+}
+
+define setcash(state,cash){
+	state[6] = cash;
+	return state
+}
+
+
+define addcash(state,cash){
+	state[6] = state[6] + cash;
+	return state
+}
+
+define removecash(state,cash){
+	state[6] = state[6] - cash;
+	return state
+}
+
+define getctokenscale(state){
+	return state[4];
+}
+
+define setctokenscale(state,ctokenscale){
+	state[4] = ctokenscale;
+	return state
+}
+
+define getunderlyingscale(state){
+	return state[5];
+}
+
+define setunderlyingscale(state,underlyingscale){
+	state[1] = underlyingscale;
+	return state
+}
+define gettotalsupply(state){
+	return state[1];
+}
+
+define settotalsupply(state,totalsupply){
+	state[1] = totalsupply;
+	return state
+}
+
+
+define addtotalsupply(state,supply){
+	state[1] = state[1] + supply;
+	return state
+}
+
+define gettotalreserves(state){
+	return state[2];
+}
+define settotalreserves(state,totalreserves){
+	state[2] = totalreserves;
+	return state
+}
+define addtotalreserves(state,reserves){
+	state[2] = state[2] + reserves;
+	return state
+}
+
+define getbalances(state){
+	return state[3];
+}
+define addbalances(state,minter,balance){
+	balances=state[3]
+	balances[minter] = balances[minter] + balance;
+	state[3] = balances;
+	return  state
+}
+define setbalances(state,balances){
+	state[3] = balances;
+	return state
+}
+
+define gettotalborrows(state){
+	return state[0];
+}
+define settotalborrows(state,totalborrows){
+	state[0] = totalborrows;
+	return state
+}
+define addtotalborrows(state,borrow){
+	state[0] = state[0] + borrow;
+	return state
+}
+
+

@@ -1,0 +1,342 @@
+define mulnatexp(a, b, expscale){
+	 
+	scale=0;
+        return a * b / expscale
+}
+
+define divexpnat(a, b){
+        return a / b
+	}
+
+define divnatexp(a,b,expscale) {
+	scale=0;
+	print "\n";
+	print "a  : ";
+	print a ;
+	print "\n";
+	print "\n";
+	print "b  : ";
+	print b ;
+	print "\n";
+	print "\n";
+	print "expscale : ";
+	print expscale;
+	print "\n";
+	divab = (a * expscale) / b
+	print "\n";
+	print "divab : ";
+	print divab;
+	print "\n";
+	return (a * expscale) / b
+}
+
+
+
+define divexpexp(a, b, expscale){
+	 scale=0;
+        return a * expscale / b
+	}
+
+
+define rescale( mantissa, mantissascale, newscale){
+
+	scale=0;
+        numerator = mantissa * newscale
+        rescaled = numerator / mantissascale
+        return rescaled
+	}
+
+define mulexpnat(a,b){
+	scale=0;
+	return a * b
+}
+
+define toexp( value,expscale){
+	scale=0;
+	print "\n";
+	print "value : ";
+	print value;
+	print "\n";
+	print "\n";
+	print "expscale : ";
+	print expscale;
+	print "\n";
+        return value * expscale
+	}
+
+define truncate(a,scle){
+	scale=0;
+	return a / scle
+}
+define mulscalartruncate(a,b,scle){
+	scale=0;
+	return truncate(mulexpnat(a,b),scle)
+}
+define mulscalartruncateadd(a,b,c,scle){
+	scale=0;
+	return truncate(mulexpnat(a,b),scle) + c
+}
+
+define subnatnat( a, b){
+
+	scale=0;
+        return a - b
+}
+
+define dotransferin(state, amount){
+	state=addcash(state,amount)
+	return state
+}
+define mint(state, minter, mintamount){
+    state = dotransferin(state,mintamount)
+    minttokens = getminttokens(state,mintamount);
+    
+    state = addtotalsupply(state, minttokens);
+    state = addbalances(state, minter, minttokens);
+    return state;
+}
+
+define getminttokens(state, mintamount){
+    return getactualamountaspercontract(state, mintamount, 1, 0)
+}
+
+
+
+define mintmodified(state, minter, mintamount){
+
+    state = dotransferin(state,mintamount)
+    minttokens = getminttokensmodified(state,mintamount);
+    state = addtotalsupply(state, minttokens);
+    state = addbalances(state, minter, minttokens);
+    return state;
+}
+
+define getminttokensmodified(state, mintamount){
+    return getactualamountmodified(state, mintamount, 1, 0)
+}
+# define getactualamount(state, amount, isunderlying, adjustment){
+#     exchangerate = exchangerateadjusted(state, adjustment)
+#     print "\n";
+#     print "exchangerate : ";
+#     print exchangerate;
+#     print "\n";
+#     actualamount=0;
+#     if (isunderlying==1) {
+# 	if (getctokenscale(state)>=getunderlyingscale(state)) {
+# 	 amountrescled=rescale(amount, getunderlyingscale(state), getctokenscale(state))
+# 	print "\n";
+# 	print "amountrescled : ";
+# 	print amountrescled;
+# 	print "\n";
+#         actualamount=-1;#divexpexp(amountrescled, exchangerate, getctokenscale(state)); 
+# 	} else {
+#         actualamount=mulnatexp(amount, exchangerate, divexpexp(getunderlyingscale(state), getctokenscale(state),1)); 
+# 	} 
+#     } else{
+#         actualamount=mulscalartruncate(exchangerate, amount);
+#     }
+#     return actualamount
+# }
+
+
+define getactualamountaspercontract(state, amount, isunderlying, adjustment){
+    exchangerate = exchangerateadjusted(state, adjustment)
+    print "\n";
+    print "exchangerate : ";
+    print exchangerate;
+    print "\n";
+    actualamount=0;
+    if (isunderlying==1) {
+        actualamount=divnatexp(amount, exchangerate, getctokenscale(state)); 
+	print "\n";
+	print "actualamount : ";
+	print actualamount;
+	print "\n";
+        } else{
+        actualamount=mulscalartruncate(exchangerate, amount);
+    }
+    return actualamount
+}
+
+define getactualamountmodified(state, amount, isunderlying, adjustment){
+    exchangerate = exchangerateadjustedmodified(state, adjustment)
+    print "\n";
+    print "exchangerate : ";
+    print exchangerate;
+    print "\n";
+    actualamount=0;
+    if (isunderlying==1) {
+        if (getctokenscale(state)>=getunderlyingscale(state)) {
+         amountrescled=rescale(amount, getunderlyingscale(state), getctokenscale(state))
+        print "\n";
+        print "amountrescled : ";
+        print amountrescled;
+        print "\n";
+        actualamount=divnatexp(amountrescled, exchangerate, getctokenscale(state)); 
+	print "\n";
+	print "actualamount : ";
+	print actualamount;
+	print "\n";
+        } else {
+        actualamount=mulnatexp(amount, exchangerate, divexpexp(getunderlyingscale(state), getctokenscale(state),1)); 
+        } 
+    } else{
+        actualamount=mulscalartruncate(exchangerate, amount);
+    }
+    return actualamount
+}
+
+define exchangerateadjusted(state, adjustment){
+        excrate = getinitialexchangeratemantissa(state)
+        if (gettotalsupply(state) > 0){
+            cash = subnatnat(getcash(state), adjustment) 
+	    print "\n";
+	    print "cash : ";
+	    print cash;
+	    print "\n";
+            cashplusborrowsminusreserves = cash + gettotalborrows(state) - gettotalreserves(state)
+	    print "\n";
+	    print "cashplusborrowsminusreserves : ";
+	    print cashplusborrowsminusreserves;
+	    print "\n";
+            exchangerate = divexpnat(toexp(cashplusborrowsminusreserves, getctokenscale(state)), gettotalsupply(state))
+	    print "\n";
+	    print "exchangerate : ";
+	    print exchangerate;
+	    print "\n";
+	    excrate = exchangerate
+	    }
+        return excrate
+	}
+
+define exchangerateadjustedmodified(state, adjustment){
+        excrate = getinitialexchangeratemantissa(state)
+        if (gettotalsupply(state) > 0){
+            cash = rescale(subnatnat(getcash(state), adjustment) , getunderlyingscale(state) , getctokenscale(state))
+            cashplusborrowsminusreserves = cash + gettotalborrows(state) - gettotalreserves(state)
+            exchangerate = divexpnat(toexp(cashplusborrowsminusreserves, getctokenscale(state)), gettotalsupply(state))
+	    excrate = exchangerate
+	    }
+        return excrate
+	}
+
+
+
+
+define ethtz(amount){
+       return amount * toscale(18)
+}
+define usdtz(amount){
+       return amount * toscale(6)
+}
+
+define xtz(amount){
+       return amount * toscale(6)
+}
+define ctoken(amount){
+       return amount * toscale(18)
+}
+
+define btctz(amount){
+       return amount * toscale(8)
+}
+cash = 0
+totalborrows=0
+totalsupply = 0
+totalreserves = 0 
+balances[0] = 0
+balances[1] = 0
+ctokenscale = ctoken(1)
+underlyingscale = btctz(1)
+initialexchangeratemantissa = ctoken(1)
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+printstate(teststate)
+teststate=mint(teststate,0,btctz(2))
+printstate(teststate)
+teststate=mint(teststate,0,btctz(2))
+printstate(teststate)
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "mintmodified";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+cash = 0
+totalborrows=0
+totalsupply = 0
+totalreserves = 0 
+balances[0] = 0
+balances[1] = 0
+ctokenscale = ctoken(1)
+underlyingscale = btctz(1)
+initialexchangeratemantissa = ctoken(1)
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+printstate(teststate)
+teststate=mintmodified(teststate,0,btctz(2))
+printstate(teststate)
+teststate=mintmodified(teststate,0,btctz(2))
+printstate(teststate)
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "              ETHtz                  ";
+print "              ETHtz                  ";
+print "              ETHtz                  ";
+print "              ETHtz                  ";
+print "              ETHtz                  ";
+print "              ETHtz                  ";
+cash = 0
+totalborrows=0
+totalsupply = 0
+totalreserves = 0 
+balances[0] = 0
+balances[1] = 0
+ctokenscale = ctoken(1)
+underlyingscale = ethtz(1)
+initialexchangeratemantissa = ctoken(1)
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+printstate(teststate)
+teststate=mint(teststate,0,ethtz(2))
+printstate(teststate)
+teststate=mint(teststate,0,ethtz(2))
+printstate(teststate)
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "mintmodified";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+print "\n";
+cash = 0
+totalborrows=0
+totalsupply = 0
+totalreserves = 0 
+balances[0] = 0
+balances[1] = 0
+ctokenscale = ctoken(1)
+underlyingscale = ethtz(1)
+initialexchangeratemantissa = ctoken(1)
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+printstate(teststate)
+teststate=mintmodified(teststate,0,ethtz(2))
+printstate(teststate)
+teststate=mintmodified(teststate,0,ethtz(2))
+printstate(teststate)
+
+
+
+
+
+###test for whne underlying scale > ctoken !!!!
