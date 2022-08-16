@@ -1,0 +1,40 @@
+define createasset( scle){
+#	asset[0]=name;
+	asset[0]=scle;
+	asset[1]=scle;
+	return asset;
+}
+
+define getassetname(asset){
+	name = asset[0];
+	return name
+}
+
+define getassetscale(asset){
+	scle = asset[1]
+	return scle
+}
+
+define amountfromdecimal(asset,amount){
+        scaledamount = amount * getassetscale(asset);   
+   	return  scaledamount 
+}
+assets[0]=createasset( 18);
+assets[1]=createasset( 18);
+assets[2]=createasset( 18);
+assets[3]=createasset( 18);
+
+define printasset(asset){
+         print "\n";
+         print "name  : ";
+         print getassetname(asset);
+         print "\n";
+	 print "\n";
+	 print "scale : ";
+	 print getassetscale(asset);
+	 print "\n";
+}
+
+printasset(assets[2]);
+print length(assets)
+
