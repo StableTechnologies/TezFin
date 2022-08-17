@@ -6,7 +6,6 @@ import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 
 import Composition from './composition';
-import Banner from '../Banner';
 
 import { HeaderCon, classes1, useStyles } from './style';
 import supplyingIcon from '../../assets/supplyingIcon.svg';
@@ -45,7 +44,6 @@ const Header = () => {
                             && `Note: Tezfin is currently operating on the Tezos test network ${networkType}.`
                 }
             </Typography>
-            <Banner />
             <Grid container className={classes.netAPY}>
                 <Grid item sx={{ display: { xl: 'none', xs: 'none' } }} xs={12} className={classes.netAPY}>
                     <Typography className={classes.netAPYText}>
