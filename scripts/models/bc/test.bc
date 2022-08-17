@@ -8,7 +8,11 @@ balances[1] = 0
 ctokenscale = ctoken(1)
 underlyingscale = btctz(1)
 initialexchangeratemantissa = ctoken(1)
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+# FIx here add accountborrows
+principal = 0
+interestindex = 0
+allmintersborrows[0] = accountborrows(principal,interestindex);
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows)
 printstate(teststate)
 teststate=mint(teststate,0,btctz(2))
 printstate(teststate)
@@ -35,7 +39,10 @@ balances[1] = 0
 ctokenscale = ctoken(1)
 underlyingscale = btctz(1)
 initialexchangeratemantissa = ctoken(1)
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+principal = 0
+interestindex = 0
+allmintersborrows[0] = accountborrows(principal,interestindex);
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows)
 printstate(teststate)
 teststate=mintmodified(teststate,0,btctz(2))
 printstate(teststate)
@@ -60,7 +67,10 @@ balances[1] = 0
 ctokenscale = ctoken(1)
 underlyingscale = ethtz(1)
 initialexchangeratemantissa = ctoken(1)
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+principal = 0
+interestindex = 0
+allmintersborrows[0] = accountborrows(principal,interestindex);
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows)
 printstate(teststate)
 teststate=mint(teststate,0,ethtz(2))
 printstate(teststate)
@@ -87,7 +97,10 @@ balances[1] = 0
 ctokenscale = ctoken(1)
 underlyingscale = ethtz(1)
 initialexchangeratemantissa = ctoken(1)
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa)
+principal = 0
+interestindex = 0
+allmintersborrows[0] = accountborrows(principal,interestindex);
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows)
 printstate(teststate)
 teststate=mintmodified(teststate,0,ethtz(2))
 printstate(teststate)

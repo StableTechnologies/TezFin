@@ -24,6 +24,32 @@ assets[1]=createasset( 18);
 assets[2]=createasset( 18);
 assets[3]=createasset( 18);
 
+
+
+define printassetname(assetid){
+        if (assetid==0) {
+	print "\n";
+	print "ETHtz : ";
+	print "\n";
+	}
+
+        if (assetid==1) {
+	print "\n";
+	print "USDtz : ";
+	print "\n";
+	}
+        if (assetid==2) {
+	print "\n";
+	print "BTCtz : ";
+	print "\n";
+	}
+        if (assetid==3) {
+	print "\n";
+	print "ETHtz : ";
+	print "\n";
+	}
+}
+
 define printasset(asset){
          print "\n";
          print "name  : ";
@@ -37,4 +63,4 @@ define printasset(asset){
 
 printasset(assets[2]);
 print length(assets)
-
+printassetname(0)
