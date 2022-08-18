@@ -1,0 +1,57 @@
+
+define irm(multiplierperblock, baserateperblock, expscale){
+	irm[0] = multiplierperblock;
+	irm[1] = baserateperblock;
+	irm[2] = expscale;
+}
+
+
+define getmultiplierperblock(irm){
+	return irm[0];
+}
+
+define setmultiplierperblock(irm,multiplierperblock){
+	irm[0] = irm;
+	return irm
+}
+
+
+define getbaserateperblock(irm){
+	return irm[1];
+}
+
+define setbaserateperblock(irm,baserateperblock){
+	irm[1] = irm;
+	return irm
+}
+
+
+define getirmexpscale(irm){
+	return irm[2];
+}
+
+define setirmexpscale(irm,expscale){
+	irm[2] = irm;
+	return irm
+}
+
+define utilizationrate(cash, borrows, reserves, escale){
+	divisor=cash+borrows-reserves;
+	scale=0;
+	return (borrows * escale) / divisor;
+}
+
+define calcborrowrate(u, multiplierperblock, escale, baserateperblock) {
+	scale=0
+	borrowrate=(u * multiplierperblock / escale) + baserateperblock;
+	return borrowrate
+}
+define calcsupplyrate(loans,balance,reserves,escale,blockmultiplier, blockbaserate, reservefactor){
+       u = utilizationrate(balance, loans, reserves, escale);
+       brate = calcborrowrate(u,blockmultiplier,escale,blockbaserate);
+       oneminusreservefactor = expscale - reservefactor;
+       scale=0;
+       ratetopool=brate * oneminusreservefactor / escale;
+       srate= u * ratetopool / escale;
+       return srate;
+}
