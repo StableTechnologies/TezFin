@@ -35,22 +35,29 @@ define setirmexpscale(irm,expscale){
 	return irm
 }
 
-define utilizationrate(cash, borrows, reserves, escale){
+define utilizationrate(state,irm){
+	cash = getcash(state)
+	borrows = getborrows(state)
+	reserves = getreserves(state)
+	escale = getirmexpscale(state)
 	divisor=cash+borrows-reserves;
 	scale=0;
 	return (borrows * escale) / divisor;
 }
 
-define calcborrowrate(u, multiplierperblock, escale, baserateperblock) {
+define calcborrowrate(state,irm) {
+	multiplierperblock = getmultiplierperblock(irm);
+	baserateperblock = getbaserateperblock(irm);
+	u = utilizationrate(state, irm)
+	escale = getirmexpscale(state)
 	scale=0
 	borrowrate=(u * multiplierperblock / escale) + baserateperblock;
 	return borrowrate
 }
-define calcsupplyrate(loans,balance,reserves,escale,blockmultiplier, blockbaserate, reservefactor){
-       u = utilizationrate(balance, loans, reserves, escale);
-       brate = calcborrowrate(u,blockmultiplier,escale,blockbaserate);
-       oneminusreservefactor = expscale - reservefactor;
+define calcsupplyrate(state,irm){
+       brate = calcborrowrate(state,irm);
        scale=0;
+       oneminusreservefactor = expscale - reservefactor;
        ratetopool=brate * oneminusreservefactor / escale;
        srate= u * ratetopool / escale;
        return srate;

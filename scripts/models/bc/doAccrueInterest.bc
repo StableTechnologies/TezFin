@@ -46,3 +46,42 @@
     #    self.data.borrowIndex = self.mulScalarTruncateAdd(
     #        simpleInterestFactor, self.data.borrowIndex, self.data.borrowIndex)
     #    self.data.accrualBlockNumber = sp.level
+
+
+define doaccrueinterest(state){
+	interestratemodel = getirm(state)
+        sp.set_type(borrowratemantissa, sp.tnat)
+        self.verifyirm()
+        self.verifyandfinishactiveop(op.ctokenoperations.accrue)
+        sp.verify(borrowratemantissa <=
+                  self.data.borrowratemaxmantissa, ec.ct_invalid_borrow_rate)
+        cash = self.getcashimpl()
+        blockdelta = sp.as_nat(sp.level - self.data.accrualblocknumber)
+
+        simpleinterestfactor = sp.compute(self.mul_exp_nat(
+            self.makeexp(borrowratemantissa), blockdelta))
+        interestaccumulated = sp.compute(self.mulscalartruncate(
+            simpleinterestfactor, self.data.totalborrows))
+        self.data.totalborrows = interestaccumulated + self.data.totalborrows
+        self.data.totalreserves = self.mulscalartruncateadd(sp.record(mantissa=self.data.reservefactormantissa),
+                                                            interestaccumulated,
+                                                            self.data.totalreserves)
+        self.data.borrowindex = self.mulscalartruncateadd(
+            simpleinterestfactor, self.data.borrowindex, self.data.borrowindex)
+        self.data.accrualblocknumber = sp.level
+	return state
+}
+
+define doaccrueinterestmodified(borrowrate, blockdelta, reservefactormantissa, totalreserves, irmscale,ctokenscale,initializationvariablescales) {
+
+        borrowRateRescaled = rescale(borrowrate, irmscale, ctokenscale)
+        simpleInterestFactor =  mulexpnat(borrowRateRescaled, blockdelta)
+        interestaccumulated = mulscalartruncate(simpleinterestfactor, totalborrows)
+        totalborrows = interestaccumulated + totalborrows
+        totalreserves = mulscalartruncateadd(rescale(reservefactormantissa, initializationvariablescales, self.data.underlyingscale),interestaccumulated, totalreserves)
+        borrowindex = mulscalartruncateadd(simpleinterestfactor, borrowindex, borrowindex)
+	borrowsreservesbi[0] = totalborrows;
+	borrowsreservesbi[1] = totalreserves;
+	borrowsreservesbi[2] = borrowindex;
+	return borrowsreservesbi
+}

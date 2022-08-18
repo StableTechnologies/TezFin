@@ -3,6 +3,8 @@ baserateperblock = 1
 expscale = 1 
 interestratemodel = irm(multiplierperblock, baserateperblock, expscale)
 
+# todo update level later 
+level=0
 
 cash = 0
 totalborrows=0
@@ -20,7 +22,7 @@ allmintersborrows[0] = accountborrows(minterprincipal,minterinterestindex);
 accrualblocknumber=0
 borrowindex=0
 tempcomptroller=0
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller)  
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level)  
 
  printstate(teststate)
  teststate=mint(teststate,0,btctz(2))
@@ -54,7 +56,7 @@ teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale
 accrualblocknumber=0
 borrowindex=0
 tempcomptroller=0
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller)  
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level)  
  printstate(teststate)
  teststate=mintmodified(teststate,0,btctz(2))
  printstate(teststate)
@@ -85,7 +87,7 @@ teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale
 accrualblocknumber=0
 borrowindex=0
 tempcomptroller=0
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller)  
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level)  
  printstate(teststate)
  teststate=mint(teststate,0,ethtz(2))
  printstate(teststate)
@@ -118,7 +120,7 @@ teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale
 accrualblocknumber=0
 borrowindex=0
 tempcomptroller=0
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller)  
+teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level)  
  printstate(teststate)
  teststate=mintmodified(teststate,0,ethtz(2))
  printstate(teststate)
