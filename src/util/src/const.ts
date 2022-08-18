@@ -87,16 +87,16 @@ export const testnetAddresses: ProtocolAddresses = {
 
 export const mainnetAddresses: ProtocolAddresses = {
     fTokens: {
-        "BTC": "KT1AGLsTSnN5816qX2sjAyv1VqySqbmg5XKf",
-        "XTZ": "KT1MExoUQ9d1WXyGGhmQjuv4AfuaGwFiSmip",
-        "ETH": "KT1P7tKK2bpb2UNkPdT7vj3QJNZ4dkwbujL5",
-        "USD": "KT1UKKJeQ7wbppyzyLWMoCSKVhFpMVPHgoPm"
+        "BTC": "KT1M9LQ2twkcz5gVwvX8toCN69oEMytERhZr",
+        "XTZ": "KT1AMZChmZuQ7WM3imknJJhkmeXxRFrZ6uWu",
+        "ETH": "KT1LxPGwkrvj8gG8k8CkpyKQaWyQAsnLfHLg",
+        "USD": "KT1AfDTR1CFo9L7PMdw643BUjn2dyaHsueDt"
     },
     fTokensReverse: {
-        KT1MExoUQ9d1WXyGGhmQjuv4AfuaGwFiSmip: AssetType.XTZ,
-        KT1P7tKK2bpb2UNkPdT7vj3QJNZ4dkwbujL5: AssetType.ETH,
-        KT1UKKJeQ7wbppyzyLWMoCSKVhFpMVPHgoPm: AssetType.USD,
-        KT1AGLsTSnN5816qX2sjAyv1VqySqbmg5XKf: AssetType.BTC
+        KT1AMZChmZuQ7WM3imknJJhkmeXxRFrZ6uWu: AssetType.XTZ,
+        KT1LxPGwkrvj8gG8k8CkpyKQaWyQAsnLfHLg: AssetType.ETH,
+        KT1AfDTR1CFo9L7PMdw643BUjn2dyaHsueDt: AssetType.USD,
+        KT1M9LQ2twkcz5gVwvX8toCN69oEMytERhZr: AssetType.BTC
     },
     underlying: {
         "ETH": {
@@ -130,21 +130,21 @@ export const mainnetAddresses: ProtocolAddresses = {
             decimals: 6
         }
     },
-    comptroller: "KT1Mdm7gMW56XW7S8fwmhBmP83KsPEH57zgV",
+    comptroller: "KT1XnZqyGrEKkf8TiQ2uYE2zyxsp2L5NZ6KW",
     interestRateModel: {
-        XTZ: "KT1JbXXhGLQuQc1bH2oqMjSnkXHzJdKXCxTp",
-        ETH: "KT1SCpQwacLPPD3bEvpyWG8ARkLvdCsChQjv",
-        BTC: "KT1FJN2FspGkpsshrLi1Hx9GHLyaxZkfDP1u",
-        USD: "KT1SCpQwacLPPD3bEvpyWG8ARkLvdCsChQjv"
+        XTZ: "KT1AtJQgU4zEp2wgyWRK7DqdDiPkWBodNiwz",
+        ETH: "KT1QCL5W3heju7SJKvRgYR9xNtP9fEenG1Eq",
+        BTC: "KT1P7GJRN5Tx8YDn4YS7Ao5UWApM2Asxk4Ty",
+        USD: "KT1QCL5W3heju7SJKvRgYR9xNtP9fEenG1Eq"
     },
-    governance: "KT1TcH8Lnr7pE7dW9T4kZNfhNsVz9QKdwaME",
+    governance: "KT1KW6McQpHFZPffW6vZt5JSxibvVKAPnYUq",
     oracleMap: {
         "ETH": {
             id: 47917,
             path: "$.args[0].args[0].int"
         },
         "USD": {
-            id: 204127,
+            id: 256774,
             path: "$.args[1].int"
         },
         "BTC": {
