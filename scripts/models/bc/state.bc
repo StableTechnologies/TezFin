@@ -43,8 +43,53 @@ define setindex(accountborrows,index){
 
 
 
+define irm(multiplierperblock, baserateperblock, expscale){
+	irm[0] = multiplierperblock;
+	irm[1] = baserateperblock;
+	irm[2] = expscale;
+}
 
-define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, underlyingscale, initialexchangeratemantissa, borrowsminters) {
+
+define getmultiplierperblock(irm){
+	return irm[0];
+}
+
+define setmultiplierperblock(irm,multiplierperblock){
+	irm[0] = irm;
+	return irm
+}
+
+
+define getbaserateperblock(irm){
+	return irm[1];
+}
+
+define setbaserateperblock(irm,baserateperblock){
+	irm[1] = irm;
+	return irm
+}
+
+
+define getexpscale(irm){
+	return irm[2];
+}
+
+define setexpscale(irm,expscale){
+	irm[2] = irm;
+	return irm
+}
+
+
+# add to state  for doAccrueInterest
+# irm
+# accrualblocknumber 
+# borrowindex 
+# temp comptroller 
+# update test 
+# finish  accrue 
+# redeem
+
+define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, underlyingscale, initialexchangeratemantissa, borrowsminters, irm, accrualblocknumber, borrowindex, comptroller) {
 	state[0] = totalborrows;     
 	state[1] = totalsupply;
 	state[2] = totalreserves;
@@ -52,9 +97,51 @@ define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, 
 	state[4] = ctokenscale;
 	state[5] = underlyingscale;
 	state[6] = cash;
-	state[7]=initialexchangeratemantissa;
-	state[8]=borrowsminters; 
+	state[7] = initialexchangeratemantissa;
+	state[8] = borrowsminters; 
+	state[9] = irm; 
+	state[10] = borrowindex; 
+	state[11] = accrualblocknumber; 
+	state[12] = comptroller; 
 	return state 
+}
+
+define getirm(state){
+	return state[9];
+}
+
+define setirm(state,irm){
+	state[9] = state;
+	return state
+}
+
+
+define getaccrualblocknumber(state){
+	return state[11];
+}
+
+define setaccrualblocknumber(state,accrualblocknumber){
+	state[11] = state;
+	return state
+} 
+
+define getborrowindex (state){
+	return state[10];
+}
+
+define setborrowindex (state,borrowindex ){
+	state[10] = state;
+	return state
+}
+
+
+define getcomptroller (state){
+	return state[12];
+}
+
+define setcomptroller (state,comptroller ){
+	state[12] = state;
+	return state
 }
 
 define getminterborrows(state){

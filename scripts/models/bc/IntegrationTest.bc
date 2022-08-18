@@ -1,3 +1,46 @@
+
+
+define irm(multiplierperblock, baserateperblock, expscale){
+	irm[0] = multiplierperblock;
+	irm[1] = baserateperblock;
+	irm[2] = expscale;
+}
+
+
+define getmultiplierperblock(irm){
+	return irm[0];
+}
+
+define setmultiplierperblock(irm,multiplierperblock){
+	irm[0] = irm;
+	return irm
+}
+
+
+define getbaserateperblock(irm){
+	return irm[1];
+}
+
+define setbaserateperblock(irm,baserateperblock){
+	irm[1] = irm;
+	return irm
+}
+
+
+define getexpscale(irm){
+	return irm[2];
+}
+
+define setexpscale(irm,expscale){
+	irm[2] = irm;
+	return irm
+}
+
+
+# add to state  for doAccrueInterest
+# irm
+# accrualblocknumber 
+# borrowindex 
 define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, underlyingscale, initialexchangeratemantissa) {
 	state[0] = totalborrows;     
 	state[1] = totalsupply;
@@ -9,6 +52,7 @@ define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, 
 	state[7]=initialexchangeratemantissa
 	return state 
 }
+
 
 define printstate(state) {
        
