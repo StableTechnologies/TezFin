@@ -50,26 +50,29 @@
 
 define doaccrueinterest(state){
 	interestratemodel = getirm(state)
-        sp.set_type(borrowratemantissa, sp.tnat)
-        self.verifyirm()
-        self.verifyandfinishactiveop(op.ctokenoperations.accrue)
-        sp.verify(borrowratemantissa <=
-                  self.data.borrowratemaxmantissa, ec.ct_invalid_borrow_rate)
-        cash = self.getcashimpl()
-        blockdelta = sp.as_nat(sp.level - self.data.accrualblocknumber)
-
-        simpleinterestfactor = sp.compute(self.mul_exp_nat(
-            self.makeexp(borrowratemantissa), blockdelta))
-        interestaccumulated = sp.compute(self.mulscalartruncate(
-            simpleinterestfactor, self.data.totalborrows))
-        self.data.totalborrows = interestaccumulated + self.data.totalborrows
-        self.data.totalreserves = self.mulscalartruncateadd(sp.record(mantissa=self.data.reservefactormantissa),
-                                                            interestaccumulated,
-                                                            self.data.totalreserves)
-        self.data.borrowindex = self.mulscalartruncateadd(
-            simpleinterestfactor, self.data.borrowindex, self.data.borrowindex)
-        self.data.accrualblocknumber = sp.level
+	borrowratemaxmantissa = getborrowratemaxmantissa(state);
+	borrowrate = calcborrowrate(state,irm)
+        if (borrowratemantissa <= self.data.borrowratemaxmantissa){
+		cash = getcash(state)
+		accrualblocknumber = getaccrualblocknumber(state)
+		level = getlevel(state);
+		accrualblocknumber = getaccrualblocknumber(state)
+		blockdelta = level - accrualblocknumber
+		simpleinterestfactor = mulexpnat(borrowratemantissa, blockdelta)
+		interestaccumulated = mulscalartruncate(simpleinterestfactor, gettotalborrows(state))
+		addtotalborrows(state,interestaccumulated);
+		self.data.totalborrows = interestaccumulated + self.data.totalborrows
+		self.data.totalreserves = self.mulscalartruncateadd(sp.record(mantissa=self.data.reservefactormantissa),
+								    interestaccumulated,
+								    self.data.totalreserves)
+		self.data.borrowindex = self.mulscalartruncateadd(
+		    simpleinterestfactor, self.data.borrowindex, self.data.borrowindex)
+		self.data.accrualblocknumber = sp.level
 	return state
+	} else {
+	  print "\n";
+	  print "ERROR!!! borrowratemantissa > borrowratemaxmantissa"
+	}
 }
 
 define doaccrueinterestmodified(borrowrate, blockdelta, reservefactormantissa, totalreserves, irmscale,ctokenscale,initializationvariablescales) {

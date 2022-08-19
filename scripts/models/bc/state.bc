@@ -54,7 +54,7 @@ define setindex(accountborrows,index){
 # finish  accrue 
 # redeem
 
-define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, underlyingscale, initialexchangeratemantissa, borrowsminters, irm, accrualblocknumber, borrowindex, comptroller,level, borrowratemaxmantissa) {
+define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, underlyingscale, initialexchangeratemantissa, borrowsminters, irm, accrualblocknumber, borrowindex, comptroller,level, borrowratemaxmantissa, reservefactormantissa) {
 	state[0] = totalborrows;     
 	state[1] = totalsupply;
 	state[2] = totalreserves;
@@ -70,7 +70,18 @@ define state(cash, totalborrows,totalsupply,totalreserves,balances,ctokenscale, 
 	state[12] = comptroller; 
 	state[13] = level; 
 	state[14] = borrowratemaxmantissa;
+	state[15] = reservefactormantissa;
 	return state 
+}
+
+
+define getreservefactormantissa(state){
+	return state[15];
+}
+
+define setreservefactormantissa(state,reservefactormantissa){
+	state[15] = state;
+	return state
 }
 
 
