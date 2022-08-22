@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-use-before-define
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
@@ -16,6 +17,8 @@ const Composition = (props) => {
     const {
         title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor, supplyBar
     } = props;
+
+    const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
 
     return (
         <Grid item xs={12} md={6} className={gridClass}>
@@ -53,7 +56,8 @@ const Composition = (props) => {
                             <Typography className={classes.statsValue}>
                               ${(
                                     ((data.collateralized > 0) && nFormatter(data.collateralized))
-                                    || ((data.borrowLimit > 0) && nFormatter(data.borrowLimit))
+                                    // displaying borrow limit as the total collateral value without deducting value borrowed
+                                    || ((totalCollateral > 0) && nFormatter(totalCollateral))
                                 )
                                 || '0.00'
                                 }
