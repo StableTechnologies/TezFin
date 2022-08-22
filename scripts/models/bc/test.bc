@@ -26,111 +26,116 @@ borrowindex=0
 tempcomptroller=0
 teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level, borrowratemaxmantissa, reservefactormantissa)  
 
- printstate(teststate)
- teststate=mint(teststate,0,btctz(2))
- printstate(teststate)
- teststate=mint(teststate,0,btctz(2))
- printstate(teststate)
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "mintmodified";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- cash = 0
- totalborrows=0
- totalsupply = 0
- totalreserves = 0 
- balances[0] = 0
- balances[1] = 0
- ctokenscale = ctoken(1)
- underlyingscale = btctz(1)
- initialexchangeratemantissa = ctoken(1)
- principal = 0
- interestindex = 0
- allmintersborrows[0] = accountborrows(principal,interestindex);
-accrualblocknumber=0
-borrowindex=0
-tempcomptroller=0
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level, borrowratemaxmantissa, reservefactormantissa)  
- printstate(teststate)
- teststate=mintmodified(teststate,0,btctz(2))
- printstate(teststate)
- teststate=mintmodified(teststate,0,btctz(2))
- printstate(teststate)
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "              ETHtz                  ";
- print "              ETHtz                  ";
- print "              ETHtz                  ";
- print "              ETHtz                  ";
- print "              ETHtz                  ";
- print "              ETHtz                  ";
- cash = 0
- totalborrows=0
- totalsupply = 0
- totalreserves = 0 
- balances[0] = 0
- balances[1] = 0
- ctokenscale = ctoken(1)
- underlyingscale = ethtz(1)
- initialexchangeratemantissa = ctoken(1)
- principal = 0
- interestindex = 0
- allmintersborrows[0] = accountborrows(principal,interestindex);
-accrualblocknumber=0
-borrowindex=0
-tempcomptroller=0
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level, borrowratemaxmantissa, reservefactormantissa)  
- printstate(teststate)
- teststate=mint(teststate,0,ethtz(2))
- printstate(teststate)
- teststate=mint(teststate,0,ethtz(2))
- printstate(teststate)
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "mintmodified";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- print "\n";
- cash = 0
- totalborrows=0
- totalsupply = 0
- totalreserves = 0 
- balances[0] = 0
- balances[1] = 0
- ctokenscale = ctoken(1)
- underlyingscale = ethtz(1)
- initialexchangeratemantissa = ctoken(1)
- principal = 0
- interestindex = 0
- allmintersborrows[0] = accountborrows(principal,interestindex);
-accrualblocknumber=0
-borrowindex=0
-tempcomptroller=0
-teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level, borrowratemaxmantissa, reservefactormantissa)  
- printstate(teststate)
- teststate=mintmodified(teststate,0,ethtz(2))
- printstate(teststate)
- teststate=mintmodified(teststate,0,ethtz(2))
- printstate(teststate)
- 
- 
- 
- 
- 
- ###test for whne underlying scale > ctoken !!!!
+printstate(teststate)
+
+doaccrueinterest(state)
+teststate=mint(teststate,0,btctz(2))
+printstate(teststate)
+
+doaccrueinterest(state)
+teststate=mint(teststate,0,btctz(2))
+printstate(teststate)
+
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "mintmodified";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# cash = 0
+# totalborrows=0
+# totalsupply = 0
+# totalreserves = 0 
+# balances[0] = 0
+# balances[1] = 0
+# ctokenscale = ctoken(1)
+# underlyingscale = btctz(1)
+# initialexchangeratemantissa = ctoken(1)
+# principal = 0
+# interestindex = 0
+# allmintersborrows[0] = accountborrows(principal,interestindex);
+#accrualblocknumber=0
+#borrowindex=0
+#tempcomptroller=0
+#teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level, borrowratemaxmantissa, reservefactormantissa)  
+# printstate(teststate)
+# teststate=mintmodified(teststate,0,btctz(2))
+# printstate(teststate)
+# teststate=mintmodified(teststate,0,btctz(2))
+# printstate(teststate)
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "              ETHtz                  ";
+# print "              ETHtz                  ";
+# print "              ETHtz                  ";
+# print "              ETHtz                  ";
+# print "              ETHtz                  ";
+# print "              ETHtz                  ";
+# cash = 0
+# totalborrows=0
+# totalsupply = 0
+# totalreserves = 0 
+# balances[0] = 0
+# balances[1] = 0
+# ctokenscale = ctoken(1)
+# underlyingscale = ethtz(1)
+# initialexchangeratemantissa = ctoken(1)
+# principal = 0
+# interestindex = 0
+# allmintersborrows[0] = accountborrows(principal,interestindex);
+#accrualblocknumber=0
+#borrowindex=0
+#tempcomptroller=0
+#teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level, borrowratemaxmantissa, reservefactormantissa)  
+# printstate(teststate)
+# teststate=mint(teststate,0,ethtz(2))
+# printstate(teststate)
+# teststate=mint(teststate,0,ethtz(2))
+# printstate(teststate)
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "mintmodified";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# print "\n";
+# cash = 0
+# totalborrows=0
+# totalsupply = 0
+# totalreserves = 0 
+# balances[0] = 0
+# balances[1] = 0
+# ctokenscale = ctoken(1)
+# underlyingscale = ethtz(1)
+# initialexchangeratemantissa = ctoken(1)
+# principal = 0
+# interestindex = 0
+# allmintersborrows[0] = accountborrows(principal,interestindex);
+#accrualblocknumber=0
+#borrowindex=0
+#tempcomptroller=0
+#teststate=state(cash,totalborrows,totalsupply,totalreserves,balances,ctokenscale,underlyingscale, initialexchangeratemantissa, allmintersborrows,interestratemodel, accrualblocknumber, borrowindex, tempcomptroller,level, borrowratemaxmantissa, reservefactormantissa)  
+# printstate(teststate)
+# teststate=mintmodified(teststate,0,ethtz(2))
+# printstate(teststate)
+# teststate=mintmodified(teststate,0,ethtz(2))
+# printstate(teststate)
+# 
+# 
+# 
+# 
+# 
+# ###test for whne underlying scale > ctoken !!!!

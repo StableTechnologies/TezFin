@@ -36,13 +36,19 @@ define setirmexpscale(irm,expscale){
 }
 
 define utilizationrate(state,irm){
-	cash = getcash(state)
-	borrows = getborrows(state)
-	reserves = getreserves(state)
-	escale = getirmexpscale(state)
-	divisor=cash+borrows-reserves;
 	scale=0;
-	return (borrows * escale) / divisor;
+	ur = 0;
+	cash = getcash(state)
+	borrows = gettotalborrows(state)
+	reserves = gettotalreserves(state)
+	escale = getirmexpscale(state)
+	if (borrows > 0) {
+	   divisor=cash+borrows-reserves;
+	   if (divisor > 0) {
+	      ur = (borrows * escale) / divisor;
+	   } 
+	} 
+	return ur
 }
 
 define calcborrowrate(state,irm) {
@@ -54,6 +60,7 @@ define calcborrowrate(state,irm) {
 	borrowrate=(u * multiplierperblock / escale) + baserateperblock;
 	return borrowrate
 }
+
 define calcsupplyrate(state,irm){
        brate = calcborrowrate(state,irm);
        scale=0;
