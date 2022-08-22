@@ -53,25 +53,29 @@ define doaccrueinterest(state) {
 	borrowratemaxmantissa = getborrowratemaxmantissa(state);
 	borrowrate = calcborrowrate(state,irm)
         if (borrowratemantissa <= borrowratemaxmantissa) {
-#		cash = getcash(state)
-#		accrualblocknumber = getaccrualblocknumber(state)
-#		level = getlevel(state);
-#		accrualblocknumber = getaccrualblocknumber(state)
-#		blockdelta = level - accrualblocknumber
-#		simpleinterestfactor = mulexpnat(borrowratemantissa, blockdelta)
-#		interestaccumulated = mulscalartruncate(simpleinterestfactor, gettotalborrows(state))
-#		state = addtotalborrows(state,interestaccumulated);
-#
-#		totalreserves = gettotalreserves(state);
-#		reservefactormantissa = getreservefactormantissa(state);
-#		totalreserves = mulscalartruncateadd(reservefactormantissa, interestaccumulated, totalreserves)
-#		state = settotalreserves(state, totalreserves);
-#
-#		borrowindex = getborrowindex(state);
-#		borrowindex = mulscalartruncateadd(simpleinterestfactor, borrowindex, borrowindex);
-#		state = setborrowindex(state, borrowindex);
-#
-#		state = setaccrualblocknumber(state, getlevel(state));
+		cash = getcash(state)
+		accrualblocknumber = getaccrualblocknumber(state)
+		level = getlevel(state);
+		accrualblocknumber = getaccrualblocknumber(state)
+		blockdelta = level - accrualblocknumber
+		simpleinterestfactor = mulexpnat(borrowratemantissa, blockdelta)
+
+		interestaccumulated = mulscalartruncate(simpleinterestfactor, gettotalborrows(state), getctokenscale(state))
+
+
+
+		state = addtotalborrows(state,interestaccumulated);
+
+		totalreserves = gettotalreserves(state);
+		reservefactormantissa = getreservefactormantissa(state);
+		totalreserves = mulscalartruncateadd(reservefactormantissa, interestaccumulated, totalreserves, getctokenscale(state))
+		state = settotalreserves(state, totalreserves);
+
+		borrowindex = getborrowindex(state);
+		borrowindex = mulscalartruncateadd(simpleinterestfactor, borrowindex, borrowindex, getctokenscale(state));
+		state = setborrowindex(state, borrowindex);
+
+		state = setaccrualblocknumber(state, getlevel(state));
 		return state
 	} else {
 	  print "\n";
@@ -79,6 +83,42 @@ define doaccrueinterest(state) {
 	}
 }
 
+
+define doaccrueinterestmodified(state) {
+	interestratemodel = getirm(state)
+	borrowratemaxmantissa = getborrowratemaxmantissa(state);
+	borrowrate = calcborrowrate(state,irm)
+	borrowrate  = rescale(borrowrate, irmscale, ctokenscale);
+        if (borrowratemantissa <= borrowratemaxmantissa) {
+		cash = getcash(state)
+		accrualblocknumber = getaccrualblocknumber(state)
+		level = getlevel(state);
+		accrualblocknumber = getaccrualblocknumber(state)
+		blockdelta = level - accrualblocknumber
+		simpleinterestfactor = mulexpnat(borrowratemantissa, blockdelta)
+
+		interestaccumulated = mulscalartruncate(simpleinterestfactor, gettotalborrows(state), getctokenscale(state))
+
+
+
+		state = addtotalborrows(state,interestaccumulated);
+
+		totalreserves = gettotalreserves(state);
+		reservefactormantissa = getreservefactormantissa(state);
+		totalreserves = mulscalartruncateadd(reservefactormantissa, interestaccumulated, totalreserves, getctokenscale(state))
+		state = settotalreserves(state, totalreserves);
+
+		borrowindex = getborrowindex(state);
+		borrowindex = mulscalartruncateadd(simpleinterestfactor, borrowindex, borrowindex, getctokenscale(state));
+		state = setborrowindex(state, borrowindex);
+
+		state = setaccrualblocknumber(state, getlevel(state));
+		return state
+	} else {
+	  print "\n";
+	  print "ERROR!!! borrowratemantissa > borrowratemaxmantissa"
+	}
+}
 # define doaccrueinterestmodified(borrowrate, blockdelta, reservefactormantissa, totalreserves, irmscale,ctokenscale,initializationvariablescales) {
 # 
 #         borrowRateRescaled = rescale(borrowrate, irmscale, ctokenscale)
