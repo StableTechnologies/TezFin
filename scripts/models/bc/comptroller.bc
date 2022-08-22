@@ -1,5 +1,140 @@
-
+define tliquidity(liquidity, updateLevel, valid){
+#     tliquidity[0]=liquidity  # Current account liquidity. Negative value indicates shortfall
+#     tliquidity[1]=updateLevel  # Block level of last update
+#     tliquidity[2]=valid  # Liquidity is valid only for one user action
+}
 # 
+# TLiquidity = sp.TRecord(
+#     liquidity=sp.TInt,  # Current account liquidity. Negative value indicates shortfall
+#     updateLevel=sp.TNat,  # Block level of last update
+#     valid=sp.TBool  # Liquidity is valid only for one user action
+# )
+# 
+# 
+
+
+#     tliquidity[0]=
+#     
+define getliquidity(tliquidity){
+	return tliquidity[0];
+}
+
+define setliquidity(tliquidity,liquidity){
+	tliquidity[0] = tliquidity;
+	return tliquidity
+}  # Current account liquidity. Negative value indicates shortfall
+#     tliquidity[1]=
+#     
+define getupdateLevel(tliquidity){
+	return tliquidity[1];
+}
+
+define setupdateLevel(tliquidity,updateLevel){
+	tliquidity[1] = tliquidity;
+	return tliquidity
+}  # Block level of last update
+#     tliquidity[2]=
+#     
+define getvalid(tliquidity){
+	return tliquidity[2];
+}
+
+define setvalid(tliquidity,valid){
+	tliquidity[2] = tliquidity;
+	return tliquidity
+}  # Liquidity is valid only for one user action
+
+
+
+define tmarket(collateralFactor, mintPaused, borrowPaused, name, price, priceExp, updateLevel, borrowCap) {
+
+#                      tmarket[0]=collateralFactor
+#                      # For instance, 0.9 to allow borrowing 90% of collateral value.
+#                      # Must be between 0 and 1, and stored as a mantissa.
+#                      tmarket[1]=mintPaused
+#                      tmarket[2]=borrowPaused
+#                      tmarket[3]=name  # Asset name for price oracle
+#                      tmarket[4]=price  # The price of the asset
+#                      tmarket[5]=priceExp  # exponent needed to normalize the token prices to 10^18
+#                      tmarket[6]=updateLevel  # Block level of last price update
+#                      tmarket[7]=borrowCap  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
+}
+
+#                      tmarket[1]=
+#                      
+define getmintPaused(tmarket){
+	return tmarket[1];
+}
+
+define setmintPaused(tmarket,mintPaused){
+	tmarket[1] = tmarket;
+	return tmarket
+}
+#                      tmarket[2]=
+#                      
+define getborrowPaused(tmarket){
+	return tmarket[2];
+}
+
+define setborrowPaused(tmarket,borrowPaused){
+	tmarket[2] = tmarket;
+	return tmarket
+}
+#                      tmarket[3]=
+#                      
+define getname(tmarket){
+	return tmarket[3];
+}
+
+define setname(tmarket,name){
+	tmarket[3] = tmarket;
+	return tmarket
+}  # Asset name for price oracle
+
+
+#                      tmarket[4]=
+#                      
+define getprice(tmarket){
+	return tmarket[4];
+}
+
+define setprice(tmarket,price){
+	tmarket[4] = tmarket;
+	return tmarket
+}  # The price of the asset
+#                      tmarket[5]=
+#                      
+define getpriceExp(tmarket){
+	return tmarket[5];
+}
+
+define setpriceExp(tmarket,priceExp){
+	tmarket[5] = tmarket;
+	return tmarket
+}  # exponent needed to normalize the token prices to 10^18
+#                      tmarket[6]=
+#                      
+define getupdateLevel(tmarket){
+	return tmarket[6];
+}
+
+define setupdateLevel(tmarket,updateLevel){
+	tmarket[6] = tmarket;
+	return tmarket
+}  # Block level of last price update
+#                      tmarket[7]=
+#                      
+define getborrowCap(tmarket){
+	return tmarket[7];
+}
+
+define setborrowCap(tmarket,borrowCap){
+	tmarket[7] = tmarket;
+	return tmarket
+}  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
+
+
+
 # TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
 #                      # Multiplier representing the most one can borrow against their collateral in this market.
 #                      collateralFactor=Exponential.TExp,
@@ -77,115 +212,115 @@ define comptroller(administrator, pendingadministrator, markets, marketnametoadd
 
 
 	     
-	     define getadministrator(comptroller){
-	     	return comptroller[0];
-	     }
-	     
-	     define setadministrator(comptroller,administrator){
-	     	comptroller[0] = comptroller;
-	     	return comptroller
-	     }
-	     
-	     define getpendingadministrator(comptroller){
-	     	return comptroller[1];
-	     }
-	     
-	     define setpendingadministrator(comptroller,pendingadministrator){
-	     	comptroller[1] = comptroller;
-	     	return comptroller
-	     }
-             # official mapping of ctokens -> market metadata. used e.g. to determine if a market is supported
-	     
-	     define getmarkets(comptroller){
-	     	return comptroller[2];
-	     }
-	     
-	     define setmarkets(comptroller,markets){
-	     	comptroller[2] = comptroller;
-	     	return comptroller
-	     }
-             # the mapping of market names -> ctoken
-	     
-	     define getmarketnametoaddress(comptroller){
-	     	return comptroller[3];
-	     }
-	     
-	     define setmarketnametoaddress(comptroller,marketnametoaddress){
-	     	comptroller[3] = comptroller;
-	     	return comptroller
-	     }
-	     
-	     define gettransferpaused(comptroller){
-	     	return comptroller[4];
-	     }
-	     
-	     define settransferpaused(comptroller,transferpaused){
-	     	comptroller[4] = comptroller;
-	     	return comptroller
-	     }
-             # per-account mapping of collaterals, capped by maxassets
-	     define getcollaterals(comptroller){
-	     	return comptroller[5];
-	     }
-	     
-	     define setcollaterals(comptroller,collaterals){
-	     	comptroller[5] = comptroller;
-	     	return comptroller
-	     }
-             # per-account mapping of loans, capped by maxassets
-	     
-	     define getloans(comptroller){
-	     	return comptroller[6];
-	     }
-	     
-	     define setloans(comptroller,loans){
-	     	comptroller[6] = comptroller;
-	     	return comptroller
-	     } 
-             # per-account mapping of current liquidity
-	     
-	     define getaccountliquidity(comptroller){
-	     	return comptroller[7];
-	     }
-	     
-	     define setaccountliquidity(comptroller,accountliquidity){
-	     	comptroller[7] = comptroller;
-	     	return comptroller
-	     }
-	     
-	     define getoracleaddress(comptroller){
-	     	return comptroller[8];
-	     }
-	     
-	     define setoracleaddress(comptroller,oracleaddress){
-	     	comptroller[8] = comptroller;
-	     	return comptroller
-	     }
-             # set of currently active operations to protect execution flow
-	     
-	     define getactiveoperations(comptroller){
-	     	return comptroller[9];
-	     }
-	     
-	     define setactiveoperations(comptroller,activeoperations){
-	     	comptroller[9] = comptroller;
-	     	return comptroller
-	     }
-	     
-	     define getclosefactormantissa(comptroller){
-	     	return comptroller[10];
-	     }
-	     
-	     define setclosefactormantissa(comptroller,closefactormantissa){
-	     	comptroller[10] = comptroller;
-	     	return comptroller
-	     }
-	     
-	     define getliquidationincentivemantissa(comptroller){
-	     	return comptroller[11];
-	     }
-	     
-	     define setliquidationincentivemantissa(comptroller,liquidationincentivemantissa){
-	     	comptroller[11] = comptroller;
-	     	return comptroller
-	     }
+define getadministrator(comptroller){
+	return comptroller[0];
+}
+
+define setadministrator(comptroller,administrator){
+	comptroller[0] = comptroller;
+	return comptroller
+}
+
+define getpendingadministrator(comptroller){
+	return comptroller[1];
+}
+
+define setpendingadministrator(comptroller,pendingadministrator){
+	comptroller[1] = comptroller;
+	return comptroller
+}
+# official mapping of ctokens -> market metadata. used e.g. to determine if a market is supported
+
+define getmarkets(comptroller){
+	return comptroller[2];
+}
+
+define setmarkets(comptroller,markets){
+	comptroller[2] = comptroller;
+	return comptroller
+}
+# the mapping of market names -> ctoken
+
+define getmarketnametoaddress(comptroller){
+	return comptroller[3];
+}
+
+define setmarketnametoaddress(comptroller,marketnametoaddress){
+	comptroller[3] = comptroller;
+	return comptroller
+}
+
+define gettransferpaused(comptroller){
+	return comptroller[4];
+}
+
+define settransferpaused(comptroller,transferpaused){
+	comptroller[4] = comptroller;
+	return comptroller
+}
+# per-account mapping of collaterals, capped by maxassets
+define getcollaterals(comptroller){
+	return comptroller[5];
+}
+
+define setcollaterals(comptroller,collaterals){
+	comptroller[5] = comptroller;
+	return comptroller
+}
+# per-account mapping of loans, capped by maxassets
+
+define getloans(comptroller){
+	return comptroller[6];
+}
+
+define setloans(comptroller,loans){
+	comptroller[6] = comptroller;
+	return comptroller
+} 
+# per-account mapping of current liquidity
+
+define getaccountliquidity(comptroller){
+	return comptroller[7];
+}
+
+define setaccountliquidity(comptroller,accountliquidity){
+	comptroller[7] = comptroller;
+	return comptroller
+}
+
+define getoracleaddress(comptroller){
+	return comptroller[8];
+}
+
+define setoracleaddress(comptroller,oracleaddress){
+	comptroller[8] = comptroller;
+	return comptroller
+}
+# set of currently active operations to protect execution flow
+
+define getactiveoperations(comptroller){
+	return comptroller[9];
+}
+
+define setactiveoperations(comptroller,activeoperations){
+	comptroller[9] = comptroller;
+	return comptroller
+}
+
+define getclosefactormantissa(comptroller){
+	return comptroller[10];
+}
+
+define setclosefactormantissa(comptroller,closefactormantissa){
+	comptroller[10] = comptroller;
+	return comptroller
+}
+
+define getliquidationincentivemantissa(comptroller){
+	return comptroller[11];
+}
+
+define setliquidationincentivemantissa(comptroller,liquidationincentivemantissa){
+	comptroller[11] = comptroller;
+	return comptroller
+}
