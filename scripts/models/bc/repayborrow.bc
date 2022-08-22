@@ -70,7 +70,7 @@
 #
 #					########## 
 #					
-#					COMPTROLER
+#					COMPTROLLER
 #					########## 
 #     """
 #        Checks if the account should be allowed to repay a borrow in the given market
@@ -87,3 +87,28 @@
 #        self.verifyMarketListed(params.cToken)
 #        self.invalidateLiquidity(params.borrower)
 #        self.invalidateLiquidity(params.payer)
+# 
+# 
+# 
+# 
+#     def invalidateLiquidity(self, account):
+#         sp.if self.data.account_liquidity.contains(account):
+#             self.data.account_liquidity[account].valid = False
+# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,191 @@
+
+# 
+# TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
+#                      # Multiplier representing the most one can borrow against their collateral in this market.
+#                      collateralFactor=Exponential.TExp,
+#                      # For instance, 0.9 to allow borrowing 90% of collateral value.
+#                      # Must be between 0 and 1, and stored as a mantissa.
+#                      mintPaused=sp.TBool,
+#                      borrowPaused=sp.TBool,
+#                      name=sp.TString,  # Asset name for price oracle
+#                      price=Exponential.TExp,  # The price of the asset
+#                      priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
+#                      updateLevel=sp.TNat,  # Block level of last price update
+#                      borrowCap=sp.TNat  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
+#                      )
+# 
+# TLiquidity = sp.TRecord(
+#     liquidity=sp.TInt,  # Current account liquidity. Negative value indicates shortfall
+#     updateLevel=sp.TNat,  # Block level of last update
+#     valid=sp.TBool  # Liquidity is valid only for one user action
+# )
+# 
+# DEFAULT_COLLATERAL_FACTOR = int(5e17)  # 50 %
+# 
+# 
+# class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
+#     def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, **extra_storage):
+#         Exponential.Exponential.__init__(
+#             self,
+#             administrator=administrator_,
+#             pendingAdministrator=sp.none,
+#             # Official mapping of cTokens -> Market metadata. Used e.g. to determine if a market is supported
+#             markets=sp.big_map(l={}, tkey=sp.TAddress, tvalue=TMarket),
+#             # The mapping of Market names -> CToken
+#             marketNameToAddress=sp.map(tkey=sp.TString, tvalue=sp.TAddress),
+#             transferPaused=sp.bool(True),
+#             # Per-account mapping of collaterals, capped by maxAssets
+#             collaterals=sp.big_map(
+#                 l={}, tkey=sp.TAddress, tvalue=sp.TSet(sp.TAddress)),
+#             # Per-account mapping of loans, capped by maxAssets
+#             loans=sp.big_map(l={}, tkey=sp.TAddress,
+#                              tvalue=sp.TSet(sp.TAddress)),
+#             # Per-account mapping of current liquidity
+#             account_liquidity=sp.big_map(
+#                 l={}, tkey=sp.TAddress, tvalue=TLiquidity),
+#             oracleAddress=oracleAddress_,
+#             # Set of currently active operations to protect execution flow
+#             activeOperations=sp.set(t=sp.TNat),
+#             closeFactorMantissa=closeFactorMantissa_,
+#             liquidationIncentiveMantissa=liquidationIncentiveMantissa_,
+#             **extra_storage
+#         )
+# 
+
+define comptroller(administrator, pendingadministrator, markets, marketnametoaddress, transferpaused, collaterals, loans, accountliquidity, oracleaddress, activeoperations, closefactormantissa, liquidationincentivemantissa){
+	
+             comptroller[0]=administrator
+             comptroller[1]=pendingadministrator
+             # official mapping of ctokens -> market metadata. used e.g. to determine if a market is supported
+             comptroller[2]=markets 
+             # the mapping of market names -> ctoken
+             comptroller[3]=marketnametoaddress
+             comptroller[4]=transferpaused
+             # per-account mapping of collaterals, capped by maxassets
+             comptroller[5]=collaterals
+             # per-account mapping of loans, capped by maxassets
+             comptroller[6]=loans 
+             # per-account mapping of current liquidity
+             comptroller[7]=accountliquidity
+             comptroller[8]=oracleaddress
+             # set of currently active operations to protect execution flow
+             comptroller[9]=activeoperations
+             comptroller[10]=closefactormantissa
+             comptroller[11]=liquidationincentivemantissa
+
+}
+
+
+	     
+	     define getadministrator(comptroller){
+	     	return comptroller[0];
+	     }
+	     
+	     define setadministrator(comptroller,administrator){
+	     	comptroller[0] = comptroller;
+	     	return comptroller
+	     }
+	     
+	     define getpendingadministrator(comptroller){
+	     	return comptroller[1];
+	     }
+	     
+	     define setpendingadministrator(comptroller,pendingadministrator){
+	     	comptroller[1] = comptroller;
+	     	return comptroller
+	     }
+             # official mapping of ctokens -> market metadata. used e.g. to determine if a market is supported
+	     
+	     define getmarkets(comptroller){
+	     	return comptroller[2];
+	     }
+	     
+	     define setmarkets(comptroller,markets){
+	     	comptroller[2] = comptroller;
+	     	return comptroller
+	     }
+             # the mapping of market names -> ctoken
+	     
+	     define getmarketnametoaddress(comptroller){
+	     	return comptroller[3];
+	     }
+	     
+	     define setmarketnametoaddress(comptroller,marketnametoaddress){
+	     	comptroller[3] = comptroller;
+	     	return comptroller
+	     }
+	     
+	     define gettransferpaused(comptroller){
+	     	return comptroller[4];
+	     }
+	     
+	     define settransferpaused(comptroller,transferpaused){
+	     	comptroller[4] = comptroller;
+	     	return comptroller
+	     }
+             # per-account mapping of collaterals, capped by maxassets
+	     define getcollaterals(comptroller){
+	     	return comptroller[5];
+	     }
+	     
+	     define setcollaterals(comptroller,collaterals){
+	     	comptroller[5] = comptroller;
+	     	return comptroller
+	     }
+             # per-account mapping of loans, capped by maxassets
+	     
+	     define getloans(comptroller){
+	     	return comptroller[6];
+	     }
+	     
+	     define setloans(comptroller,loans){
+	     	comptroller[6] = comptroller;
+	     	return comptroller
+	     } 
+             # per-account mapping of current liquidity
+	     
+	     define getaccountliquidity(comptroller){
+	     	return comptroller[7];
+	     }
+	     
+	     define setaccountliquidity(comptroller,accountliquidity){
+	     	comptroller[7] = comptroller;
+	     	return comptroller
+	     }
+	     
+	     define getoracleaddress(comptroller){
+	     	return comptroller[8];
+	     }
+	     
+	     define setoracleaddress(comptroller,oracleaddress){
+	     	comptroller[8] = comptroller;
+	     	return comptroller
+	     }
+             # set of currently active operations to protect execution flow
+	     
+	     define getactiveoperations(comptroller){
+	     	return comptroller[9];
+	     }
+	     
+	     define setactiveoperations(comptroller,activeoperations){
+	     	comptroller[9] = comptroller;
+	     	return comptroller
+	     }
+	     
+	     define getclosefactormantissa(comptroller){
+	     	return comptroller[10];
+	     }
+	     
+	     define setclosefactormantissa(comptroller,closefactormantissa){
+	     	comptroller[10] = comptroller;
+	     	return comptroller
+	     }
+	     
+	     define getliquidationincentivemantissa(comptroller){
+	     	return comptroller[11];
+	     }
+	     
+	     define setliquidationincentivemantissa(comptroller,liquidationincentivemantissa){
+	     	comptroller[11] = comptroller;
+	     	return comptroller
+	     }
