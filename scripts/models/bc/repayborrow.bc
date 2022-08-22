@@ -1,53 +1,89 @@
-
-    # """    
-    #     Sender borrows assets from the protocol to their own address
-
-    #     params: TNat - The amount of the underlying asset to borrow
-
-    #     requirements:
-    #         cToken: 
-    #             accrueInterest() should be executed within 5 blocks prior to this call
-    #         comptroller:
-    #             updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-    #             updateAccountLiquidity() should be executed within 5 blocks prior to this call
-    # """
-    # @sp.entry_point
-    # def borrow(self, params):
-    #     sp.set_type(params, sp.TNat)
-    #     self.verifyNotInternal()
-    #     self.verifyBorrowAllowed(sp.sender, params)
-    #     self.borrowInternal(sp.record(borrower=sp.sender, borrowAmount=params))
-
-    # def borrowInternal(self, params):
-    #     self.checkCash(params.borrowAmount)
-    #     self.verifyAccruedInterestRelevance()
-    #     self.doTransferOut(params.borrower, params.borrowAmount)
-    #     accountBorrows = self.getBorrowBalance(
-    #         params.borrower) + params.borrowAmount
-    #     self.data.balances[params.borrower].accountBorrows.principal = accountBorrows
-    #     self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
-    #     self.data.totalBorrows += params.borrowAmount
-
-    # def verifyBorrowAllowed(self, borrower_, borrowAmount_):
-    #     self.addAddressIfNecessary(borrower_)
-    #     c = sp.contract(CMPI.TBorrowAllowedParams, self.data.comptroller,
-    #                     entry_point="borrowAllowed").open_some()
-    #     transferData = sp.record(
-    #         cToken=sp.self_address, borrower=borrower_, borrowAmount=borrowAmount_)
-    #     sp.transfer(transferData, sp.mutez(0), c)
-
-    # """    
-    #     Sender repays their own borrow
-
-    #     params: TNat - The amount to repay
-
-    #     requirements: 
-    #         accrueInterest() should be executed within 5 blocks prior to this call
-    # """
-    # @sp.entry_point
-    # def repayBorrow(self, params):
-    #     sp.set_type(params, sp.TNat)
-    #     self.verifyNotInternal()
-    #     self.verifyRepayBorrowAllowed(sp.sender, sp.sender, params)
-    #     self.repayBorrowInternal(
-    #         sp.record(payer=sp.sender, borrower=sp.sender, repayAmount=params))
+# 
+# 
+#     """    
+#         Sender repays their own borrow
+# 
+#         params: TNat - The amount to repay
+# 
+#         requirements: 
+#             accrueInterest() should be executed within 5 blocks prior to this call
+#     """
+#     @sp.entry_point
+#     def repayBorrow(self, params):
+#         sp.set_type(params, sp.TNat)
+#         self.verifyNotInternal()
+#         self.verifyRepayBorrowAllowed(sp.sender, sp.sender, params)
+#         self.repayBorrowInternal(
+#             sp.record(payer=sp.sender, borrower=sp.sender, repayAmount=params))
+# 
+#     """    
+#         Sender repays a borrow belonging to borrower
+# 
+#         params: TRecord
+#             borrower: TAddress - The account with the debt being payed off
+#             repayAmount: TNat - The amount to repay
+#         
+#         requirements:
+#             accrueInterest() should be executed within 5 blocks prior to this call
+#     """
+#     @sp.entry_point
+#     def repayBorrowBehalf(self, params):
+#         sp.set_type(params, sp.TRecord(
+#             borrower=sp.TAddress, repayAmount=sp.TNat))
+#         self.verifyNotInternal()
+#         self.verifyRepayBorrowAllowed(
+#             sp.sender, params.borrower, params.repayAmount)
+#         self.repayBorrowInternal(sp.record(
+#             payer=sp.sender, borrower=params.borrower, repayAmount=params.repayAmount))
+# 
+#     def repayBorrowInternal(self, params):
+#         self.verifyAccruedInterestRelevance()
+#         accountBorrows = self.getBorrowBalance(params.borrower)
+#         repayAmount = sp.min(accountBorrows, params.repayAmount)
+#         self.doTransferIn(params.payer, repayAmount)
+#         self.data.balances[params.borrower].accountBorrows.principal = self.sub_nat_nat(
+#             accountBorrows, repayAmount)
+#         self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
+#         self.data.totalBorrows = self.sub_nat_nat(
+#             self.data.totalBorrows, repayAmount)
+#         sp.if self.data.balances[params.borrower].accountBorrows.principal == 0:
+#             c = sp.contract(sp.TAddress, self.data.comptroller,
+#                             entry_point="removeFromLoans").open_some()
+#             sp.transfer(params.borrower, sp.mutez(0), c)
+# 
+#     def verifyRepayBorrowAllowed(self, payer_, borrower_, repayAmount_):
+#         self.addAddressIfNecessary(payer_)
+#         c = sp.contract(CMPI.TRepayBorrowAllowedParams, self.data.comptroller,
+#                         entry_point="repayBorrowAllowed").open_some()
+#         transferData = sp.record(
+#             cToken=sp.self_address, payer=payer_, borrower=borrower_, repayAmount=repayAmount_)
+#         sp.transfer(transferData, sp.mutez(0), c)
+# 
+#
+#    def verifyRepayBorrowAllowed(self, payer_, borrower_, repayAmount_):
+#        self.addAddressIfNecessary(payer_)
+#        c = sp.contract(CMPI.TRepayBorrowAllowedParams, self.data.comptroller,
+#                        entry_point="repayBorrowAllowed").open_some()
+#        transferData = sp.record(
+#            cToken=sp.self_address, payer=payer_, borrower=borrower_, repayAmount=repayAmount_)
+#        sp.transfer(transferData, sp.mutez(0), c)
+#
+#					########## 
+#					
+#					COMPTROLER
+#					########## 
+#     """
+#        Checks if the account should be allowed to repay a borrow in the given market
+#
+#        params: TRecord
+#            cToken: TAddress - The market to verify the repay against
+#            payer: TAddress - The account which would repay the asset
+#            borrower: TAddress - The account which would borrowed the asset
+#            repayAmount: TNat - The amount of the underlying asset the account would repay
+#    """
+#    @sp.entry_point(lazify=True)
+#    def repayBorrowAllowed(self, params):
+#        sp.set_type(params, CMPTInterface.TRepayBorrowAllowedParams)
+#        self.verifyMarketListed(params.cToken)
+#        self.invalidateLiquidity(params.borrower)
+#        self.invalidateLiquidity(params.payer)
