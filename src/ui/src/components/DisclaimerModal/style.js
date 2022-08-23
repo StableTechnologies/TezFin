@@ -82,14 +82,14 @@ export const useStyles = makeStyles({
 
         marginRight: '1.5rem',
         '@media(max-width: 501px)': {
-            padding: '0.925rem 2rem !important'
+            padding: '0.925rem 2rem '
         },
         '@media(max-width: 320px)': {
-            padding: '0.925rem .5rem !important'
+            padding: '0.925rem .5rem '
         }
     },
     title: {
-        fontSize: '1.5rem',
+        fontSize: '1.3rem',
         color: '#000',
         padding: '0.1rem 0rem 0rem',
         opacity: '0.87',
@@ -99,11 +99,11 @@ export const useStyles = makeStyles({
     },
     warningCon: {
         marginRight: '1rem',
-        padding: '0.5rem 0rem 0rem',
+        padding: '0.2rem 0rem 0rem'
     },
     warningIcon: {
-        width: '1.2rem',
-        height: '1.2rem',
+        width: '1rem',
+        height: '1rem',
         '@media(max-width: 501px)': {
             width: '1.25rem',
             height: '1.25rem'
