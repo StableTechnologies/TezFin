@@ -10,7 +10,7 @@ export const useStyles = makeStyles({
             borderRadius: '0',
             background: '#FFFFFF',
             color: '#000',
-            padding: '2rem 0rem 2rem'
+            padding: '0.5rem 0rem 2rem'
         },
         '& .MuiDialogTitle-root': {
             justifyContent: 'center',
@@ -20,10 +20,10 @@ export const useStyles = makeStyles({
             fontSize: '20px',
             lineHeight: '30px',
             color: '#000',
-            padding: '1.925rem 4rem 0'
+            padding: '1.925rem 0.9rem 0rem'
         },
         '& .MuiDialogContent-root': {
-            padding: '10 2.5rem 2.5rem'
+            padding: '1rem 2rem 2.5rem'
         },
         '& .MuiDialogContentText-root': {
             fontFamily: 'Poppins',
@@ -79,6 +79,8 @@ export const useStyles = makeStyles({
     },
     headerCon: {
         display: 'flex',
+
+        marginRight: '1.5rem',
         '@media(max-width: 501px)': {
             padding: '0.925rem 2rem !important'
         },
@@ -89,17 +91,19 @@ export const useStyles = makeStyles({
     title: {
         fontSize: '1.5rem',
         color: '#000',
+        padding: '0.1rem 0rem 0rem',
         opacity: '0.87',
         '@media(max-width: 501px)': {
             fontSize: '1rem'
         }
     },
     warningCon: {
-        marginRight: '1rem'
+        marginRight: '1rem',
+        padding: '0.5rem 0rem 0rem',
     },
     warningIcon: {
-        width: '2rem',
-        height: '2rem',
+        width: '1.2rem',
+        height: '1.2rem',
         '@media(max-width: 501px)': {
             width: '1.25rem',
             height: '1.25rem'
