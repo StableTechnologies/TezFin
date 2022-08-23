@@ -9,7 +9,8 @@ export const useStyles = makeStyles({
             textAlign: 'left',
             borderRadius: '0',
             background: '#FFFFFF',
-            color: '#000'
+            color: '#000',
+            padding: '0rem 0rem 2rem'
         },
         '& .MuiDialogTitle-root': {
             justifyContent: 'center',
@@ -19,7 +20,7 @@ export const useStyles = makeStyles({
             fontSize: '20px',
             lineHeight: '30px',
             color: '#000',
-            padding: '0.925rem 4rem 0'
+            padding: '1.925rem 4rem 0'
         },
         '& .MuiDialogContent-root': {
             padding: '10 2.5rem 2.5rem'
@@ -33,7 +34,7 @@ export const useStyles = makeStyles({
             textAlign: 'justify',
             color: '#000',
             opacity: '0.87',
-            padding: '1.35rem 0rem 0',
+            padding: '1.35rem 1.5rem 0',
             '@media(max-width: 501px)': {
                 fontSize: '0.875rem'
             }
