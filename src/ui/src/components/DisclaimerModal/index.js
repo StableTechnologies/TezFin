@@ -17,8 +17,8 @@ const DisclamerModal = (props) => {
     const { close } = props;
     const title = 'Please Exercise Caution';
 
-    const para1 = `While the initial creators of the TezFin (Tezos Finance;
-        tezos.finance) protocol have made reasonable
+    const para1 = `While the initial creators of the TezFin 
+        protocol have made reasonable
         efforts to attempt to ensure the security of the
         contracts and platform, including modeling much of
         the codebase from existing well-audited projects
