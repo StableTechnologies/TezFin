@@ -90,16 +90,16 @@ define setvalid(tliquidity,valid){
 
 define tmarket(collateralFactor, mintPaused, borrowPaused, name, price, priceExp, updateLevel, borrowCap) {
 
-#                      tmarket[0]=collateralFactor
-#                      # For instance, 0.9 to allow borrowing 90% of collateral value.
-#                      # Must be between 0 and 1, and stored as a mantissa.
-#                      tmarket[1]=mintPaused
-#                      tmarket[2]=borrowPaused
-#                      tmarket[3]=name  # Asset name for price oracle
-#                      tmarket[4]=price  # The price of the asset
-#                      tmarket[5]=priceExp  # exponent needed to normalize the token prices to 10^18
-#                      tmarket[6]=updateLevel  # Block level of last price update
-#                      tmarket[7]=borrowCap  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
+                      tmarket[0]=collateralFactor
+                      # For instance, 0.9 to allow borrowing 90% of collateral value.
+                      # Must be between 0 and 1, and stored as a mantissa.
+                      tmarket[1]=mintPaused
+                      tmarket[2]=borrowPaused
+                      tmarket[3]=name  # Asset name for price oracle
+                      tmarket[4]=price  # The price of the asset
+                      tmarket[5]=priceExp  # exponent needed to normalize the token prices to 10^18
+                      tmarket[6]=updateLevel  # Block level of last price update
+                      tmarket[7]=borrowCap  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
 }
 
 #                      tmarket[1]=
@@ -229,37 +229,57 @@ define setborrowCap(tmarket,borrowCap){
 #         )
 # 
 
-define comptroller(administrator, pendingadministrator, markets, marketnametoaddress, transferpaused, collaterals, loans, accountliquidity, oracleaddress, activeoperations, closefactormantissa, liquidationincentivemantissa){
-	
-             comptroller[0]=administrator
-             comptroller[1]=pendingadministrator
+
+             comptrolleradministrator=0  
+             comptrollerpendingadministrator=1  
              # official mapping of ctokens -> market metadata. used e.g. to determine if a market is supported
-             comptroller[2]=markets 
+             comptrollermarkets=2   
              # the mapping of market names -> ctoken
-             comptroller[3]=marketnametoaddress
-             comptroller[4]=transferpaused
+             comptrollermarketnametoaddress=3  
+             comptrollertransferpaused=4  
              # per-account mapping of collaterals, capped by maxassets
-             comptroller[5]=collaterals
+             comptrollercollaterals=5  
              # per-account mapping of loans, capped by maxassets
-             comptroller[6]=loans 
+             comptrollerloans=6   
              # per-account mapping of current liquidity
-             comptroller[7]=accountliquidity
-             comptroller[8]=oracleaddress
+             comptrolleraccountliquidity=7  
+             comptrolleroracleaddress=8  
              # set of currently active operations to protect execution flow
-             comptroller[9]=activeoperations
-             comptroller[10]=closefactormantissa
-             comptroller[11]=liquidationincentivemantissa
+             comptrolleractiveoperations=9  
+             comptrollerclosefactormantissa=10  
+             comptrollerliquidationincentivemantissa=11  
+
+define comptroller(state, administrator, pendingadministrator, markets, marketnametoaddress, transferpaused, collaterals, loans, accountliquidity, oracleaddress, activeoperations, closefactormantissa, liquidationincentivemantissa){
+	
+             state[comptrolleradministrator] = administrator
+             state[comptrollerpendingadministrator] = pendingadministrator
+             # official mapping of ctokens -> market metadata. used e.g. to determine if a market is supported
+             state[comptrollermarkets] = markets
+             # the mapping of market names -> ctoken
+             state[comptrollermarketnametoaddress] =  marketnametoaddress
+             state[comptrollertransferpaused] = transferpaused
+             # per-account mapping of collaterals, capped by maxassets
+             state[comptrollercollaterals] = collaterals
+             # per-account mapping of loans, capped by maxassets
+             state[comptrollerloans] = loans
+             # per-account mapping of current liquidity
+             state[comptrolleraccountliquidity] = accountliquidity
+             state[comptrolleroracleaddress] = oracleaddress
+             # set of currently active operations to protect execution flow
+             state[comptrolleractiveoperations] = account
+             state[comptrollerclosefactormantissa] = closefactormantissa
+             state[comptrollerliquidationincentivemantissa] = liquidationincentivemantissa
 
 }
 
 
 	     
 define getadministrator(comptroller){
-	return comptroller[0];
+	return comptroller[comptrolleradministrator];
 }
 
 define setadministrator(comptroller,administrator){
-	comptroller[0] = comptroller;
+	comptroller[comptrolleradministrator] = comptroller;
 	return comptroller
 }
 
@@ -366,3 +386,52 @@ define setliquidationincentivemantissa(comptroller,liquidationincentivemantissa)
 	comptroller[11] = comptroller;
 	return comptroller
 }
+true=1;
+false=0;
+
+define contains(items, item){
+       for (n=0;items[n];n++){
+            if (items[n]=item) {
+               return true;
+            }
+	}
+	return false;
+}
+
+#     """
+#         Add assets to be included in account liquidity calculation
+# 
+#         cTokens: TList(TAddress) - The list of addresses of the cToken markets to be enabled
+#     """
+#     @sp.entry_point(lazify=True)
+#     define enterMarkets(cTokens, sender) {
+#             for (n=0;cTokens[n];n++){
+#                  addToCollaterals(token, sender)
+#             }
+#         self.invalidateLiquidity(sp.sender)
+# }# 
+#     define addToCollaterals(cToken, lender) {
+#         self.verifyMarketListed(cToken)
+#         sp.if self.data.collaterals.contains(lender):
+#             self.data.collaterals[lender].add(cToken)
+#         sp.else:
+#             self.data.collaterals[lender] = sp.set([cToken])
+# }# 
+# 
+# 
+# 
+#     define verifyMarketListed(token) {
+#         sp.verify(self.data.markets.contains(token) &
+#                   self.data.markets[token].isListed, EC.CMPT_MARKET_NOT_LISTED)
+# }# 
+# 
+#     
+#     define invalidateLiquidity(self, account) {
+#         sp.if self.data.account_liquidity.contains(account):
+#             self.data.account_liquidity[account].valid = False
+# }
+
+
+
+
+
