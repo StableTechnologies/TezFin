@@ -1,3 +1,45 @@
+
+tmintallowedparamsctoken=0
+tmintallowedparamsminter=1
+tmintallowedparamsmintamount=2
+
+tborrowallowedparamsctoken=0
+tborrowallowedparamsborrower=1
+tborrowallowedparamsborrowamount=2
+
+tredeemallowedparamsctoken=0
+tredeemallowedparamsredeemer=1
+tredeemallowedparamsredeemamount=2
+
+trepayborrowallowedparamsctoken=0
+trepayborrowallowedparamspayer=1
+trepayborrowallowedparamsborrower=2
+trepayborrowallowedparamsrepayamount=3
+
+ttransferallowedparamsctoken=0
+ttransferallowedparamsrsrc=1
+ttransferallowedparamsdst=2
+ttransferallowedparamstransfertokens=3
+
+taccountliquidityparamsctokenmodify=0
+taccountliquidityparamsaccount=1
+taccountliquidityparamsredeemtokens=2
+taccountliquidityparamsborrowamount=3
+
+tgetaccountliquidityparamsdata=0
+tgetaccountliquidityparamscallback=1
+
+tliquidatecalculateseizetokensctokenborrowed=0
+tliquidatecalculateseizetokensctokencollateral=1
+tliquidatecalculateseizetokensactualrepayamount=2
+
+tliquidateborrowallowedctokenborrowed=0
+tliquidateborrowallowedctokencollateral=1
+tliquidateborrowallowedborrower=2
+tliquidateborrowallowedliquidator=3
+tliquidateborrowallowedrepayamount=4
+
+
 define tliquidity(liquidity, updateLevel, valid){
 #     tliquidity[0]=liquidity  # Current account liquidity. Negative value indicates shortfall
 #     tliquidity[1]=updateLevel  # Block level of last update
