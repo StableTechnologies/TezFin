@@ -13,6 +13,16 @@ export function getSupplyRate(
   return supplyRate;
 }
 
+ function rescale(
+   mantissa: bigInt.BigInteger,
+   mantissaScale: bigInt.BigInteger,
+   newScale: bigInt.BigInteger
+ ) {
+   const numerator = mantissa.multiply(newScale);
+   const rescaled = numerator.divide(mantissaScale);
+   return rescaled;
+ }
+
 // getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token, precision of
 // the CToken, returns the prevailing borrow rate.
@@ -24,36 +34,35 @@ export function getBorrowRate(
   blockMultiplier: bigInt.BigInteger,
   blockBaseRate: bigInt.BigInteger
 ): bigInt.BigInteger {
-  const borrowRate = 0;
-   const uRate = utilizationRate(loans, balance, reserves, scale);
+  const uRate = utilizationRate(loans, balance, reserves, scale);
 
-   return utilizationRate.multiply(blockMultiplier).divide(scale).plus(blockBaseRate);
-  /*
-	 * 
-	function _calcBorrowRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger, blockMultiplier: bigInt.BigInteger, blockBaseRate: bigInt.BigInteger): bigInt.BigInteger {
-	    const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
-
-	    return utilizationRate.multiply(blockMultiplier).divide(scale).plus(blockBaseRate);
-	}
-
-
-	 */
+  const borrowRate = uRate
+    .multiply(blockMultiplier)
+    .divide(scale)
+    .plus(blockBaseRate);
   return borrowRate;
 }
 
 
-function utilizationRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger): bigInt.BigInteger {
+function utilizationRate(
+  loans: bigInt.BigInteger,
+  balance: bigInt.BigInteger,
+  reserves: bigInt.BigInteger,
+  scale: bigInt.BigInteger
+): bigInt.BigInteger {
+  if (loans.lesserOrEquals(0)) {
+    return bigInt.zero;
+  }
 
-    if (loans.lesserOrEquals(0)) { return bigInt.zero; }
+  const divisor = balance.plus(loans).minus(reserves);
 
+  if (divisor.eq(0)) {
+    return bigInt.zero;
+  }
 
-    const divisor = balance.plus(loans).minus(reserves);
+  const utilizationRate = loans.multiply(scale).divide(divisor);
 
-    if (divisor.eq(0)) { return bigInt.zero; }
-
-    const utilizationRate = loans.multiply(scale).divide(divisor);
-
-    return utilizationRate;
+  return utilizationRate;
 }
 
 
