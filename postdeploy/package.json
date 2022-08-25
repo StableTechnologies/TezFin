@@ -12,6 +12,7 @@
   "author": "Stable Technologies",
   "license": "MIT",
   "dependencies": {
+    "big-integer": "^1.6.51",
     "bignumber.js": "^9.0.1",
     "conseiljs": "5.1.0",
     "conseiljs-softsigner": "^5.0.4",
