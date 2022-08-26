@@ -149,6 +149,14 @@ function mulScalarTruncate(
 }
 
 
+function mulScalarTruncateAdd(
+  a: TExp,
+  scalar: bigInt.BigInteger,
+  addend: bigInt.BigInteger,
+  expScale: bigInt.BigInteger
+) {
+  return mulScalarTruncate(a, scalar, expScale).add(addend);
+}
 /*
 
 
