@@ -3,14 +3,33 @@ import bigInt from 'big-integer';
 // block, etc from IRM storage, precision of the underlying token,
 // precision of the CToken, returns the prevailing supply rate.
 export function getSupplyRate(
-  cash,
-  borrows,
-  baseRatePerBlock,
-  underlyingExpScale,
-  ctokenExpScale
-) {
+  loans: bigInt.BigInteger,
+  balance: bigInt.BigInteger,
+  reserves: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
+  irmExpScale: bigInt.BigInteger,
+  blockMultiplier: bigInt.BigInteger,
+  blockBaseRate: bigInt.BigInteger,
+  reserveFactor: bigInt.BigInteger
+): bigInt.BigInteger {
   const supplyRate = 0;
-  return supplyRate;
+
+  const uRate = utilizationRate(loans, balance, reserves, irmExpScale);
+  const borrowRate = getBorrowRate(
+    loans,
+    balance,
+    reserves,
+    ctokenExpScale,
+    irmExpScale,
+    blockMultiplier,
+    blockBaseRate
+  );
+  const oneMinusReserveFactor = irmExpScale.minus(reserveFactor);
+  const rateToPool = borrowRate
+    .multiply(oneMinusReserveFactor)
+    .divide(irmExpScale);
+
+  return rateToPool.multiply(uRate).divide(irmExpScale);
 }
 
  function rescale(
@@ -23,10 +42,34 @@ export function getSupplyRate(
    return rescaled;
  }
 
+
+
+export function getBorrowRate(
+  loans: bigInt.BigInteger,
+  balance: bigInt.BigInteger,
+  reserves: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
+  irmExpScale: bigInt.BigInteger,
+  blockMultiplier: bigInt.BigInteger,
+  blockBaseRate: bigInt.BigInteger
+): bigInt.BigInteger {
+
+  const borrowRate = _calcBorrowRate(
+    loans,
+    balance,
+    reserves,
+    ctokenExpScale,
+    irmExpScale,
+    blockMultiplier,
+    blockBaseRate
+  );
+  return rescale(borrowRate, irmExpScale, ctokenExpScale);
+}
+
 // getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token, precision of
 // the CToken, returns the prevailing borrow rate.
-export function getBorrowRate(
+export function _calcBorrowRate(
   loans: bigInt.BigInteger,
   balance: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
@@ -41,7 +84,7 @@ export function getBorrowRate(
     .multiply(blockMultiplier)
     .divide(ctokenExpScale)
     .plus(blockBaseRate);
-  return rescale(borrowRate, irmExpScale, ctokenExpScale);
+  return borrowRate
 }
 
 
