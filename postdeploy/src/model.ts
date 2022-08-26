@@ -43,7 +43,7 @@ function mulScalarTruncateAdd(
 // block, etc from IRM storage, precision of the underlying token,
 // precision of the CToken, returns the prevailing supply rate.
 function getSupplyRate(
-  loans: bigInt.BigInteger,
+  borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
@@ -53,7 +53,7 @@ function getSupplyRate(
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
   const supplyRate = _calcSupplyRate(
-    loans,
+    borrows,
     cash,
     reserves,
     underlyingExpScale,
@@ -66,7 +66,7 @@ function getSupplyRate(
 }
 
 function _calcSupplyRate(
-  loans: bigInt.BigInteger,
+  borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
@@ -75,9 +75,9 @@ function _calcSupplyRate(
   baseRatePerBlock: bigInt.BigInteger,
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
-  const uRate = utilizationRate(loans, cash, reserves, irmExpScale);
+  const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
   const borrowRate = _calcBorrowRate(
-    loans,
+    borrows,
     cash,
     reserves,
     underlyingExpScale,
@@ -109,7 +109,7 @@ function rescale(
 // block, etc from IRM storage, precision of the underlying token, precision of
 // the CToken, returns the prevailing borrow rate.
 export function getBorrowRate(
-  loans: bigInt.BigInteger,
+  borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
@@ -118,7 +118,7 @@ export function getBorrowRate(
   baseRatePerBlock: bigInt.BigInteger
 ): bigInt.BigInteger {
   const borrowRate = _calcBorrowRate(
-    loans,
+    borrows,
     cash,
     reserves,
     underlyingExpScale,
@@ -131,7 +131,7 @@ export function getBorrowRate(
 
 
 function _calcBorrowRate(
-  loans: bigInt.BigInteger,
+  borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
@@ -139,7 +139,7 @@ function _calcBorrowRate(
   multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger
 ): bigInt.BigInteger {
-  const uRate = utilizationRate(loans, cash, reserves, irmExpScale);
+  const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
   const borrowRate = uRate
     .multiply(multiplierPerBlock)
     .divide(underlyingExpScale)
@@ -148,19 +148,19 @@ function _calcBorrowRate(
 }
 
 function utilizationRate(
-  loans: bigInt.BigInteger,
+  borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   scale: bigInt.BigInteger
 ): bigInt.BigInteger {
-  if (loans.lesserOrEquals(0)) {
+  if (borrows.lesserOrEquals(0)) {
     return bigInt.zero;
   }
-  const divisor = cash.plus(loans).minus(reserves);
+  const divisor = cash.plus(borrows).minus(reserves);
   if (divisor.eq(0)) {
     return bigInt.zero;
   }
-  const utilizationRate = loans.multiply(scale).divide(divisor);
+  const utilizationRate = borrows.multiply(scale).divide(divisor);
   return utilizationRate;
 }
 
