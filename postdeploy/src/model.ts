@@ -4,7 +4,7 @@ import bigInt from "big-integer";
 // precision of the CToken, returns the prevailing supply rate.
 function getSupplyRate(
   loans: bigInt.BigInteger,
-  balance: bigInt.BigInteger,
+  cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   ctokenExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
@@ -14,7 +14,7 @@ function getSupplyRate(
 ): bigInt.BigInteger {
   const supplyRate = _calcSupplyRate(
     loans,
-    balance,
+    cash,
     reserves,
     ctokenExpScale,
     irmExpScale,
@@ -27,7 +27,7 @@ function getSupplyRate(
 
 function _calcSupplyRate(
   loans: bigInt.BigInteger,
-  balance: bigInt.BigInteger,
+  cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   ctokenExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
@@ -35,10 +35,10 @@ function _calcSupplyRate(
   blockBaseRate: bigInt.BigInteger,
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
-  const uRate = utilizationRate(loans, balance, reserves, irmExpScale);
+  const uRate = utilizationRate(loans, cash, reserves, irmExpScale);
   const borrowRate = _calcBorrowRate(
     loans,
-    balance,
+    cash,
     reserves,
     ctokenExpScale,
     irmExpScale,
@@ -66,7 +66,7 @@ function rescale(
 
 export function getBorrowRate(
   loans: bigInt.BigInteger,
-  balance: bigInt.BigInteger,
+  cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   ctokenExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
@@ -75,7 +75,7 @@ export function getBorrowRate(
 ): bigInt.BigInteger {
   const borrowRate = _calcBorrowRate(
     loans,
-    balance,
+    cash,
     reserves,
     ctokenExpScale,
     irmExpScale,
@@ -90,14 +90,14 @@ export function getBorrowRate(
 // the CToken, returns the prevailing borrow rate.
 function _calcBorrowRate(
   loans: bigInt.BigInteger,
-  balance: bigInt.BigInteger,
+  cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   ctokenExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   blockMultiplier: bigInt.BigInteger,
   blockBaseRate: bigInt.BigInteger
 ): bigInt.BigInteger {
-  const uRate = utilizationRate(loans, balance, reserves, irmExpScale);
+  const uRate = utilizationRate(loans, cash, reserves, irmExpScale);
   const borrowRate = uRate
     .multiply(blockMultiplier)
     .divide(ctokenExpScale)
@@ -107,14 +107,14 @@ function _calcBorrowRate(
 
 function utilizationRate(
   loans: bigInt.BigInteger,
-  balance: bigInt.BigInteger,
+  cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
   scale: bigInt.BigInteger
 ): bigInt.BigInteger {
   if (loans.lesserOrEquals(0)) {
     return bigInt.zero;
   }
-  const divisor = balance.plus(loans).minus(reserves);
+  const divisor = cash.plus(loans).minus(reserves);
   if (divisor.eq(0)) {
     return bigInt.zero;
   }
@@ -122,6 +122,48 @@ function utilizationRate(
   return utilizationRate;
 }
 
+interface TExp {
+	mantissa: bigInt.BigInteger
+}
+
+function makeExp(value: bigInt.BigInteger): TExp {
+	return {
+		mantissa: value
+	}
+}
+/*
+
+
+
+
+
+    function mul_exp_nat( a, b){
+        sp.set_type(a, TExp)
+        sp.set_type(b, sp.TNat)
+        return self.makeExp(a.mantissa * b)
+	}
+
+    function truncate( exp){
+        sp.set_type(exp, TExp)
+        return exp.mantissa // self.data.expScale
+	}
+
+
+    function mulScalarTruncate( a, scalar){
+        sp.set_type(a, TExp)
+        return self.truncate(self.mul_exp_nat(a, scalar))
+	}
+
+
+    function mulScalarTruncateAdd( a, scalar, addend){
+        sp.set_type(a, TExp)
+        sp.set_type(scalar, sp.TNat)
+        sp.set_type(addend, sp.TNat)
+        return self.mulScalarTruncate(a, scalar) + addend
+	}
+
+ 
+ */
 // checkTotalBorrows() - Given the last accrual block, the current accrual block,
 // the old index, the old total borrows etc, returns what the total borrows now
 // should be.
