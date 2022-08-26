@@ -2,6 +2,30 @@ import bigInt from 'big-integer';
 // getSupplyRate() - Given cash, borrows, etc from CToken storage, base rate per 
 // block, etc from IRM storage, precision of the underlying token,
 // precision of the CToken, returns the prevailing supply rate.
+function getSupplyRate(
+  loans: bigInt.BigInteger,
+  balance: bigInt.BigInteger,
+  reserves: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
+  irmExpScale: bigInt.BigInteger,
+  blockMultiplier: bigInt.BigInteger,
+  blockBaseRate: bigInt.BigInteger,
+  reserveFactor: bigInt.BigInteger
+): bigInt.BigInteger {
+
+
+  const supplyRate =  _calcSupplyRate(
+  loans,
+  balance,
+  reserves,
+  ctokenExpScale,
+  irmExpScale,
+  blockMultiplier,
+  blockBaseRate,
+  reserveFactor,
+)
+ return rescale(supplyRate, irmExpScale, ctokenExpScale);
+}
 function _calcSupplyRate(
   loans: bigInt.BigInteger,
   balance: bigInt.BigInteger,
