@@ -139,6 +139,16 @@ function mul_exp_nat(a: TExp, b: bigInt.BigInteger) {
 function truncate(exponential: TExp, expScale: bigInt.BigInteger) {
   return exponential.mantissa.divide(expScale);
 }
+
+function mulScalarTruncate(
+  a: TExp,
+  scalar: bigInt.BigInteger,
+  expScale: bigInt.BigInteger
+) {
+  return truncate(mul_exp_nat(a, scalar), expScale);
+}
+
+
 /*
 
 
