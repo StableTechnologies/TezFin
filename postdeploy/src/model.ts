@@ -135,22 +135,18 @@ function makeExp(value: bigInt.BigInteger): TExp {
 function mul_exp_nat(a: TExp, b: bigInt.BigInteger) {
   return makeExp(a.mantissa.multiply(b));
 }
+
+function truncate(exponential: TExp, expScale: bigInt.BigInteger) {
+  return exponential.mantissa.divide(expScale);
+}
 /*
 
 
 
 
 
-    function mul_exp_nat( a, b){
-        sp.set_type(a, TExp)
-        sp.set_type(b, sp.TNat)
-        return self.makeExp(a.mantissa * b)
-	}
 
-    function truncate( exp){
-        sp.set_type(exp, TExp)
-        return exp.mantissa // self.data.expScale
-	}
+
 
 
     function mulScalarTruncate( a, scalar){
