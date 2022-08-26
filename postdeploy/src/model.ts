@@ -2,7 +2,7 @@ import bigInt from 'big-integer';
 // getSupplyRate() - Given cash, borrows, etc from CToken storage, base rate per 
 // block, etc from IRM storage, precision of the underlying token,
 // precision of the CToken, returns the prevailing supply rate.
-export function getSupplyRate(
+function _calcSupplyRate(
   loans: bigInt.BigInteger,
   balance: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
@@ -12,10 +12,10 @@ export function getSupplyRate(
   blockBaseRate: bigInt.BigInteger,
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
-  const supplyRate = 0;
+
 
   const uRate = utilizationRate(loans, balance, reserves, irmExpScale);
-  const borrowRate = getBorrowRate(
+  const borrowRate = _calcBorrowRate(
     loans,
     balance,
     reserves,
@@ -29,7 +29,9 @@ export function getSupplyRate(
     .multiply(oneMinusReserveFactor)
     .divide(irmExpScale);
 
-  return rateToPool.multiply(uRate).divide(irmExpScale);
+
+  const supplyRate = rateToPool.multiply(uRate).divide(irmExpScale);
+	return supplyRate
 }
 
  function rescale(
@@ -69,7 +71,7 @@ export function getBorrowRate(
 // getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token, precision of
 // the CToken, returns the prevailing borrow rate.
-export function _calcBorrowRate(
+function _calcBorrowRate(
   loans: bigInt.BigInteger,
   balance: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
