@@ -30,17 +30,18 @@ export function getBorrowRate(
   loans: bigInt.BigInteger,
   balance: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
-  scale: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
+  irmExpScale: bigInt.BigInteger,
   blockMultiplier: bigInt.BigInteger,
   blockBaseRate: bigInt.BigInteger
 ): bigInt.BigInteger {
-  const uRate = utilizationRate(loans, balance, reserves, scale);
+  const uRate = utilizationRate(loans, balance, reserves, irmExpScale);
 
   const borrowRate = uRate
     .multiply(blockMultiplier)
-    .divide(scale)
+    .divide(ctokenExpScale)
     .plus(blockBaseRate);
-  return borrowRate;
+  return rescale(borrowRate, irmExpScale, ctokenExpScale);
 }
 
 
