@@ -123,13 +123,17 @@ function utilizationRate(
 }
 
 interface TExp {
-	mantissa: bigInt.BigInteger
+  mantissa: bigInt.BigInteger;
 }
 
 function makeExp(value: bigInt.BigInteger): TExp {
-	return {
-		mantissa: value
-	}
+  return {
+    mantissa: value,
+  };
+}
+
+function mul_exp_nat(a: TExp, b: bigInt.BigInteger) {
+  return makeExp(a.mantissa.multiply(b));
 }
 /*
 
