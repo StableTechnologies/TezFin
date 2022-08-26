@@ -170,14 +170,38 @@ function utilizationRate(
 // the old index, the old total borrows etc, returns what the total borrows now
 // should be.
 export function checkTotalBorrows(
-  lastAccrualLevel,
-  currentLevel,
-  borrowIndex,
-  borrows
+  borrowRateMaxMantissa: bigInt.BigInteger,
+  underlyingExpScale: bigInt.BigInteger,
+  level: bigInt.BigInteger,
+  accrualBlockNumber: bigInt.BigInteger,
+  totalBorrows: bigInt.BigInteger,
+  borrows: bigInt.BigInteger,
+  cash: bigInt.BigInteger,
+  reserves: bigInt.BigInteger,
+  irmExpScale: bigInt.BigInteger,
+  multiplierPerBlock: bigInt.BigInteger,
+  baseRatePerBlock: bigInt.BigInteger
 ) {
-  const totalBorrows = 0;
-  return totalBorrows;
+  const borrowRateMantissa = getBorrowRate(
+    borrows,
+    cash,
+    reserves,
+    underlyingExpScale,
+    irmExpScale,
+    multiplierPerBlock,
+    baseRatePerBlock
+  );
 
+  const totalBorrowsAfterInterest = accrueInterestTotalBorrows(
+    rescale(borrowRateMantissa, irmExpScale, underlyingExpScale),
+    rescale(borrowRateMaxMantissa, irmExpScale, underlyingExpScale),
+    underlyingExpScale,
+    level,
+    accrualBlockNumber,
+    totalBorrows
+  );
+
+  return totalBorrowsAfterInterest;
 }
 
 function accrueInterestTotalBorrows(
