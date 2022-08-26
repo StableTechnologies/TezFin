@@ -49,7 +49,7 @@ function getSupplyRate(
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   blockMultiplier: bigInt.BigInteger,
-  blockBaseRate: bigInt.BigInteger,
+  baseRatePerBlock: bigInt.BigInteger,
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
   const supplyRate = _calcSupplyRate(
@@ -59,7 +59,7 @@ function getSupplyRate(
     underlyingExpScale,
     irmExpScale,
     blockMultiplier,
-    blockBaseRate,
+    baseRatePerBlock,
     reserveFactor
   );
   return rescale(supplyRate, irmExpScale, underlyingExpScale);
@@ -72,7 +72,7 @@ function _calcSupplyRate(
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   blockMultiplier: bigInt.BigInteger,
-  blockBaseRate: bigInt.BigInteger,
+  baseRatePerBlock: bigInt.BigInteger,
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
   const uRate = utilizationRate(loans, cash, reserves, irmExpScale);
@@ -83,7 +83,7 @@ function _calcSupplyRate(
     underlyingExpScale,
     irmExpScale,
     blockMultiplier,
-    blockBaseRate
+    baseRatePerBlock
   );
   const oneMinusReserveFactor = irmExpScale.minus(reserveFactor);
   const rateToPool = borrowRate
@@ -104,6 +104,10 @@ function rescale(
   return rescaled;
 }
 
+
+// getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
+// block, etc from IRM storage, precision of the underlying token, precision of
+// the CToken, returns the prevailing borrow rate.
 export function getBorrowRate(
   loans: bigInt.BigInteger,
   cash: bigInt.BigInteger,
@@ -111,7 +115,7 @@ export function getBorrowRate(
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   blockMultiplier: bigInt.BigInteger,
-  blockBaseRate: bigInt.BigInteger
+  baseRatePerBlock: bigInt.BigInteger
 ): bigInt.BigInteger {
   const borrowRate = _calcBorrowRate(
     loans,
@@ -120,14 +124,12 @@ export function getBorrowRate(
     underlyingExpScale,
     irmExpScale,
     blockMultiplier,
-    blockBaseRate
+    baseRatePerBlock
   );
   return rescale(borrowRate, irmExpScale, underlyingExpScale);
 }
 
-// getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
-// block, etc from IRM storage, precision of the underlying token, precision of
-// the CToken, returns the prevailing borrow rate.
+
 function _calcBorrowRate(
   loans: bigInt.BigInteger,
   cash: bigInt.BigInteger,
@@ -135,13 +137,13 @@ function _calcBorrowRate(
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   blockMultiplier: bigInt.BigInteger,
-  blockBaseRate: bigInt.BigInteger
+  baseRatePerBlock: bigInt.BigInteger
 ): bigInt.BigInteger {
   const uRate = utilizationRate(loans, cash, reserves, irmExpScale);
   const borrowRate = uRate
     .multiply(blockMultiplier)
     .divide(underlyingExpScale)
-    .plus(blockBaseRate);
+    .plus(baseRatePerBlock);
   return borrowRate;
 }
 
