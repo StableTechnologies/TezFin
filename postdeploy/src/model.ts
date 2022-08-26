@@ -48,7 +48,7 @@ function getSupplyRate(
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
-  blockMultiplier: bigInt.BigInteger,
+  multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger,
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
@@ -58,7 +58,7 @@ function getSupplyRate(
     reserves,
     underlyingExpScale,
     irmExpScale,
-    blockMultiplier,
+    multiplierPerBlock,
     baseRatePerBlock,
     reserveFactor
   );
@@ -71,7 +71,7 @@ function _calcSupplyRate(
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
-  blockMultiplier: bigInt.BigInteger,
+  multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger,
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
@@ -82,7 +82,7 @@ function _calcSupplyRate(
     reserves,
     underlyingExpScale,
     irmExpScale,
-    blockMultiplier,
+    multiplierPerBlock,
     baseRatePerBlock
   );
   const oneMinusReserveFactor = irmExpScale.minus(reserveFactor);
@@ -114,7 +114,7 @@ export function getBorrowRate(
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
-  blockMultiplier: bigInt.BigInteger,
+  multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger
 ): bigInt.BigInteger {
   const borrowRate = _calcBorrowRate(
@@ -123,7 +123,7 @@ export function getBorrowRate(
     reserves,
     underlyingExpScale,
     irmExpScale,
-    blockMultiplier,
+    multiplierPerBlock,
     baseRatePerBlock
   );
   return rescale(borrowRate, irmExpScale, underlyingExpScale);
@@ -136,12 +136,12 @@ function _calcBorrowRate(
   reserves: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
-  blockMultiplier: bigInt.BigInteger,
+  multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger
 ): bigInt.BigInteger {
   const uRate = utilizationRate(loans, cash, reserves, irmExpScale);
   const borrowRate = uRate
-    .multiply(blockMultiplier)
+    .multiply(multiplierPerBlock)
     .divide(underlyingExpScale)
     .plus(baseRatePerBlock);
   return borrowRate;
