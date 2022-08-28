@@ -472,6 +472,15 @@ export namespace FToken {
         }
     }
 
+    export async function GetBalanceNoMod(account: string, assetType: AssetType, balancesMapId: number, server: string): Promise<any> {
+        try {
+            const balanceResult = await queryBalance(account, balancesMapId, server);
+            return parseBalanceResultNoMod(balanceResult, assetType);
+        } catch (e) {
+            return parseBalanceResultNoMod({}, assetType);
+        }
+    }
+
     /*
      * @description
      *
@@ -513,6 +522,21 @@ export namespace FToken {
             assetType: assetType,
             supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex.supply(bigInt(supplyPrincipal), bigInt(1_000_000), currentIndex),
             loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex.borrow(bigInt(borrowPrincipal), borrowIndex, currentIndex)
+        }
+    }
+
+    export function parseBalanceResultNoMod(balanceInfo: any, assetType: AssetType): any {
+        const borrowIndex = JSONPath({ path: '$.args[0].args[0].int', json: balanceInfo })[0] || 0;
+        const borrowPrincipal = JSONPath({ path: '$.args[0].args[1].int', json: balanceInfo })[0] || 0;
+        const supplyPrincipal = JSONPath({ path: '$.args[2].int', json: balanceInfo })[0] || 0;
+
+        // TODO: parse approvals
+        // return 0 balance if uninitialized in contract
+        return {
+            assetType: assetType,
+            borrowIndex: borrowIndex,
+            borrowPrincipal: borrowPrincipal, 
+            supplyPrincipal: supplyPrincipal,
         }
     }
 

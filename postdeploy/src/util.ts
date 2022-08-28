@@ -3,7 +3,7 @@ import * as DeployHelper from './deploy';
 import * as FTokenHelper from './ftoken';
 import * as config from '../config/config.json';
 
-import { AssetType, Comptroller, FToken, Governance, PriceFeed, ProtocolAddresses, testnetAddresses, TezosLendingPlatform, TokenStandard, UnderlyingAsset } from 'tezoslendingplatformjs';
+import { AssetType, Comptroller, FToken, Governance, MarketMap, PriceFeed, ProtocolAddresses, testnetAddresses, TezosLendingPlatform, TokenStandard, UnderlyingAsset } from 'tezoslendingplatformjs';
 import { ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper, registerFetch, registerLogger } from 'conseiljs';
 import { CryptoUtils, KeyStoreUtils, SoftSigner } from 'conseiljs-softsigner';
 import log, { LogLevelDesc } from 'loglevel';
@@ -64,7 +64,7 @@ export async function batchMint(records: string[][]) {
     const protocolAddresses = testnetAddresses;
     log.info(`protocolAddresses: ${JSON.stringify(protocolAddresses!)}`);
 
-    for(let rec of records)
+    for (let rec of records)
         await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, rec[0])
 }
 
@@ -168,4 +168,14 @@ export async function parseProtocolAddress(path: string) {
     return {
         protoAddress, oracle: protocolAddressesJSON.TezFinOracle
     }
+}
+
+export async function printStatus(comptroller: Comptroller.Storage, market: MarketMap, protoAddress: ProtocolAddresses, server: string, addresses: string[]) {
+    const data = await TezosLendingPlatform.GetFtokenStorages(comptroller, protoAddress, server)
+    console.log("[--] Status of FTokens :\n", JSON.stringify(data));
+    console.log("[--] Status of Accounts :\n")
+    addresses.forEach(async (address) => {
+        const data = await TezosLendingPlatform.GetFtokenBalancesNoMod(address, market, server)
+        console.log(`[----] Account ${address} :\n`, JSON.stringify(data))
+    })
 }

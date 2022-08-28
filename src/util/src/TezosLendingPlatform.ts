@@ -99,6 +99,29 @@ export namespace TezosLendingPlatform {
     }
 
     /*
+     * @description Gets the market data for all markets in protocolAddresses
+     *
+     * @param address The fToken contract address to query
+     * @param server Tezos node URL
+     */
+    export async function GetFtokenStorages(comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<any> {
+        // get storage for all contracts
+        let markets: any = {};
+        await Promise.all(Object.keys(protocolAddresses.fTokens).map(async (asset) => {
+            const fTokenAddress = protocolAddresses.fTokens[asset];
+            const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
+            try {
+                const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]], server, fTokenType);
+                markets[asset] = fTokenStorage
+            } catch (e) {
+                log.error(`Failed in GetMarkets for ${asset} at ${protocolAddresses.fTokens[asset]} and ${JSON.stringify(protocolAddresses.underlying[asset])} with ${e}`);
+                log.error(`Comptroller state: ${JSON.stringify(comptroller)}`);
+            }
+        }));
+        return markets;
+    }
+
+    /*
      * @description Returns the account corresponding to address.
      *
      * @param address Address of the requested account
@@ -163,6 +186,14 @@ export namespace TezosLendingPlatform {
             console.log('cc1', asset, markets[asset]);
             balances[asset] = await FToken.GetBalance(address, asset as AssetType, markets[asset].storage.borrow.borrowIndex, markets[asset].storage.balancesMapId, server);
             console.log('cc2', asset, balances[asset]);
+        }));
+        return balances;
+    }
+
+    export async function GetFtokenBalancesNoMod(address: string, markets: MarketMap, server: string): Promise<any> {
+        let balances: any = {};
+        await Promise.all(Object.keys(markets).map(async (asset) => {
+            balances[asset] = await FToken.GetBalanceNoMod(address, asset as AssetType, markets[asset].storage.balancesMapId, server);
         }));
         return balances;
     }
