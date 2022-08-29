@@ -37,7 +37,7 @@ function mulScalarTruncateAdd(
   return mulScalarTruncate(a, scalar, expScale).add(addend);
 }
 
-
+// 
 
 // getSupplyRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token,
@@ -46,6 +46,7 @@ function getSupplyRate(
   borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   multiplierPerBlock: bigInt.BigInteger,
@@ -56,19 +57,21 @@ function getSupplyRate(
     borrows,
     cash,
     reserves,
+    ctokenExpScale,
     underlyingExpScale,
     irmExpScale,
     multiplierPerBlock,
     baseRatePerBlock,
     reserveFactor
   );
-  return rescale(supplyRate, irmExpScale, underlyingExpScale);
+  return rescale(supplyRate, irmExpScale, ctokenExpScale);
 }
 
 function _calcSupplyRate(
   borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   multiplierPerBlock: bigInt.BigInteger,
@@ -76,17 +79,19 @@ function _calcSupplyRate(
   reserveFactor: bigInt.BigInteger
 ): bigInt.BigInteger {
   const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
-  const borrowRate = _calcBorrowRate(
+	
+  const borrowRateMantissa = getBorrowRate(
     borrows,
     cash,
     reserves,
+    ctokenExpScale,
     underlyingExpScale,
     irmExpScale,
     multiplierPerBlock,
     baseRatePerBlock
   );
   const oneMinusReserveFactor = irmExpScale.minus(reserveFactor);
-  const rateToPool = borrowRate
+  const rateToPool = borrowRateMantissa
     .multiply(oneMinusReserveFactor)
     .divide(irmExpScale);
 
@@ -98,7 +103,7 @@ function rescale(
   mantissa: bigInt.BigInteger,
   mantissaScale: bigInt.BigInteger,
   newScale: bigInt.BigInteger
-): bigInt.BigInteger {
+) {
   const numerator = mantissa.multiply(newScale);
   if (mantissaScale.eq(0)) {
     const rescaled = numerator.divide(mantissaScale);
@@ -115,6 +120,7 @@ export function getBorrowRate(
   borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   multiplierPerBlock: bigInt.BigInteger,
@@ -122,14 +128,17 @@ export function getBorrowRate(
 ): bigInt.BigInteger {
   const borrowRate = _calcBorrowRate(
     borrows,
-    cash,
+    rescale(cash,underlyingExpScale,ctokenExpScale),
     reserves,
-    underlyingExpScale,
+    ctokenExpScale,
     irmExpScale,
     multiplierPerBlock,
     baseRatePerBlock
   );
-  return rescale(borrowRate, irmExpScale, underlyingExpScale);
+  /* rescaling is applied since we are assuming to set the baseratePerBlock and
+   * multiplierperBlock for all ctokens at a constant exponential scale
+*/
+  return rescale(borrowRate, irmExpScale, ctokenExpScale);
 }
 
 
@@ -137,7 +146,7 @@ function _calcBorrowRate(
   borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
-  underlyingExpScale: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
   irmExpScale: bigInt.BigInteger,
   multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger
@@ -145,7 +154,7 @@ function _calcBorrowRate(
   const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
   const borrowRate = uRate
     .multiply(multiplierPerBlock)
-    .divide(underlyingExpScale)
+    .divide(ctokenExpScale)
     .plus(baseRatePerBlock);
   return borrowRate;
 }
@@ -175,6 +184,7 @@ function utilizationRate(
 export function checkTotalBorrows(
   borrowRateMaxMantissa: bigInt.BigInteger,
   underlyingExpScale: bigInt.BigInteger,
+  ctokenExpScale: bigInt.BigInteger,
   level: bigInt.BigInteger,
   accrualBlockNumber: bigInt.BigInteger,
   totalBorrows: bigInt.BigInteger,
@@ -184,11 +194,12 @@ export function checkTotalBorrows(
   irmExpScale: bigInt.BigInteger,
   multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger
-):bigInt.BigInteger {
+) {
   const borrowRateMantissa = getBorrowRate(
     borrows,
     cash,
     reserves,
+    ctokenExpScale,
     underlyingExpScale,
     irmExpScale,
     multiplierPerBlock,
@@ -214,7 +225,7 @@ function accrueInterestTotalBorrows(
   level: bigInt.BigInteger,
   accrualBlockNumber: bigInt.BigInteger,
   totalBorrows: bigInt.BigInteger
-): bigInt.BigInteger {
+) {
   if (!borrowRateMantissa.lesserOrEquals(borrowRateMaxMantissa)) {
     throw new Error("INVALID BORROW RATE");
   }
