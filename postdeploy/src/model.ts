@@ -100,9 +100,12 @@ function rescale(
   newScale: bigInt.BigInteger
 ) {
   const numerator = mantissa.multiply(newScale);
+  if (mantissaScale.eq(0)) {
   const rescaled = numerator.divide(mantissaScale);
   return rescaled;
+  } else return 0;
 }
+
 
 
 // getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
