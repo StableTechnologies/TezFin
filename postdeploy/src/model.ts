@@ -214,7 +214,7 @@ function accrueInterestTotalBorrows(
   level: bigInt.BigInteger,
   accrualBlockNumber: bigInt.BigInteger,
   totalBorrows: bigInt.BigInteger
-) {
+): bigInt.BigInteger {
   if (!borrowRateMantissa.lesserOrEquals(borrowRateMaxMantissa)) {
     throw new Error("INVALID BORROW RATE");
   }
