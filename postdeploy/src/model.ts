@@ -98,7 +98,7 @@ function rescale(
   mantissa: bigInt.BigInteger,
   mantissaScale: bigInt.BigInteger,
   newScale: bigInt.BigInteger
-) {
+): bigInt.BigInteger {
   const numerator = mantissa.multiply(newScale);
   if (mantissaScale.eq(0)) {
     const rescaled = numerator.divide(mantissaScale);
