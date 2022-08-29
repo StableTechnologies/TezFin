@@ -184,7 +184,7 @@ export function checkTotalBorrows(
   irmExpScale: bigInt.BigInteger,
   multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger
-) {
+):bigInt.BigInteger {
   const borrowRateMantissa = getBorrowRate(
     borrows,
     cash,
