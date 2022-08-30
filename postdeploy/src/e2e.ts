@@ -1,9 +1,9 @@
-import { initConseil, initKeystore, parseProtocolAddress } from "./util";
+import { initConseil, initKeystore, parseProtocolAddress, printStatus } from "./util";
 import * as DeployHelper from './deploy';
 import * as FTokenHelper from './ftoken';
 import { ConseilServerInfo, KeyStore, Signer } from "conseiljs";
 import * as ComptrollerHelper from './comptroller';
-import { AssetType, Comptroller, ProtocolAddresses } from "tezoslendingplatformjs";
+import { AssetType, TezosLendingPlatform, Comptroller, ProtocolAddresses } from "tezoslendingplatformjs";
 import * as config from '../config/config.json';
 
 async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, signer1: Signer, keystore2: KeyStore, signer2: Signer, protocolAddresses: ProtocolAddresses, oracle: string) {
@@ -42,15 +42,21 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         await ComptrollerHelper.enterMarkets(["BTC"] as AssetType[], keystore2!, signer2!, protocolAddresses!);
         // get comptroller
         const comptroller = await Comptroller.GetStorage(protocolAddresses!.comptroller, protocolAddresses!, config.tezosNode, config.conseilServer as ConseilServerInfo);
-
+        const market = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
+        const addresses = [keystore.publicKeyHash,keystore1.publicKeyHash,keystore2.publicKeyHash];
+        
+        await printStatus(comptroller, market,protocolAddresses,config.tezosNode,addresses);
+        
         // sleep for 1 min
         await new Promise(r => setTimeout(r, 60000));
         for (let i = 1; i <= 5; i++) {
             for (let j = 1; j <= 2; j++) {
                 // borrow USD for user B and C
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore1!, signer1!);
+                await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
                 await new Promise(r => setTimeout(r, 35000));
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore2!, signer2!);
+                await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
                 await new Promise(r => setTimeout(r, 35000));
                 // alternatingly repay loans for user B and C
                 if (j % 2 != 0)
@@ -58,6 +64,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
                 else
                     await FTokenHelper.repayBorrow("USD" as AssetType, 200, keystore2!, signer2!, protocolAddresses!);
                 // sleep for 30 sec
+                await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
                 await new Promise(r => setTimeout(r, 35000));
             }
         }
@@ -65,15 +72,19 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         await FTokenHelper.updatePrice([{ "asset": "ETH" as AssetType, price: 1000 * Math.pow(10, 6) }], oracle, keystore!, signer!, protocolAddresses!)
         // liquidate user A for 1000 USD
         await FTokenHelper.liquidate({ amount: 1000, seizeCollateral: "ETH" as AssetType, supplyCollateral: "USD" as AssetType, borrower: keystore1.publicKeyHash }, keystore!, signer!, protocolAddresses!)
+        await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
 
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
         // repay remaining amounts
         await FTokenHelper.repayBorrow("USD" as AssetType, 3500, keystore1!, signer1!, protocolAddresses!);
+        await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
+        
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
         await FTokenHelper.repayBorrow("USD" as AssetType, 4500, keystore2!, signer2!, protocolAddresses!);
-
+        await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
+        
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
         // exit markets
@@ -86,16 +97,21 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         // redeem supplied tokens for user B
         for (const redeem of ["ETH"])
             await FTokenHelper.redeem(redeem as AssetType, 4.95, comptroller, protocolAddresses!, keystore1!, signer1!);
+        await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
+        
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
         // redeem supplied tokens for user C
         for (const redeem of ["BTC"])
             await FTokenHelper.redeem(redeem as AssetType, 6, comptroller, protocolAddresses!, keystore2!, signer2!);
+        await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
+
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
         // redeem supplied tokens for user A
         for (const redeem of ["USD"])
             await FTokenHelper.redeem(redeem as AssetType, 20000, comptroller, protocolAddresses!, keystore!, signer!);
+        await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
     } catch (err) {
         console.log(JSON.stringify(err))
     }

@@ -8,7 +8,7 @@ export async function mint(asset: AssetType, amount:number, keystore: KeyStore, 
         underlying: asset,
         amount: amount * Math.pow(10,protocolAddresses.underlying[asset].decimals)
     };
-    log.info(`mint ${asset} parameters: ${JSON.stringify(mint)}`);
+    log.info(`mint ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(mint)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash = await TezosLendingPlatform.Mint(mint, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
     await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
@@ -19,7 +19,7 @@ export async function redeem(asset: AssetType, amount:number, comptroller: Compt
         underlying: asset as AssetType,
         amount: amount * Math.pow(10,protocolAddresses.underlying[asset].decimals)
     };
-    log.info(`redeem ${asset} parameters: ${JSON.stringify(redeem)}`);
+    log.info(`redeem ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(redeem)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash =  await TezosLendingPlatform.Redeem(redeem, comptroller, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
     await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
@@ -30,7 +30,7 @@ export async function borrow(asset: AssetType, amount:number, comptroller: Compt
         underlying: asset as AssetType,
         amount: amount * Math.pow(10,protocolAddresses.underlying[asset].decimals)
     };
-    log.info(`borrow ${asset} parameters: ${JSON.stringify(borrow)}`);
+    log.info(`borrow ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(borrow)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash = await TezosLendingPlatform.Borrow(borrow, comptroller, protocolAddresses, config.tezosNode, signer, keystore);
     await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
@@ -41,7 +41,7 @@ export async function repayBorrow(asset: AssetType, amount: number, keystore: Ke
         underlying: asset,
         amount: amount * Math.pow(10,protocolAddresses.underlying[asset].decimals)
     };
-    log.info(`repayBorrow ${asset} parameters: ${JSON.stringify(repayBorrow)}`);
+    log.info(`repayBorrow ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(repayBorrow)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash =  await TezosLendingPlatform.RepayBorrow(repayBorrow, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
     await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
@@ -55,7 +55,7 @@ export async function updatePrice(priceList: PriceFeed.Pair[], oracle: string, k
 }
 
 export async function liquidate(details: FToken.LiquidateDetails, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
-    log.info(`liquidating ${details.borrower} asset ${details.seizeCollateral} for amout of ${details.amount} with asset ${details.supplyCollateral}`);
+    log.info(`liquidating ${details.borrower} by ${keystore.publicKeyHash} asset ${details.seizeCollateral} for amout of ${details.amount} with asset ${details.supplyCollateral}`);
     details.amount = details.amount * Math.pow(10, protocolAddresses.underlying[details.supplyCollateral].decimals)
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash = await TezosLendingPlatform.Liquidate(details,protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
