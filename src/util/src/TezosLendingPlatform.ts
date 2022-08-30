@@ -182,12 +182,10 @@ export namespace TezosLendingPlatform {
         await Promise.all(Object.keys(markets).map(async (asset) => {
             switch (markets[asset].asset.underlying.tokenStandard) {
                 case TokenStandard.XTZ: // native asset
-
-			    balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
+                    balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
                     break;
                 default: // contract-based assets
-
-			    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
+                    balances[asset] = await GetUnderlyingBalanceToken(markets[asset].asset.underlying, address, server);
                     break;
             }
         }));
@@ -210,8 +208,8 @@ export namespace TezosLendingPlatform {
     }
 
     // Only valid for specific tokens
-    export async function PopulateTokenBalanceMapIDs(underlying: { [assetType: string]: UnderlyingAsset }, server: string){
-        Object.keys(underlying).forEach(async(asset)=>{
+    export async function PopulateTokenBalanceMapIDs(underlying: { [assetType: string]: UnderlyingAsset }, server: string) {
+        Object.keys(underlying).forEach(async (asset) => {
             if (underlying[asset].tokenStandard === TokenStandard.XTZ) return;
             const storage = await TezosNodeReader.getContractStorage(server, underlying[asset].address!);
             if (underlying[asset].tokenStandard === TokenStandard.FA12) {
@@ -507,7 +505,7 @@ export namespace TezosLendingPlatform {
      * @param gas
      * @param freight
      */
-    export function permissionOperation(asset: AssetType, amount:number, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] | undefined {
+    export function permissionOperation(asset: AssetType, amount: number, cancelPermission: boolean, protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 800_000, freight: number = 20_000): Transaction[] | undefined {
         const underlying: UnderlyingAsset = protocolAddresses.underlying[asset] == undefined
             ? { assetType: AssetType.XTZ, tokenStandard: TokenStandard.XTZ, decimals: 6 }
             : protocolAddresses.underlying[asset];

@@ -15,6 +15,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
         self.init(
             overrides=sp.big_map(l={"USD-USD": (sp.timestamp(int(time.time())), sp.as_nat(
                 1000000))}, tkey=sp.TString, tvalue=sp.TPair(sp.TTimestamp, sp.TNat)),
+            alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD"},
+                             tkey=sp.TString, tvalue=sp.TString),
             oracle=oracle,
             admin=admin
         )
@@ -46,7 +48,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
             Sets the price for custom assets not supported by harbinger eg. USD
         """
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
-        sp.set_type(params, sp.TList(sp.TRecord(asset=sp.TString,price=sp.TNat)))
+        sp.set_type(params, sp.TList(
+            sp.TRecord(asset=sp.TString, price=sp.TNat)))
         sp.for item in params:
             self.data.overrides[item.asset] = (sp.now, item.price)
 
@@ -57,6 +60,25 @@ class TezFinOracle(OracleInterface.OracleInterface):
         """
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
         del self.data.overrides[asset]
+
+    @sp.entry_point
+    def addAlias(self, params):
+        """
+            Adds alias for assets supported by original oracle
+        """
+        sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
+        sp.set_type(params, sp.TList(
+            sp.TRecord(alias=sp.TString, asset=sp.TString)))
+        sp.for item in params:
+            self.data.alias[item.alias] = item.asset
+
+    @sp.entry_point
+    def removeAlias(self, asset):
+        """
+            Removes alias
+        """
+        sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
+        del self.data.alias[asset]
 
     @sp.entry_point
     def get(self, requestPair):
@@ -74,9 +96,12 @@ class TezFinOracle(OracleInterface.OracleInterface):
                 requestedAsset, self.data.overrides[requestedAsset])
             sp.transfer(callbackParam, sp.mutez(0), callback)
         sp.else:
-            oracle_data = sp.view("getPrice", self.data.oracle, requestedAsset, t=sp.TPair(
+            asset = sp.local("asset", requestedAsset)
+            sp.if self.data.alias.contains(requestedAsset):
+                asset.value = self.data.alias[requestedAsset]
+            oracle_data = sp.view("getPrice", self.data.oracle, asset.value, t=sp.TPair(
                 sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
-            callbackParam = (requestedAsset, oracle_data)
+            callbackParam = (asset.value, oracle_data)
             sp.transfer(callbackParam, sp.mutez(0), callback)
 
     @sp.onchain_view()
@@ -88,6 +113,9 @@ class TezFinOracle(OracleInterface.OracleInterface):
         sp.if self.data.overrides.contains(requestedAsset):
             sp.result(self.data.overrides[requestedAsset])
         sp.else:
-            oracle_data = sp.view("getPrice", self.data.oracle, requestedAsset, t=sp.TPair(
+            asset = sp.local("asset", requestedAsset)
+            sp.if self.data.alias.contains(requestedAsset):
+                asset.value = self.data.alias[requestedAsset]
+            oracle_data = sp.view("getPrice", self.data.oracle, asset.value, t=sp.TPair(
                 sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
             sp.result(oracle_data)

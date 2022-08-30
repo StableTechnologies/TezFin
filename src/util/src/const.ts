@@ -10,6 +10,9 @@ export const decimals = {
     "ETHtz": 18,
     "BTCtz": 8,
     "USDtz": 6,
+    "OXTZ": 6,
+    "oXTZ": 6,
+    "WTZ": 6,
 }
 
 export const testnetAddresses: ProtocolAddresses = {
@@ -17,13 +20,17 @@ export const testnetAddresses: ProtocolAddresses = {
         "BTC": "KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP",
         "XTZ": "KT1VeuSXva7i3aae1Y3nZtSNWW2mgWMXqgQE",
         "ETH": "KT1AEFHLpUMD8CFJkH1gU2TtCCMpZJdumFfn",
-        "USD": "KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37"
+        "USD": "KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37",
+        "WTZ": "KT1Bo6yzhCbLKE7uViSYCPdX4rrYhmqHBeXf",
+        "OXTZ": "KT1WBKgbUP6PN5NSis67JDXBJuaPpJ16uf9u"
     },
     fTokensReverse: {
         KT1VeuSXva7i3aae1Y3nZtSNWW2mgWMXqgQE: AssetType.XTZ,
         KT1AEFHLpUMD8CFJkH1gU2TtCCMpZJdumFfn: AssetType.ETH,
         KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37: AssetType.USD,
-        KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP: AssetType.BTC
+        KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP: AssetType.BTC,
+        KT1Bo6yzhCbLKE7uViSYCPdX4rrYhmqHBeXf: AssetType.WTZ,
+        KT1WBKgbUP6PN5NSis67JDXBJuaPpJ16uf9u: AssetType.OXTZ
     },
     underlying: {
         "ETH": {
@@ -41,6 +48,23 @@ export const testnetAddresses: ProtocolAddresses = {
             tokenStandard: TokenStandard.FA12,
             decimals: 6,
             balancesPath: "$.args[1].int"
+        },
+        "OXTZ": {
+            assetType: AssetType.OXTZ,
+            address: "KT1NPYBb3WMs189D25Q7PZBB2yy7Zxa6xUDu",
+            balancesMapId: 167525,
+            tokenStandard: TokenStandard.FA12,
+            decimals: 6,
+            balancesPath: "$.args[1].int"
+        },
+        "WTZ": {
+            assetType: AssetType.WTZ,
+            address: "KT1D8Sp3gq62JMPWD8t7nnKPNfLs5YXVLDZV",
+            balancesMapId: 167520,
+            tokenStandard: TokenStandard.FA2,
+            decimals: 6,
+            balancesPath: "$.int",
+            tokenId: 0
         },
         "BTC": {
             assetType: AssetType.BTC,
@@ -62,7 +86,9 @@ export const testnetAddresses: ProtocolAddresses = {
         XTZ: "KT1Bkw1s6x3JFEnqNBMeF36B2QfszX3BJDJi",
         ETH: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
         BTC: "KT1JpWxmJkrDgxuXXVp9QcGFChRfyd9JGanN",
-        USD: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR"
+        USD: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
+        OXTZ: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
+        WTZ: "KT1JpWxmJkrDgxuXXVp9QcGFChRfyd9JGanN"
     },
     governance: "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
     oracleMap: {
@@ -71,7 +97,7 @@ export const testnetAddresses: ProtocolAddresses = {
             path: "$.args[0].args[0].int"
         },
         "USD": {
-            id: 34657,
+            id: 167529,
             path: "$.args[1].int"
         },
         "BTC": {
@@ -79,6 +105,14 @@ export const testnetAddresses: ProtocolAddresses = {
             path: "$.args[0].args[0].int"
         },
         "XTZ": {
+            id: 25877,
+            path: "$.args[0].args[0].int"
+        },
+        "OXTZ": {
+            id: 25877,
+            path: "$.args[0].args[0].int"
+        },
+        "WTZ": {
             id: 25877,
             path: "$.args[0].args[0].int"
         }
@@ -115,6 +149,22 @@ export const mainnetAddresses: ProtocolAddresses = {
             decimals: 6,
             balancesPath: "$.args[0].int"
         },
+        "OXTZ": {
+            assetType: AssetType.OXTZ,
+            address: "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz",
+            balancesMapId: 103270,
+            tokenStandard: TokenStandard.FA12,
+            decimals: 6,
+            balancesPath: "$.args[1].int"
+        },
+        "WTZ": {
+            assetType: AssetType.WTZ,
+            address: "KT1PnUZCp3u2KzWr93pn4DD7HAJnm3rWVrgn",
+            balancesMapId: 19486,
+            tokenStandard: TokenStandard.FA2,
+            decimals: 6,
+            balancesPath: "$.int"
+        },
         "BTC": {
             assetType: AssetType.BTC,
             tokenStandard: TokenStandard.FA2,
@@ -135,7 +185,10 @@ export const mainnetAddresses: ProtocolAddresses = {
         XTZ: "KT1AtJQgU4zEp2wgyWRK7DqdDiPkWBodNiwz",
         ETH: "KT1QCL5W3heju7SJKvRgYR9xNtP9fEenG1Eq",
         BTC: "KT1P7GJRN5Tx8YDn4YS7Ao5UWApM2Asxk4Ty",
-        USD: "KT1QCL5W3heju7SJKvRgYR9xNtP9fEenG1Eq"
+        USD: "KT1QCL5W3heju7SJKvRgYR9xNtP9fEenG1Eq",
+        OXTZ: "KT1QCL5W3heju7SJKvRgYR9xNtP9fEenG1Eq",
+        WTZ: "KT1P7GJRN5Tx8YDn4YS7Ao5UWApM2Asxk4Ty"
+
     },
     governance: "KT1KW6McQpHFZPffW6vZt5JSxibvVKAPnYUq",
     oracleMap: {
@@ -154,6 +207,14 @@ export const mainnetAddresses: ProtocolAddresses = {
         "XTZ": {
             id: 47917,
             path: "$.args[0].args[0].int"
+        },
+        "WTZ": {
+            id: 47917,
+            path: "$.args[0].args[0].int"
+        },
+        "OXTZ": {
+            id: 47917,
+            path: "$.args[0].args[0].int"
         }
     }
 };
@@ -161,7 +222,9 @@ export const mainnetAddresses: ProtocolAddresses = {
 export const tokenNames: { [assetType: string]: string } = {
     "ETH": "ETH",
     "USD": "USD",
-    "BTC": "BTC"
+    "BTC": "BTC",
+    "OXTZ": "OXTZ",
+    "WTZ": "WTZ",
 };
 
 export const expectedBlocksPerYear = 2 * 60 * 24 * 365;

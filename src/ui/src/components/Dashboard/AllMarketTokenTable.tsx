@@ -26,7 +26,6 @@ import { useStyles } from './style';
 const AllMarketTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
-
     const { address } = useSelector((state: any) => state.addWallet.account);
 
     const [tokenDetails, setTokenDetails] = useState();
@@ -73,7 +72,7 @@ const AllMarketTokenTable = (props) => {
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
                                                 {(data.marketSize > 0) ? nFormatter(decimalify(data.marketSize.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
-                                            </span> <br/>
+                                            </span> <br />
                                             <span className={classes.faintFont}>
                                                 ${(data.marketSize > 0) ? nFormatter(decimalify((data.marketSize * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                             </span>
@@ -81,7 +80,7 @@ const AllMarketTokenTable = (props) => {
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
                                                 {(data.totalBorrowed > 0) ? nFormatter(decimalify(data.totalBorrowed.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
-                                            </span> <br/>
+                                            </span> <br />
                                             <span className={classes.faintFont}>
                                                 ${(data.totalBorrowed > 0) ? nFormatter(decimalify((data.totalBorrowed * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                             </span>
@@ -113,13 +112,13 @@ const AllMarketTokenTable = (props) => {
                                         <TableCell align="right">
                                             <span className={classes.clearFont}>
                                                 {(data.walletBalance > 0) ? nFormatter(decimalify(data.walletBalance.toString(), decimals[data.title], decimals[data.title])) : '0'} {data.title}
-                                            </span> <br/>
+                                            </span> <br />
                                             <span className={classes.faintFont}>
                                                 ${(data.walletBalance > 0) ? nFormatter(decimalify((data.walletBalance * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                             </span>
                                         </TableCell>
                                     </TableRow>
-                                    : <TableSkeleton index={data.title} cell={6}/>
+                                    : <TableSkeleton index={data.title} cell={6} />
                             }
                         </React.Fragment>
                     ))}

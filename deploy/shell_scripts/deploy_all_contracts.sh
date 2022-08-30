@@ -38,3 +38,11 @@ node ./deploy/deploy_script/deploy.js
 ($1 compile ./deploy/compile_targets/CompileCXTZ.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
 && echo "CompileCXTZ.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy.js
+
+($1 compile ./deploy/compile_targets/CompileCWTZ.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
+&& echo "CompileCWTZ.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy.js
+
+($1 compile ./deploy/compile_targets/CompileCoXTZ.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
+&& echo "CompileCoXTZ.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy.js

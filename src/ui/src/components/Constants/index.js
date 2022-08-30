@@ -25,6 +25,12 @@ export const tokens = [
     //   { title: 'CTez', logo: ctez, banner: 'CTez', assetType: '' },
     {
         title: 'USDtz', logo: USDtz, fLogo: fUSDtz, banner: 'USDtz', assetType: AssetType.USD
+    },
+    {
+        title: 'oXTZ', logo: USDtz, fLogo: fUSDtz, banner: 'oXTZ', assetType: AssetType.OXTZ
+    },
+    {
+        title: 'WTZ', logo: USDtz, fLogo: fUSDtz, banner: 'WTZ', assetType: AssetType.WTZ
     }
 ];
 export const tokenColor = {
@@ -34,5 +40,7 @@ export const tokenColor = {
     USD: '#189DA3',
     ETHtz: '#662F9D',
     BTCtz: '#F2991A',
-    USDtz: '#189DA3'
+    USDtz: '#189DA3',
+    oXTZ : '#189DA3',
+    WTZ: '#189DA3'
 };
