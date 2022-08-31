@@ -185,6 +185,34 @@ export async function getIrmStorage(server: string, irmAddress: string) {
   };
 }
 
+export async function getGlobalStateOfAllTokens(
+  comptroller: Comptroller.Storage,
+  market: MarketMap,
+  protoAddress: ProtocolAddresses,
+  server: string,
+  addresses: string[]
+) {
+  var state = await TezosLendingPlatform.GetFtokenStorages(
+    comptroller,
+    protoAddress,
+    server
+  );
+  Object.keys(state).forEach((token) => {
+    const irm = getIrmStorage(server, state[token].interestRateModel);
+    state[token].interestRateModel = irm;
+  });
+
+  addresses.forEach(async (address) => {
+    const data = await TezosLendingPlatform.GetFtokenBalancesNoMod(
+      address,
+      market,
+      server
+    );
+    state.accounts[address] = data;
+  });
+
+  return state;
+}
 export async function printStatus(comptroller: Comptroller.Storage, market: MarketMap, protoAddress: ProtocolAddresses, server: string, addresses: string[]) {
     const data = await TezosLendingPlatform.GetFtokenStorages(comptroller, protoAddress, server)
     console.log("[--] Status of FTokens :\n", JSON.stringify(data));
