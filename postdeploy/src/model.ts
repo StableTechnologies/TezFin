@@ -110,11 +110,15 @@ function rescale(
     return rescaled;
   } else return bigInt.zero;
 }
-type state = object;
+type State = object;
 
-interface action{
-	action: any, 
-	transformer: (state) => state, 
+interface Action {
+  action: any;
+	transformer: (state: State) => State;
+}
+
+export function nextState(state: State, action: Action): State {
+	return action.transformer(state)
 }
 
 /* 
