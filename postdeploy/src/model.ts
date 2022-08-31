@@ -110,24 +110,12 @@ function rescale(
     return rescaled;
   } else return bigInt.zero;
 }
+type state = object;
 
-/* 
-	export async function printStatus(comptroller: Comptroller.Storage, market: MarketMap, protoAddress: ProtocolAddresses, server: string, addresses: string[]) {
-	    const data = await TezosLendingPlatform.GetFtokenStorages(comptroller, protoAddress, server)
-	    console.log("[--] Status of FTokens :\n", JSON.stringify(data));
-	    console.log("[--] Status of Accounts :\n")
-	    addresses.forEach(async (address) => {
-	        const data = await TezosLendingPlatform.GetFtokenBalancesNoMod(address, market, server)
-	        console.log(`[----] Account ${address} :\n`, JSON.stringify(data))
-	    })
-	}
-*/
-
-/*
- *
-                const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
-                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0];
- */
+interface action{
+	action: any, 
+	transformer: (state) => state, 
+}
 
 /* 
 	function getBorrowRate(data: any,ctokenExpScale, underlyingExpScale): bigInt.BigInteger{
