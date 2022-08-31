@@ -184,7 +184,8 @@ export async function getIrmStorage(server: string, irmAddress: string) {
     scale: params[2],
   };
 }
-
+// TODO: add underlyingExpScale to state
+//
 export async function getGlobalStateOfAllTokens(
   comptroller: Comptroller.Storage,
   market: MarketMap,
