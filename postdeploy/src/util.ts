@@ -192,12 +192,13 @@ export async function getGlobalStateOfAllTokens(
   server: string,
   addresses: string[]
 ) {
-  var state = await TezosLendingPlatform.GetFtokenStorages(
+  let state = { ftokens: {}, accounts: {} };
+  state.ftokens = await TezosLendingPlatform.GetFtokenStorages(
     comptroller,
     protoAddress,
     server
   );
-  Object.keys(state).forEach((token) => {
+  Object.keys(state.ftokens).forEach((token) => {
     const irm = getIrmStorage(server, state[token].interestRateModel);
     state[token].interestRateModel = irm;
   });
