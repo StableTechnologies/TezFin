@@ -110,17 +110,49 @@ function rescale(
     return rescaled;
   } else return bigInt.zero;
 }
-type State = object;
+//type State = object;
+
+interface State { ftokens: Object, accounts: Object };
 
 interface Action {
-  action: any;
-	transformer: (state: State) => State;
+  transformer: (state: State) => State;
 }
 
+const updateBorrowRate: Action = {
+  transformer: (state) => getBorrowRates(state),
+};
 export function nextState(state: State, action: Action): State {
-	return action.transformer(state)
+  return action.transformer(state);
 }
 
+
+function getBorrowRates(state: State): State {
+  Object.keys(state.ftokens).forEach((token) => {
+    const borrows = state[token].borrow.totalBorrows;
+    const cash = state[token].currentCash;
+    const reserves = state[token].totalReserves;
+    const ctokenExpScale = state[token].halfExpScale;
+    const underlyingExpScale = state[token].underlyingExpScale;
+    const irm = state[token].interestRateModel;
+    const irmExpScale = irm.scale;
+    const multiplierPerBlock = irm.multiplierPerBlock;
+    const baseRatePerBlock = irm.baseRatePerBlock;
+
+    state[token].borrow.borrowRatePerBlock = _getBorrowRate(
+      borrows,
+      cash,
+      reserves,
+      ctokenExpScale,
+      underlyingExpScale,
+      irmExpScale,
+      multiplierPerBlock,
+      baseRatePerBlock
+    );
+
+  });
+  return state;
+}
+//	return _getBorrowRate(data.totalBorrows, data.currentCash, data.totalReserves,
 /* 
 	function getBorrowRate(data: any,ctokenExpScale, underlyingExpScale): bigInt.BigInteger{
 		return _getBorrowRate(data.totalBorrows, data.currentCash, data.totalReserves,
