@@ -42,7 +42,7 @@ function mulScalarTruncateAdd(
 // getSupplyRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token,
 // precision of the CToken, returns the prevailing supply rate.
-function getSupplyRate(
+function _getSupplyRate(
   borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
@@ -80,7 +80,7 @@ function _calcSupplyRate(
 ): bigInt.BigInteger {
   const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
 	
-  const borrowRateMantissa = getBorrowRate(
+  const borrowRateMantissa = _getBorrowRate(
     borrows,
     cash,
     reserves,
@@ -116,7 +116,7 @@ function rescale(
 // getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token, precision of
 // the CToken, returns the prevailing borrow rate.
-export function getBorrowRate(
+function _getBorrowRate(
   borrows: bigInt.BigInteger,
   cash: bigInt.BigInteger,
   reserves: bigInt.BigInteger,
@@ -195,7 +195,7 @@ export function checkTotalBorrows(
   multiplierPerBlock: bigInt.BigInteger,
   baseRatePerBlock: bigInt.BigInteger
 ) {
-  const borrowRateMantissa = getBorrowRate(
+  const borrowRateMantissa = _getBorrowRate(
     borrows,
     cash,
     reserves,
