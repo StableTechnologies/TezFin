@@ -170,6 +170,21 @@ export async function parseProtocolAddress(path: string) {
     }
 }
 
+export async function getIrmStorage(server: string, irmAddress: string) {
+  const storageResult = await TezosNodeReader.getContractStorage(
+    server,
+    irmAddress
+  );
+
+  const params = JSONPath({ path: "$.args.[int]", json: storageResult });
+
+  return {
+    baseRatePerBlock: params[0],
+    multiplierPerBlock: params[1],
+    scale: params[2],
+  };
+}
+
 export async function printStatus(comptroller: Comptroller.Storage, market: MarketMap, protoAddress: ProtocolAddresses, server: string, addresses: string[]) {
     const data = await TezosLendingPlatform.GetFtokenStorages(comptroller, protoAddress, server)
     console.log("[--] Status of FTokens :\n", JSON.stringify(data));

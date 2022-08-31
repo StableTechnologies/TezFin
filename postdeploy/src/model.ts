@@ -111,7 +111,30 @@ function rescale(
   } else return bigInt.zero;
 }
 
+/* 
+	export async function printStatus(comptroller: Comptroller.Storage, market: MarketMap, protoAddress: ProtocolAddresses, server: string, addresses: string[]) {
+	    const data = await TezosLendingPlatform.GetFtokenStorages(comptroller, protoAddress, server)
+	    console.log("[--] Status of FTokens :\n", JSON.stringify(data));
+	    console.log("[--] Status of Accounts :\n")
+	    addresses.forEach(async (address) => {
+	        const data = await TezosLendingPlatform.GetFtokenBalancesNoMod(address, market, server)
+	        console.log(`[----] Account ${address} :\n`, JSON.stringify(data))
+	    })
+	}
+*/
 
+/*
+ *
+                const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
+                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0];
+ */
+
+/* 
+	function getBorrowRate(data: any,ctokenExpScale, underlyingExpScale): bigInt.BigInteger{
+		return _getBorrowRate(data.totalBorrows, data.currentCash, data.totalReserves,
+			d, data., data., data., data., data., data.,  
+	}
+*/
 
 // getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token, precision of
@@ -175,6 +198,7 @@ function utilizationRate(
   const utilizationRate = borrows.multiply(scale).divide(divisor);
   return utilizationRate;
 }
+
 
 
 //
