@@ -123,11 +123,11 @@ interface InternalState {
 export interface State { ftokens: Object, accounts: Object, internal: InternalState };
 
 interface Action {
-	transformer(state: State): State;
+	transformer(state: State, args?: any): State;
 }
 
-const updateBorrowRate: Action = action(getBorrowRates);
-const showState: Action = action(printState);
+export const updateBorrowRate: Action = action(getBorrowRates);
+export const showState: Action = action(printState);
 
 
 /* 

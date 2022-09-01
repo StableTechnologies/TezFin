@@ -1,6 +1,7 @@
-import { initConseil, initKeystore, parseProtocolAddress, printStatus } from "./util";
+import { initConseil, initKeystore, parseProtocolAddress, printStatus, getGlobalStateOfAllTokens } from "./util";
 import * as DeployHelper from './deploy';
 import * as FTokenHelper from './ftoken';
+import * as Model from './model';
 import { ConseilServerInfo, KeyStore, Signer } from "conseiljs";
 import * as ComptrollerHelper from './comptroller';
 import { AssetType, TezosLendingPlatform, Comptroller, ProtocolAddresses } from "tezoslendingplatformjs";
@@ -53,6 +54,10 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
             for (let j = 1; j <= 2; j++) {
                 // borrow USD for user B and C
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore1!, signer1!);
+		// TODO test get state
+
+		var state: Model.State = await getGlobalStateOfAllTokens(comptroller, market, protocolAddresses, config.tezosNode, addresses);
+		Model.nextState(state, Model.showState);
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
                 await new Promise(r => setTimeout(r, 35000));
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore2!, signer2!);

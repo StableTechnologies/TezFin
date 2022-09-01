@@ -1,6 +1,7 @@
 import * as ComptrollerHelper from './comptroller';
 import * as DeployHelper from './deploy';
 import * as FTokenHelper from './ftoken';
+import * as Model from './model';
 import * as config from '../config/config.json';
 import {State} from './model';
 import { AssetType, Comptroller, FToken, Governance, MarketMap, PriceFeed, ProtocolAddresses, testnetAddresses, TezosLendingPlatform, TokenStandard, UnderlyingAsset } from 'tezoslendingplatformjs';
@@ -186,24 +187,24 @@ export async function getIrmStorage(server: string, irmAddress: string) {
     scale: params[2],
   };
 }
-// TODO: Query node level//
+
 export async function getGlobalStateOfAllTokens(
   comptroller: Comptroller.Storage,
   market: MarketMap,
   protoAddress: ProtocolAddresses,
   server: string,
   addresses: string[]
-) {
-  let internal = {comptroller, market, protoAddress, server, addresses};
+): Promise<State> {
+  let internal = { comptroller, market, protoAddress, server, addresses };
 
-  let state = { ftokens: {}, accounts: {} };
+  let state: State = { ftokens: {}, accounts: {}, internal };
   state.ftokens = await TezosLendingPlatform.GetFtokenStorages(
     comptroller,
     protoAddress,
     server
   );
-  Object.keys(state.ftokens).forEach((token) => {
-    const irm = getIrmStorage(server, state[token].interestRateModel);
+  Object.keys(state.ftokens).forEach(async (token) => {
+    const irm = await getIrmStorage(server, state[token].interestRateModel);
     state[token].interestRateModel = irm;
   });
 
