@@ -11,6 +11,8 @@ import { JSONPath } from "jsonpath-plus";
 import fetch from 'node-fetch';
 import fs from 'fs';
 
+import bigInt from "big-integer";
+
 export async function initConseil() {
     log.setLevel(config.loglevel as LogLevelDesc);
     const logger = log.getLogger('conseiljs');
@@ -184,8 +186,7 @@ export async function getIrmStorage(server: string, irmAddress: string) {
     scale: params[2],
   };
 }
-// TODO: add underlyingExpScale to state
-//
+// TODO: Query node level//
 export async function getGlobalStateOfAllTokens(
   comptroller: Comptroller.Storage,
   market: MarketMap,
@@ -214,6 +215,12 @@ export async function getGlobalStateOfAllTokens(
   });
 
   return state;
+}
+
+export async function getCurrentLevel(): Promise<bigInt.BigInteger> {
+    const head = await TezosNodeReader.getBlockHead(config.tezosNode)
+	return bigInt(head.header.level);
+
 }
 export async function printStatus(comptroller: Comptroller.Storage, market: MarketMap, protoAddress: ProtocolAddresses, server: string, addresses: string[]) {
     const data = await TezosLendingPlatform.GetFtokenStorages(comptroller, protoAddress, server)
