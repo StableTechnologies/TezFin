@@ -2,7 +2,7 @@ import * as ComptrollerHelper from './comptroller';
 import * as DeployHelper from './deploy';
 import * as FTokenHelper from './ftoken';
 import * as config from '../config/config.json';
-
+import {State} from './model';
 import { AssetType, Comptroller, FToken, Governance, MarketMap, PriceFeed, ProtocolAddresses, testnetAddresses, TezosLendingPlatform, TokenStandard, UnderlyingAsset } from 'tezoslendingplatformjs';
 import { ConseilServerInfo, KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Tzip7ReferenceTokenHelper, registerFetch, registerLogger } from 'conseiljs';
 import { CryptoUtils, KeyStoreUtils, SoftSigner } from 'conseiljs-softsigner';
@@ -194,6 +194,8 @@ export async function getGlobalStateOfAllTokens(
   server: string,
   addresses: string[]
 ) {
+  let internal = {comptroller, market, protoAddress, server, addresses};
+
   let state = { ftokens: {}, accounts: {} };
   state.ftokens = await TezosLendingPlatform.GetFtokenStorages(
     comptroller,
