@@ -119,6 +119,7 @@ interface Action {
 }
 
 const updateBorrowRate: Action = action(getBorrowRates);
+const showState: Action = action(printState);
  
 export function action(transformer: (state: State) => State): Action {
   return {
@@ -130,11 +131,11 @@ export function nextState(state: State, action: Action): State {
   return action.transformer(state);
 }
 
-/* 
-	function printState(state: State): State {
-		return state
-	}
-*/
+function printState(state: State): State {
+  console.log("[--] State :\n", JSON.stringify(state));
+  return state;
+}
+
 function getBorrowRates(state: State): State {
   Object.keys(state.ftokens).forEach((token) => {
     const borrows = state[token].borrow.totalBorrows;
