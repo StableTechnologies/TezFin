@@ -1,5 +1,7 @@
-import bigInt from "big-integer";
+import bigInt from 'big-integer';
+import {getGlobalStateOfAllTokens} from './util'
 
+import { AssetType, Comptroller, FToken, MarketMap, ProtocolAddresses} from 'tezoslendingplatformjs';
 // Exponential math function to be moved in a separate file
 interface TExp {
   mantissa: bigInt.BigInteger;
@@ -111,16 +113,29 @@ function rescale(
   } else return bigInt.zero;
 }
 //type State = object;
-
-interface State { ftokens: Object, accounts: Object };
+interface InternalState {
+  comptroller: Comptroller.Storage,
+  market: MarketMap,
+  protoAddress: ProtocolAddresses,
+  server: string,
+  addresses: string[]
+}
+export interface State { ftokens: Object, accounts: Object, internal: InternalState };
 
 interface Action {
-  transformer: (state: State) => State;
+	transformer(state: State): State;
 }
 
 const updateBorrowRate: Action = action(getBorrowRates);
 const showState: Action = action(printState);
- 
+
+
+/* 
+	function getGlobalRemoteState(state: State = emptyState): State {
+		return await getGlobalStateOfAllTokens()
+	}
+	
+*/
 export function action(transformer: (state: State) => State): Action {
   return {
     transformer,
