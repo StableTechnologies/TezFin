@@ -118,14 +118,23 @@ interface Action {
   transformer: (state: State) => State;
 }
 
-const updateBorrowRate: Action = {
-  transformer: (state) => getBorrowRates(state),
-};
+const updateBorrowRate: Action = action(getBorrowRates);
+ 
+export function action(transformer: (state: State) => State): Action {
+  return {
+    transformer,
+  };
+}
+
 export function nextState(state: State, action: Action): State {
   return action.transformer(state);
 }
 
-
+/* 
+	function printState(state: State): State {
+		return state
+	}
+*/
 function getBorrowRates(state: State): State {
   Object.keys(state.ftokens).forEach((token) => {
     const borrows = state[token].borrow.totalBorrows;
@@ -152,13 +161,7 @@ function getBorrowRates(state: State): State {
   });
   return state;
 }
-//	return _getBorrowRate(data.totalBorrows, data.currentCash, data.totalReserves,
-/* 
-	function getBorrowRate(data: any,ctokenExpScale, underlyingExpScale): bigInt.BigInteger{
-		return _getBorrowRate(data.totalBorrows, data.currentCash, data.totalReserves,
-			d, data., data., data., data., data., data.,  
-	}
-*/
+
 
 // getBorrowRate() - Given cash, borrows, etc from CToken storage, base rate per
 // block, etc from IRM storage, precision of the underlying token, precision of
