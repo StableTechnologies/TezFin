@@ -172,19 +172,31 @@ export async function parseProtocolAddress(path: string) {
         protoAddress, oracle: protocolAddressesJSON.TezFinOracle
     }
 }
-
-export async function getIrmStorage(server: string, irmAddress: string) {
+interface IrmStorage {
+    baseRatePerBlock: bigInt.BigInteger,
+    multiplierPerBlock: bigInt.BigInteger,
+    scale: bigInt.BigInteger
+	
+}
+export async function getIrmStorage(
+  server: string,
+  irmAddress: string
+): Promise<IrmStorage> {
+  console.log("\n\n\n\n irmAddress", irmAddress);
   const storageResult = await TezosNodeReader.getContractStorage(
     server,
     irmAddress
   );
 
+  console.log("\n\n\n\n irmStorage \n\n", storageResult);
+  // TODO  fix this function error (json path?)
   const params = JSONPath({ path: "$.args.[int]", json: storageResult });
 
+  console.log("\n\n\n\n irmStorage params \n\n", params);
   return {
-    baseRatePerBlock: params[0],
-    multiplierPerBlock: params[1],
-    scale: params[2],
+    baseRatePerBlock: bigInt(params[0]),
+    multiplierPerBlock: bigInt(params[1]),
+    scale: bigInt(params[2]),
   };
 }
 
@@ -203,20 +215,46 @@ export async function getGlobalStateOfAllTokens(
     protoAddress,
     server
   );
-  Object.keys(state.ftokens).forEach(async (token) => {
-    const irm = await getIrmStorage(server, state[token].interestRateModel);
-    state[token].interestRateModel = irm;
-  });
 
-  addresses.forEach(async (address) => {
-    const data = await TezosLendingPlatform.GetFtokenBalancesNoMod(
+  console.log("\n\n\n ftokens state\n\n\n", state.ftokens);
+  console.log(
+    "\n\n\n ftokens state stringify \n\n\n",
+    JSON.stringify(state.ftokens)
+  );
+
+  let irmS = async _ => {
+	  Object.keys(state.ftokens).forEach(async (key) => {
+		  state.ftokens[key].irm =  await getIrmStorage(server, state.ftokens[key].interestRateModel);
+	  })};
+	 Promise.all([irmS])
+/* 
+	 *
+	  for (let token in state.ftokens) {
+    console.log("\n\n\n\n token \n\n", token);
+    console.log(
+      "\n\n\n\n state.ftokens[token].interestRateModel\n\n",
+      state.ftokens[token].interestRateModel
+    );
+    await getIrmStorage(server, state[token].interestRateModel).then((irm) => {
+      state.ftokens[token].interestRateModel = irm;
+    });
+    console.log(
+      "\n\n\n\n --------- interestRateModel storage\n\n",
+      state.ftokens[token].interestRateModel
+    );
+  }
+ 
+*/ 
+  console.log("\n\n\n  state after irm", state.ftokens);
+  for (let address in addresses) {
+    state.accounts[address] = await TezosLendingPlatform.GetFtokenBalancesNoMod(
       address,
       market,
       server
     );
-    state.accounts[address] = data;
-  });
+  }
 
+  console.log("\n\n\n [!] final state ", state);
   return state;
 }
 

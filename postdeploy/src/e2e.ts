@@ -57,6 +57,8 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 		// TODO test get state
 
 		var state: Model.State = await getGlobalStateOfAllTokens(comptroller, market, protocolAddresses, config.tezosNode, addresses);
+		 
+                console.log("\n\n\n [!!] final state top level ", state);
 		Model.nextState(state, Model.showState);
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
                 await new Promise(r => setTimeout(r, 35000));
