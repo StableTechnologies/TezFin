@@ -4,7 +4,7 @@ import Ethtz from '../../assets/ETHtz.svg';
 import USDtz from '../../assets/USDtz.svg';
 import XTZ from '../../assets/XTZ.svg';
 import wtz from '../../assets/wtz.svg';
-import oxtz from '../../assets/oXTZ.png';
+import oxtz from '../../assets/oxtz.svg';
 // import ctez from '../../assets/ctez.svg';
 // import kUSD from '../../assets/kUSD.svg';
 import fBTCtz from '../../assets/fbtctz.svg';
@@ -13,6 +13,7 @@ import fUSDtz from '../../assets/fusdtz.svg';
 import fXTZ from '../../assets/fXTZ.svg';
 // import fCtez from '../../assets/fctez.svg';
 import fOXTZ from '../../assets/foxtz.svg';
+import fWTZ from '../../assets/fwtz.svg';
 
 export const tokens = [
     {
@@ -35,7 +36,7 @@ export const tokens = [
         title: 'OXTZ', logo: oxtz, fLogo: fOXTZ, banner: 'OXTZ', assetType: AssetType.OXTZ
     },
     {
-        title: 'WTZ', logo: wtz, fLogo: wtz, banner: 'WTZ', assetType: AssetType.WTZ // TODO:  update fToken for  WTZ
+        title: 'WTZ', logo: wtz, fLogo: fWTZ, banner: 'WTZ', assetType: AssetType.WTZ // TODO:  update fToken for  WTZ
     }
 ];
 export const tokenColor = {
