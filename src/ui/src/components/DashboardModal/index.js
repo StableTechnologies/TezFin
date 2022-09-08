@@ -79,7 +79,10 @@ const DashboardModal = (props) => {
                                 placement="bottom"
                             >
                                 <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
-                                    {tokenDetails.walletBalance ? nFormatter(decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title])) : '0'}
+                                    {tokenDetails.walletBalance
+                                        ? nFormatter(decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title], decimals[tokenDetails.title]))
+                                        : '0'
+                                    }
                                     {' '} {tokenDetails.banner}
                                 </Typography>
                             </LightTooltip>
