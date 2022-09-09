@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
-import bigInt from 'big-integer';
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
@@ -8,7 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { marketAction } from '../../reduxContent/market/actions';
 
-import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
+import {
+    confirmTransaction, undecimalify, verifyTransaction
+} from '../../util';
 import { borrowingMaxAction } from '../../util/maxAction';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useBorrowErrorText, useRepayErrorText } from '../../util/modalHooks';
@@ -69,19 +70,20 @@ const BorrowModal = (props) => {
         setEvaluationError(error);
     };
 
+    console.log('acc', account.underlyingBalances[tokenDetails.assetType].value.toString());
     const repayBorrowToken = async () => {
-        // eslint-disable-next-line no-shadow
-	     
-	    if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
-		    // sending the contract total wallet underlyingBalance 
+        if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
+            // sending the contract total wallet underlyingBalance
+            // eslint-disable-next-line no-shadow
             const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, account.underlyingBalances[tokenDetails.assetType].value.toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
             setOpGroup(opGroup);
             setEvaluationError(error);
-	    } else {
+        } else {
+            // eslint-disable-next-line no-shadow
             const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
             setOpGroup(opGroup);
             setEvaluationError(error);
-	    }
+        }
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
