@@ -8,10 +8,10 @@ CToken = sp.io.import_script_from_url("file:contracts/CToken.py")
 
 
 class CFA12(CToken.CToken):
-    def __init__(self, scale_, underlyingScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, fa1_2_TokenAddress_, **extra_storage):
+    def __init__(self, expScale_, underlyingExpScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, fa1_2_TokenAddress_, **extra_storage):
         CToken.CToken.__init__(self,
-                               scale_,
-                               underlyingScale_,
+                               expScale_,
+                               underlyingExpScale_,
                                comptroller_,
                                interestRateModel_,
                                initialExchangeRateMantissa_,
