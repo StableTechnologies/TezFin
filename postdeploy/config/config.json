@@ -54,6 +54,30 @@
         "amount": "8531395243",
         "activation_code": "37a8b46f2b3c691d02ac76a595a1373bc44c751e"
     },
+    "keystore2":{
+        "pkh": "tz1RgUae7qJ17upHCps1rb4hhg3TfpPttCTG",
+        "mnemonic": [
+            "rib",
+            "kind",
+            "ship",
+            "strike",
+            "key",
+            "mail",
+            "lumber",
+            "riot",
+            "nest",
+            "blind",
+            "later",
+            "scrap",
+            "spread",
+            "seven",
+            "unique"
+        ],
+        "email": "bbxwqqqf.ozpirtrt@teztnets.xyz",
+        "password": "BfjziIwc8a",
+        "amount": "202261594109",
+        "activation_code": "f61acbb698a18f8640f2e781a3dfe1042e8f0bd4"
+    },
     "networkBlockTime": 31,
     "delay": 7,
     "revealAccount": false,
@@ -78,7 +102,7 @@
     "mintAmounts": {
         "ETH":100,
         "BTC":100,
-        "USD":20000
+        "USD":30000
     },
     "redeem": [
         "ETH",

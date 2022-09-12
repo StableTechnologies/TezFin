@@ -208,7 +208,7 @@ const DashboardModal = (props) => {
                 </>
                 <Box className={`${classes.contentBoxTwo} ${classes.limit}`}>
                     <Grid container textAlign="justify" justifyContent="space-between">
-                        <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit </Grid>
+                        <Grid item sm={5} className={`${classes.modalText} ${classes.faintFont} ${visibility ? '' : classes.visibility}`}> Borrow Limit Left </Grid>
                         <Grid item sm={7} className={`${classes.modalText} ${classes.modalTextRight} ${visibility ? '' : classes.visibility}`}>
                             ${pendingLimit
                                 ? ((pendingLimit > 0) ? nFormatter(pendingLimit, 2) : '0.00')
