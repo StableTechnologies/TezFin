@@ -1,5 +1,4 @@
 import bigInt from 'big-integer';
-import {getGlobalStateOfAllTokens} from './util'
 import {StateHistory, State} from './state'
 import { AssetType, Comptroller, FToken, MarketMap, ProtocolAddresses} from 'tezoslendingplatformjs';
 // Exponential math function to be moved in a separate file

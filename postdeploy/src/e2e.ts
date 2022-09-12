@@ -1,4 +1,4 @@
-import { initConseil, initKeystore, parseProtocolAddress, printStatus, getGlobalStateOfAllTokens } from "./util";
+import { initConseil, initKeystore, parseProtocolAddress, printStatus } from "./util";
 import * as DeployHelper from './deploy';
 import * as FTokenHelper from './ftoken';
 import * as Model from './model';
