@@ -1,6 +1,6 @@
 import bigInt from 'big-integer';
 import {getGlobalStateOfAllTokens} from './util'
-
+import {StateHistory, State} from './state'
 import { AssetType, Comptroller, FToken, MarketMap, ProtocolAddresses} from 'tezoslendingplatformjs';
 // Exponential math function to be moved in a separate file
 interface TExp {
@@ -112,7 +112,7 @@ function rescale(
     return rescaled;
   } else return bigInt.zero;
 }
-//type State = object;
+//type StateOld = object;
 interface InternalState {
   comptroller: Comptroller.Storage,
   market: MarketMap,
@@ -120,10 +120,10 @@ interface InternalState {
   server: string,
   addresses: string[]
 }
-export interface State { ftokens: Object, accounts: Object, internal: InternalState };
+export interface StateOld { ftokens: Object, accounts: Object, internal: InternalState };
 
 interface Action {
-	transformer(state: State, args?: any): State;
+	transformer(state: StateOld, args?: any): StateOld;
 }
 
 export const updateBorrowRate: Action = action(getBorrowRates);
@@ -131,27 +131,90 @@ export const showState: Action = action(printState);
 
 
 /* 
-	function getGlobalRemoteState(state: State = emptyState): State {
+	function getGlobalRemoteState(state: StateOld = emptyState): StateOld {
 		return await getGlobalStateOfAllTokens()
 	}
 	
 */
-export function action(transformer: (state: State) => State): Action {
+export function action(transformer: (state: StateOld) => StateOld): Action {
   return {
     transformer,
   };
 }
 
-export function nextState(state: State, action: Action): State {
+export function nextState(state: StateOld, action: Action): StateOld {
   return action.transformer(state);
 }
 
-function printState(state: State): State {
-  console.log("[--] State :\n", JSON.stringify(state));
+function printState(state: StateOld): StateOld {
+  console.log("[--] StateOld :\n", JSON.stringify(state));
   return state;
 }
 
-function getBorrowRates(state: State): State {
+interface BorrowRateParameter {
+  borrows: string | number,
+  cash: string | number,
+  reserves: string | number,
+  ctokenExpScale: string | number,
+  underlyingExpScale: string | number,
+  irmExpScale: string | number,
+  multiplierPerBlock: string | number,
+  baseRatePerBlock: string | number,
+}
+
+function getBorrowRateParameters(
+  state: State,
+  token: string
+): BorrowRateParameter {
+  const markets = state.markets;
+  return {
+    borrows: markets[token].storage.borrow.totalBorrows,
+    cash: markets[token].storage.currentCash,
+    reserves: markets[token].storage.totalReserves,
+    ctokenExpScale: markets[token].storage.halfExpScale,
+    underlyingExpScale: markets[token].storage.underlyingExpScale,
+    irmExpScale: markets[token].rateModel.scale,
+    multiplierPerBlock: markets[token].rateModel.blockMultiplier,
+    baseRatePerBlock: markets[token].rateModel.blockRate,
+  };
+}
+
+
+
+
+
+
+
+
+function getBorrowRates2(state: StateOld): StateOld {
+  Object.keys(state.ftokens).forEach((token) => {
+    const borrows = state[token].borrow.totalBorrows;
+    const cash = state[token].currentCash;
+    const reserves = state[token].totalReserves;
+    const ctokenExpScale = state[token].halfExpScale;
+    const underlyingExpScale = state[token].underlyingExpScale;
+    const irm = state[token].interestRateModel;
+    const irmExpScale = irm.scale;
+    const multiplierPerBlock = irm.multiplierPerBlock;
+    const baseRatePerBlock = irm.baseRatePerBlock;
+
+    state[token].borrow.borrowRatePerBlock = _getBorrowRate(
+      borrows,
+      cash,
+      reserves,
+      ctokenExpScale,
+      underlyingExpScale,
+      irmExpScale,
+      multiplierPerBlock,
+      baseRatePerBlock
+    );
+
+  });
+  return state;
+}
+
+
+function getBorrowRates(state: StateOld): StateOld {
   Object.keys(state.ftokens).forEach((token) => {
     const borrows = state[token].borrow.totalBorrows;
     const cash = state[token].currentCash;

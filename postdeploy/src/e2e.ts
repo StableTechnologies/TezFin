@@ -46,6 +46,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         const market = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
         const addresses = [keystore.publicKeyHash,keystore1.publicKeyHash,keystore2.publicKeyHash];
         
+       console.log("[--] Status of Markets :\n", JSON.stringify(market));
         await printStatus(comptroller, market,protocolAddresses,config.tezosNode,addresses);
         
         // sleep for 1 min
@@ -56,10 +57,10 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore1!, signer1!);
 		// TODO test get state
 
-		var state: Model.State = await getGlobalStateOfAllTokens(comptroller, market, protocolAddresses, config.tezosNode, addresses);
-		 
-                console.log("\n\n\n [!!] final state top level ", state);
-		Model.nextState(state, Model.showState);
+//		var state: Model.State = await getGlobalStateOfAllTokens(comptroller, market, protocolAddresses, config.tezosNode, addresses);
+//		 
+//                console.log("\n\n\n [!!] final state top level ", state);
+//		Model.nextState(state, Model.showState);
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
                 await new Promise(r => setTimeout(r, 35000));
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore2!, signer2!);

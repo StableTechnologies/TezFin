@@ -2,7 +2,7 @@ import { KeyStore, Signer, TezosConseilClient, Tzip7ReferenceTokenHelper, MultiA
 import { TezosLendingPlatform, FToken, Comptroller, AssetType, ProtocolAddresses, PriceFeed } from 'tezoslendingplatformjs';
 import log from 'loglevel';
 import * as config from '../config/config.json';
-
+import {awaitOperationConfirmation, OpConfirmation} from './conseiljs-patch';
 export async function mint(asset: AssetType, amount:number, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     let mint: FToken.MintPair = {
         underlying: asset,
@@ -11,7 +11,7 @@ export async function mint(asset: AssetType, amount:number, keystore: KeyStore, 
     log.info(`mint ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(mint)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash = await TezosLendingPlatform.Mint(mint, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
-    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+	await awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then((res: OpConfirmation) => { if (res.operation['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 export async function redeem(asset: AssetType, amount:number, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, keystore: KeyStore, signer: Signer) {
@@ -22,7 +22,7 @@ export async function redeem(asset: AssetType, amount:number, comptroller: Compt
     log.info(`redeem ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(redeem)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash =  await TezosLendingPlatform.Redeem(redeem, comptroller, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
-    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+    await awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res.operation['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 export async function borrow(asset: AssetType, amount:number, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, keystore: KeyStore, signer: Signer) {
@@ -33,7 +33,7 @@ export async function borrow(asset: AssetType, amount:number, comptroller: Compt
     log.info(`borrow ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(borrow)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash = await TezosLendingPlatform.Borrow(borrow, comptroller, protocolAddresses, config.tezosNode, signer, keystore);
-    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+    await awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res.operation['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 export async function repayBorrow(asset: AssetType, amount: number, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
@@ -44,14 +44,14 @@ export async function repayBorrow(asset: AssetType, amount: number, keystore: Ke
     log.info(`repayBorrow ${asset} by ${keystore.publicKeyHash} parameters: ${JSON.stringify(repayBorrow)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash =  await TezosLendingPlatform.RepayBorrow(repayBorrow, protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
-    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+    await awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res.operation['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 export async function updatePrice(priceList: PriceFeed.Pair[], oracle: string, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     log.info(`updating asset prices : `,JSON.stringify(priceList));
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash = await PriceFeed.SetPrice(priceList, oracle, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
-    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+    await awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res.operation['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 export async function liquidate(details: FToken.LiquidateDetails, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
@@ -59,5 +59,5 @@ export async function liquidate(details: FToken.LiquidateDetails, keystore: KeyS
     details.amount = details.amount * Math.pow(10, protocolAddresses.underlying[details.supplyCollateral].decimals)
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const opHash = await TezosLendingPlatform.Liquidate(details,protocolAddresses, config.tezosNode, signer, keystore, config.tx.fee, config.tx.gas, config.tx.freight);
-    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+    await awaitOperationConfirmation(config.tezosNode, head.header.level - 1, opHash, 6).then(res => { if (res.operation['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
