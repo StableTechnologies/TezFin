@@ -7,8 +7,8 @@ UTILS = sp.io.import_script_from_url("file:deploy/compile_targets/Utils.py")
 UTILS.checkDependencies(CFG.CXTZ)
 
 sp.add_compilation_target("CXTZ", CXTZ.CXTZ(
-    scale_=sp.nat(int(1000000000000000000)),
-    underlyingScale_=sp.nat(int(1000000)),
+    expScale_=sp.nat(int(1000000)),
+    underlyingExpScale_=sp.nat(int(1000000)),
     comptroller_ = sp.address(CFG.deployResult.Comptroller),
     interestRateModel_ = sp.address(CFG.deployResult.CXTZ_IRM),
     administrator_ = sp.address(CFG.deployResult.Governance),
