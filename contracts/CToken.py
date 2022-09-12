@@ -21,10 +21,10 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
         Parameters
         ----------
-        scale_ :  The exponent used to simulate CToken's decimal points .
-        underlyingScale_ : The exponent used to simulate the underlying assets decimal points.
+        expScale :  The exponent used to simulate CToken's decimal points .
+        underlyingExpScale : The exponent used to simulate the underlying assets decimal points.
     """
-    def __init__(self, scale_, underlyingScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
+    def __init__(self, expScale_, underlyingExpScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
         Exponential.Exponential.__init__(
             self,
             balances=sp.big_map(tkey=sp.TAddress, tvalue=sp.TRecord(
@@ -35,22 +35,22 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 balance=sp.TNat)),  # Official record of token balances for each account
             totalSupply=sp.nat(0),  # Total number of tokens in circulation
             # Maximum borrow rate that can ever be applied (.00000008% / block)
-            borrowRateMaxMantissa=sp.nat(int(80000000000)),
+            borrowRateMaxMantissa=sp.nat(int(8)) * expScale_ // sp.nat(int(10000000000)),
             # Maximum fraction of interest that can be set aside for reserves
-            reserveFactorMaxMantissa=sp.nat(int(1e18)),
+            reserveFactorMaxMantissa=expScale_,
             comptroller=comptroller_,  # Contract which oversees inter-cToken operations
             # Model which tells what the current interest rate should be
             interestRateModel=interestRateModel_,
             # Initial exchange rate used when minting the first CTokens
             initialExchangeRateMantissa=initialExchangeRateMantissa_,
             # Fraction of interest currently set aside for reserves
-            reserveFactorMantissa= sp.nat(int(50000000000000000)), # 5%
+            reserveFactorMantissa= sp.nat(int(5)) * expScale_ // sp.nat(int(100)), # 5%
             # protocol share for sezied asstes
-            protocolSeizeShareMantissa=sp.nat(100000000000000), #0.01%
+            protocolSeizeShareMantissa=sp.nat(int(1)) * expScale_ // sp.nat(int(10000)), #0.01%
             # Block number that interest was last accrued at
             accrualBlockNumber=sp.nat(0),
             # Accumulator of the total earned interest rate since the opening of the market
-            borrowIndex=sp.nat(int(1e18)),
+            borrowIndex=expScale_,
             # Total amount of outstanding borrows of the underlying in this market
             totalBorrows=sp.nat(0),
             # Total amount of reserves of the underlying held in this market
@@ -63,8 +63,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             pendingAdministrator=sp.none,  # Pending administrator`s address for this contract
             # Set of currently active operations to protect execution flow
             activeOperations=sp.set(t=sp.TNat),
-            underlyingScale=underlyingScale_,
-            scale=scale_,
+            underlyingExpScale=underlyingExpScale_,
+            scale=expScale_,
             **extra_storage
         )
 
