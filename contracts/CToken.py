@@ -65,6 +65,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             activeOperations=sp.set(t=sp.TNat),
             underlyingExpScale=underlyingExpScale_,
             expScale=expScale_,
+            halfExpScale=expScale_ // sp.nat(int(2)),
             **extra_storage
         )
 
