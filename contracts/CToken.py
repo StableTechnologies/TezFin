@@ -64,7 +64,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Set of currently active operations to protect execution flow
             activeOperations=sp.set(t=sp.TNat),
             underlyingExpScale=underlyingExpScale_,
-            scale=expScale_,
+            expScale=expScale_,
             **extra_storage
         )
 
