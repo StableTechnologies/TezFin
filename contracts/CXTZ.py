@@ -12,9 +12,9 @@ CToken = sp.io.import_script_from_url("file:contracts/CToken.py")
 
 
 class CXTZ(CToken.CToken):
-    def __init__(self, expScale_, underlyingExpScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa, administrator_):
+    def __init__(self, expScale_, underlyingExpScale_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_):
         CToken.CToken.__init__(self, expScale_, underlyingExpScale_, comptroller_, interestRateModel_,
-                               initialExchangeRateMantissa, administrator_)
+                               initialExchangeRateMantissa_, administrator_)
 
     def getCashImpl(self):
         # TODO: test in regards to https://forum.tezosagora.org/t/problems-with-balance/2194/3
