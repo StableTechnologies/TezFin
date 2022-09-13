@@ -11,5 +11,6 @@ sp.add_compilation_target("CXTZ", CXTZ.CXTZ(
     underlyingExpScale_=sp.nat(int(1000000)),
     comptroller_ = sp.address(CFG.deployResult.Comptroller),
     interestRateModel_ = sp.address(CFG.deployResult.CXTZ_IRM),
+    initialExchangeRateMantissa_ = sp.nat(CFG.CXTZ.initialExchangeRateMantissa),
     administrator_ = sp.address(CFG.deployResult.Governance),
     ))

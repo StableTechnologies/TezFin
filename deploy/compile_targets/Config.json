@@ -45,7 +45,32 @@
             "CFA12_IRM"
         ]
     },
+    "CBTC": {
+        "initialExchangeRateMantissa": 100000000,
+        "dependencies": [
+            "Comptroller",
+            "Governance",
+            "CXTZ_IRM"
+        ]
+    },
+    "CETH": {
+        "initialExchangeRateMantissa": 1000000000000000000,
+        "dependencies": [
+            "Comptroller",
+            "Governance",
+            "CXTZ_IRM"
+        ]
+    },
+    "CUSD": {
+        "initialExchangeRateMantissa": 1000000,
+        "dependencies": [
+            "Comptroller",
+            "Governance",
+            "CXTZ_IRM"
+        ]
+    },
     "CXTZ": {
+        "initialExchangeRateMantissa": 1000000,
         "dependencies": [
             "Comptroller",
             "Governance",

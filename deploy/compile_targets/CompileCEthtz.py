@@ -11,7 +11,7 @@ sp.add_compilation_target("CETHtz", CFA12.CFA12(
     underlyingExpScale_=sp.nat(int(1000000000000000000)),
     comptroller_ = sp.address(CFG.deployResult.Comptroller),
     interestRateModel_ = sp.address(CFG.deployResult.CFA12_IRM),
-    initialExchangeRateMantissa_ = sp.nat(CFG.CFA2.initialExchangeRateMantissa),
+    initialExchangeRateMantissa_ = sp.nat(CFG.CETH.initialExchangeRateMantissa),
     administrator_ = sp.address(CFG.deployResult.Governance),
     fa1_2_TokenAddress_ = sp.address(CFG.deployResult.ETHtz)
     ))

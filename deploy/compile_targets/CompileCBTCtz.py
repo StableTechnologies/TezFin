@@ -11,7 +11,7 @@ sp.add_compilation_target("CBTCtz", CFA2.CFA2(
     underlyingExpScale_=sp.nat(int(100000000)),
     comptroller_ = sp.address(CFG.deployResult.Comptroller),
     interestRateModel_ = sp.address(CFG.deployResult.CFA2_IRM),
-    initialExchangeRateMantissa_ = sp.nat(CFG.CFA2.initialExchangeRateMantissa),
+    initialExchangeRateMantissa_ = sp.nat(CFG.CBTC.initialExchangeRateMantissa),
     administrator_ = sp.address(CFG.deployResult.Governance),
     fa2_TokenAddress_ = sp.address(CFG.deployResult.BTCtz),
     tokenId_ = sp.nat(CFG.CFA2.tokenId)
