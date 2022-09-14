@@ -7,8 +7,8 @@ UTILS = sp.io.import_script_from_url("file:deploy/compile_targets/Utils.py")
 UTILS.checkDependencies(CFG.CFA2)
 
 sp.add_compilation_target("CBTCtz", CFA2.CFA2(
-    expScale_=sp.nat(int(100000000)),
-    underlyingExpScale_=sp.nat(int(100000000)),
+    expScale_ = sp.nat(int(100000000)),
+    underlyingExpScale_ = sp.nat(int(100000000)),
     comptroller_ = sp.address(CFG.deployResult.Comptroller),
     interestRateModel_ = sp.address(CFG.deployResult.CFA2_IRM),
     initialExchangeRateMantissa_ = sp.nat(CFG.CBTC.initialExchangeRateMantissa),
