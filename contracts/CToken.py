@@ -764,7 +764,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def accrueInterestInternal(self, params):
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
                         entry_point="getBorrowRate").open_some()
-        transferData = sp.record(cash=self.getCashImpl(),
+        transferData = sp.record(cash=self.rescale(self.getCashImpl(), self.data.underlyingExpScale, self.data.expScale),
                                  borrows=self.data.totalBorrows,
                                  reserves=self.data.totalReserves, 
                                  cb=sp.self_entry_point("doAccrueInterest"))
@@ -778,10 +778,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                                     sp.unit, 
                                     t=sp.TNat
                                     ).open_some("INVALID InterestRateModel VIEW")
-        borrowRateRescaled = self.rescale(borrowRateMantissa, irmScale, self.data.underlyingExpScale)
+        borrowRateRescaled = self.rescale(borrowRateMantissa, irmScale, self.data.expScale)
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
-        sp.verify(borrowRateRescaled <=
-                  self.rescale(self.data.borrowRateMaxMantissa, sp.nat(int(1e18)), self.data.underlyingExpScale), EC.CT_INVALID_BORROW_RATE)
+        sp.verify(borrowRateRescaled <= self.data.borrowRateMaxMantissa, EC.CT_INVALID_BORROW_RATE)
         cash = self.getCashImpl()
         blockDelta = sp.as_nat(sp.level - self.data.accrualBlockNumber)
 
@@ -790,7 +789,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         interestAccumulated = sp.compute(self.mulScalarTruncate(
             simpleInterestFactor, self.data.totalBorrows))
         self.data.totalBorrows = interestAccumulated + self.data.totalBorrows
-        self.data.totalReserves = self.mulScalarTruncateAdd(sp.record(mantissa=self.rescale(self.data.reserveFactorMantissa, sp.nat(int(1e18)), self.data.underlyingExpScale)),
+        self.data.totalReserves = self.mulScalarTruncateAdd(sp.record(mantissa=self.data.reserveFactorMantissa),
                                                             interestAccumulated,
                                                             self.data.totalReserves)
         self.data.borrowIndex = self.mulScalarTruncateAdd(
