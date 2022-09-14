@@ -189,7 +189,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.entry_point
     def borrow(self, params):
         sp.set_type(params, sp.TNat)
-        params = self.rescale(params, self.data.underlyingExpScale, self.expScale)
+        params = self.rescale(params, self.data.underlyingExpScale, self.data.expScale)
         self.verifyNotInternal()
         self.verifyBorrowAllowed(sp.sender, params)
         self.borrowInternal(sp.record(borrower=sp.sender, borrowAmount=params))
@@ -223,7 +223,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.entry_point
     def repayBorrow(self, params):
         sp.set_type(params, sp.TNat)
-        params = self.rescale(params, self.underlyingExpScale, self.expScale)
+        params = self.rescale(params, self.data.underlyingExpScale, self.data.expScale)
         self.verifyNotInternal()
         self.verifyRepayBorrowAllowed(sp.sender, sp.sender, params)
         self.repayBorrowInternal(
@@ -243,7 +243,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def repayBorrowBehalf(self, params):
         sp.set_type(params, sp.TRecord(
             borrower=sp.TAddress, repayAmount=sp.TNat))
-        params.repayAmount = self.rescale(params.repayAmount, self.underlyingExpScale, self.expScale)
+        params.repayAmount = self.rescale(params.repayAmount, self.data.underlyingExpScale, self.data.expScale)
         self.verifyNotInternal()
         self.verifyRepayBorrowAllowed(
             sp.sender, params.borrower, params.repayAmount)
@@ -909,7 +909,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyInternal()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.RESERVE_FACTOR)
         self.verifyAccruedInterestRelevance()
-        sp.verify(newReserveFactor <= self.rescale(self.data.reserveFactorMaxMantissa, sp.nat(int(1e18)), self.data.underlyingExpScale),
+        sp.verify(newReserveFactor <= self.data.reserveFactorMaxMantissa,
                   EC.CT_INVALID_RESERVE_FACTOR)
         self.data.reserveFactorMantissa = newReserveFactor
 
