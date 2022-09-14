@@ -223,6 +223,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.entry_point
     def repayBorrow(self, params):
         sp.set_type(params, sp.TNat)
+        params = self.rescale(params, self.underlyingExpScale, self.expScale)
         self.verifyNotInternal()
         self.verifyRepayBorrowAllowed(sp.sender, sp.sender, params)
         self.repayBorrowInternal(
