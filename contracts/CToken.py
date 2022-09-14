@@ -215,7 +215,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """    
         Sender repays their own borrow
 
-        params: TNat - The amount to repay
+        params: TNat - The amount to repay in underlyingScale
 
         requirements: 
             accrueInterest() should be executed within 5 blocks prior to this call
@@ -243,6 +243,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def repayBorrowBehalf(self, params):
         sp.set_type(params, sp.TRecord(
             borrower=sp.TAddress, repayAmount=sp.TNat))
+        params.repayAmount = self.rescale(params.repayAmount, self.underlyingExpScale, self.expScale)
         self.verifyNotInternal()
         self.verifyRepayBorrowAllowed(
             sp.sender, params.borrower, params.repayAmount)
