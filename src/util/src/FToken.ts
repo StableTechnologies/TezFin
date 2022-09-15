@@ -69,7 +69,7 @@ export namespace FToken {
                     administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
                     balancesMapId: balancesMapId,
                     supply: {
-                        totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
+                        totalSupply: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
                         supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[2].int', json: storageResult })[0])
                     },
                     borrow: {
