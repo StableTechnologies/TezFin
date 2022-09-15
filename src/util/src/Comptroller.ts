@@ -77,7 +77,7 @@ export namespace Comptroller {
                 collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
                 loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].int', json: storageResult })[0],
                 administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
-                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[1].int', json: storageResult })[0],
                 expScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
                 halfExpScale: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
                 liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[1].args[0].int', json: storageResult })[0],
