@@ -55,7 +55,7 @@ export namespace Comptroller {
     export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         // get marketsMapId
-        const marketsMapId = JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
+        const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[2].int', json: storageResult })[0];
         // get all market values for fTokens from protocolAddresses
         const markets: MarketMap = {};
 
