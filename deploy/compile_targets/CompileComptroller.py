@@ -10,5 +10,6 @@ UTILS.checkDependencies(CFG.Comptroller)
 sp.add_compilation_target("Comptroller", CMPT.Comptroller(administrator_ = sp.address(CFG.deployResult.Governance),
     oracleAddress_ = sp.address(CFG.deployResult.TezFinOracle),
     closeFactorMantissa_ = sp.nat(CFG.Comptroller.closeFactorMantissa),
-    liquidationIncentiveMantissa_ = sp.nat(CFG.Comptroller.liquidationIncentiveMantissa)
+    liquidationIncentiveMantissa_ = sp.nat(CFG.Comptroller.liquidationIncentiveMantissa),
+    expScale_ = sp.nat(int(1000000000000000000))
     ))

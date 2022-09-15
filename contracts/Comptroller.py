@@ -41,7 +41,7 @@ DEFAULT_COLLATERAL_FACTOR = int(5e17)  # 50 %
 
 
 class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
-    def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, **extra_storage):
+    def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, expScale_,**extra_storage):
         Exponential.Exponential.__init__(
             self,
             administrator=administrator_,
@@ -65,6 +65,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             activeOperations=sp.set(t=sp.TNat),
             closeFactorMantissa=closeFactorMantissa_,
             liquidationIncentiveMantissa=liquidationIncentiveMantissa_,
+            expScale=expScale_,
+            halfExpScale=expScale_ // sp.nat(int(2)),
             **extra_storage
         )
 
