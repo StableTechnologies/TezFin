@@ -35,7 +35,10 @@ const PendingModal = (props) => {
                 ? <>
                     Operation hash: {' '}
                     <a
-                        href={`https://arronax.io/tezos/${network}/operations/${transactionHash}`}
+                        href={(network === 'mainnet')
+                            ? `https://tzkt.io/${transactionHash}`
+                            : `https://${network}.tzkt.io/${transactionHash}`
+                        }
                         target="_blank"
                         rel="noopener"
                         className={classes.hashLink}

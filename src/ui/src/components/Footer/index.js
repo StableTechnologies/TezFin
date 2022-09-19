@@ -72,7 +72,7 @@ const Footer = () => {
                         </IconButton>
                     </Link>
                     <Link
-                        href="https://discord.com/invite/FRw2vgc6"
+                        href="https://discord.gg/ccWRCu2Dht"
                         target="_blank"
                         rel="noopener"
                     >

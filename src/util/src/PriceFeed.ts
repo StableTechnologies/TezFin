@@ -5,6 +5,11 @@ import { JSONPath } from 'jsonpath-plus';
 import { OracleMap } from './types';
 import bigInt from 'big-integer';
 
+const alias = {
+    [AssetType.OXTZ]: AssetType.XTZ,
+    [AssetType.WTZ]: AssetType.XTZ
+}
+
 export namespace PriceFeed {
 
     export interface Pair {
@@ -20,6 +25,9 @@ export namespace PriceFeed {
      * @param server rpc node url
      */
     export async function GetPrice(asset: AssetType, oracleMap: OracleMap, server: string): Promise<bigInt.BigInteger> {
+        if (Object.prototype.hasOwnProperty.call(alias, asset)) {
+            asset = alias[asset]
+        }
         const packedKey = TezosMessageUtils.encodeBigMapKey(
             Buffer.from(TezosMessageUtils.writePackedData(asset + "-USD", "string"), "hex")
         );

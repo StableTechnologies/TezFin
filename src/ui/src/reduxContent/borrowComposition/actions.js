@@ -41,13 +41,11 @@ export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, get
         borrowLimit = totalCollateral - borrowing;
     }
 
-    const limitBalance = borrowLimit - borrowing;
     borrowComposition = {
         assets,
         borrowing,
         borrowLimit,
-        borrowUtilization,
-        limitBalance
+        borrowUtilization
     };
 
     dispatch({ type: GET_BORROW_COMPOSITION_DATA, payload: borrowComposition });

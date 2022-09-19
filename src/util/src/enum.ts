@@ -8,7 +8,9 @@ export enum AssetType {
     FA2 = "FA2",
     ETH = "ETH",
     USD = "USD",
-    BTC = "BTC"
+    BTC = "BTC",
+    WTZ = "WTZ",
+    OXTZ = "OXTZ"
 }
 
 export enum TokenStandard {

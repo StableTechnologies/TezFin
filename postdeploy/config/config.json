@@ -30,7 +30,7 @@
         "amount": "22841330521",
         "activation_code": "77c3e768abfdb7e389f7ccd890c091ba42b84a88"
     },
-    "keystore1":{
+    "keystore1": {
         "pkh": "tz1ZDm7WEgVLtbwSbbV4zoj2wofKzBy6WNLL",
         "mnemonic": [
             "voice",
@@ -91,23 +91,31 @@
     "tokenMint": [
         "ETH",
         "BTC",
-        "USD"
+        "USD",
+        "OXTZ",
+        "WTZ"
     ],
     "mint": [
         "ETH",
         "BTC",
-        "USD"
+        "USD",
+        "OXTZ",
+        "WTZ"
     ],
     "mintAmount": 15000,
     "mintAmounts": {
-        "ETH":100,
-        "BTC":100,
-        "USD":30000
+        "ETH": 100,
+        "BTC": 100,
+        "USD": 20000,
+        "OXTZ": 5000,
+        "WTZ": 5000
     },
     "redeem": [
         "ETH",
         "BTC",
-        "USD"
+        "USD",
+        "OXTZ",
+        "WTZ"
     ],
     "redeemAmount": 20,
     "borrow": [
@@ -122,7 +130,9 @@
         "ETH",
         "BTC",
         "USD",
-        "XTZ"
+        "XTZ",
+        "OXTZ",
+        "WTZ"
     ],
     "exitMarket": [
         "ETH"
@@ -143,6 +153,14 @@
         {
             "name": "XTZ",
             "priceExp": 12
+        },
+        {
+            "name": "OXTZ",
+            "priceExp": 12
+        },
+        {
+            "name": "WXTZ",
+            "priceExp": 12
         }
     ],
     "disableMarket": [],
@@ -150,7 +168,9 @@
         "ETH",
         "BTC",
         "USD",
-        "XTZ"
+        "XTZ",
+        "OXTZ",
+        "WTZ"
     ],
     "setPrices": {
         "assets": [],
