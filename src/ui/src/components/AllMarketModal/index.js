@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { marketAction } from '../../reduxContent/market/actions';
@@ -27,7 +28,8 @@ const AllMarketModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
     const { server } = useSelector((state) => state.nodes.tezosNode);
-    const { borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
 
     const publicKeyHash = account.address;
 
@@ -36,7 +38,7 @@ const AllMarketModal = (props) => {
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
-    const [maxAmount, setMaxAmount] = useState('');
+    const [useMaxAmount, setUseMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [opGroup, setOpGroup] = useState('');
@@ -46,11 +48,12 @@ const AllMarketModal = (props) => {
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
-    const [currrentTab, setCurrrentTab] = useState('');
-    const [limit, setLimit] = useState('');
+    const [currentTab, setCurrentTab] = useState('');
+    const [pendingLimit, setPendingLimit] = useState('');
+    const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useSupplyErrorText(tokenValue, limit);
-    const buttonTwo = useBorrowErrorText(tokenValue, limit, tokenDetails);
+    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
+    const buttonTwo = useBorrowErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -73,7 +76,7 @@ const AllMarketModal = (props) => {
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
-    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
+    useEffect(() => setAmount(undecimalify(useMaxAmount, decimals[tokenDetails.title])), [useMaxAmount]);
 
     useEffect(() => {
         if (opGroup) {
@@ -136,15 +139,26 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
         setAmount('');
-        setMaxAmount('');
+        setUseMaxAmount('');
     }, [close]);
 
     useEffect(() => {
-        marketsMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        marketsMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
+    }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
+
+    useEffect(() => {
+        if ((currentTab === 'two') && (tokenValue > 0)) {
+            const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+            const pendingBorrowing = borrowing + tokenValueUsd;
+            const pendingBorrowLimit = totalCollateral - pendingBorrowing;
+            setPendingLimit(pendingBorrowLimit);
+            setPendingLimitUsed(new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100));
+        }
         return () => {
-            setLimit('');
+            setPendingLimit('');
+            setPendingLimitUsed('');
         };
-    }, [currrentTab, tokenDetails, tokenValue]);
+    }, [tokenValue, currentTab]);
 
     return (
         <>
@@ -155,8 +169,6 @@ const AllMarketModal = (props) => {
             <DashboardModal
                 APYText={`${tokenDetails.title} Variable APY Rate`}
                 APYTextTwo="Borrow APY"
-                Limit="Borrow Limit"
-                LimitUsed="Borrow Limit Used"
                 CurrentStateText= "Currently Supplying"
                 CurrentStateTextTwo= "Currently Borrowing"
                 open={open}
@@ -166,8 +178,8 @@ const AllMarketModal = (props) => {
                 handleClickTabTwo={borrowToken}
                 labelOne="Supply"
                 labelTwo="Borrow"
-                buttonOne={buttonOne.text}
-                buttonTwo={buttonTwo.text}
+                buttonOne={publicKeyHash ? buttonOne.text : 'Supply'}
+                buttonTwo={publicKeyHash ? buttonTwo.text : 'Borrow'}
                 btnSub={classes.btnSub}
                 btnSubTwo={classes.btnSubTwo}
                 inkBarStyle={classes.inkBarStyle}
@@ -176,12 +188,13 @@ const AllMarketModal = (props) => {
                 visibility={true}
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
-                inputBtnTextTwo = "90% Limit"
-                maxAction={(tabValue) => marketsMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
-                maxAmount= {maxAmount}
-                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
-                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
+                inputBtnTextTwo = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
+                useMaxAmount= {useMaxAmount}
+                errorText={publicKeyHash && ((currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText)}
+                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                pendingLimit={(currentTab === 'two') ? pendingLimit : false}
+                pendingLimitUsed={(currentTab === 'two') ? pendingLimitUsed : false}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
             />
         </>
     );

@@ -1,6 +1,3 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
 // eslint-disable-next-line no-use-before-define
 import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material';
@@ -9,33 +6,33 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import WarningIcon from '@mui/icons-material/Warning';
-// eslint-disable-next-line object-curly-newline
+import Box from '@mui/material/Box';
+
+import WarningIcon from '../../assets/warning.svg';
 
 import { useStyles } from './style';
 
 const DisclamerModal = (props) => {
     const classes = useStyles();
     const { close } = props;
-    const title = 'Please Use Caution';
-
+    const title = 'Please Exercise Caution';
 
     const para1 = `While the initial creators of the TezFin (Tezos Finance;
-        tezos.finance) protocol have made reasonable 
-        efforts to attempt to ensure the security of the 
+        tezos.finance) protocol have made reasonable
+        efforts to attempt to ensure the security of the
         contracts and platform, including modeling much of
-        the codebase from existing well-audited projects 
+        the codebase from existing well-audited projects
         from other blockchains, and by soliciting review from
-        friends, nothing approaching the rigor of a formal 
-	audit has been conducted at this time`;
-        
-    const para2  = `We STRONGLY urge caution to anyone who chooses 
-        to engage with these contracts and this platform. If 
+        friends, nothing approaching the rigor of a formal
+        audit has been conducted at this time`;
+
+    const para2 = `We STRONGLY urge caution to anyone who chooses
+        to engage with these contracts and this platform. If
         you do choose to engage with these contracts and
         this platform, we strongly urge you to only use small
-	amounts of assets that you are comfortable losing.`;
+        amounts of assets that you are comfortable losing.`;
 
-     const buttonLabel = 'I understand the risks';
+    const buttonLabel = 'I understand the risks';
 
     const [openDisclaimerModal, setDisclaimerModal] = useState(true);
 
@@ -46,26 +43,13 @@ const DisclamerModal = (props) => {
                 onClose={close}
                 className={classes.root}
             >
-                <DialogTitle>
-                    <div
-                        style={{
-                            width: '15%',
-                            position: 'relative',
-                            top: '3px',
-                            float: 'left'
-                        }}
-                    >
-                        <WarningIcon color="warning" />
-                    </div>
-                    <div
-                        style={{
-                            width: '85%',
-                            position: 'relative',
-                            float: 'left'
-                        }}
-                    >
-                            {title}
-                    </div>
+                <DialogTitle className={classes.headerCon}>
+                    <Box className={classes.warningCon}>
+                        <img src={WarningIcon} alt='warning-icon' className={classes.warningIcon} />
+                    </Box>
+                    <Typography className={classes.title}>
+                        {title}
+                    </Typography>
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText> {para1} </DialogContentText>

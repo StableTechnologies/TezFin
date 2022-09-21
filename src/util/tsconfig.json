@@ -10,12 +10,13 @@
     "noImplicitAny": false,
     "baseUrl": "src",
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
   },
   "exclude": [
     "node_modules"
   ],
   "include": [
-    "./src/*.ts"
+    "./src/**/*.ts"
   ]
 }

@@ -308,6 +308,19 @@ export const useStyles = makeStyles({
         fontWeight: '400',
         fontSize: '1.25rem',
         paddingLeft: '1rem'
+    },
+    networkType: {
+        color: '#000',
+        opacity: '0.87',
+        fontWeight: '400',
+        fontSize: '1rem',
+        lineHeight: '30px',
+        padding: '1.25rem 0 1rem',
+        textAlign: 'center',
+        '@media(max-width: 501px)': {
+            fontSize: '0.625rem',
+            paddingBottom: '0.5rem'
+        }
     }
 });
 
@@ -320,10 +333,7 @@ export const classes1 = {
 export const HeaderCon = styled('div')(() => ({
     [`&.${classes1.root}`]: {
         backgroundColor: '#F9FAFC',
-        paddingBottom: '3.0625rem',
-        '@media(min-width: 1024px)': {
-            height: '308.34px'
-        }
+        paddingBottom: '3.0625rem'
     }
 }));
 export const Title = styled('p')(() => ({
