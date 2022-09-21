@@ -8,29 +8,35 @@ export const useStyles = makeStyles({
             minHeight: 'auto',
             textAlign: 'left',
             borderRadius: '0',
-	    background: '#FFFFFF',
+            background: '#FFFFFF',
             color: '#000'
         },
         '& .MuiDialogTitle-root': {
-	    fontFamily: 'Poppins',
-            fontStyle: 'normal', 
+            justifyContent: 'center',
+            fontFamily: 'Poppins',
+            fontStyle: 'normal',
             fontWeight: '700',
             fontSize: '20px',
             lineHeight: '30px',
             color: '#000',
-            padding: '0.925rem 6.0rem 0'
+            padding: '0.925rem 4rem 0'
         },
         '& .MuiDialogContent-root': {
-            padding: '10 2.5rem 2.5rem',
+            padding: '10 2.5rem 2.5rem'
         },
         '& .MuiDialogContentText-root': {
-	    fontFamily: 'Poppins',
-            fontStyle: 'normal', 
+            fontFamily: 'Poppins',
+            fontStyle: 'normal',
             fontWeight: '400',
             fontSize: '16px',
             lineHeight: '24px',
+            textAlign: 'justify',
             color: '#000',
-            padding: '1.35rem 0rem 0'
+            opacity: '0.87',
+            padding: '1.35rem 0rem 0',
+            '@media(max-width: 501px)': {
+                fontSize: '0.875rem'
+            }
         },
         '& .MuiDialogActions-root': {
             padding: '2.75rem 2.875rem',
@@ -50,7 +56,7 @@ export const useStyles = makeStyles({
         },
         '& .MuiButton-text': {
             textTransform: 'none'
-        },
+        }
     },
     btnMain: {
         background: '#39E4B8',
@@ -66,7 +72,36 @@ export const useStyles = makeStyles({
         lineHeight: '1.875rem',
         textTransform: 'unset',
         '@media(max-width: 501px)': {
-            width: '100%'
+            width: '100%',
+            fontSize: '1rem'
+        }
+    },
+    headerCon: {
+        display: 'flex',
+        '@media(max-width: 501px)': {
+            padding: '0.925rem 2rem !important'
+        },
+        '@media(max-width: 320px)': {
+            padding: '0.925rem .5rem !important'
+        }
+    },
+    title: {
+        fontSize: '1.5rem',
+        color: '#000',
+        opacity: '0.87',
+        '@media(max-width: 501px)': {
+            fontSize: '1rem'
+        }
+    },
+    warningCon: {
+        marginRight: '1rem'
+    },
+    warningIcon: {
+        width: '2rem',
+        height: '2rem',
+        '@media(max-width: 501px)': {
+            width: '1.25rem',
+            height: '1.25rem'
         }
     }
 });

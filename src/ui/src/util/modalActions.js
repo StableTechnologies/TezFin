@@ -29,7 +29,7 @@ export const supplyTokenAction = async (tokenDetails, amount, close, setTokenTex
 /**
  * This function is used for redeeming tokens for the underlying asset..
  * @param  tokenDetails underlying asset.
- * @param  amount amount to be supplied.
+ * @param  amount amount to be redeemed.
  * @param  close close Modal.
  * @param  setTokenText set text for confirmation modal.
  * @param  handleOpenInitialize open initial operation modal.
@@ -55,7 +55,7 @@ export const withdrawTokenAction = async (tokenDetails, amount, close, setTokenT
 /**
  * This function is used for borrowing tokens for the underlying asset..
  **@param  tokenDetails underlying asset.
- * @param  amount amount to be supplied.
+ * @param  amount amount to be borrowed.
  * @param  close close Modal.
  * @param  setTokenText set text for confirmation modal.
  * @param  handleOpenInitialize open initial operation modal.
@@ -81,7 +81,7 @@ export const borrowTokenAction = async (tokenDetails, amount, close, setTokenTex
 /**
  * This function is used for repaying tokens for the underlying asset.
  * @param  tokenDetails underlying asset.
- * @param  amount amount to be supplied.
+ * @param  amount amount to be repaid.
  * @param  close close Modal.
  * @param  setTokenText set text for confirmation modal.
  * @param  handleOpenInitialize open initial operation modal.

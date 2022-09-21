@@ -1,11 +1,15 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
+
 import { useDispatch, useSelector } from 'react-redux';
 
 import { marketAction } from '../../reduxContent/market/actions';
 
-import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
+import {
+    confirmTransaction, undecimalify, verifyTransaction
+} from '../../util';
 import { borrowingMaxAction } from '../../util/maxAction';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useBorrowErrorText, useRepayErrorText } from '../../util/modalHooks';
@@ -26,7 +30,9 @@ const BorrowModal = (props) => {
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
     const { server } = useSelector((state) => state.nodes.tezosNode);
-    const { borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
+
     const publicKeyHash = account.address;
 
     const [openInitializeModal, setInitializeModal] = useState(false);
@@ -34,7 +40,7 @@ const BorrowModal = (props) => {
     const [openSuccessModal, setSuccessModal] = useState(false);
     const [openErrorModal, setErrorModal] = useState(false);
     const [amount, setAmount] = useState('');
-    const [maxAmount, setMaxAmount] = useState('');
+    const [useMaxAmount, setUseMaxAmount] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [response, setResponse] = useState('');
     const [opGroup, setOpGroup] = useState('');
@@ -44,11 +50,12 @@ const BorrowModal = (props) => {
     const [evaluationError, setEvaluationError] = useState(false);
     const [errType, setErrType] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
-    const [currrentTab, setCurrrentTab] = useState('');
-    const [limit, setLimit] = useState('');
+    const [currentTab, setCurrentTab] = useState('');
+    const [pendingLimit, setPendingLimit] = useState('');
+    const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useBorrowErrorText(tokenValue, limit, tokenDetails);
-    const buttonTwo = useRepayErrorText(tokenValue, limit);
+    const buttonOne = useBorrowErrorText(tokenValue, useMaxAmount, tokenDetails);
+    const buttonTwo = useRepayErrorText(tokenValue, useMaxAmount);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
@@ -63,15 +70,24 @@ const BorrowModal = (props) => {
         setEvaluationError(error);
     };
 
+    console.log('acc', account.underlyingBalances[tokenDetails.assetType].value.toString());
     const repayBorrowToken = async () => {
-        // eslint-disable-next-line no-shadow
-        const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-        setOpGroup(opGroup);
-        setEvaluationError(error);
+        if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
+            // sending the contract total wallet underlyingBalance
+            // eslint-disable-next-line no-shadow
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, account.underlyingBalances[tokenDetails.assetType].value.toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+        } else {
+            // eslint-disable-next-line no-shadow
+            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+        }
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
-    useEffect(() => setAmount(undecimalify(maxAmount, decimals[tokenDetails.title])), [maxAmount]);
+    useEffect(() => setAmount(undecimalify(useMaxAmount, decimals[tokenDetails.title])), [useMaxAmount]);
 
     useEffect(() => {
         if (opGroup) {
@@ -134,15 +150,33 @@ const BorrowModal = (props) => {
 
     useEffect(() => {
         setAmount('');
-        setMaxAmount('');
+        setUseMaxAmount('');
     }, [close]);
 
     useEffect(() => {
-        borrowingMaxAction(currrentTab, tokenDetails, borrowLimit, setLimit);
+        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
+    }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
+
+    useEffect(() => {
+        const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+        let pendingBorrowing = 0;
+        if (tokenValue > 0) {
+            if (currentTab === 'one') {
+                pendingBorrowing = borrowing + tokenValueUsd;
+            }
+            if (currentTab === 'two') {
+                pendingBorrowing = borrowing - tokenValueUsd;
+            }
+            const pendingBorrowLimit = totalCollateral - pendingBorrowing;
+            setPendingLimit(pendingBorrowLimit);
+            setPendingLimitUsed(new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100));
+        }
+
         return () => {
-            setLimit('');
+            setPendingLimit('');
+            setPendingLimitUsed('');
         };
-    }, [currrentTab, tokenDetails]);
+    }, [tokenValue, currentTab]);
 
     return (
         <>
@@ -152,8 +186,6 @@ const BorrowModal = (props) => {
             <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} errType={errType} />
             <DashboardModal
                 APYText="Borrow APY"
-                Limit="Borrow Limit"
-                LimitUsed="Borrow Limit Used"
                 CurrentStateText="Currently Borrowing"
                 open={open}
                 close={close}
@@ -168,13 +200,14 @@ const BorrowModal = (props) => {
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
                 setAmount={(e) => { setAmount(e); }}
-                inputBtnTextOne = "90% Limit"
+                inputBtnTextOne = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
                 inputBtnTextTwo = "Use Max"
-                maxAction={(tabValue) => borrowingMaxAction(tabValue, tokenDetails, borrowLimit, setMaxAmount)}
-                maxAmount= {maxAmount}
-                errorText={(currrentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={(currrentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
-                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrrentTab(tabValue); }}
+                useMaxAmount= {useMaxAmount}
+                errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
+                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                pendingLimit={pendingLimit}
+                pendingLimitUsed={pendingLimitUsed}
+                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
             />
         </>
     );

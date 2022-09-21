@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-use-before-define
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
@@ -16,6 +17,8 @@ const Composition = (props) => {
     const {
         title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor, supplyBar
     } = props;
+
+    const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
 
     return (
         <Grid item xs={12} md={6} className={gridClass}>
@@ -36,8 +39,8 @@ const Composition = (props) => {
                             <Typography className={classes.statsTitle}> {dataTitle} </Typography>
                             <Typography className={classes.statsValue}>
                                 ${(
-                                    ((data.supplying > 0) && nFormatter(data.supplying, 2))
-                                    || ((data.borrowing > 0) && nFormatter(data.borrowing, 2))
+                                    ((data.supplying > 0) && nFormatter(data.supplying))
+                                    || ((data.borrowing > 0) && nFormatter(data.borrowing))
                                 )
                                 || '0.00'
                                 }
@@ -52,8 +55,9 @@ const Composition = (props) => {
                             <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                             <Typography className={classes.statsValue}>
                               ${(
-                                    ((data.collateralized > 0) && nFormatter(data.collateralized, 2))
-                                    || ((data.borrowLimit > 0) && nFormatter(data.borrowLimit, 2))
+                                    ((data.collateralized > 0) && nFormatter(data.collateralized))
+                                    // displaying borrow limit as the total collateral value without deducting value borrowed
+                                    || ((totalCollateral > 0) && nFormatter(totalCollateral))
                                 )
                                 || '0.00'
                                 }

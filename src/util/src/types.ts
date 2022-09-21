@@ -1,4 +1,4 @@
-import { AssetType, TokenStandard } from "enum";
+import { AssetType, TokenStandard } from "./enum";
 
 import { FToken } from './FToken';
 import { InterestRateModel } from "./contracts/InterestRateModel";
@@ -32,8 +32,8 @@ export interface BorrowComposition {
     * @param
     */
 export interface SupplyMarket {
-    rate: number;
-    balanceUnderlying: bigInt.BigInteger;
+    rate: bigInt.BigNumber;
+    balanceUnderlying: BigNumber;
     balanceUsd: bigInt.BigInteger;
     collateral: boolean;
 }
@@ -44,7 +44,7 @@ export interface SupplyMarket {
     * @param
     */
 export interface BorrowMarket {
-    rate: number;
+    rate: bigInt.BigInteger;
     balanceUnderlying: bigInt.BigInteger;
     balanceUsd: bigInt.BigInteger;
     liquidityUnderlying: bigInt.BigInteger;
@@ -59,7 +59,7 @@ export interface BorrowMarket {
     * @param borrowLimitUsed Percentage of account's borrow limit currently used
     */
 export interface SupplyMarketModal {
-    rate?: number;
+    rate?: bigInt.BigInteger;
     borrowLimitUsd: bigInt.BigInteger;
     borrowLimitUsed: number
 }
@@ -72,7 +72,7 @@ export interface SupplyMarketModal {
     * @param borrowLimitUsed Percentage of account's borrow limit currently used
     */
 export interface BorrowMarketModal {
-    rate: number;
+    rate: bigInt.BigInteger;
     borrowBalanceUsd: bigInt.BigInteger;
     borrowLimitUsed: number;
     borrowBalance: bigInt.BigInteger;
@@ -146,7 +146,7 @@ export interface UnderlyingAssetMetadata {
 export interface MarketData {
     numParticipants: number;
     totalAmount: bigInt.BigInteger;
-    rate: number;
+    rate: bigInt.BigInteger;
 }
 
 /*
@@ -195,7 +195,7 @@ export type MarketMap = { [assetType: string]: Market }
     */
 export interface Account {
     address: string;
-    underlyingBalances: { [asset: string]: bigInt.BigInteger };
+    underlyingBalances: { [asset: string]: BigNumber };
     marketBalances: FToken.BalanceMap;
     totalSupplyingUsd: bigInt.BigInteger;
     totalCollateralUsd: bigInt.BigInteger;

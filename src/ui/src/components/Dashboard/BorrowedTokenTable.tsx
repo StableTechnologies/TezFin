@@ -1,8 +1,11 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import Table from '@mui/material/Table';
@@ -14,12 +17,13 @@ import TableRow from '@mui/material/TableRow';
 import { Typography } from '@mui/material';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';
+import { decimalify, formatTokenData, nFormatter, roundValue, truncateNum } from '../../util';
 
 import TableSkeleton from '../Skeleton';
 import BorrowModal from '../BorrowModal';
 
 import { useStyles } from './style';
+import LightTooltip from '../Tooltip/LightTooltip';
 
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
@@ -27,10 +31,18 @@ const BorrowedTokenTable = (props) => {
 
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
+    const { totalCollateral } = useSelector((state: any) => state.supplyComposition.supplyComposition);
 
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const checkLimitUsed = (data) => {
+        const val = new BigNumber(
+            decimalify((data.balanceUnderlying * data.usdPrice), decimals[data.title], decimals[data.title])
+        ).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100).toNumber();
+        return (val > 0.01) ? truncateNum(val) : '<0.01';
+    };
 
     const closeModal = () => {
         setMktModal(false);
@@ -94,18 +106,35 @@ const BorrowedTokenTable = (props) => {
                                     {' '} {data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {truncateNum(data.rate)}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}>
+                                <span>
+                                    {(data.rate > 0)
+                                        // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
+                                        ? ((new BigNumber(data.rate).gt(new BigNumber(10000000000000000)))
+                                            ? roundValue(decimalify(data.rate, 18))
+                                            : '<0.01'
+                                        )
+                                        : '0'
+                                    }%
+                                </span>
+                            </TableCell>
                             <TableCell align="right">
-                                <span className={classes.clearFont}>
-                                    {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0'} {' '} {data.title}
-                                </span> <br/>
+                                <LightTooltip
+                                    title={`${decimalify((data.balanceUnderlying), decimals[data.title], decimals[data.title])} ${data.title}`}
+                                    placement="bottom"
+                                >
+                                    <span className={classes.clearFont}>
+                                        {truncateNum(decimalify(data.balanceUnderlying, decimals[data.title], decimals[data.title]))} {' '} {data.title}
+                                    </span>
+                                </LightTooltip>
+                                <br/>
                                 <span className={classes.faintFont}>
-                                    ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
+                                    ${nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title]))}
                                 </span>
                             </TableCell>
                             <TableCell align="right">
                                 <span className={classes.clearFont}>
-                                    ${(data.liquidityUnderlying > 0) ? nFormatter(decimalify((data.liquidityUnderlying * data.usdPrice).toString(), decimals[data.title])) : '0.00'}
+                                    {checkLimitUsed(data)}%
                                 </span>
                             </TableCell>
                         </TableRow>

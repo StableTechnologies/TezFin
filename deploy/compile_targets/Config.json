@@ -1,18 +1,18 @@
 {
     "CFA12_IRM": {
         "scale": 1000000000000000000,
-        "multiplierPerBlock": 180000000000,
-        "baseRatePerBlock": 840000000000
+        "multiplierPerBlock": 76000000000,
+        "baseRatePerBlock": 950642634
     },
     "CFA2_IRM": {
-        "scale": 100000000,
-        "multiplierPerBlock": 180000000000,
-        "baseRatePerBlock": 840000000000
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 76000000000,
+        "baseRatePerBlock": 950642634
     },
     "CXTZ_IRM": {
-        "scale": 1000000,
-        "multiplierPerBlock": 200000000000,
-        "baseRatePerBlock": 860000000000
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 76000000000,
+        "baseRatePerBlock": 950642634
     },
     "Governance": {
         "dependencies": [
@@ -20,8 +20,8 @@
         ]
     },
     "Comptroller": {
-        "closeFactorMantissa": 1000000000000000000,
-        "liquidationIncentiveMantissa": 0,
+        "closeFactorMantissa": 500000000000000000,
+        "liquidationIncentiveMantissa": 1050000000000000000,
         "dependencies": [
             "Governance",
             "PriceOracle"

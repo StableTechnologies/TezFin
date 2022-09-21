@@ -21,6 +21,7 @@ export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, get
     const assets = [];
     let borrowing = 0;
     let borrowUtilization = 0;
+    let borrowLimit = 0;
 
     if (Object.keys(borrowedMarkets).length > 0) {
         borrowedMarkets.map((x) => {
@@ -29,22 +30,22 @@ export const borrowCompositionAction = (borrowedMarkets) => async (dispatch, get
                 usdPrice: x.usdPrice,
                 balanceUnderlying: x.balanceUnderlying,
                 collateralFactor: new BigNumber(x.collateralFactor).toNumber(),
-                total: decimalify((x.balanceUnderlying * x.usdPrice), decimals[x.title], decimals[x.title])
+                total: new BigNumber(decimalify(x.balanceUnderlying, decimals[x.title], decimals[x.title])).multipliedBy(new BigNumber(x.usdPrice)).toNumber()
             });
             return borrowedMarkets;
         });
-
         borrowing = assets.reduce((a, b) => a + b.total, 0);
-        borrowUtilization = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
     }
-    const borrowLimit = totalCollateral - borrowing;
-    const limitBalance = borrowLimit - borrowing;
+    if (totalCollateral > 0) {
+        borrowUtilization = new BigNumber(borrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100);
+        borrowLimit = totalCollateral - borrowing;
+    }
+
     borrowComposition = {
         assets,
         borrowing,
         borrowLimit,
-        borrowUtilization,
-        limitBalance
+        borrowUtilization
     };
 
     dispatch({ type: GET_BORROW_COMPOSITION_DATA, payload: borrowComposition });

@@ -1,9 +1,12 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+
 import { decimals } from 'tezoslendingplatformjs';
+import BigNumber from 'bignumber.js';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -22,9 +25,10 @@ import DisableCollateralModal from '../DisableCollateralModal';
 import questionCircleIcon from '../../assets/questionCircle.svg';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, formatTokenData, nFormatter, truncateNum } from '../../util';
+import { decimalify, formatTokenData, nFormatter, roundValue, truncateNum } from '../../util';
 
 import { useStyles } from './style';
+import LightTooltip from '../Tooltip/LightTooltip';
 
 const SuppliedTokenTable = (props) => {
     const classes = useStyles();
@@ -127,11 +131,28 @@ const SuppliedTokenTable = (props) => {
                                     {' '} ꜰ{data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}> {truncateNum(data.rate)}% </TableCell>
+                            <TableCell align="right" className={classes.clearFont}>
+                                <span>
+                                    {(data.rate > 0)
+                                        // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
+                                        ? ((new BigNumber(data.rate).gt(new BigNumber(10000000000000000)))
+                                            ? roundValue(decimalify(data.rate, 18))
+                                            : '<0.01'
+                                        )
+                                        : '0'
+                                    }%
+                                </span>
+                            </TableCell>
                             <TableCell align="right">
-                                <span className={classes.clearFont}>
-                                    {(data.balanceUnderlying > 0) ? nFormatter(decimalify(data.balanceUnderlying.toString(), decimals[data.title], decimals[data.title])) : '0.00'} {data.title}
-                                </span> <br/>
+                                <LightTooltip
+                                    title={`${decimalify((data.balanceUnderlying), decimals[data.title], decimals[data.title])} ${data.title}`}
+                                    placement="bottom"
+                                >
+                                    <span className={classes.clearFont}>
+                                        {truncateNum(decimalify(data.balanceUnderlying, decimals[data.title], decimals[data.title]))} {' '} {data.title}
+                                    </span>
+                                </LightTooltip>
+                                <br/>
                                 <span className={classes.faintFont}>
                                     ${(data.balanceUnderlying > 0) ? nFormatter(decimalify((data.balanceUnderlying * data.usdPrice).toString(), decimals[data.title], decimals[data.title])) : '0.00'}
                                 </span>
