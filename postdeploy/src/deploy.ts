@@ -18,7 +18,7 @@ export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protoco
     for (const asset of config.tokenMint)
         ops.push(tokenMint(asset, keystore!, signer!, protocolAddresses!, address, config.mintAmounts[asset]))
     const counter = await TezosNodeReader.getCounterForAccount(config.tezosNode, keystore.publicKeyHash);
-    const opGroup = await TezosNodeWriter.prepareOperationGroup(config.tezosNode, keystore, counter, ops, true);
+    const opGroup = await TezosNodeWriter.prepareOperationGroup(config.tezosNode, keystore, counter, ops, false);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
     const result = await TezosNodeWriter.sendOperation(config.tezosNode, opGroup, signer);
     const tokenMintOpId = result["operationGroupID"]
