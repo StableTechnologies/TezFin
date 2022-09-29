@@ -16,6 +16,7 @@
     "conseiljs": "5.2.3",
     "conseiljs-softsigner": "^5.0.4",
     "csv": "^6.1.0",
+    "immer": "^9.0.15",
     "jsonpath-plus": "6.0.1",
     "loglevel": "1.7.1",
     "node-fetch": "2.6.1",
