@@ -4,6 +4,6 @@ set -e # Any subsequent(*) commands which fail will cause the shell script to ex
 # example:  ./deploy/shell_scripts/deploy_comptroller.sh ~/smartpy-cli/SmartPy.sh
 
 
-($1 compile ./deploy/compile_targets/CompileComptroller.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
+($1 compile ./deploy/compile_targets/CompileComptroller.py ./TezFinBuild/compiled_contracts --purge --protocol kathmandu --erase-comments --erase-var-annots --initial-cast)\
 && echo "CompileComptroller.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy.js
