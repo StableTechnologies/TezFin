@@ -120,6 +120,18 @@ function getBorrowRate(state: State, token: any): any {
 	 * multiplierperBlock for all ctokens at a constant exponential scale
 	 */
 
+	console.log(
+		"\n",
+		"before scaling humanReadable(borrowRate, ctokenExpScale)  : ",
+		humanReadable(borrowRate, ctokenExpScale),
+		"\n"
+	);
+	console.log(
+		"\n",
+		"before scaling humanReadable(borrowRate, irmExpScale)  : ",
+		humanReadable(borrowRate, irmExpScale),
+		"\n"
+	);
 	const mantissa = rescale(borrowRate, irmExpScale, ctokenExpScale);
 	return {
 		mantissa: mantissa,
@@ -244,8 +256,8 @@ const mrkt: State = state(marketTestData, protoAddr);
 
 /// delete
 
-function showBorrowRate(market, protocolAddresses, token) {
-	const _state : State = state(marketTestData, protoAddr);
+export function showBorrowRate(market, protocolAddresses, token) {
+	const _state: State = state(market, protocolAddresses);
 	const borrowRateParams = getBorrowRateParameters(_state, token);
 	console.log(borrowRateParams);
 	console.log(
