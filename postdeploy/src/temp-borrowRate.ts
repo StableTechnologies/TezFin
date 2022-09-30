@@ -182,9 +182,58 @@ function utilizationRate(
 		return bigInt.zero;
 	}
 	const utilizationRate = borrows.multiply(scale).divide(divisor);
+	console.log("\n", "utilizationRate : ", utilizationRate, "\n");
+	console.log(
+		"\n",
+		"humanReadable(utilizationRate,scale) : ",
+		humanReadable(utilizationRate, scale),
+		"\n"
+	);
+
 	return utilizationRate;
 }
 
+function readableBorrowRateParams(params: BorrowRateParameter) {
+	const {
+		borrows,
+		cash,
+		underlyingExpScale,
+		ctokenExpScale,
+		reserves,
+		irmExpScale,
+		multiplierPerBlock,
+		baseRatePerBlock,
+	} = params;
+	return {
+		borrows: new BigNumber(borrows.toString())
+			.div(ctokenExpScale.toString())
+			.toString(),
+		cash: new BigNumber(cash.toString())
+			.div(underlyingExpScale.toString())
+			.toString(),
+		underlyingExpScale: (
+			underlyingExpScale.toString().length - 1
+		).toString(),
+		ctokenExpScale: (
+			ctokenExpScale.toString().length - 1
+		).toString(),
+		reserves: new BigNumber(reserves.toString())
+			.div(ctokenExpScale.toString())
+			.toString(),
+		irmExpScale: (irmExpScale.toString().length - 1).toString(),
+		multiplierPerBlock: new BigNumber(multiplierPerBlock.toString())
+			.div(irmExpScale.toString())
+			.toString(),
+		baseRatePerBlock: new BigNumber(baseRatePerBlock.toString())
+			.div(irmExpScale.toString())
+			.toString(),
+	};
+}
+function humanReadable(mantissa, scale) {
+	return new BigNumber(mantissa.toString())
+		.div(scale.toString())
+		.toString();
+}
 const mrkt: State = state(marketTestData, protoAddr);
 /*
 		{
@@ -194,7 +243,24 @@ const mrkt: State = state(marketTestData, protoAddr);
 	*/
 
 /// delete
-const borrowRateParams = getBorrowRateParameters(mrkt, "ETH");
-console.log(borrowRateParams);
 
-console.log(getBorrowRate(state(marketTestData, protoAddr), "ETH"));
+function showBorrowRate(market, protocolAddresses, token) {
+	const _state : State = state(marketTestData, protoAddr);
+	const borrowRateParams = getBorrowRateParameters(_state, token);
+	console.log(borrowRateParams);
+	console.log(
+		"\n",
+		"readableBorrowRateParams(borrowRateParams) : ",
+		readableBorrowRateParams(borrowRateParams),
+		"\n"
+	);
+
+	console.log(
+		"\n",
+		"BorrowRate : \n",
+		getBorrowRate(_state, token),
+		"\n"
+	);
+}
+
+showBorrowRate(marketTestData, protoAddr, "ETH");
