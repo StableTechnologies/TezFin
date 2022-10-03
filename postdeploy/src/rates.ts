@@ -92,25 +92,8 @@ function getBorrowRateParameters(
 // block, etc from IRM storage, precision of the underlying token, precision of
 // the CToken, returns the prevailing borrow rate.
 function getBorrowRate(state: State, token: any): any {
-	const {
-		borrows,
-		cash,
-		underlyingExpScale,
-		ctokenExpScale,
-		reserves,
-		irmExpScale,
-		multiplierPerBlock,
-		baseRatePerBlock,
-	} = getBorrowRateParameters(state, token);
-	const borrowRate = _calcBorrowRate(
-		borrows,
-		rescale(cash, underlyingExpScale, ctokenExpScale),
-		reserves,
-		ctokenExpScale,
-		irmExpScale,
-		multiplierPerBlock,
-		baseRatePerBlock
-	);
+	const borrowParams = getBorrowRateParameters(state, token);
+	const borrowRate = _calcBorrowRate(borrowParams);
 	/*
 	console.log("\n", "irmExpScale : ", irmExpScale, "\n");
 	console.log("\n", "borrowRate : ", borrowRate, "\n");
@@ -122,48 +105,41 @@ function getBorrowRate(state: State, token: any): any {
 
 	console.log(
 		"\n",
-		"before scaling humanReadable(borrowRate, ctokenExpScale)  : ",
-		humanReadable(borrowRate, ctokenExpScale),
+		"before scaling readable(borrowRate, ctokenExpScale)  : ",
+		readable(borrowRate, borrowParams.ctokenExpScale),
 		"\n"
 	);
 	console.log(
 		"\n",
-		"before scaling humanReadable(borrowRate, irmExpScale)  : ",
-		humanReadable(borrowRate, irmExpScale),
+		"before scaling readable(borrowRate, irmExpScale)  : ",
+		readable(borrowRate, borrowParams.irmExpScale),
 		"\n"
 	);
-	const mantissa = rescale(borrowRate, irmExpScale, ctokenExpScale);
+	const mantissa = rescale(
+		borrowRate,
+		borrowParams.irmExpScale,
+		borrowParams.ctokenExpScale
+	);
 	return {
 		mantissa: mantissa,
-		humanReadable: new BigNumber(mantissa.toString())
-			.div(ctokenExpScale.toString())
-			.toString(),
+		readable: readable(mantissa, borrowParams.ctokenExpScale),
 		token: token,
 	};
 }
 
 function _calcBorrowRate(
-	borrows: bigInt.BigInteger,
-	cash: bigInt.BigInteger,
-	reserves: bigInt.BigInteger,
-	ctokenExpScale: bigInt.BigInteger,
-	irmExpScale: bigInt.BigInteger,
-	multiplierPerBlock: bigInt.BigInteger,
-	baseRatePerBlock: bigInt.BigInteger
+	borrowRateParams: BorrowRateParameter
 ): bigInt.BigInteger {
-	/*
-	console.log(
-		"\n",
+	const {
 		borrows,
 		cash,
-		reserves,
+		underlyingExpScale,
 		ctokenExpScale,
+		reserves,
 		irmExpScale,
 		multiplierPerBlock,
 		baseRatePerBlock,
-		"\n"
-	);
-	*/
+	} = borrowRateParams;
 	const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
 	/*
 	console.log("\n", "uRate : ", uRate, "\n");
@@ -197,8 +173,8 @@ function utilizationRate(
 	console.log("\n", "utilizationRate : ", utilizationRate, "\n");
 	console.log(
 		"\n",
-		"humanReadable(utilizationRate,scale) : ",
-		humanReadable(utilizationRate, scale),
+		"readable(utilizationRate,scale) : ",
+		readable(utilizationRate, scale),
 		"\n"
 	);
 
@@ -217,31 +193,21 @@ function readableBorrowRateParams(params: BorrowRateParameter) {
 		baseRatePerBlock,
 	} = params;
 	return {
-		borrows: new BigNumber(borrows.toString())
-			.div(ctokenExpScale.toString())
-			.toString(),
-		cash: new BigNumber(cash.toString())
-			.div(underlyingExpScale.toString())
-			.toString(),
+		borrows: readable(borrows, ctokenExpScale),
+		cash: readable(cash, underlyingExpScale),
 		underlyingExpScale: (
 			underlyingExpScale.toString().length - 1
 		).toString(),
 		ctokenExpScale: (
 			ctokenExpScale.toString().length - 1
 		).toString(),
-		reserves: new BigNumber(reserves.toString())
-			.div(ctokenExpScale.toString())
-			.toString(),
+		reserves: readable(reserves, ctokenExpScale),
 		irmExpScale: (irmExpScale.toString().length - 1).toString(),
-		multiplierPerBlock: new BigNumber(multiplierPerBlock.toString())
-			.div(irmExpScale.toString())
-			.toString(),
-		baseRatePerBlock: new BigNumber(baseRatePerBlock.toString())
-			.div(irmExpScale.toString())
-			.toString(),
+		multiplierPerBlock: readable(multiplierPerBlock, irmExpScale),
+		baseRatePerBlock: readable(baseRatePerBlock, irmExpScale),
 	};
 }
-function humanReadable(mantissa, scale) {
+function readable(mantissa, scale) {
 	return new BigNumber(mantissa.toString())
 		.div(scale.toString())
 		.toString();
@@ -341,9 +307,28 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 
 export function showAccrual(market, protocolAddresses, level, token) {
 	const _state: State = state(market, protocolAddresses);
-	const accrual = getAccrualParameters(_state, bigInt(level), token);
-	console.log("\n", "accrual : ", accrual, "\n");
+	const ctokenExpScale = getBorrowRateParameters(
+		_state,
+		token
+	).ctokenExpScale;
+	const accrualParams = getAccrualParameters(
+		_state,
+		bigInt(level),
+		token
+	);
+	console.log("\n", "accrual : ", accrualParams, "\n");
+	let totalBorrows = accrueInterestTotalBorrows(accrualParams);
+	return {
+		mantissa: totalBorrows,
+		readable: readable(totalBorrows, ctokenExpScale),
+	};
 }
 
 showBorrowRate(marketTestData, protoAddr, "ETH");
-showAccrual(marketTestData, protoAddr, 1140973, "ETH");
+//only params now then plug calc in
+console.log(
+	"\n",
+	'showAccrual(marketTestData, protoAddr, 1140974, "ETH")',
+	showAccrual(marketTestData, protoAddr, 1140974, "ETH"),
+	"\n"
+);
