@@ -275,4 +275,75 @@ export function showBorrowRate(market, protocolAddresses, token) {
 	);
 }
 
+interface AccrualParameters {
+	borrowRateMantissa: bigInt.BigInteger;
+	borrowRateMaxMantissa: bigInt.BigInteger;
+	underlyingExpScale: bigInt.BigInteger;
+	level: bigInt.BigInteger;
+	accrualBlockNumber: bigInt.BigInteger;
+	totalBorrows: bigInt.BigInteger;
+	token: AssetType;
+}
+
+function getAccrualParameters(
+	state: State,
+	level: bigInt.BigInteger,
+	token: string
+): AccrualParameters {
+	const borrowParams = getBorrowRateParameters(state, token);
+	const borrowRateMantissa = getBorrowRate(state, token).mantissa;
+	const markets = state.markets;
+	const tokenDetails =
+		state.protocolAddresses.underlying[token as AssetType];
+	const tokenScale = bigInt(10).pow(tokenDetails.decimals);
+
+	return {
+		borrowRateMantissa: borrowRateMantissa,
+		borrowRateMaxMantissa: bigInt(
+			markets[token].storage.borrow.borrowRateMaxMantissa
+		),
+		underlyingExpScale: borrowParams.underlyingExpScale,
+		level: bigInt(level),
+		accrualBlockNumber: bigInt(
+			markets[token].storage.accrualBlockNumber
+		),
+		totalBorrows: borrowParams.borrows,
+		token: token as AssetType,
+	};
+}
+
+function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
+	const {
+		borrowRateMantissa,
+		borrowRateMaxMantissa,
+		underlyingExpScale,
+		level,
+		accrualBlockNumber,
+		totalBorrows,
+	} = accrualParameters;
+	if (!borrowRateMantissa.lesserOrEquals(borrowRateMaxMantissa)) {
+		throw new Error("INVALID BORROW RATE");
+	}
+	const blockDelta = level.minus(accrualBlockNumber);
+
+	const simpleInterestFactor = mul_exp_nat(
+		makeExp(borrowRateMantissa),
+		blockDelta
+	);
+	const interestAccumulated = mulScalarTruncate(
+		simpleInterestFactor,
+		totalBorrows,
+		underlyingExpScale
+	);
+	const totalBorrowsAfterInterest = interestAccumulated.add(totalBorrows);
+	return totalBorrowsAfterInterest;
+}
+
+export function showAccrual(market, protocolAddresses, level, token) {
+	const _state: State = state(market, protocolAddresses);
+	const accrual = getAccrualParameters(_state, bigInt(level), token);
+	console.log("\n", "accrual : ", accrual, "\n");
+}
+
 showBorrowRate(marketTestData, protoAddr, "ETH");
+showAccrual(marketTestData, protoAddr, 1140973, "ETH");
