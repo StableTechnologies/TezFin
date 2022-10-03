@@ -6,7 +6,7 @@ import * as ComptrollerHelper from './comptroller';
 import { AssetType, TezosLendingPlatform, Comptroller, ProtocolAddresses } from "tezoslendingplatformjs";
 import * as config from '../config/config.json';
 
-import {showBorrowRate} from './rates'
+import {showBorrowRate, getAccrualBlockNumber, calculateTotalBorrowBalance, getTotalBorrows} from './rates'
 async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, signer1: Signer, keystore2: KeyStore, signer2: Signer, protocolAddresses: ProtocolAddresses, oracle: string) {
     try {
         // mint underlying tokens to both users 
@@ -52,16 +52,51 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 		console.log('\n','mrkt : ', mrkt,'\n'); 
 		showBorrowRate(mrkt, protocolAddresses, token);
 	}
+	
+        async function totalBorrowsCalculated(mrkt, token){
+		 
+		    //GET accrual number and total borrows from storage
+		    const accrualBlock = await accrualBlockNumber(token)
+		     const totalBorrows = await totalBorrowsInStorage(token)
+		    //caluculateTotal borrows passing last market and this accrual
+                    const calcBorrowBalance = calculateTotalBorrowBalance(mrkt, protocolAddresses, accrualBlock, token)
+		    console.log('\n','calcBorrowBalance : ', calcBorrowBalance,'\n'); 
+		    console.log('\n','totalBorrows(in storage) : ', totalBorrows,'\n'); 
+			
+	}
+        async function totalBorrowsInStorage(token){
+                let mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
+		return getTotalBorrows(mrkt, token)
+	}
+        async function accrualBlockNumber(token){
+                let mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
+		return getAccrualBlockNumber(mrkt, token)
+	}
+	
         // sleep for 1 min
         await new Promise(r => setTimeout(r, 60000));
         for (let i = 1; i <= 5; i++) {
             for (let j = 1; j <= 2; j++) {
                 // borrow USD for user B and C
-                await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore1!, signer1!);
+
+		// GET MARKET HERE
+                var mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
+		console.log('\n',' LAST accrualBlockNumber("USD") : ', await accrualBlockNumber("USD"),'\n'); 
+		await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore1!, signer1!);
+	         console.log('\n',' after borrow accrualBlockNumber("USD") : ', await accrualBlockNumber("USD"),'\n'); 
+
+		//GET accrual number and total borrows from storage
+		//caluculateTotal borrows passing last market and this accrual
+		//compare two borrows
+		await totalBorrowsCalculated(mrkt,"USD")
+
                 await printBorrowRate("USD");
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
                 await new Promise(r => setTimeout(r, 35000));
+
+                var mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore2!, signer2!);
+		await totalBorrowsCalculated(mrkt,"USD")
                 await printBorrowRate("USD");
 
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);

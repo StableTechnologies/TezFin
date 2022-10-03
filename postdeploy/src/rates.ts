@@ -305,7 +305,7 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 	return totalBorrowsAfterInterest;
 }
 
-export function showAccrual(market, protocolAddresses, level, token) {
+export function calculateTotalBorrowBalance(market, protocolAddresses, level, token) {
 	const _state: State = state(market, protocolAddresses);
 	const ctokenExpScale = getBorrowRateParameters(
 		_state,
@@ -328,7 +328,15 @@ showBorrowRate(marketTestData, protoAddr, "ETH");
 //only params now then plug calc in
 console.log(
 	"\n",
-	'showAccrual(marketTestData, protoAddr, 1140974, "ETH")',
-	showAccrual(marketTestData, protoAddr, 1140974, "ETH"),
+	'calculateTotalBorrowBalance(marketTestData, protoAddr, 1140974, "ETH")',
+	calculateTotalBorrowBalance(marketTestData, protoAddr, 1140974, "ETH"),
 	"\n"
 );
+export const getAccrualBlockNumber = (markets,token) => {
+		return	markets[token].storage.accrualBlockNumber
+}
+
+export const getTotalBorrows = (markets,token) => {
+return markets[token].storage.borrow.totalBorrows
+}
+console.log('\n','getAccrualBlockNumber(marketTestData, "ETH") : ', getAccrualBlockNumber(marketTestData, "ETH"),'\n'); 
