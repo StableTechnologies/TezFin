@@ -49,7 +49,6 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         await printStatus(comptroller, market,protocolAddresses,config.tezosNode,addresses);
         async function printBorrowRate(token){
                 let mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
-		console.log('\n','mrkt : ', mrkt,'\n'); 
 		showBorrowRate(mrkt, protocolAddresses, token);
 	}
 	

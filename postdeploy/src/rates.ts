@@ -147,7 +147,7 @@ function _calcBorrowRate(
 	 */
 	const borrowRate = uRate
 		.multiply(multiplierPerBlock)
-		.divide(ctokenExpScale)
+		.divide(irmExpScale)
 		.plus(baseRatePerBlock);
 	/*
 	console.log("\n", "borrowRate : ", borrowRate, "\n");
@@ -290,17 +290,20 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 	if (!borrowRateMantissa.lesserOrEquals(borrowRateMaxMantissa)) {
 		throw new Error("INVALID BORROW RATE");
 	}
+	console.log('\n',' accrueInterest ...borrowRateMantissa  : ', borrowRateMantissa ,'\n'); 
 	const blockDelta = level.minus(accrualBlockNumber);
-
+	console.log('\n','blockDelta : ', blockDelta,'\n'); 
 	const simpleInterestFactor = mul_exp_nat(
 		makeExp(borrowRateMantissa),
 		blockDelta
 	);
+	console.log('\n','simpleInterestFactor : ', simpleInterestFactor,'\n'); 
 	const interestAccumulated = mulScalarTruncate(
 		simpleInterestFactor,
 		totalBorrows,
 		underlyingExpScale
 	);
+	console.log('\n','interestAccumulated : ', interestAccumulated,'\n'); 
 	const totalBorrowsAfterInterest = interestAccumulated.add(totalBorrows);
 	return totalBorrowsAfterInterest;
 }
