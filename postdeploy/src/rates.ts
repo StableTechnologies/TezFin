@@ -37,8 +37,10 @@ function rescale(
 	newScale: bigInt.BigInteger
 ) {
 	const numerator = mantissa.multiply(newScale);
+	console.log('\n','numerator in rescale : ', numerator,'\n'); 
 	if (!mantissaScale.eq(0)) {
 		const rescaled = numerator.divide(mantissaScale);
+		console.log('\n','rescaled in rescale: ', rescaled,'\n'); 
 		return rescaled;
 	} else return bigInt.zero;
 }
@@ -120,6 +122,7 @@ function getBorrowRate(state: State, token: any): any {
 		borrowParams.irmExpScale,
 		borrowParams.ctokenExpScale
 	);
+	console.log('\n','mantissa in getBorrowRate : ', mantissa,'\n'); 
 	return {
 		mantissa: mantissa,
 		readable: readable(mantissa, borrowParams.ctokenExpScale),
@@ -141,18 +144,14 @@ function _calcBorrowRate(
 		baseRatePerBlock,
 	} = borrowRateParams;
 	const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
-	/*
 	console.log("\n", "uRate : ", uRate, "\n");
 
-	 */
 	const borrowRate = uRate
 		.multiply(multiplierPerBlock)
 		.divide(irmExpScale)
 		.plus(baseRatePerBlock);
-	/*
 	console.log("\n", "borrowRate : ", borrowRate, "\n");
 
-	 */
 	return borrowRate;
 }
 
@@ -257,14 +256,16 @@ function getAccrualParameters(
 	token: string
 ): AccrualParameters {
 	const borrowParams = getBorrowRateParameters(state, token);
-	const borrowRateMantissa = getBorrowRate(state, token).mantissa;
+	const borrowRate= getBorrowRate(state, token);
+	console.log('\n','borrowRate in accrualParams : ', borrowRate,'\n'); 
+	console.log('\n','borrowRate.mantissa : ', borrowRate.mantissa,'\n'); 
 	const markets = state.markets;
 	const tokenDetails =
 		state.protocolAddresses.underlying[token as AssetType];
 	const tokenScale = bigInt(10).pow(tokenDetails.decimals);
 
 	return {
-		borrowRateMantissa: borrowRateMantissa,
+		borrowRateMantissa: borrowRate.mantissa,
 		borrowRateMaxMantissa: bigInt(
 			markets[token].storage.borrow.borrowRateMaxMantissa
 		),
@@ -287,7 +288,7 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 		accrualBlockNumber,
 		totalBorrows,
 	} = accrualParameters;
-	if (!borrowRateMantissa.lesserOrEquals(borrowRateMaxMantissa)) {
+	if (borrowRateMantissa.greaterOrEquals(borrowRateMaxMantissa)) {
 		throw new Error("INVALID BORROW RATE");
 	}
 	console.log('\n',' accrueInterest ...borrowRateMantissa  : ', borrowRateMantissa ,'\n'); 
