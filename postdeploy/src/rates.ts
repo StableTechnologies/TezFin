@@ -36,11 +36,13 @@ function rescale(
 	mantissaScale: bigInt.BigInteger,
 	newScale: bigInt.BigInteger
 ) {
+	console.log('\n','mantissa : ', mantissa,'\n'); 
 	const numerator = mantissa.multiply(newScale);
 	console.log('\n','numerator in rescale : ', numerator,'\n'); 
 	if (!mantissaScale.eq(0)) {
 		const rescaled = numerator.divide(mantissaScale);
-		console.log('\n','rescaled in rescale: ', rescaled,'\n'); 
+		console.log('\n','mantissaScale : ', mantissaScale,'\n'); 
+		console.log('\n','rescaled numerator.divide(mantissaScale)in rescale: ', rescaled,'\n'); 
 		return rescaled;
 	} else return bigInt.zero;
 }
@@ -125,6 +127,7 @@ function getBorrowRate(state: State, token: any): any {
 	console.log('\n','mantissa in getBorrowRate : ', mantissa,'\n'); 
 	return {
 		mantissa: mantissa,
+		withoutRescale: borrowRate,
 		readable: readable(mantissa, borrowParams.ctokenExpScale),
 		token: token,
 	};
@@ -242,6 +245,7 @@ export function showBorrowRate(market, protocolAddresses, token) {
 
 interface AccrualParameters {
 	borrowRateMantissa: bigInt.BigInteger;
+	rateWithoutScaling: bigInt.BigInteger;
 	borrowRateMaxMantissa: bigInt.BigInteger;
 	underlyingExpScale: bigInt.BigInteger;
 	level: bigInt.BigInteger;
@@ -266,6 +270,7 @@ function getAccrualParameters(
 
 	return {
 		borrowRateMantissa: borrowRate.mantissa,
+		rateWithoutScaling: borrowRate.withoutRescale,
 		borrowRateMaxMantissa: bigInt(
 			markets[token].storage.borrow.borrowRateMaxMantissa
 		),
@@ -282,6 +287,7 @@ function getAccrualParameters(
 function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 	const {
 		borrowRateMantissa,
+		rateWithoutScaling,
 		borrowRateMaxMantissa,
 		underlyingExpScale,
 		level,
@@ -306,7 +312,20 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 	);
 	console.log('\n','interestAccumulated : ', interestAccumulated,'\n'); 
 	const totalBorrowsAfterInterest = interestAccumulated.add(totalBorrows);
-	return totalBorrowsAfterInterest;
+	console.log('\n',' accrueInterest ...borrowRateMantissa  : ', borrowRateMantissa ,'\n'); 
+	const _simpleInterestFactor = mul_exp_nat(
+		makeExp(rateWithoutScaling),
+		blockDelta
+	);
+	console.log('\n','simpleInterestFactor : ', simpleInterestFactor,'\n'); 
+	const _interestAccumulated = mulScalarTruncate(
+		_simpleInterestFactor,
+		totalBorrows,
+		underlyingExpScale
+	);
+	console.log('\n','interestAccumulated : ', interestAccumulated,'\n'); 
+	const _totalBorrowsAfterInterest = _interestAccumulated.add(totalBorrows);
+	return { scaled: totalBorrowsAfterInterest, notScaled: _totalBorrowsAfterInterest};
 }
 
 export function calculateTotalBorrowBalance(market, protocolAddresses, level, token) {
@@ -323,7 +342,8 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 	console.log("\n", "accrual : ", accrualParams, "\n");
 	let totalBorrows = accrueInterestTotalBorrows(accrualParams);
 	return {
-		mantissa: totalBorrows,
+		mantissa: totalBorrows.notScaled,
+		scaledMantissa: totalBorrows.scaled,
 		readable: readable(totalBorrows, ctokenExpScale),
 	};
 }
