@@ -256,7 +256,7 @@ function getAccrualParameters(
 	token: string
 ): AccrualParameters {
 	const borrowParams = getBorrowRateParameters(state, token);
-	const borrowRate= getBorrowRate(state, token);
+	const borrowRate = getBorrowRate(state, token);
 	console.log('\n','borrowRate in accrualParams : ', borrowRate,'\n'); 
 	console.log('\n','borrowRate.mantissa : ', borrowRate.mantissa,'\n'); 
 	const markets = state.markets;
@@ -306,26 +306,29 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 	const interestAccumulated = mulScalarTruncate(
 		simpleInterestFactor,
 		totalBorrows,
-		irmExpScale
+		underlyingExpScale
 	);
 	console.log('\n','interestAccumulated : ', interestAccumulated,'\n'); 
 	const totalBorrowsAfterInterest = interestAccumulated.add(totalBorrows);
 	
 	console.log('\n',' totalborrows  : ', totalBorrows ,'\n'); 
 	console.log('\n',' totalborrows After Interest  : ', totalBorrowsAfterInterest ,'\n'); 
-	console.log('\n',' accrueInterest ...borrowRateMantissa  : ', borrowRateMantissa ,'\n'); 
+
+	console.log('\n',' accrueInterest ...borrowRateMantissa  unscaled : ', rateWithoutScaling ,'\n'); 
 	const _simpleInterestFactor = mul_exp_nat(
 		makeExp(rateWithoutScaling),
 		blockDelta
 	);
-	console.log('\n','simpleInterestFactor : ', simpleInterestFactor,'\n'); 
+	console.log('\n','simpleInterestFactor without scale : ', _simpleInterestFactor,'\n'); 
 	const _interestAccumulated = mulScalarTruncate(
 		_simpleInterestFactor,
 		totalBorrows,
-		underlyingExpScale
+		irmExpScale
 	);
-	console.log('\n','interestAccumulated : ', interestAccumulated,'\n'); 
+	console.log('\n','interestAccumulated without scale : ', _interestAccumulated,'\n'); 
 	const _totalBorrowsAfterInterest = _interestAccumulated.add(totalBorrows);
+
+	console.log('\n',' totalborrows After Interest  : ', _totalBorrowsAfterInterest ,'\n'); 
 	return { scaled: totalBorrowsAfterInterest, notScaled: _totalBorrowsAfterInterest};
 }
 
@@ -342,15 +345,15 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 	);
 
 	const borrowDeltaMantissa = ctokenExpScale.multiply(borrowDelta);
-	accrualParams.totalBorrows = accrualParams.totalBorrows.add(borrowDeltaMantissa);
+	//accrualParams.totalBorrows = accrualParams.totalBorrows.add(borrowDeltaMantissa);
 	console.log("\n", "accrual : ", accrualParams, "\n");
 
 	let totalBorrows = accrueInterestTotalBorrows(accrualParams);
 	return {
-		mantissa: totalBorrows.notScaled,
-		scaledMantissa: totalBorrows.scaled,
-		readableNotScaled: readable(totalBorrows.notScaled, ctokenExpScale),
-		readableScaled: readable(totalBorrows.scaled, ctokenExpScale),
+		mantissa: totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa)),
+		scaledMantissa: totalBorrows.scaled.add(bigInt(borrowDeltaMantissa)),
+		readableNotScaled: readable(totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale),
+		readableScaled: readable(totalBorrows.scaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale),
 	};
 }
 
