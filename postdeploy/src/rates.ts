@@ -344,12 +344,12 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 	return {
 		mantissa: totalBorrows.notScaled,
 		scaledMantissa: totalBorrows.scaled,
-		readable: readable(totalBorrows, ctokenExpScale),
+		readableNotScaled: readable(totalBorrows.notScaled, ctokenExpScale),
+		readableScaled: readable(totalBorrows.scaled, ctokenExpScale),
 	};
 }
 
 showBorrowRate(marketTestData, protoAddr, "ETH");
-//only params now then plug calc in
 console.log(
 	"\n",
 	'calculateTotalBorrowBalance(marketTestData, protoAddr, 1140974, "ETH")',
