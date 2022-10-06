@@ -109,12 +109,6 @@ function getBorrowRate(state: State, token: any): any {
 
 	console.log(
 		"\n",
-		"before scaling readable(borrowRate, ctokenExpScale)  : ",
-		readable(borrowRate, borrowParams.ctokenExpScale),
-		"\n"
-	);
-	console.log(
-		"\n",
 		"before scaling readable(borrowRate, irmExpScale)  : ",
 		readable(borrowRate, borrowParams.irmExpScale),
 		"\n"
@@ -129,6 +123,7 @@ function getBorrowRate(state: State, token: any): any {
 		mantissa: mantissa,
 		withoutRescale: borrowRate,
 		readable: readable(mantissa, borrowParams.ctokenExpScale),
+		readableNonScaled: readable(borrowRate, borrowParams.ctokenExpScale),
 		token: token,
 	};
 }
@@ -315,6 +310,9 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 	);
 	console.log('\n','interestAccumulated : ', interestAccumulated,'\n'); 
 	const totalBorrowsAfterInterest = interestAccumulated.add(totalBorrows);
+	
+	console.log('\n',' totalborrows  : ', totalBorrows ,'\n'); 
+	console.log('\n',' totalborrows After Interest  : ', totalBorrowsAfterInterest ,'\n'); 
 	console.log('\n',' accrueInterest ...borrowRateMantissa  : ', borrowRateMantissa ,'\n'); 
 	const _simpleInterestFactor = mul_exp_nat(
 		makeExp(rateWithoutScaling),
@@ -337,19 +335,22 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 		_state,
 		token
 	).ctokenExpScale;
-	const accrualParams = getAccrualParameters(
+	var accrualParams = getAccrualParameters(
 		_state,
 		bigInt(level),
 		token
 	);
-	console.log("\n", "accrual : ", accrualParams, "\n");
+
 	const borrowDeltaMantissa = ctokenExpScale.multiply(borrowDelta);
+	accrualParams.totalBorrows = accrualParams.totalBorrows.add(borrowDeltaMantissa);
+	console.log("\n", "accrual : ", accrualParams, "\n");
+
 	let totalBorrows = accrueInterestTotalBorrows(accrualParams);
 	return {
-		mantissa: totalBorrows.notScaled.add(borrowDeltaMantissa),
-		scaledMantissa: totalBorrows.scaled.add(borrowDeltaMantissa),
-		readableNotScaled: readable(totalBorrows.notScaled.add(borrowDelta), ctokenExpScale),
-		readableScaled: readable(totalBorrows.scaled.add(borrowDelta), ctokenExpScale),
+		mantissa: totalBorrows.notScaled,
+		scaledMantissa: totalBorrows.scaled,
+		readableNotScaled: readable(totalBorrows.notScaled, ctokenExpScale),
+		readableScaled: readable(totalBorrows.scaled, ctokenExpScale),
 	};
 }
 
@@ -361,10 +362,18 @@ console.log(
 	"\n"
 );
 export const getAccrualBlockNumber = (markets,token) => {
+
+
 		return	markets[token].storage.accrualBlockNumber
 }
 
-export const getTotalBorrows = (markets,token) => {
-return markets[token].storage.borrow.totalBorrows
+export const getTotalBorrows = (markets, token, protocolAddresses) => {
+
+        const ctokenScale = Math.pow(10,protocolAddresses.underlying[token].decimals)
+	const totalBorrowMantissa =  markets[token].storage.borrow.totalBorrows;
+	return  {
+		 totalBorrowMantissa: totalBorrowMantissa,
+		 readable : readable(totalBorrowMantissa, ctokenScale) 
+}
 }
 console.log('\n','getAccrualBlockNumber(marketTestData, "ETH") : ', getAccrualBlockNumber(marketTestData, "ETH"),'\n'); 
