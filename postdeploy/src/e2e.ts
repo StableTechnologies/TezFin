@@ -52,13 +52,13 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 		showBorrowRate(mrkt, protocolAddresses, token);
 	}
 	
-        async function totalBorrowsCalculated(mrkt, token){
+        async function totalBorrowsCalculated(mrkt, token, borrowDelta){
 		 
 		    //GET accrual number and total borrows from storage
 		    const accrualBlock = await accrualBlockNumber(token)
 		     const totalBorrows = await totalBorrowsInStorage(token)
 		    //caluculateTotal borrows passing last market and this accrual
-                    const calcBorrowBalance = calculateTotalBorrowBalance(mrkt, protocolAddresses, accrualBlock, token)
+                    const calcBorrowBalance = calculateTotalBorrowBalance(mrkt, protocolAddresses, accrualBlock, token, borrowDelta)
 		    console.log('\n','calcBorrowBalance : ', calcBorrowBalance,'\n'); 
 		    console.log('\n','totalBorrows(in storage) : ', totalBorrows,'\n'); 
 			
@@ -87,7 +87,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 		//GET accrual number and total borrows from storage
 		//caluculateTotal borrows passing last market and this accrual
 		//compare two borrows
-		await totalBorrowsCalculated(mrkt,"USD")
+		await totalBorrowsCalculated(mrkt,"USD",500)
 
                 await printBorrowRate("USD");
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
@@ -95,7 +95,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 
                 var mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
                 await FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore2!, signer2!);
-		await totalBorrowsCalculated(mrkt,"USD")
+		await totalBorrowsCalculated(mrkt,"USD",500)
                 await printBorrowRate("USD");
 
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
