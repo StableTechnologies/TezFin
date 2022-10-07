@@ -360,15 +360,14 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 		const readableNotScaled = readable(totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale);
 		const readableScaled = readable(totalBorrows.scaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale);
 	const expected = mantissa;
-	const diff = mantissa.subtract(bigInt(currentTotalInStorage));
+	const deltaTotalBorrows = mantissa.subtract(bigInt(currentTotalInStorage));
 	// convert diff to irm scale
-	const rescaleDiff = rescale(diff, borrowRateParams.ctokenExpScale, borrowRateParams.irmExpScale);
-	const noBlocksDiff = rescaleDiff.divide(accrualParams.rateWithoutScaling)
+	const deltaAsBlocksOfAppliedInterest = deltaTotalBorrows.multiply(borrowRateParams.irmExpScale).divide(accrualParams.totalBorrows).divide(accrualParams.rateWithoutScaling);
 	return {
 		mantissa: mantissa,
 		readableNotScaled: readableNotScaled,
-		diffFromStroage : readable(diff,ctokenExpScale),
-		diffAsNumOfBlocksInterest: noBlocksDiff, 
+		diffFromStroage : readable(deltaTotalBorrows,ctokenExpScale),
+		diffAsNumOfBlocksInterest: deltaAsBlocksOfAppliedInterest, 
 		scaledMantissa: scaledMantissa,
 		readableScaled: readableScaled,
 
