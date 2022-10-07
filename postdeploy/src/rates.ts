@@ -369,7 +369,7 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 	console.log('/n deltaTotalBorrows' , deltaTotalBorrows);
 	const deltaAsBlocksOfAppliedInterest = deltaTotalBorrows.multiply(borrowRateParams.irmExpScale).divide(accrualParams.totalBorrows).divide(accrualParams.rateWithoutScaling);
 
-	const calcBrate = accrualParams.borrowRateMantissa;
+	const calcBrate = accrualParams.rateWithoutScaling;
 	const brateAppliedInStorage = calcBrate.subtract(deltaTotalBorrows.multiply(irmExpScale).divide(totalBorrowsBefore).divide(blockDelta.add(deltaAsBlocksOfAppliedInterest)));
 	const brateDIff = accrualParams.borrowRateMantissa.subtract(brateAppliedInStorage);
 	const readableBrateDiff = readable(brateDIff,irmExpScale)
