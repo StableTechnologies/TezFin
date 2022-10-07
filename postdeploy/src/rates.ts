@@ -404,7 +404,7 @@ export function calculateTotalBorrowBalance(
       .divide(totalBorrowsBefore)
       .divide(blockDelta.add(deltaAsBlocksOfAppliedInterest))
   );
-  const brateDIff = accrualParams.borrowRateMantissa.subtract(
+  const brateDIff = accrualParams.rateWithoutScaling.subtract(
     brateAppliedInStorage
   );
   const readableBrateDiff = readable(brateDIff, irmExpScale);
