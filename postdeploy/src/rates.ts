@@ -364,15 +364,17 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 	const irmExpScale = borrowRateParams.irmExpScale;
 	const totalBorrowsBefore = accrualParams.totalBorrows;
 	const blockDelta = accrualParams.accrualBlockNumber.subtract(accrualParams.level)
-	const calcBrate = accrualParams.borrowRateMantissa;
-	const brateAppliedInStorage = calcBrate.subtract(deltaTotalBorrows.multiply(irmExpScale).divide(totalBorrowsBefore).divide(blockDelta));
-	const brateDIff = accrualParams.borrowRateMantissa.subtract(brateAppliedInStorage);
-	const readableBrateDiff = readable(brateDIff,irmExpScale)
-	const readableBrateCalculated= readable(brateDIff,irmExpScale)
-	const readableBrateApplied = readable(brateDIff,irmExpScale)
+
 	// convert diff to irm scale
 	console.log('/n deltaTotalBorrows' , deltaTotalBorrows);
 	const deltaAsBlocksOfAppliedInterest = deltaTotalBorrows.multiply(borrowRateParams.irmExpScale).divide(accrualParams.totalBorrows).divide(accrualParams.rateWithoutScaling);
+
+	const calcBrate = accrualParams.borrowRateMantissa;
+	const brateAppliedInStorage = calcBrate.subtract(deltaTotalBorrows.multiply(irmExpScale).divide(totalBorrowsBefore).divide(blockDelta.add(deltaAsBlocksOfAppliedInterest)));
+	const brateDIff = accrualParams.borrowRateMantissa.subtract(brateAppliedInStorage);
+	const readableBrateDiff = readable(brateDIff,irmExpScale)
+	const readableBrateCalculated= readable(calcBrate,irmExpScale)
+	const readableBrateApplied = readable(brateAppliedInStorage,irmExpScale)
 	return {
 		mantissa: mantissa,
 		readableNotScaled: readableNotScaled,
