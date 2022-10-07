@@ -399,11 +399,10 @@ export function calculateTotalBorrowBalance(
 
   const calcBrate = accrualParams.rateWithoutScaling;
   const brateAppliedInStorageAccountingForBlocks = calcBrate
-    .multiply(blockDelta)
+    .multiply(blockDelta).divide(deltaAsBlocksOfAppliedInterest)
     .subtract(
-      deltaTotalBorrows.multiply(irmExpScale).divide(totalBorrowsBefore)
-    )
-    .divide(blockDelta.add(deltaAsBlocksOfAppliedInterest));
+	    deltaTotalBorrows.multiply(irmExpScale).divide(totalBorrowsBefore.multiply(blockDelta.add(deltaAsBlocksOfAppliedInterest)))
+    );
   const brateAppliedInStorage = calcBrate
     .multiply(blockDelta)
     .subtract(
