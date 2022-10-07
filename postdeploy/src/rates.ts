@@ -332,8 +332,13 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
 	return { scaled: totalBorrowsAfterInterest, notScaled: _totalBorrowsAfterInterest};
 }
 
-export function calculateTotalBorrowBalance(market, protocolAddresses, level, token, borrowDelta) {
+export function calculateTotalBorrowBalance(market, protocolAddresses, level, token, borrowDelta, currentTotalInStorage) {
 	const _state: State = state(market, protocolAddresses);
+
+	const borrowRateParams = getBorrowRateParameters(
+		_state,
+		token
+	);
 	const ctokenExpScale = getBorrowRateParameters(
 		_state,
 		token
@@ -349,14 +354,28 @@ export function calculateTotalBorrowBalance(market, protocolAddresses, level, to
 	console.log("\n", "accrual : ", accrualParams, "\n");
 
 	let totalBorrows = accrueInterestTotalBorrows(accrualParams);
+
+		const mantissa = totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa));
+		const scaledMantissa = totalBorrows.scaled.add(bigInt(borrowDeltaMantissa));
+		const readableNotScaled = readable(totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale);
+		const readableScaled = readable(totalBorrows.scaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale);
+	const expected = mantissa;
+	const diff = mantissa.subtract(bigInt(currentTotalInStorage));
+	// convert diff to irm scale
+	const rescaleDiff = rescale(diff, borrowRateParams.ctokenExpScale, borrowRateParams.irmExpScale);
+	const noBlocksDiff = rescaleDiff.divide(accrualParams.rateWithoutScaling)
 	return {
-		mantissa: totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa)),
-		scaledMantissa: totalBorrows.scaled.add(bigInt(borrowDeltaMantissa)),
-		readableNotScaled: readable(totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale),
-		readableScaled: readable(totalBorrows.scaled.add(bigInt(borrowDeltaMantissa)), ctokenExpScale),
+		mantissa: mantissa,
+		readableNotScaled: readableNotScaled,
+		diffFromStroage : readable(diff,ctokenExpScale),
+		diffAsNumOfBlocksInterest: noBlocksDiff, 
+		scaledMantissa: scaledMantissa,
+		readableScaled: readableScaled,
+
 	};
 }
 
+/*
 showBorrowRate(marketTestData, protoAddr, "ETH");
 console.log(
 	"\n",
@@ -364,6 +383,7 @@ console.log(
 	calculateTotalBorrowBalance(marketTestData, protoAddr, 1140974, "ETH",0),
 	"\n"
 );
+*/
 export const getAccrualBlockNumber = (markets,token) => {
 
 
@@ -379,4 +399,4 @@ export const getTotalBorrows = (markets, token, protocolAddresses) => {
 		 readable : readable(totalBorrowMantissa, ctokenScale) 
 }
 }
-console.log('\n','getAccrualBlockNumber(marketTestData, "ETH") : ', getAccrualBlockNumber(marketTestData, "ETH"),'\n'); 
+// console.log('\n','getAccrualBlockNumber(marketTestData, "ETH") : ', getAccrualBlockNumber(marketTestData, "ETH"),'\n'); 
