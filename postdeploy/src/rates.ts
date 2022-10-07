@@ -122,8 +122,8 @@ function getBorrowRate(state: State, token: any): any {
 	return {
 		mantissa: mantissa,
 		withoutRescale: borrowRate,
-		readable: readable(mantissa, borrowParams.ctokenExpScale),
-		readableNonScaled: readable(borrowRate, borrowParams.ctokenExpScale),
+		readable: readable(mantissa, borrowParams.irmExpScale),
+		readableNonScaled: readable(borrowRate, borrowParams.irmExpScale),
 		token: token,
 	};
 }
