@@ -1,7 +1,8 @@
 import { State, state } from "./state";
 import { marketTestData } from "./markets";
 import { protoAddr } from "./protoaddr";
-import { AssetType } from "tezoslendingplatformjs";
+import { AssetType, FToken, TezosLendingPlatform } from "tezoslendingplatformjs";
+
 import bigInt from "big-integer";
 import BigNumber from "bignumber.js";
 
@@ -31,27 +32,6 @@ function mulScalarTruncate(
   return truncate(mul_exp_nat(a, scalar), expScale);
 }
 
-function rescale(
-  mantissa: bigInt.BigInteger,
-  mantissaScale: bigInt.BigInteger,
-  newScale: bigInt.BigInteger
-) {
-  console.log("\n", "mantissa : ", mantissa, "\n");
-  const numerator = mantissa.multiply(newScale);
-  console.log("\n", "numerator in rescale : ", numerator, "\n");
-  if (!mantissaScale.eq(0)) {
-    const rescaled = numerator.divide(mantissaScale);
-    console.log("\n", "mantissaScale : ", mantissaScale, "\n");
-    console.log(
-      "\n",
-      "rescaled numerator.divide(mantissaScale)in rescale: ",
-      rescaled,
-      "\n"
-    );
-    return rescaled;
-  } else return bigInt.zero;
-}
-
 function mulScalarTruncateAdd(
   a: TExp,
   scalar: bigInt.BigInteger,
@@ -71,6 +51,13 @@ interface BorrowRateParameter {
   multiplierPerBlock: bigInt.BigInteger;
   baseRatePerBlock: bigInt.BigInteger;
   token: AssetType;
+}
+
+function getStorageAndIrm(state: State, token: string) {
+  return {
+    storage: state.markets[token].storage,
+    irm: state.markets[token].rateModel,
+  };
 }
 
 function getBorrowRateParameters(
@@ -99,86 +86,21 @@ function getBorrowRateParameters(
 // the CToken, returns the prevailing borrow rate.
 function getBorrowRate(state: State, token: any): any {
   const borrowParams = getBorrowRateParameters(state, token);
-  const borrowRate = _calcBorrowRate(borrowParams);
-  /*
-	console.log("\n", "irmExpScale : ", irmExpScale, "\n");
-	console.log("\n", "borrowRate : ", borrowRate, "\n");
-	*/
+  const storageAndIrm = getStorageAndIrm(state, token);
 
-  /* rescaling is applied since we are assuming to set the baseratePerBlock and
-   * multiplierperBlock for all ctokens at a constant exponential scale
-   */
+  const mantissa = FToken.getBorrowRate(
+    storageAndIrm.storage,
+    storageAndIrm.irm
+  );
 
-  console.log(
-    "\n",
-    "before scaling readable(borrowRate, irmExpScale)  : ",
-    readable(borrowRate, borrowParams.irmExpScale),
-    "\n"
-  );
-  const mantissa = rescale(
-    borrowRate,
-    borrowParams.irmExpScale,
-    borrowParams.ctokenExpScale
-  );
-  console.log("\n", "mantissa in getBorrowRate : ", mantissa, "\n");
   return {
     mantissa: mantissa,
-    withoutRescale: borrowRate,
     readable: readable(mantissa, borrowParams.irmExpScale),
-    readableNonScaled: readable(borrowRate, borrowParams.irmExpScale),
+    readableNonScaled: readable(mantissa, borrowParams.irmExpScale),
     token: token,
   };
 }
 
-function _calcBorrowRate(
-  borrowRateParams: BorrowRateParameter
-): bigInt.BigInteger {
-  const {
-    borrows,
-    cash,
-    underlyingExpScale,
-    ctokenExpScale,
-    reserves,
-    irmExpScale,
-    multiplierPerBlock,
-    baseRatePerBlock,
-  } = borrowRateParams;
-  const uRate = utilizationRate(borrows, cash, reserves, irmExpScale);
-  console.log("\n", "uRate : ", uRate, "\n");
-
-  const borrowRate = uRate
-    .multiply(multiplierPerBlock)
-    .divide(irmExpScale)
-    .plus(baseRatePerBlock);
-  console.log("\n", "borrowRate : ", borrowRate, "\n");
-
-  return borrowRate;
-}
-
-function utilizationRate(
-  borrows: bigInt.BigInteger,
-  cash: bigInt.BigInteger,
-  reserves: bigInt.BigInteger,
-  scale: bigInt.BigInteger
-): bigInt.BigInteger {
-  if (borrows.lesserOrEquals(0)) {
-    return bigInt.zero;
-  }
-  const divisor = cash.plus(borrows).minus(reserves);
-  if (divisor.eq(0)) {
-    return bigInt.zero;
-  }
-  const utilizationRate = borrows.multiply(scale).divide(divisor);
-  console.log("\n", "utilizationRate : ", utilizationRate, "\n");
-  console.log(
-    "\n",
-    "readable(utilizationRate,scale) : ",
-    readable(utilizationRate, scale),
-    "\n"
-  );
-
-  return utilizationRate;
-}
 
 function readableBorrowRateParams(params: BorrowRateParameter) {
   const {
@@ -206,14 +128,6 @@ function readable(mantissa, scale) {
   return new BigNumber(mantissa.toString()).div(scale.toString()).toString();
 }
 const mrkt: State = state(marketTestData, protoAddr);
-/*
-		{
-		markets: marketTestData,
-		protocolAddresses: protoAddr,
-	};
-	*/
-
-/// delete
 
 export function showBorrowRate(market, protocolAddresses, token) {
   const _state: State = state(market, protocolAddresses);
@@ -231,7 +145,6 @@ export function showBorrowRate(market, protocolAddresses, token) {
 
 interface AccrualParameters {
   borrowRateMantissa: bigInt.BigInteger;
-  rateWithoutScaling: bigInt.BigInteger;
   borrowRateMaxMantissa: bigInt.BigInteger;
   borrowIndex: bigInt.BigInteger;
   irmExpScale: bigInt.BigInteger;
@@ -249,21 +162,14 @@ function getAccrualParameters(
 ): AccrualParameters {
   const borrowParams = getBorrowRateParameters(state, token);
   const borrowRate = getBorrowRate(state, token);
-  console.log("\n", "borrowRate in accrualParams : ", borrowRate, "\n");
-  console.log("\n", "borrowRate.mantissa : ", borrowRate.mantissa, "\n");
   const markets = state.markets;
-  const tokenDetails = state.protocolAddresses.underlying[token as AssetType];
-  const tokenScale = bigInt(10).pow(tokenDetails.decimals);
 
   return {
     borrowRateMantissa: borrowRate.mantissa,
-    rateWithoutScaling: borrowRate.withoutRescale,
     borrowRateMaxMantissa: bigInt(
       markets[token].storage.borrow.borrowRateMaxMantissa
     ),
-    borrowIndex: bigInt(
-      markets[token].storage.borrow.borrowIndex
-    ),
+    borrowIndex: bigInt(markets[token].storage.borrow.borrowIndex),
     underlyingExpScale: borrowParams.underlyingExpScale,
     irmExpScale: borrowParams.irmExpScale,
     level: bigInt(level),
@@ -276,7 +182,6 @@ function getAccrualParameters(
 function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
   const {
     borrowRateMantissa,
-    rateWithoutScaling,
     borrowRateMaxMantissa,
     borrowIndex,
     underlyingExpScale,
@@ -288,97 +193,33 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
   if (borrowRateMantissa.greaterOrEquals(borrowRateMaxMantissa)) {
     throw new Error("INVALID BORROW RATE");
   }
-  console.log(
-    "\n",
-    " accrueInterest ...borrowRateMantissa  : ",
-    borrowRateMantissa,
-    "\n"
-  );
   const blockDelta = level.minus(accrualBlockNumber);
-  console.log("\n", "blockDelta : ", blockDelta, "\n");
   const simpleInterestFactor = mul_exp_nat(
     makeExp(borrowRateMantissa),
     blockDelta
   );
-  console.log("\n", "simpleInterestFactor : ", simpleInterestFactor, "\n");
+  const _borrowIndex = mulScalarTruncateAdd(
+    simpleInterestFactor,
+    borrowIndex,
+    borrowIndex,
+    irmExpScale
+  );
   const interestAccumulated = mulScalarTruncate(
     simpleInterestFactor,
     totalBorrows,
-    underlyingExpScale
+    irmExpScale
   );
-  console.log("\n", "interestAccumulated : ", interestAccumulated, "\n");
   const totalBorrowsAfterInterest = interestAccumulated.add(totalBorrows);
 
-  console.log("\n", " totalborrows  : ", totalBorrows, "\n");
-  console.log(
-    "\n",
-    " totalborrows After Interest  : ",
-    totalBorrowsAfterInterest,
-    "\n"
-  );
-
-  console.log(
-    "\n",
-    " accrueInterest ...borrowRateMantissa  unscaled : ",
-    rateWithoutScaling,
-    "\n"
-  );
-  const _simpleInterestFactor = mul_exp_nat(
-    makeExp(rateWithoutScaling),
-    blockDelta
-  );
-	const _borrowIndex = mulScalarTruncateAdd(
-    _simpleInterestFactor,
-    borrowIndex,
-    borrowIndex,
-    irmExpScale
-  );
-  console.log(
-    "\n",
-    "simpleInterestFactor without scale : ",
-    _simpleInterestFactor,
-    "\n"
-  );
-  const _interestAccumulated = mulScalarTruncate(
-    _simpleInterestFactor,
-    totalBorrows,
-    irmExpScale
-  );
-  console.log(
-    "\n",
-    "interestAccumulated without scale : ",
-    _interestAccumulated,
-    "\n"
-  );
-  const _totalBorrowsAfterInterest = _interestAccumulated.add(totalBorrows);
-
-  console.log(
-    "\n",
-    " totalborrows After Interest  : ",
-    _totalBorrowsAfterInterest,
-    "\n"
-  );
   return {
-    scaled: totalBorrowsAfterInterest,
-    notScaled: _totalBorrowsAfterInterest,
-    borrowIndex: _borrowIndex
+    totalBorrows: totalBorrowsAfterInterest,
+    borrowIndex: _borrowIndex,
   };
 }
 function calculateAccountBalance(accountPrincipal, borrowIndex, InterestIndex) {
-	console.log('\n  account Principal \n');
-	console.log(accountPrincipal);
-	  
-	console.log('\n  borrowIndex\n');
-	console.log(borrowIndex);
-  const principalTimesIndex = bigInt(accountPrincipal).multiply(bigInt(borrowIndex));
-
-	console.log('\n  principalTimesIndex \n');
-	console.log(principalTimesIndex);
-	console.log('\n  InterestIndex \n');
-	console.log(InterestIndex);
-
-	console.log('\n  principalTimesIndex.divide(bigInt(InterestIndex)) \n');
-	console.log(principalTimesIndex.divide(bigInt(InterestIndex)));
+  const principalTimesIndex = bigInt(accountPrincipal).multiply(
+    bigInt(borrowIndex)
+  );
 
   return principalTimesIndex.divide(bigInt(InterestIndex));
 }
@@ -389,9 +230,9 @@ export function calculateTotalBorrowBalance(
   token,
   borrowDelta,
   currentTotalInStorage,
-	accountLastData,
-	accountBorrowsNow,
-	acceptedError = 0
+  accountLastData,
+  accountBorrowsNow,
+  acceptedError = 0
 ) {
   const _state: State = state(market, protocolAddresses);
 
@@ -400,78 +241,51 @@ export function calculateTotalBorrowBalance(
   var accrualParams = getAccrualParameters(_state, bigInt(level), token);
 
   const borrowDeltaMantissa = ctokenExpScale.multiply(borrowDelta);
-  //accrualParams.totalBorrows = accrualParams.totalBorrows.add(borrowDeltaMantissa);
-  console.log("\n", "accrual : ", accrualParams, "\n");
 
   let totalBorrows = accrueInterestTotalBorrows(accrualParams);
 
-  const mantissa = totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa));
-  const scaledMantissa = totalBorrows.scaled.add(bigInt(borrowDeltaMantissa));
-  const readableNotScaled = readable(
-    totalBorrows.notScaled.add(bigInt(borrowDeltaMantissa)),
+  const mantissa = totalBorrows.totalBorrows.add(bigInt(borrowDeltaMantissa));
+  const readableTotalBorrow = readable(
+    totalBorrows.totalBorrows.add(bigInt(borrowDeltaMantissa)),
     ctokenExpScale
   );
-  const readableScaled = readable(
-    totalBorrows.scaled.add(bigInt(borrowDeltaMantissa)),
-    ctokenExpScale
-  );
-  const expected = mantissa;
   const deltaTotalBorrows = mantissa.subtract(bigInt(currentTotalInStorage));
   const irmExpScale = borrowRateParams.irmExpScale;
-  const totalBorrowsBefore = accrualParams.totalBorrows;
-  const blockDelta = accrualParams.accrualBlockNumber.subtract(
-    accrualParams.level
-  );
 
-  console.log("/n deltaTotalBorrows", deltaTotalBorrows);
   const deltaAsBlocksOfAppliedInterest = deltaTotalBorrows
     .multiply(borrowRateParams.irmExpScale)
     .divide(accrualParams.totalBorrows)
-    .divide(accrualParams.rateWithoutScaling);
+    .divide(accrualParams.borrowRateMantissa);
 
-  const calcBrate = accrualParams.rateWithoutScaling;
+  const calcBrate = accrualParams.borrowRateMantissa;
 
   const readableBrateCalculated = readable(calcBrate, irmExpScale);
-	const accountBorrows = calculateAccountBalance(
+  const accountBorrows = calculateAccountBalance(
     accountLastData.borrowPrincipal,
     totalBorrows.borrowIndex,
     accountLastData.borrowIndex
   ).add(bigInt(borrowDeltaMantissa));
-	const accountDiff = accountBorrows.subtract(bigInt(accountBorrowsNow));
-	const e = new BigNumber(acceptedError).multipliedBy(new BigNumber(ctokenExpScale.toString()))
-	console.log('\n accepted error :', acceptedError);
-	console.log('\n e (accepted error) :', e);
-	console.log('\n e.integerValue().toString()', e.integerValue().toString());
-
-	console.log('\n accountDiff :', accountDiff);
-	console.log('\n deltaTotalBorrows :', deltaTotalBorrows);
-	const pass = accountDiff.leq(bigInt(e.integerValue().toString())) &&  deltaTotalBorrows.leq(bigInt(e.integerValue().toString()))
+  const accountDiff = accountBorrows.subtract(bigInt(accountBorrowsNow));
+  const e = new BigNumber(acceptedError).multipliedBy(
+    new BigNumber(ctokenExpScale.toString())
+  );
+  const pass =
+    accountDiff.leq(bigInt(e.integerValue().toString())) &&
+    deltaTotalBorrows.leq(bigInt(e.integerValue().toString()));
   return {
     mantissa: mantissa,
-    readableNotScaled: readableNotScaled,
+    readableTotalBorrow: readableTotalBorrow,
     diffFromStroage: readable(deltaTotalBorrows, ctokenExpScale),
     diffAsNumOfBlocksInterest: deltaAsBlocksOfAppliedInterest,
     calcBrate: calcBrate,
     readableBrateCalculated: readableBrateCalculated,
-    scaledMantissa: scaledMantissa,
-    readableScaled: readableScaled,
     accountBorrowPrincipal: accountBorrows,
     accountPrincipalInStorage: accountBorrowsNow,
     diffFromModel: accountDiff,
-    pass: pass
-    
+    pass: pass,
   };
 }
 
-/*
-showBorrowRate(marketTestData, protoAddr, "ETH");
-console.log(
-	"\n",
-	'calculateTotalBorrowBalance(marketTestData, protoAddr, 1140974, "ETH")',
-	calculateTotalBorrowBalance(marketTestData, protoAddr, 1140974, "ETH",0),
-	"\n"
-);
-*/
 export const getAccrualBlockNumber = (markets, token) => {
   return markets[token].storage.accrualBlockNumber;
 };
@@ -487,4 +301,135 @@ export const getTotalBorrows = (markets, token, protocolAddresses) => {
     readable: readable(totalBorrowMantissa, ctokenScale),
   };
 };
-// console.log('\n','getAccrualBlockNumber(marketTestData, "ETH") : ', getAccrualBlockNumber(marketTestData, "ETH"),'\n');
+
+
+
+
+      export  async function borrowRateTest(
+          keystore,
+          token,
+          borrowActionDelta,
+          borrowAction,
+	  comptroller,
+	  protocolAddresses,
+	  tezosNode,
+	  market,
+          acceptedError = "0",
+          tries = 3
+	) {
+
+	
+        async function printBorrowRate(token) {
+          let mrkt = await TezosLendingPlatform.GetMarkets(
+            comptroller,
+            protocolAddresses!,
+            tezosNode
+          );
+          showBorrowRate(mrkt, protocolAddresses, token);
+        }
+
+        async function totalBorrowsCalculated(
+          mrkt,
+          token,
+          borrowDelta,
+          protocolAddresses,
+          accountAddress,
+          accountLastData,
+          acceptedError
+        ) {
+          //GET accrual number and total borrows from storage
+          const accrualBlock = await accrualBlockNumber(token);
+          const totalBorrows = await totalBorrowsInStorage(
+            token,
+            protocolAddresses
+          );
+          const accountNow = await getTokenDetailsForAccount(
+            accountAddress,
+            token
+          );
+          //caluculateTotal borrows passing last market and this accrual
+          const calcBorrowBalance = calculateTotalBorrowBalance(
+            mrkt,
+            protocolAddresses,
+            accrualBlock,
+            token,
+            borrowDelta,
+            totalBorrows.totalBorrowMantissa,
+            accountLastData,
+            accountNow.borrowPrincipal,
+            acceptedError
+          );
+          console.log("\n", "calcBorrowBalance : ", calcBorrowBalance, "\n");
+          console.log("\n", "totalBorrows(in storage) : ", totalBorrows, "\n");
+          return {
+            calculated: calcBorrowBalance,
+            storageMarket: totalBorrows,
+            stroageAccount: accountNow.borrowPrincipal,
+          };
+        }
+        async function getTokenDetailsForAccount(accountAddress, token) {
+          const data = await TezosLendingPlatform.GetFtokenBalancesNoMod(
+            accountAddress,
+            market,
+            tezosNode
+          );
+          return data[token];
+        }
+        async function totalBorrowsInStorage(token, protocolAddresses) {
+          let mrkt = await TezosLendingPlatform.GetMarkets(
+            comptroller,
+            protocolAddresses!,
+            tezosNode
+          );
+          return getTotalBorrows(mrkt, token, protocolAddresses);
+        }
+        async function accrualBlockNumber(token) {
+          let mrkt = await TezosLendingPlatform.GetMarkets(
+            comptroller,
+            protocolAddresses!,
+            tezosNode
+          );
+          return getAccrualBlockNumber(mrkt, token);
+        }
+          const errOutOfExpectedRange =
+            "Borrows calculated vs in Storage have a greater error than accepted";
+          var tried;
+          while (true) {
+            try {
+              console.log("\n in borrow rate test \n");
+              const mrkt = await TezosLendingPlatform.GetMarkets(
+                comptroller,
+                protocolAddresses!,
+                tezosNode
+              );
+              const account = await getTokenDetailsForAccount(
+                keystore.publicKeyHash,
+                "USD"
+              );
+              await borrowAction;
+              //GET accrual number and total borrows from storage
+              //caluculateTotal borrows passing last market and this accrual
+              //compare two borrows
+              const borrowModel = await totalBorrowsCalculated(
+                mrkt,
+                token,
+                borrowActionDelta,
+                protocolAddresses,
+                keystore.publicKeyHash,
+                account,
+                acceptedError
+              );
+              if (!borrowModel.calculated.pass) {
+                console.log("\n Calculations for Borrows \n", borrowModel);
+
+                throw errOutOfExpectedRange;
+              }
+
+              console.log("\n Calculations for Borrows \n", borrowModel);
+              return;
+            } catch (e) {
+              if (typeof e === "string" && e === errOutOfExpectedRange) throw e;
+              if (++tried == tries) throw e;
+            }
+          }
+        }
