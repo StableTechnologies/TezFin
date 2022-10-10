@@ -439,6 +439,12 @@ export function calculateTotalBorrowBalance(
   ).add(bigInt(borrowDeltaMantissa));
 	const accountDiff = accountBorrows.subtract(bigInt(accountBorrowsNow));
 	const e = new BigNumber(acceptedError).multipliedBy(new BigNumber(ctokenExpScale.toString()))
+	console.log('\n accepted error :', acceptedError);
+	console.log('\n e (accepted error) :', e);
+	console.log('\n e.integerValue().toString()', e.integerValue().toString());
+
+	console.log('\n accountDiff :', accountDiff);
+	console.log('\n deltaTotalBorrows :', deltaTotalBorrows);
 	const pass = accountDiff.leq(bigInt(e.integerValue().toString())) &&  deltaTotalBorrows.leq(bigInt(e.integerValue().toString()))
   return {
     mantissa: mantissa,

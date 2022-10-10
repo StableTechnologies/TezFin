@@ -102,7 +102,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 		//compare two borrows
 		const borrowModel = await totalBorrowsCalculated(mrkt,token, borrowActionDelta, protocolAddresses, keystore.publicKeyHash, account,acceptedError )
 		if (!borrowModel.calculated.pass) {
-			throw new Error(borrowModel.toString());
+			throw borrowModel.toString();
 		}	
 		console.log('\n finished borrow rate test \n' );
 	}
@@ -121,7 +121,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 		 
 		var action = FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore1!, signer1!)
 	        console.log('\n',' after borrow accrualBlockNumber("USD") : ', await accrualBlockNumber("USD"),'\n'); 
-		await borrowRateTest(keystore1, "USD", 500, action, '0.000001');
+		await borrowRateTest(keystore1, "USD", 500, action, '0.0002');
 		//GET accrual number and total borrows from storage
 		//caluculateTotal borrows passing last market and this accrual
 		//compare two borrows
@@ -131,7 +131,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
                 await new Promise(r => setTimeout(r, 35000));
 
                 action =  FTokenHelper.borrow("USD" as AssetType, 500, comptroller, protocolAddresses!, keystore2!, signer2!);
-		await borrowRateTest(keystore2, "USD", 500,action, '0.000001');
+		await borrowRateTest(keystore2, "USD", 500,action, '0.0002');
                 await printBorrowRate("USD");
 
                 await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
@@ -143,7 +143,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
 		}
                 else{
                     action = FTokenHelper.repayBorrow("USD" as AssetType, 200, keystore2!, signer2!, protocolAddresses!);
-		    await borrowRateTest(keystore2, "USD", 200, action, '0.000001');
+		    await borrowRateTest(keystore2, "USD", 200, action, '0.0002');
 		}
 	       
                 await printBorrowRate("USD");
@@ -162,13 +162,13 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         await new Promise(r => setTimeout(r, 30000));
         // repay remaining amounts
         action = FTokenHelper.repayBorrow("USD" as AssetType, 3500, keystore1!, signer1!, protocolAddresses!);
-	await borrowRateTest(keystore1, "USD", -3500, action, '0.000001');
+	await borrowRateTest(keystore1, "USD", -3500, action, '0.0002');
         await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
         
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
         action = FTokenHelper.repayBorrow("USD" as AssetType, 4500, keystore2!, signer2!, protocolAddresses!);
-	await borrowRateTest(keystore2, "USD", -4500, action, '0.000001');
+	await borrowRateTest(keystore2, "USD", -4500, action, '0.001');
         await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
         
         // sleep for 30 sec
