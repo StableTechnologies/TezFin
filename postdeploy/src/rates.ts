@@ -322,6 +322,12 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
     makeExp(rateWithoutScaling),
     blockDelta
   );
+	const _borrowIndex = mulScalarTruncateAdd(
+    _simpleInterestFactor,
+    rateWithoutScaling,
+    rateWithoutScaling,
+    irmExpScale
+  );
   console.log(
     "\n",
     "simpleInterestFactor without scale : ",
@@ -350,6 +356,7 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
   return {
     scaled: totalBorrowsAfterInterest,
     notScaled: _totalBorrowsAfterInterest,
+    borrowIndex: _borrowIndex
   };
 }
 
