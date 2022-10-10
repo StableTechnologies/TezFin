@@ -10,37 +10,37 @@ import {showBorrowRate, getAccrualBlockNumber, calculateTotalBorrowBalance, getT
 async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, signer1: Signer, keystore2: KeyStore, signer2: Signer, protocolAddresses: ProtocolAddresses, oracle: string) {
     try {
         // mint underlying tokens to both users 
-         //  await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash);
-         //  await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore1.publicKeyHash);
-         //  await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore2.publicKeyHash);
+           // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash);
+           // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore1.publicKeyHash);
+           // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore2.publicKeyHash);
 
-         //  // set initial price for all assets
-         //  await FTokenHelper.updatePrice([{ "asset": "ETH" as AssetType, price: 2000 * Math.pow(10, 6) }, { "asset": "BTC" as AssetType, price: 20000 * Math.pow(10, 6) }, { "asset": "XTZ" as AssetType, price: 2 * Math.pow(10, 6) }], oracle, keystore!, signer!, protocolAddresses!)
+           // // set initial price for all assets
+           // await FTokenHelper.updatePrice([{ "asset": "ETH" as AssetType, price: 2000 * Math.pow(10, 6) }, { "asset": "BTC" as AssetType, price: 20000 * Math.pow(10, 6) }, { "asset": "XTZ" as AssetType, price: 2 * Math.pow(10, 6) }], oracle, keystore!, signer!, protocolAddresses!)
 
-         //  // sleep for 30 sec
-         //  await new Promise(r => setTimeout(r, 30000));
+           // // sleep for 30 sec
+           // await new Promise(r => setTimeout(r, 30000));
 
-         //  // supply FOR USER A
-         //  for (const mint of ["USD"])
-         //      await FTokenHelper.mint(mint as AssetType, 20000, keystore!, signer!, protocolAddresses!);
+           // // supply FOR USER A
+           // for (const mint of ["USD"])
+           //     await FTokenHelper.mint(mint as AssetType, 20000, keystore!, signer!, protocolAddresses!);
 
-         //  // sleep for 30 sec
-         //  await new Promise(r => setTimeout(r, 30000));
+           // // sleep for 30 sec
+           // await new Promise(r => setTimeout(r, 30000));
 
-         //  // supply FOR USER B
-         //  for (const mint of ["ETH",])
-         //      await FTokenHelper.mint(mint as AssetType, 6, keystore1!, signer1!, protocolAddresses!);
+           // // supply FOR USER B
+           // for (const mint of ["ETH",])
+           //     await FTokenHelper.mint(mint as AssetType, 6, keystore1!, signer1!, protocolAddresses!);
 
-         //  // sleep for 30 sec
-         //  await new Promise(r => setTimeout(r, 30000));
+           // // sleep for 30 sec
+           // await new Promise(r => setTimeout(r, 30000));
 
-         //  // supply FOR USER C
-         //  for (const mint of ["BTC",])
-         //      await FTokenHelper.mint(mint as AssetType, 6, keystore2!, signer2!, protocolAddresses!);
-         //  // collateralize for user B
-         //  await ComptrollerHelper.enterMarkets(["ETH"] as AssetType[], keystore1!, signer1!, protocolAddresses!);
-         //  // collateralize for user C
-         //  await ComptrollerHelper.enterMarkets(["BTC"] as AssetType[], keystore2!, signer2!, protocolAddresses!);
+           // // supply FOR USER C
+           // for (const mint of ["BTC",])
+           //     await FTokenHelper.mint(mint as AssetType, 6, keystore2!, signer2!, protocolAddresses!);
+           // // collateralize for user B
+           // await ComptrollerHelper.enterMarkets(["ETH"] as AssetType[], keystore1!, signer1!, protocolAddresses!);
+           // // collateralize for user C
+           // await ComptrollerHelper.enterMarkets(["BTC"] as AssetType[], keystore2!, signer2!, protocolAddresses!);
        //// get comptroller
         const comptroller = await Comptroller.GetStorage(protocolAddresses!.comptroller, protocolAddresses!, config.tezosNode, config.conseilServer as ConseilServerInfo);
         const market = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
@@ -91,21 +91,57 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
                 let mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
 		return getAccrualBlockNumber(mrkt, token)
 	}
-	async function borrowRateTest(keystore, token, borrowActionDelta, borrowAction, acceptedError = '0') {
+	async function borrowRateTest(
+    keystore,
+    token,
+    borrowActionDelta,
+    borrowAction,
+    acceptedError = "0",
+    tries = 3
+  ) {
 
-		console.log('\n in borrow rate test \n' );
-                const mrkt = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses!, config.tezosNode);
-		const account = await getTokenDetailsForAccount(keystore.publicKeyHash, "USD");
-		await borrowAction;
-		//GET accrual number and total borrows from storage
-		//caluculateTotal borrows passing last market and this accrual
-		//compare two borrows
-		const borrowModel = await totalBorrowsCalculated(mrkt,token, borrowActionDelta, protocolAddresses, keystore.publicKeyHash, account,acceptedError )
-		if (!borrowModel.calculated.pass) {
-			throw borrowModel.toString();
-		}	
-		console.log('\n finished borrow rate test \n' );
-	}
+       const errOutOfExpectedRange = "Borrows calculated vs in Storage have a greater error than accepted" ;
+    var tried;
+    while (true) {
+      try {
+        console.log("\n in borrow rate test \n");
+        const mrkt = await TezosLendingPlatform.GetMarkets(
+          comptroller,
+          protocolAddresses!,
+          config.tezosNode
+        );
+        const account = await getTokenDetailsForAccount(
+          keystore.publicKeyHash,
+          "USD"
+        );
+        await borrowAction;
+        //GET accrual number and total borrows from storage
+        //caluculateTotal borrows passing last market and this accrual
+        //compare two borrows
+        const borrowModel = await totalBorrowsCalculated(
+          mrkt,
+          token,
+          borrowActionDelta,
+          protocolAddresses,
+          keystore.publicKeyHash,
+          account,
+          acceptedError
+        );
+        if (!borrowModel.calculated.pass) {
+          console.log("\n Calculations for Borrows \n", borrowModel);
+
+          throw errOutOfExpectedRange
+        }
+
+          console.log("\n Calculations for Borrows \n", borrowModel);
+	  return
+      } catch (e) {
+	      if (typeof e === "string" && e === errOutOfExpectedRange) throw e;
+        if (++tried == tries) throw e;
+      }
+    }
+    console.log("\n finished borrow rate test \n");
+  }
 	
         // sleep for 1 min
         await new Promise(r => setTimeout(r, 60000));
@@ -138,12 +174,15 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
                 await new Promise(r => setTimeout(r, 35000));
                 // alternatingly repay loans for user B and C
                 if (j % 2 != 0){
+		    console.log('\n repay borrow 1 \n');
                     action = FTokenHelper.repayBorrow("USD" as AssetType, 200, keystore1!, signer1!, protocolAddresses!);
-		    await borrowRateTest(keystore1, "USD", 200, action);
+		    await borrowRateTest(keystore1, "USD", -200, action, '0.0002');
 		}
                 else{
+			 
+		    console.log('\n repay borrow 2 \n');
                     action = FTokenHelper.repayBorrow("USD" as AssetType, 200, keystore2!, signer2!, protocolAddresses!);
-		    await borrowRateTest(keystore2, "USD", 200, action, '0.0002');
+		    await borrowRateTest(keystore2, "USD", -200, action, '0.0002');
 		}
 	       
                 await printBorrowRate("USD");
@@ -161,14 +200,18 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
         // repay remaining amounts
+	
+	console.log('\n repay borrow 3 \n');
         action = FTokenHelper.repayBorrow("USD" as AssetType, 3500, keystore1!, signer1!, protocolAddresses!);
 	await borrowRateTest(keystore1, "USD", -3500, action, '0.0002');
         await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
         
         // sleep for 30 sec
         await new Promise(r => setTimeout(r, 30000));
+
+	console.log('\n repay borrow 4 \n');
         action = FTokenHelper.repayBorrow("USD" as AssetType, 4500, keystore2!, signer2!, protocolAddresses!);
-	await borrowRateTest(keystore2, "USD", -4500, action, '0.001');
+	await borrowRateTest(keystore2, "USD", -4500, action, '0.0002');
         await printStatus(comptroller, market, protocolAddresses, config.tezosNode, addresses);
         
         // sleep for 30 sec
