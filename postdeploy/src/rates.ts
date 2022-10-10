@@ -233,6 +233,7 @@ interface AccrualParameters {
   borrowRateMantissa: bigInt.BigInteger;
   rateWithoutScaling: bigInt.BigInteger;
   borrowRateMaxMantissa: bigInt.BigInteger;
+  borrowIndex: bigInt.BigInteger;
   irmExpScale: bigInt.BigInteger;
   underlyingExpScale: bigInt.BigInteger;
   level: bigInt.BigInteger;
@@ -260,6 +261,9 @@ function getAccrualParameters(
     borrowRateMaxMantissa: bigInt(
       markets[token].storage.borrow.borrowRateMaxMantissa
     ),
+    borrowIndex: bigInt(
+      markets[token].storage.borrow.borrowIndex
+    ),
     underlyingExpScale: borrowParams.underlyingExpScale,
     irmExpScale: borrowParams.irmExpScale,
     level: bigInt(level),
@@ -274,6 +278,7 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
     borrowRateMantissa,
     rateWithoutScaling,
     borrowRateMaxMantissa,
+    borrowIndex,
     underlyingExpScale,
     irmExpScale,
     level,
@@ -324,8 +329,8 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
   );
 	const _borrowIndex = mulScalarTruncateAdd(
     _simpleInterestFactor,
-    rateWithoutScaling,
-    rateWithoutScaling,
+    borrowIndex,
+    borrowIndex,
     irmExpScale
   );
   console.log(
@@ -359,14 +364,34 @@ function accrueInterestTotalBorrows(accrualParameters: AccrualParameters) {
     borrowIndex: _borrowIndex
   };
 }
+function calculateAccountBalance(accountPrincipal, borrowIndex, InterestIndex) {
+	console.log('\n  account Principal \n');
+	console.log(accountPrincipal);
+	  
+	console.log('\n  borrowIndex\n');
+	console.log(borrowIndex);
+  const principalTimesIndex = bigInt(accountPrincipal).multiply(bigInt(borrowIndex));
 
+	console.log('\n  principalTimesIndex \n');
+	console.log(principalTimesIndex);
+	console.log('\n  InterestIndex \n');
+	console.log(InterestIndex);
+
+	console.log('\n  principalTimesIndex.divide(bigInt(InterestIndex)) \n');
+	console.log(principalTimesIndex.divide(bigInt(InterestIndex)));
+
+  return principalTimesIndex.divide(bigInt(InterestIndex));
+}
 export function calculateTotalBorrowBalance(
   market,
   protocolAddresses,
   level,
   token,
   borrowDelta,
-  currentTotalInStorage
+  currentTotalInStorage,
+	accountLastData,
+	accountBorrowsNow,
+	acceptedError = 0
 ) {
   const _state: State = state(market, protocolAddresses);
 
@@ -406,33 +431,15 @@ export function calculateTotalBorrowBalance(
 
   const calcBrate = accrualParams.rateWithoutScaling;
 
-    const borrowMulBLockDelta = totalBorrowsBefore.multiply(
-        blockDelta.add(deltaAsBlocksOfAppliedInterest)
-      )
-	console.log("\n borrowMulBLockDelta ", borrowMulBLockDelta);
-  const equationPart2 = deltaTotalBorrows
-    .multiply(irmExpScale)
-    .divide(borrowMulBLockDelta);
-  console.log("\n eq2", equationPart2);
-
-  const brateAppliedInStorageAccountingForBlocks = calcBrate
-    .multiply(blockDelta)
-		.divide(blockDelta.add(deltaAsBlocksOfAppliedInterest));
-// .subtract(equationPart2);
-	console.log(brateAppliedInStorageAccountingForBlocks);
-  console.log("\n brateAppliedInStorageAccountingForBlocks", brateAppliedInStorageAccountingForBlocks.subtract(equationPart2));
-  const brateAppliedInStorage = calcBrate
-    .multiply(blockDelta)
-    .subtract(
-      deltaTotalBorrows.multiply(irmExpScale).divide(totalBorrowsBefore)
-    )
-    .divide(blockDelta);
-  const brateDIff = accrualParams.rateWithoutScaling.subtract(
-    brateAppliedInStorage
-  );
-  const readableBrateDiff = readable(brateDIff, irmExpScale);
   const readableBrateCalculated = readable(calcBrate, irmExpScale);
-  const readableBrateApplied = readable(brateAppliedInStorage, irmExpScale);
+	const accountBorrows = calculateAccountBalance(
+    accountLastData.borrowPrincipal,
+    totalBorrows.borrowIndex,
+    accountLastData.borrowIndex
+  ).add(bigInt(borrowDeltaMantissa));
+	const accountDiff = accountBorrows.subtract(bigInt(accountBorrowsNow));
+	const e = new BigNumber(acceptedError).multipliedBy(new BigNumber(ctokenExpScale.toString()))
+	const pass = accountDiff.leq(bigInt(e.integerValue().toString())) &&  deltaTotalBorrows.leq(bigInt(e.integerValue().toString()))
   return {
     mantissa: mantissa,
     readableNotScaled: readableNotScaled,
@@ -440,13 +447,13 @@ export function calculateTotalBorrowBalance(
     diffAsNumOfBlocksInterest: deltaAsBlocksOfAppliedInterest,
     calcBrate: calcBrate,
     readableBrateCalculated: readableBrateCalculated,
-    brateAppliedInStorage: brateAppliedInStorage,
-    brateAppliedInStorageAccountingForBlocks: brateAppliedInStorageAccountingForBlocks,
-    readableBrateApplied: readableBrateApplied,
-    brateDIff: brateDIff,
-    readableBrateDiff: readableBrateDiff,
     scaledMantissa: scaledMantissa,
     readableScaled: readableScaled,
+    accountBorrowPrincipal: accountBorrows,
+    accountPrincipalInStorage: accountBorrowsNow,
+    diffFromModel: accountDiff,
+    pass: pass
+    
   };
 }
 
