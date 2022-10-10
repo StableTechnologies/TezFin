@@ -398,11 +398,22 @@ export function calculateTotalBorrowBalance(
     .divide(accrualParams.rateWithoutScaling);
 
   const calcBrate = accrualParams.rateWithoutScaling;
+
+    const borrowMulBLockDelta = totalBorrowsBefore.multiply(
+        blockDelta.add(deltaAsBlocksOfAppliedInterest)
+      )
+	console.log("\n borrowMulBLockDelta ", borrowMulBLockDelta);
+  const equationPart2 = deltaTotalBorrows
+    .multiply(irmExpScale)
+    .divide(borrowMulBLockDelta);
+  console.log("\n eq2", equationPart2);
+
   const brateAppliedInStorageAccountingForBlocks = calcBrate
-    .multiply(blockDelta).divide(deltaAsBlocksOfAppliedInterest)
-    .subtract(
-	    deltaTotalBorrows.multiply(irmExpScale).divide(totalBorrowsBefore.multiply(blockDelta.add(deltaAsBlocksOfAppliedInterest)))
-    );
+    .multiply(blockDelta)
+		.divide(blockDelta.add(deltaAsBlocksOfAppliedInterest));
+// .subtract(equationPart2);
+	console.log(brateAppliedInStorageAccountingForBlocks);
+  console.log("\n brateAppliedInStorageAccountingForBlocks", brateAppliedInStorageAccountingForBlocks.subtract(equationPart2));
   const brateAppliedInStorage = calcBrate
     .multiply(blockDelta)
     .subtract(
