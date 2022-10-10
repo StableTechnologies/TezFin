@@ -29,7 +29,7 @@ def test():
     admin = sp.test_account("admin")
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "florence")
+    scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("SweepTokens tests")
@@ -59,8 +59,8 @@ def test():
 
     scenario.h2("Test sweep to contract")
     adminContract = TestAdminContract(admin.address)
-    c2 = TestSweepTokens(adminContract.address)
     scenario += adminContract
+    c2 = TestSweepTokens(adminContract.address)
     scenario += c2
 
     scenario.h3("sweepFA12")

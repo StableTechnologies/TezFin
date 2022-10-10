@@ -17,6 +17,11 @@ class CTokenMock(sp.Contract):
         sp.set_type(account, sp.TAddress)
         sp.result(self.data.test_account_snapshot)
 
+    @sp.onchain_view()
+    def getAccountSnapshotView(self, account):
+        sp.set_type(account, sp.TAddress)
+        sp.result(self.data.test_account_snapshot)
+
     @sp.entry_point
     def accrueInterest(self, params):
         sp.set_type(params, sp.TUnit)

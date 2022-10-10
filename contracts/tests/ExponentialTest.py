@@ -91,7 +91,7 @@ def test():
 
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "florence")
+    scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("Exponential math tests")

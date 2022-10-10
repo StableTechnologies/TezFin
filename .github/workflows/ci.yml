@@ -1,0 +1,22 @@
+name: Build
+
+on:
+  pull_request:
+    branches: ['*']
+
+jobs:
+  build_and_test_smart_contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - uses: actions/setup-python@v2
+      - name: "Install SmartPy"
+        run: |
+          bash <(curl -s https://smartpy.io/cli/install.sh) --yes
+      - name: "Version Check"
+        run: |
+          ~/smartpy-cli/SmartPy.sh --version
+      - name: "Run tests"
+        run: |
+          bash contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh

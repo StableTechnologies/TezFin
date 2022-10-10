@@ -15,3 +15,10 @@ done
 
 echo -e "------------------------------------------"
 echo ${PASSED} out of ${COUNT} tests passed
+
+if [[ $PASSED -eq $COUNT ]]
+then
+    exit 0
+else
+    exit 1
+fi
