@@ -26,13 +26,22 @@ class ComptrollerTest(CMPT.Comptroller):
         self.data.markets[sp.fst(params)] = sp.snd(params)
         self.data.marketNameToAddress[sp.snd(params).name] = sp.fst(params)
 
+    @sp.entry_point
+    def addToLoansExternal(self, params):
+        sp.set_type(params, sp.TPair(sp.TAddress, sp.TSet(sp.TAddress)))
+        self.data.loans[sp.fst(params)] = sp.snd(params)
+    
+    @sp.onchain_view()
+    def calculateAccountLiquidityExposed(self, params):
+        sp.result(self.calculateAccountLiquidityWithView(params))
+
 
 @sp.add_test(name = "Comptroller_Tests")
 def test():
     bLevel = BlockLevel.BlockLevel()
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "florence")
+    scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("Comptroller tests")
@@ -52,23 +61,30 @@ def test():
     # Contracts
     scenario.h2("Contracts")
     view_result = RV.ViewerInt()
+    scenario += view_result
     oracle = OracleMock.OracleMock()
+    scenario += oracle
     cmpt = ComptrollerTest( administrator_= admin.address, oracleAddress_=oracle.address)
+    scenario += cmpt
     cTokenMock = CTMock.CTokenMock(test_account_snapshot_ = sp.record(
             account = alice.address,
             cTokenBalance = sp.nat(10), 
             borrowBalance = sp.nat(0),
             exchangeRateMantissa = exchRate
         ))
-
-    scenario += view_result
-    scenario += oracle
-    scenario += cmpt
     scenario += cTokenMock
+
+    cTokenMock1 = CTMock.CTokenMock(test_account_snapshot_ = sp.record(
+            account = alice.address,
+            cTokenBalance = sp.nat(0), 
+            borrowBalance = sp.nat(0),
+            exchangeRateMantissa = exchRate
+        ))
+    scenario += cTokenMock1
 
     # Add stub markets
 
-    listedMarket = sp.address("KT10")
+    listedMarket = cTokenMock1.address
     notListedMarket = sp.address("KT11")
     listedMarketWithoutAccountMembership = sp.address("KT12")
 
@@ -77,41 +93,22 @@ def test():
         sp.pair(listedMarket,
                 sp.record(isListed = sp.bool(True),
                           collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
-                          accountMembership = emptyMembership, 
                           mintPaused = sp.bool(True), 
                           borrowPaused = sp.bool(True), 
                           name = sp.string("m1"), 
-                          price = sp.record(mantissa=sp.nat(0)), 
+                          price = sp.record(mantissa=sp.nat(0)),
+                          priceExp = 1000000000000000000,
                           updateLevel = sp.nat(0),
                           borrowCap = sp.nat(0))),
-        sp.pair(notListedMarket, 
-                sp.record(isListed = sp.bool(False), 
-                          collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
-                          accountMembership = emptyMembership, 
-                          mintPaused = sp.bool(True), 
-                          borrowPaused = sp.bool(True), 
-                          name = sp.string("m2"), 
-                          price = sp.record(mantissa=sp.nat(0)), 
-                          updateLevel = sp.nat(0),
-                          borrowCap = sp.nat(0))),
-        sp.pair(listedMarketWithoutAccountMembership, 
-                sp.record(isListed = sp.bool(True), 
-                          collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
-                          accountMembership = emptyMembership,
-                          mintPaused = sp.bool(True), 
-                          borrowPaused = sp.bool(True), 
-                          name = sp.string("m3"), 
-                          price = sp.record(mantissa=sp.nat(0)), 
-                          updateLevel = sp.nat(0),
-                          borrowCap = sp.nat(0))),
+
         sp.pair(cTokenMock.address, 
                 sp.record(isListed = sp.bool(True), 
                           collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
-                          accountMembership = emptyMembership, 
                           mintPaused = sp.bool(True), 
                           borrowPaused = sp.bool(True), 
                           name = sp.string("m4"), 
-                          price = sp.record(mantissa=sp.nat(0)), 
+                          price = sp.record(mantissa=sp.nat(0)),
+                          priceExp = 1000000000000000000,
                           updateLevel = sp.nat(0),
                           borrowCap = sp.nat(0)))
     ]
@@ -165,67 +162,67 @@ def test():
     scenario += cmpt.mintAllowed(minterArgLambda(listedMarket)).run(sender = alice, level = bLevel.next())
 
     scenario.h3("Redeem allowed")
-    redeemArgLambda = lambda market : sp.record(cToken=market, redeemer=alice.address, redeemAmount=sp.nat(10))
+    cmpt.addToLoansExternal(sp.pair(alice.address, sp.set([cTokenMock.address])))
+    redeemArgLambda = lambda market : sp.record(cToken=market, redeemer=alice.address, redeemAmount=sp.nat(10*1000000000000000000))
     scenario.h4("on the listed market, without updated price")
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("on the listed market, with updated price, without updated liquidity")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
-    scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
-    scenario.h4("on the listed market, with updated price and updated liquidity")
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
-    scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = True)
+    scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("on the not listed market")
     scenario += cmpt.redeemAllowed(redeemArgLambda(notListedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("with insufficient liquidity")
     cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(0), borrowBalance = sp.nat(100), exchangeRateMantissa = exchRate)).run(level = bLevel.current())
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
+    scenario.show(cmpt.data.collaterals)
+    scenario.show(alice.address)
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("without insufficient liquidity")
-    cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(100), borrowBalance = sp.nat(0), exchangeRateMantissa = exchRate)).run(level = bLevel.current())
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(100*1000000000000000000), borrowBalance = sp.nat(0), exchangeRateMantissa = exchRate)).run(level = bLevel.current())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
     scenario.h4("invalid after price was not updated for 5 blocks")
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.add(5), valid = False)
 
     scenario.h3("Borrow allowed")
-    borrowArgLambda = lambda market : sp.record(cToken=market, borrower=alice.address, borrowAmount=sp.nat(100))
+    borrowArgLambda = lambda market : sp.record(cToken=market, borrower=alice.address, borrowAmount=sp.nat(100*1000000000000000000))
     scenario.h4("on the listed market, without updated price")
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("on the listed market, with updated price, without updated liquidity")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("on the listed market, with updated price and updated liquidity")
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = True)
     scenario.h4("on the not listed market")
     scenario += cmpt.borrowAllowed(borrowArgLambda(notListedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("with insufficient liquidity")
     cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(0), borrowBalance = sp.nat(100), exchangeRateMantissa = exchRate)).run(level = bLevel.current())
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("without insufficient liquidity")
-    cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(100), borrowBalance = sp.nat(0), exchangeRateMantissa = exchRate)).run(level = bLevel.current())
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(100*1000000000000000000), borrowBalance = sp.nat(0), exchangeRateMantissa = exchRate)).run(level = bLevel.current())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
     scenario.h4("with price errors")
     oracle.setPrice(0)
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next(), valid = False)
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next(), valid = False)
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("without price errors")
     oracle.setPrice(1)
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
     scenario.h4("borrow is paused")
     scenario += cmpt.setBorrowPaused(sp.record(cToken = listedMarket, state = sp.bool(True))).run(sender = admin, level = bLevel.current())
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("borrow is not paused")
     scenario += cmpt.setBorrowPaused(sp.record(cToken = listedMarket, state = sp.bool(False))).run(sender = admin, level = bLevel.current())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
     scenario.h4("alice calls borrowAllowed if borrower not in market")
-    scenario += cmpt.updateAccountLiquidity(notMember.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(notMember.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(sp.record(cToken=listedMarket, borrower=notMember.address, borrowAmount=sp.nat(0))).run(
         sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("cToken calls borrowAllowed if borrower not in market")
@@ -242,38 +239,26 @@ def test():
     scenario += cmpt.repayBorrowAllowed(repayBorrowArgLambda(notListedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
 
     scenario.h3("Transfer allowed")
-    transferArgLambda = lambda market : sp.record(cToken=market, src=admin.address, dst=alice.address, transferTokens=sp.nat(100))
+    transferArgLambda = lambda market : sp.record(cToken=market, src=alice.address, dst=admin.address, transferTokens=sp.nat(100))
     scenario.h4("redeem is allowed, without updated price")
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("redeem is allowed, with updated price, without updated liquidity")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("redeem is allowed, with updated price and updated liquidity")
-    scenario += cmpt.updateAccountLiquidity(admin.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
     scenario.h4("redeem is not allowed")
     scenario += cmpt.transferAllowed(transferArgLambda(notListedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("transfer is paused")
     scenario += cmpt.setTransferPaused(sp.bool(True)).run(sender = admin, level = bLevel.current())
-    scenario += cmpt.updateAccountLiquidity(admin.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("transfer is not paused")
     scenario += cmpt.setTransferPaused(sp.bool(False)).run(sender = admin, level = bLevel.current())
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
     scenario.h4("invalid after price was not updated for 5 blocks")
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.add(5), valid = False)
-
-
-    scenario.h2("Test markets")
-    scenario.h3("Enter market")
-    scenario.h4("on the listed market")
-    cmpt.enterMarkets(sp.list([listedMarketWithoutAccountMembership])).run(sender = alice, level = bLevel.next())
-    scenario.h4("on the not listed market")
-    cmpt.enterMarkets(sp.list([notListedMarket])).run(sender = alice, level = bLevel.next(), valid = False)
-    scenario.h4("account membership is already joined")
-    cmpt.enterMarkets(sp.list([listedMarketWithoutAccountMembership])).run(sender = alice, level = bLevel.next(), valid = False)
-    scenario.h4("account membership is not joined")
-    cmpt.enterMarkets(sp.list([listedMarketWithoutAccountMembership])).run(sender = admin, level = bLevel.next())
 
     scenario.h3("Exit market")
     scenario.h4("The sender hasn't borrow balance, asset price was not updated")
@@ -283,10 +268,10 @@ def test():
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
     cmpt.exitMarket(cTokenMock.address).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("The sender hasn't borrow balance, asset price was updated and updated liquidity")
-    scenario += cmpt.updateAccountLiquidity(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
+    scenario.verify(cmpt.data.collaterals[alice.address].contains(cTokenMock.address))  # account membership should exist before
     cmpt.exitMarket(cTokenMock.address).run(sender = alice, level = bLevel.current())
-    scenario.verify( (~ cmpt.data.markets[cTokenMock.address].accountMembership.contains(alice.address)))  # account membership must be removed
-    scenario.verify( (~ cmpt.data.account_assets[alice.address].contains(cTokenMock.address))) # cToken must be deleted from the account’s list of assets
+    scenario.verify( (~ cmpt.data.collaterals[alice.address].contains(cTokenMock.address)))  # account membership must be removed
     scenario.h4("The sender has borrow balance")
     scenario += cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(10), borrowBalance = sp.nat(100), exchangeRateMantissa = exchRate))
     cmpt.exitMarket(cTokenMock.address).run(sender = alice, level = bLevel.current(), valid = False)
@@ -294,42 +279,34 @@ def test():
     scenario.h2("Test updateAssetPrice")
     scenario.h3("Update price")
     oracle.setPrice(2)
-    scenario += cmpt.updateAssetPrice(listedMarket).run(sender = bob, level = bLevel.next())
+    scenario += cmpt.updateAllAssetPricesWithView().run(sender = bob, level = bLevel.next())
     scenario.verify_equal(cmpt.data.markets[listedMarket].price.mantissa, sp.nat(int(2e18)))
     scenario.verify_equal(cmpt.data.markets[listedMarket].updateLevel, bLevel.current())
     scenario.h3("Try to update price at the same level")
     oracle.setPrice(1)
-    scenario += cmpt.updateAssetPrice(listedMarket).run(sender = bob, level = bLevel.current())
+    scenario += cmpt.updateAllAssetPricesWithView().run(sender = bob, level = bLevel.current())
     scenario.verify_equal(cmpt.data.markets[listedMarket].price.mantissa, sp.nat(int(2e18)))
-    scenario.h3("Try set price directly")
-    scenario += cmpt.setAssetPrice((sp.string("m1"), (sp.timestamp(0), sp.nat(12)))).run(sender = bob, level = bLevel.next(), valid=False)
 
     scenario.h2("Test account liquidity")
     cmpt.enterMarkets(sp.list([cTokenMock.address])).run(sender = bob, level = bLevel.next())
     scenario.h3("Get current liquidity, without updated price")
     cTokenMock.setAccountSnapshot(sp.record(account = bob.address, cTokenBalance = sp.nat(10), borrowBalance = sp.nat(100), exchangeRateMantissa = exchRate))
-    liquidityParams = sp.record(cTokenModify=listedMarketWithoutAccountMembership, account=bob.address, redeemTokens=sp.nat(0), borrowAmount=sp.nat(0))
-    scenario += cmpt.getHypoAccountLiquidity(sp.record(data=liquidityParams, callback=view_result.typed.targetInt)).run(sender=bob, level=bLevel.next(), valid = False)
+    liquidityParams = sp.record(cTokenModify=sp.some(listedMarketWithoutAccountMembership), account=bob.address, redeemTokens=sp.nat(0), borrowAmount=sp.nat(0))
     scenario.h3("Get current liquidity, with updated price")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
-    scenario += cmpt.getHypoAccountLiquidity(sp.record(data=liquidityParams, callback=view_result.typed.targetInt)).run(sender=bob, level=bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(-90)) # borrows(100) - balance(10)
+    result = sp.view("calculateAccountLiquidityExposed", cmpt.address, liquidityParams, t=sp.TRecord(sumBorrowPlusEffects = sp.TNat,sumCollateral = sp.TNat)).open_some()
+    scenario.verify_equal((result.sumCollateral-result.sumBorrowPlusEffects), -90) # borrows(100) - balance(10)
     scenario.h3("Get liquidity with redeem")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
-    liquidityParams = sp.record(cTokenModify=cTokenMock.address, account=bob.address, redeemTokens=sp.nat(20), borrowAmount=sp.nat(0))
-    scenario += cmpt.getHypoAccountLiquidity(sp.record(data=liquidityParams, callback=view_result.typed.targetInt)).run(sender=bob, level=bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(-70))
+    liquidityParams = sp.record(cTokenModify=sp.some(cTokenMock.address), account=bob.address, redeemTokens=sp.nat(20), borrowAmount=sp.nat(0))
+    result = sp.view("calculateAccountLiquidityExposed", cmpt.address, liquidityParams, t=sp.TRecord(sumBorrowPlusEffects = sp.TNat,sumCollateral = sp.TNat)).open_some()
+    scenario.verify_equal((result.sumCollateral-result.sumBorrowPlusEffects), -70)
     scenario.h3("Get liquidity with borrow")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
-    liquidityParams = sp.record(cTokenModify=cTokenMock.address, account=bob.address, redeemTokens=sp.nat(0), borrowAmount=sp.nat(20))
-    scenario += cmpt.getHypoAccountLiquidity(sp.record(data=liquidityParams, callback=view_result.typed.targetInt)).run(sender=bob, level=bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(-110))
-    scenario.h3("Try return liquidity directly")
-    scenario += cmpt.returnHypoAccountLiquidity((sp.unit, view_result.typed.targetInt)).run(sender=bob, level=bLevel.next(), valid=False)
-    scenario.h3("Try calculate liquidity directly")
-    params = sp.record(account=bob.address, cTokenBalance=sp.nat(100), borrowBalance=sp.nat(10), exchangeRateMantissa=exchRate)
-    scenario += cmpt.calculateAccountAssetLiquidity(params).run(sender=bob, level=bLevel.next(), valid=False)
-    
+    liquidityParams = sp.record(cTokenModify=sp.some(cTokenMock.address), account=bob.address, redeemTokens=sp.nat(0), borrowAmount=sp.nat(20))
+    result = sp.view("calculateAccountLiquidityExposed", cmpt.address, liquidityParams, t=sp.TRecord(sumBorrowPlusEffects = sp.TNat,sumCollateral = sp.TNat)).open_some()
+    scenario.verify_equal((result.sumCollateral-result.sumBorrowPlusEffects), -110)
+
     scenario.h2("Test admin functionality")
     scenario.h3("Set price oracle")
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, cmpt.setPriceOracle,
@@ -360,11 +337,11 @@ def test():
 
     scenario.h3("Support market")
     newMarket = sp.test_account("[supportMarket] new market").address
-    supportMarketParams = sp.record(cToken=newMarket, name=sp.string("market"))
+    supportMarketParams = sp.record(cToken=newMarket, name=sp.string("market"), priceExp=1000000000000000000)
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "support market", bLevel, admin, alice, cmpt.supportMarket,
         supportMarketParams)
     scenario.verify(cmpt.data.markets.contains(newMarket) & cmpt.data.markets[newMarket].isListed)
-    scenario.verify(cmpt.data.marketNameToAddress.contains("market"))
+    scenario.verify(cmpt.data.marketNameToAddress.contains("market-USD"))
     scenario.h4("Already listed market")
     cmpt.supportMarket(supportMarketParams).run(sender = admin, level = bLevel.next(), valid = False)
 
@@ -418,5 +395,4 @@ def testPauseFunctionsOnMarkets(scenario, actionText, bLevel, sender, callableOb
 
 def updateAssetsPrices(scenario, cmpt, bLevel, markets):
     bLevel.next()
-    for asset in markets:
-        scenario += cmpt.updateAssetPrice(asset).run(level = bLevel.current())
+    cmpt.updateAllAssetPricesWithView().run(level = bLevel.current())

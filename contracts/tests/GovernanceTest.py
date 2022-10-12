@@ -15,7 +15,7 @@ def test():
     bLevel = BlockLevel.BlockLevel()
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "florence")
+    scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("Governor tests")
@@ -30,34 +30,31 @@ def test():
     # Contracts
     scenario.h2("Contracts")
     governor = GOV.Governance(admin.address)
-
+    scenario += governor
     cmpt = CMPT.Comptroller(administrator_= governor.address,
         oracleAddress_ = sp.address("KT10"),
         closeFactorMantissa_= sp.nat(0),
         liquidationIncentiveMantissa_= sp.nat(0))
+    scenario += cmpt
     
     multiplierPerBlock = 180000000000 # 0.00000018
     baseRatePerBlock = 840000000000 # 0.00000084
-    irm = IRM.InterestRateModel(multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
-    
+    irm = IRM.InterestRateModel(multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock, scale_=1000000000000000000)
+    scenario += irm 
+
     fa12Target = FA12Mock.FA12Mock()
+    scenario += fa12Target
     cfa12 = CFA12.CFA12(comptroller_=cmpt.address, 
                         interestRateModel_=irm.address,
                         initialExchangeRateMantissa_=sp.nat(int(1e12)),
                         administrator_=governor.address,
                         fa1_2_TokenAddress_ = fa12Target.address)
+    scenario += cfa12
     cxtz = CXTZ.CXTZ(comptroller_=cmpt.address, 
                    interestRateModel_=irm.address, 
                    administrator_=governor.address)
-
-    oracle = OracleMock.OracleMock()
-
-    scenario += cmpt
-    scenario += governor
-    scenario += irm 
     scenario += cxtz
-    scenario += fa12Target
-    scenario += cfa12
+    oracle = OracleMock.OracleMock()
     scenario += oracle
     
     scenario.h2("Governor governance")
@@ -68,22 +65,15 @@ def test():
 
     scenario.h3("Accept governance")
     scenario.h4("Not pending admin attempts to accept governance")
-    scenario += governor.acceptGovernance(sp.unit).run(sender=admin, level=bLevel.next(), valid=False)
+    scenario += governor.acceptGovernance(sp.unit).run(sender=admin, level=bLevel.current(), valid=False)
     scenario.h4("Pending admin attempts to accept governance")
-    scenario += governor.acceptGovernance(sp.unit).run(sender=pendingGovernance, level=bLevel.next())
+    scenario += governor.acceptGovernance(sp.unit).run(sender=pendingGovernance, level=bLevel.current())
     scenario.verify(governor.data.administrator == pendingGovernance.address)
     scenario.verify( ~ governor.data.pendingAdministrator.is_some())
 
     # [CONSISTENCY] return governance back to test account "admin"
-    scenario += governor.setPendingGovernance(admin.address).run(sender=pendingGovernance, level=bLevel.next())
-    scenario += governor.acceptGovernance(sp.unit).run(sender=admin, level=bLevel.next())
-
-    scenario += governor.setAccrualIntPeriodRelevance(sp.record(cToken = cfa12.address, blockNumber = sp.nat(4))).run(sender=admin, level=bLevel.next())
-    scenario.verify(cfa12.data.accrualIntPeriodRelevance == sp.nat(4))
-    scenario += governor.setLiquidityPeriodRelevance(sp.record(comptroller = cmpt.address, blockNumber = sp.nat(4))).run(sender=admin, level=bLevel.next())
-    scenario.verify(cmpt.data.liquidityPeriodRelevance == sp.nat(4))
-    scenario += governor.setPricePeriodRelevance(sp.record(comptroller = cmpt.address, blockNumber = sp.nat(4))).run(sender=admin, level=bLevel.next())
-    scenario.verify(cmpt.data.pricePeriodRelevance == sp.nat(4))
+    scenario += governor.setPendingGovernance(admin.address).run(sender=pendingGovernance, level=bLevel.current())
+    scenario += governor.acceptGovernance(sp.unit).run(sender=admin, level=bLevel.current())
 
     testCToken(scenario, cxtz, bLevel, alice, admin, governor, cmpt, irm, oracle, "CXTZ")
     testCxtzReserves(scenario, cxtz, bLevel, alice, admin, governor)
@@ -102,8 +92,8 @@ def testCToken(scenario, ctoken, bLevel, alice, admin, governor, cmpt, irm, orac
     scenario.verify(ctoken.data.pendingAdministrator.open_some() == alice.address)
 
     scenario.h3("Accept cToken governance")
-    scenario += ctoken.acceptGovernance(sp.unit).run(sender=alice, level=bLevel.next())
-    scenario += ctoken.setPendingGovernance(governor.address).run(sender=alice, level=bLevel.next())
+    scenario += ctoken.acceptGovernance(sp.unit).run(sender=alice, level=bLevel.current())
+    scenario += ctoken.setPendingGovernance(governor.address).run(sender=alice, level=bLevel.current())
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "accept contract governance", bLevel, admin, alice, governor.acceptContractGovernance, ctoken.address)
     scenario.verify(ctoken.data.administrator == governor.address)
 
@@ -126,7 +116,7 @@ def testCxtzReserves(scenario, cxtz, bLevel, alice, admin, governor):
     scenario.h3("Add reserves to reduce")
     prevBalance = scenario.compute(cxtz.balance)
     prevTotalReserves = scenario.compute(cxtz.data.totalReserves)
-    cxtz.addReserves(sp.nat(5)).run(sender = alice, level = bLevel.next(), amount = sp.mutez(5))
+    cxtz.addReserves(sp.nat(5)).run(sender = alice, level = bLevel.current(), amount = sp.mutez(5))
     scenario.verify(cxtz.data.totalReserves > prevTotalReserves)
     scenario.verify(cxtz.balance > prevBalance)
 
@@ -144,7 +134,7 @@ def testCfa12Reserves(scenario, cfa12, fa12Target, bLevel, alice, admin, governo
     scenario.h3("Add reserves to reduce")
     fa12Target.mint(sp.record(address = alice.address, value = 500))
     scenario += fa12Target.approve(sp.record(spender = cfa12.address, value = 500)).run(sender=alice)
-    cfa12.addReserves(sp.nat(500)).run(sender = alice, level = bLevel.next())
+    cfa12.addReserves(sp.nat(500)).run(sender = alice, level = bLevel.current())
 
     scenario.h3("Reduce reserves")
     prevBalance = scenario.compute(fa12Target.data.balances[cfa12.address].balance)
@@ -163,8 +153,8 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     scenario.verify(cmpt.data.pendingAdministrator.open_some() == alice.address)
 
     scenario.h3("Accept comptroller governance")
-    scenario += cmpt.acceptGovernance(sp.unit).run(sender=alice, level=bLevel.next())
-    scenario += cmpt.setPendingGovernance(governor.address).run(sender=alice, level=bLevel.next())
+    scenario += cmpt.acceptGovernance(sp.unit).run(sender=alice, level=bLevel.current())
+    scenario += cmpt.setPendingGovernance(governor.address).run(sender=alice, level=bLevel.current())
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "accept contract governance", bLevel, admin, alice, governor.acceptContractGovernance, cmpt.address)
     scenario.verify(cmpt.data.administrator == governor.address)
 
@@ -184,7 +174,7 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     scenario.verify(cmpt.data.liquidationIncentiveMantissa == arg.liquidationIncentive)
 
     scenario.h3("Support market")
-    arg = sp.record(comptroller = cmpt.address, market=sp.record(cToken = ctoken.address, name=sp.string("m1")))
+    arg = sp.record(comptroller = cmpt.address, market=sp.record(cToken = ctoken.address, name=sp.string("m1"), priceExp=10^18))
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "support market", bLevel, admin, alice, governor.supportMarket, arg)
     scenario.verify(cmpt.data.markets.contains(arg.market.cToken) & cmpt.data.markets[arg.market.cToken].isListed)
 

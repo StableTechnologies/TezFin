@@ -13,7 +13,7 @@ def test():
     bLevel = BlockLevel.BlockLevel()
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "florence")
+    scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("CXTZ tests")
@@ -27,26 +27,29 @@ def test():
 
     # Contracts
     scenario.h2("Contracts")
+    
     cmpt = CMPT.ComptrollerMock()
-    irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(840000000000), supplyRate_=sp.nat(180000000000))
+    scenario += cmpt
+    
+    irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(80000000000), supplyRate_=sp.nat(180000000000))
+    scenario += irm
+    
     view_result = RV.ViewerNat()
+    scenario += view_result
+
     c1 = CXTZ.CXTZ(comptroller_=cmpt.address, 
                    interestRateModel_=irm.address, 
                    administrator_=admin.address)
-
-    scenario += cmpt
-    scenario += irm
-    scenario += view_result
     scenario += c1
 
     scenario.h2("mint + transferIn")
     scenario.h3("first mint")
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
-    scenario += c1.mint(777).run(sender=alice, level=bLevel.next(), amount=sp.mutez(777))
+    scenario += c1.mint(777).run(sender=alice, level=bLevel.current(), amount=sp.mutez(777))
     scenario.verify(c1.data.balances[alice.address].balance == sp.nat(777))
     scenario.h3("second mint")
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
-    scenario += c1.mint(20).run(sender=admin, level=bLevel.next(), amount=sp.mutez(20))
+    scenario += c1.mint(20).run(sender=admin, level=bLevel.current(), amount=sp.mutez(20))
     scenario.verify(c1.data.balances[admin.address].balance == sp.nat(20))
 
     scenario.h2("getCash")
@@ -59,7 +62,7 @@ def test():
 
     scenario.h2("call transferOut inside borrow entry point ")
     DataRelevance.updateAllRelevance(scenario, bLevel, alice, c1, cmpt, c1.address, alice.address)
-    scenario += c1.borrow(sp.nat(777)).run(sender=alice, level=bLevel.next())
+    scenario += c1.borrow(sp.nat(777)).run(sender=alice, level=bLevel.current())
 
     scenario.h2("getCash after transferOut call")
     scenario += c1.getCash(sp.pair(sp.unit, view_result.typed.targetNat)).run(sender=alice, level=bLevel.next())

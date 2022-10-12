@@ -14,7 +14,7 @@ def test():
     bLevel = BlockLevel.BlockLevel()
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "florence")
+    scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("CFA1.2 tests")
@@ -29,10 +29,13 @@ def test():
     # Contracts
     scenario.h2("Contracts")
     cmpt = CMPT.ComptrollerMock()
-    irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(840000000000), supplyRate_=sp.nat(180000000000))
+    scenario += cmpt
+    irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(80000000000), supplyRate_=sp.nat(180000000000))
+    scenario += irm
     fa12 = FA12Mock.FA12Mock()
+    scenario += fa12
     view_result = RV.ViewerNat()
-
+    scenario += view_result
     exchange_rate = int(1e18)
     c1 = CFA12.CFA12(comptroller_=cmpt.address, 
                      interestRateModel_=irm.address,
@@ -40,10 +43,6 @@ def test():
                      administrator_=admin.address,
                      fa1_2_TokenAddress_ = fa12.address)
 
-    scenario += cmpt
-    scenario += irm
-    scenario += fa12
-    scenario += view_result
     scenario += c1
     
     scenario.h2("Check transferIn")
@@ -54,13 +53,13 @@ def test():
     scenario += fa12.mint(sp.record(address = alice.address, value = 100))
     scenario += fa12.approve(sp.record(spender = c1.address, value = 100)).run(sender=alice)
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
-    scenario += c1.mint(100).run(sender=alice, level=bLevel.next())
+    scenario += c1.mint(100).run(sender=alice, level=bLevel.current())
     scenario.verify(c1.data.balances[alice.address].balance == 100)
     scenario.h3("Second mint")
     scenario += fa12.mint(sp.record(address = admin.address, value = 10))
     scenario += fa12.approve(sp.record(spender = c1.address, value = 10)).run(sender=admin)
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
-    scenario += c1.mint(10).run(sender=admin, level=bLevel.next())
+    scenario += c1.mint(10).run(sender=admin, level=bLevel.current())
     scenario.verify(c1.data.balances[admin.address].balance == 10)
 
     scenario.h2("Check getCash")
@@ -85,7 +84,7 @@ def test():
 
     scenario.h2("Check transferOut")
     DataRelevance.updateAllRelevance(scenario, bLevel, alice, c1, cmpt, c1.address, alice.address)
-    scenario += c1.borrow(sp.nat(10)).run(sender=alice, level=bLevel.next())
+    scenario += c1.borrow(sp.nat(10)).run(sender=alice, level=bLevel.current())
     scenario.verify(fa12.data.balances[c1.address].balance == 100)
     scenario.verify(fa12.data.balances[alice.address].balance == 10)
 

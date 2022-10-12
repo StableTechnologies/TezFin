@@ -88,6 +88,10 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
     def setPendingGovernance(self, pendingAdminAddress):
         sp.set_type(pendingAdminAddress, sp.TAddress)
 
+    @sp.entry_point(lazify=True)
+    def removeFromLoans(self, borrower):
+        sp.set_type(borrower, sp.TAddress)
+        
     @sp.entry_point
     def acceptGovernance(self, unusedArg):
         sp.set_type(unusedArg, sp.TAddress)

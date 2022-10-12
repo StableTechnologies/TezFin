@@ -8,7 +8,7 @@ def test():
     expScale = sp.nat(int(1e18))
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "florence")
+    scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("InterestRateModel tests")
@@ -16,7 +16,7 @@ def test():
     multiplierPerBlock = 180000000000 # 0.00000018
     baseRatePerBlock = 840000000000 # 0.00000084
 
-    c1 = IRM.InterestRateModel(scale=expScale, multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
+    c1 = IRM.InterestRateModel(scale_=expScale, multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
     scenario += c1
 
     view_result = RV.ViewerNat()
