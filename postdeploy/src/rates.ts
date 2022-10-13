@@ -382,6 +382,17 @@ function calculateAccountBalance(accountPrincipal, borrowIndex, InterestIndex) {
 
   return principalTimesIndex.divide(bigInt(InterestIndex));
 }
+
+function _calcAnnualizedRate(
+	rate: bigInt.BigInteger,
+	expScale: bigInt.BigInteger,
+	annualPeriods = 1051920
+){
+	const apyrate = rate.multiply(annualPeriods).multiply(100);
+	const _readable = readable(rate,expScale)
+	return _readable;
+}
+
 export function calculateTotalBorrowBalance(
   market,
   protocolAddresses,
@@ -452,6 +463,7 @@ export function calculateTotalBorrowBalance(
     diffFromStroage: readable(deltaTotalBorrows, ctokenExpScale),
     diffAsNumOfBlocksInterest: deltaAsBlocksOfAppliedInterest,
     calcBrate: calcBrate,
+    apyForBrate: _calcAnnualizedRate(calcBrate, irmExpScale),
     readableBrateCalculated: readableBrateCalculated,
     scaledMantissa: scaledMantissa,
     readableScaled: readableScaled,
