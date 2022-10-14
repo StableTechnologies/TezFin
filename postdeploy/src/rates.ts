@@ -315,7 +315,6 @@ export const getTotalBorrows = (markets, token, protocolAddresses) => {
 	  tezosNode,
 	  market,
           acceptedError = "0",
-          tries = 3
 	) {
 
 	
@@ -393,10 +392,8 @@ export const getTotalBorrows = (markets, token, protocolAddresses) => {
         }
           const errOutOfExpectedRange =
             "Borrows calculated vs in Storage have a greater error than accepted";
-          var tried;
-          while (true) {
             try {
-              console.log("\n in borrow rate test \n");
+		    console.log('\n','in borrow test : ', '\n'); 
               const mrkt = await TezosLendingPlatform.GetMarkets(
                 comptroller,
                 protocolAddresses!,
@@ -423,13 +420,12 @@ export const getTotalBorrows = (markets, token, protocolAddresses) => {
                 console.log("\n Calculations for Borrows \n", borrowModel);
 
                 throw errOutOfExpectedRange;
-              }
+              }else {
 
               console.log("\n Calculations for Borrows \n", borrowModel);
-              return;
+              return
+	      }
             } catch (e) {
-              if (typeof e === "string" && e === errOutOfExpectedRange) throw e;
-              if (++tried == tries) throw e;
-            }
+               throw e 
           }
         }
