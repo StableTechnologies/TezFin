@@ -51,7 +51,7 @@ Code is organized in the following structure
        - [deploy.js](deploy/deploy_script/deploy.js) - conseiljs deployment script
     - [shell_scripts](deploy/shell_scripts) - shell scripts to compile and deploy contracts in one command
 
-## Run Contracts Unit Tests
+## Run Contract Unit Tests
 
 To run tests use SmartPy CLI from the core project directory. Create a folder for test outputs. Example:
 
@@ -70,7 +70,7 @@ cd TezFin
 ./contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh
 ```
 
-## Run Contracts E2E Tests
+## Run Contract E2E Tests
 
 To run e2e tests use the following command, you will need latest smartpy cli installed.
 
