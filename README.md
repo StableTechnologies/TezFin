@@ -77,6 +77,7 @@ To run e2e tests use the following command, you will need latest smartpy cli ins
 ```sh
 cd TezFin
 ./e2e/shell_scripts/deploy_all_contracts.sh ~/smartpy-cli/SmartPy.sh
+```
 
 ## Compile & Deploy Contracts
 
