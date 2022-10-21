@@ -124,13 +124,17 @@ export const mainnetAddresses: ProtocolAddresses = {
         "BTC": "KT1M9LQ2twkcz5gVwvX8toCN69oEMytERhZr",
         "XTZ": "KT1AMZChmZuQ7WM3imknJJhkmeXxRFrZ6uWu",
         "ETH": "KT1LxPGwkrvj8gG8k8CkpyKQaWyQAsnLfHLg",
-        "USD": "KT1AfDTR1CFo9L7PMdw643BUjn2dyaHsueDt"
+        "USD": "KT1AfDTR1CFo9L7PMdw643BUjn2dyaHsueDt",
+        "WTZ": "KT1F2HLNv4ev4U45fWMvAR5rUxPScdSZMvXK",
+        "OXTZ": "KT1TJnggKeM4ZhjW5KtWHswfyZ3yYNst53LZ"
     },
     fTokensReverse: {
         KT1AMZChmZuQ7WM3imknJJhkmeXxRFrZ6uWu: AssetType.XTZ,
         KT1LxPGwkrvj8gG8k8CkpyKQaWyQAsnLfHLg: AssetType.ETH,
         KT1AfDTR1CFo9L7PMdw643BUjn2dyaHsueDt: AssetType.USD,
-        KT1M9LQ2twkcz5gVwvX8toCN69oEMytERhZr: AssetType.BTC
+        KT1M9LQ2twkcz5gVwvX8toCN69oEMytERhZr: AssetType.BTC,
+        KT1F2HLNv4ev4U45fWMvAR5rUxPScdSZMvXK: AssetType.WTZ,
+        KT1TJnggKeM4ZhjW5KtWHswfyZ3yYNst53LZ: AssetType.OXTZ
     },
     underlying: {
         "ETH": {
