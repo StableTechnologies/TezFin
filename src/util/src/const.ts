@@ -167,6 +167,7 @@ export const mainnetAddresses: ProtocolAddresses = {
             balancesMapId: 19486,
             tokenStandard: TokenStandard.FA2,
             decimals: 6,
+            tokenId: 0,
             balancesPath: "$.int"
         },
         "BTC": {
