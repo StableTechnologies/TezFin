@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 // eslint-disable-next-line no-use-before-define
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -45,13 +46,6 @@ const Footer = () => {
                         activeClassName={classes.activeLink}
                     >
                         Market
-                    </NavLink>
-                    <NavLink
-                        to="feedback"
-                        className={classes.footerLink}
-                        activeClassName={classes.activeLink}
-                    >
-                        Feedback
                     </NavLink>
                     <NavLink
                         to="about"
