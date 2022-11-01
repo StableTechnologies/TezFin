@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable import/prefer-default-export */
 import { makeStyles } from '@mui/styles';
 
@@ -19,10 +20,10 @@ export const useStyles = makeStyles({
             fontSize: '20px',
             lineHeight: '30px',
             color: '#000',
-            padding: '0.925rem 4rem 0'
+            padding: '0.925rem 0rem 0rem !important'
         },
         '& .MuiDialogContent-root': {
-            padding: '10 2.5rem 2.5rem'
+            padding: '0rem 3rem 1.5rem'
         },
         '& .MuiDialogContentText-root': {
             fontFamily: 'Poppins',
@@ -78,12 +79,14 @@ export const useStyles = makeStyles({
     },
     headerCon: {
         display: 'flex',
+        padding: '0.925rem 2rem 0rem !important',
         '@media(max-width: 501px)': {
-            padding: '0.925rem 2rem !important'
+            padding: '0.925rem 2rem 0rem !important'
         },
         '@media(max-width: 320px)': {
-            padding: '0.925rem .5rem !important'
+            padding: '0.925rem .5rem 0rem !important'
         }
+        // border: '2px solid #161616'
     },
     title: {
         fontSize: '1.5rem',
@@ -103,5 +106,9 @@ export const useStyles = makeStyles({
             width: '1.25rem',
             height: '1.25rem'
         }
+    },
+    btnCon: {
+        flexDirection: 'column',
+        padding: '0rem 2rem 0.925rem !important'
     }
 });

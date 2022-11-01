@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 // eslint-disable-next-line no-use-before-define
 import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material';
@@ -17,8 +18,7 @@ const DisclamerModal = (props) => {
     const { close } = props;
     const title = 'Please Exercise Caution';
 
-    const para1 = `While the initial creators of the TezFin (Tezos Finance;
-        tezos.finance) protocol have made reasonable
+    const para1 = `While the initial creators of the TezFin protocol have made reasonable
         efforts to attempt to ensure the security of the
         contracts and platform, including modeling much of
         the codebase from existing well-audited projects
@@ -55,7 +55,7 @@ const DisclamerModal = (props) => {
                     <DialogContentText> {para1} </DialogContentText>
                     <DialogContentText> {para2} </DialogContentText>
                 </DialogContent>
-                <DialogActions sx={{ flexDirection: 'column' }}>
+                <DialogActions className={classes.btnCon}>
                     <>
                         <Button
                             className={` ${classes.btnMain} `}
