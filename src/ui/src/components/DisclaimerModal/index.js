@@ -24,7 +24,7 @@ const DisclamerModal = (props) => {
         the codebase from existing well-audited projects
         from other blockchains, and by soliciting review from
         friends, nothing approaching the rigor of a formal
-        audit has been conducted at this time`;
+        audit has been conducted at this time.`;
 
     const para2 = `We STRONGLY urge caution to anyone who chooses
         to engage with these contracts and this platform. If
