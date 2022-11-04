@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 /* eslint-disable import/prefer-default-export */
 import { makeStyles } from '@mui/styles';
 
