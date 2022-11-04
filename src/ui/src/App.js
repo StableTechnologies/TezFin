@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 /* eslint-disable array-element-newline */
 /* eslint-disable import/extensions */
 import { useEffect } from 'react';
