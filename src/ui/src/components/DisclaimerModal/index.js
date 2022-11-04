@@ -17,14 +17,13 @@ const DisclamerModal = (props) => {
     const { close } = props;
     const title = 'Please Exercise Caution';
 
-    const para1 = `While the initial creators of the TezFin (Tezos Finance;
-        tezos.finance) protocol have made reasonable
+    const para1 = `While the initial creators of the TezFin protocol have made reasonable
         efforts to attempt to ensure the security of the
         contracts and platform, including modeling much of
         the codebase from existing well-audited projects
         from other blockchains, and by soliciting review from
         friends, nothing approaching the rigor of a formal
-        audit has been conducted at this time`;
+        audit has been conducted at this time.`;
 
     const para2 = `We STRONGLY urge caution to anyone who chooses
         to engage with these contracts and this platform. If
@@ -55,7 +54,7 @@ const DisclamerModal = (props) => {
                     <DialogContentText> {para1} </DialogContentText>
                     <DialogContentText> {para2} </DialogContentText>
                 </DialogContent>
-                <DialogActions sx={{ flexDirection: 'column' }}>
+                <DialogActions className={classes.btnCon}>
                     <>
                         <Button
                             className={` ${classes.btnMain} `}

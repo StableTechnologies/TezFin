@@ -19,10 +19,15 @@ export const useStyles = makeStyles({
             fontSize: '20px',
             lineHeight: '30px',
             color: '#000',
-            padding: '0.925rem 4rem 0'
+            padding: '0.925rem 0rem 0rem !important'
         },
         '& .MuiDialogContent-root': {
-            padding: '10 2.5rem 2.5rem'
+            '@media(min-width: 500px)': {
+                padding: '0rem 3rem 1.5rem !important'
+            },
+            '@media(max-width: 499px)': {
+                padding: '0rem 1.5rem 1.5rem !important'
+            }
         },
         '& .MuiDialogContentText-root': {
             fontFamily: 'Poppins',
@@ -34,8 +39,8 @@ export const useStyles = makeStyles({
             color: '#000',
             opacity: '0.87',
             padding: '1.35rem 0rem 0',
-            '@media(max-width: 501px)': {
-                fontSize: '0.875rem'
+            '@media(max-width: 499px)': {
+                fontSize: '0.9rem'
             }
         },
         '& .MuiDialogActions-root': {
@@ -78,11 +83,12 @@ export const useStyles = makeStyles({
     },
     headerCon: {
         display: 'flex',
-        '@media(max-width: 501px)': {
-            padding: '0.925rem 2rem !important'
+        padding: '0.925rem 2rem 0rem !important',
+        '@media(max-width: 499px)': {
+            padding: '0.925rem 0.5rem 0rem !important'
         },
         '@media(max-width: 320px)': {
-            padding: '0.925rem .5rem !important'
+            padding: '0.925rem 0.5rem 0rem !important'
         }
     },
     title: {
@@ -90,7 +96,7 @@ export const useStyles = makeStyles({
         color: '#000',
         opacity: '0.87',
         '@media(max-width: 501px)': {
-            fontSize: '1rem'
+            fontSize: '1.2rem'
         }
     },
     warningCon: {
@@ -103,5 +109,9 @@ export const useStyles = makeStyles({
             width: '1.25rem',
             height: '1.25rem'
         }
+    },
+    btnCon: {
+        flexDirection: 'column',
+        padding: '0rem 2rem 0.925rem !important'
     }
 });
