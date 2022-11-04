@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 // eslint-disable-next-line no-use-before-define
 import React from 'react';
 import { NavLink } from 'react-router-dom';
