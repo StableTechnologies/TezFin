@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 // eslint-disable-next-line no-use-before-define
 import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material';
