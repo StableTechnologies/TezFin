@@ -47,13 +47,6 @@ const Footer = () => {
                         Market
                     </NavLink>
                     <NavLink
-                        to="feedback"
-                        className={classes.footerLink}
-                        activeClassName={classes.activeLink}
-                    >
-                        Feedback
-                    </NavLink>
-                    <NavLink
                         to="about"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}

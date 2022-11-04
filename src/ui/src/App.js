@@ -13,6 +13,7 @@ import './App.css';
 import Nav from './components/Header/nav';
 import Header from './components/Header';
 import Home from './components/Home';
+// eslint-disable-next-line import/no-unresolved
 import Dashboard from './components/Dashboard';
 import DebugDashboard from './components/Debug';
 import ComingSoon from './components/ComingSoon/index.tsx';
@@ -66,11 +67,6 @@ const App = () => {
                     <Route exact path='/dashboard'>
                         <Header />
                         <Dashboard />
-                    </Route>
-                    <Route exact path='/feedback'>
-                        <Grid sx={{ width: '100%', height: '100vh' }}>
-                            <iframe src="https://tezfin.upvoty.com/" width='100%' height='100%' />
-                        </Grid>
                     </Route>
                     <Route exact path={['/about', '/market']} component={ComingSoon} />
                     <Route exact path='/debugDashboard'>
