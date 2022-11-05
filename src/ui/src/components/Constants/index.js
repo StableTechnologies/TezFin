@@ -33,7 +33,7 @@ export const tokens = [
     //     title: 'CTez', logo: ctez, fLogo: fCtez, banner: 'CTez', assetType: AssetType.CTEZ
     // },
     {
-        title: 'OXTZ', logo: oxtz, fLogo: fOXTZ, banner: 'OXTZ', assetType: AssetType.OXTZ
+        title: 'oXTZ', logo: oxtz, fLogo: fOXTZ, banner: 'oXTZ', assetType: AssetType.OXTZ
     },
     {
         title: 'WTZ', logo: wtz, fLogo: fWTZ, banner: 'WTZ', assetType: AssetType.WTZ // TODO:  update fToken for  WTZ
