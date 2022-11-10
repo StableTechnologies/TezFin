@@ -2,6 +2,10 @@
 /* eslint-disable import/prefer-default-export */
 import { makeStyles } from '@mui/styles';
 
+// full screen : 500px+
+// mid screen : 390px+
+// sm screen : 350px-
+
 export const useStyles = makeStyles({
     root: {
         '& .MuiDialog-paper': {
@@ -10,109 +14,70 @@ export const useStyles = makeStyles({
             textAlign: 'left',
             borderRadius: '0',
             background: '#FFFFFF',
-            color: '#000'
-        },
-        '& .MuiDialogTitle-root': {
-            justifyContent: 'center',
-            fontFamily: 'Poppins',
-            fontStyle: 'normal',
-            fontWeight: '700',
-            fontSize: '20px',
-            lineHeight: '30px',
             color: '#000',
-            padding: '0.925rem 0rem 0rem !important'
+            padding: '1rem 1.5rem 1.5rem !important',
         },
         '& .MuiDialogContent-root': {
-            '@media(min-width: 500px)': {
-                padding: '0rem 3rem 1.5rem !important'
-            },
-            '@media(max-width: 499px)': {
-                padding: '0rem 1.5rem 1.5rem !important'
-            }
+            padding: '0.75rem 0rem 0.75rem !important',
         },
         '& .MuiDialogContentText-root': {
-            fontFamily: 'Poppins',
-            fontStyle: 'normal',
-            fontWeight: '400',
-            fontSize: '16px',
-            lineHeight: '24px',
             textAlign: 'justify',
-            color: '#000',
-            opacity: '0.87',
-            padding: '1.35rem 0rem 0',
-            '@media(max-width: 499px)': {
-                fontSize: '0.9rem'
-            }
         },
-        '& .MuiDialogActions-root': {
-            padding: '2.75rem 2.875rem',
-            '@media(max-width: 768px)': {
-                padding: '30px 2.875rem'
-            },
-            '@media(max-width: 501px)': {
-                padding: '1.875rem'
-            },
-            '@media(max-width: 320px)': {
-                paddingLeft: '1rem',
-                paddingRight: '1rem'
-            }
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-            border: '0'
-        },
-        '& .MuiButton-text': {
-            textTransform: 'none'
-        }
+    },
+    btnCon: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '0px 0px 0px !important',
     },
     btnMain: {
-        background: '#39E4B8',
+        backgroundColor: '#39E4B8',
         color: '#fff',
-        '&:hover': {
-            background: '#30D3AA'
-        },
         borderRadius: '.5rem',
         width: '380px',
         height: '48px',
         fontSize: '1.25rem',
         fontWeight: '500',
         lineHeight: '1.875rem',
-        textTransform: 'unset',
-        '@media(max-width: 501px)': {
-            width: '100%',
-            fontSize: '1rem'
-        }
+        textTransform: 'none',
+        '&:hover': {
+            backgroundColor: '#30D3AA',
+        },
+        '@media(max-width:390px)': {
+            fontSize: '0.925rem',
+        },
+        '@media(min-width:500px)': {
+            fontSize: '1.5rem',
+        },
     },
     headerCon: {
         display: 'flex',
-        padding: '0.925rem 2rem 0rem !important',
-        '@media(max-width: 499px)': {
-            padding: '0.925rem 0.5rem 0rem !important'
-        },
-        '@media(max-width: 320px)': {
-            padding: '0.925rem 0.5rem 0rem !important'
-        }
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '0px 0px 0px !important',
+        gap: '1rem',
     },
     title: {
-        fontSize: '1.5rem',
+        fontSize: '1.25rem',
         color: '#000',
         opacity: '0.87',
-        '@media(max-width: 501px)': {
-            fontSize: '1.2rem'
-        }
-    },
-    warningCon: {
-        marginRight: '1rem'
+        '@media(max-width:390px)': {
+            fontSize: '0.925rem',
+        },
+        '@media(min-width:500px)': {
+            fontSize: '1.5rem',
+        },
     },
     warningIcon: {
-        width: '2rem',
-        height: '2rem',
-        '@media(max-width: 501px)': {
-            width: '1.25rem',
-            height: '1.25rem'
-        }
+        height: '1.25rem',
+        width: '1.25rem',
+        '@media(max-width:390px)': {
+            height: '0.925rem',
+            width: '0.925rem',
+        },
+        '@media(min-width:500px)': {
+            height: '1.5rem',
+            width: '1.5rem',
+        },
     },
-    btnCon: {
-        flexDirection: 'column',
-        padding: '0rem 2rem 0.925rem !important'
-    }
 });

@@ -7,7 +7,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Box from '@mui/material/Box';
 
 import WarningIcon from '../../assets/warning.svg';
 
@@ -41,31 +40,27 @@ const DisclamerModal = (props) => {
             <Dialog
                 open={openDisclaimerModal}
                 onClose={close}
-                className={classes.root}
-            >
+                className={classes.root}>
                 <DialogTitle className={classes.headerCon}>
-                    <Box className={classes.warningCon}>
-                        <img src={WarningIcon} alt='warning-icon' className={classes.warningIcon} />
-                    </Box>
-                    <Typography className={classes.title}>
-                        {title}
-                    </Typography>
+                    <img
+                        src={WarningIcon}
+                        alt='warning-icon'
+                        className={classes.warningIcon}
+                    />
+                    <Typography className={classes.title}>{title}</Typography>
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText> {para1} </DialogContentText>
                     <DialogContentText> {para2} </DialogContentText>
                 </DialogContent>
                 <DialogActions className={classes.btnCon}>
-                    <>
-                        <Button
-                            className={` ${classes.btnMain} `}
-                            onClick={() => {
-                                setDisclaimerModal(false);
-                            }}
-                        >
-                            {buttonLabel}
-                        </Button>
-                    </>
+                    <Button
+                        className={` ${classes.btnMain} `}
+                        onClick={() => {
+                            setDisclaimerModal(false);
+                        }}>
+                        {buttonLabel}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>
