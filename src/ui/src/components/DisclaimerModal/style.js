@@ -21,6 +21,7 @@ export const useStyles = makeStyles({
         },
         '& .MuiDialogContentText-root': {
             textAlign: 'justify',
+            padding: '0 0 0.5rem',
         },
     },
     btnCon: {
@@ -71,7 +72,7 @@ export const useStyles = makeStyles({
         height: '1.25rem',
         width: '1.25rem',
         '@media(max-width:390px)': {
-            height: '0.925rem',
+            height: '1rem',
             width: '0.925rem',
         },
         '@media(min-width:500px)': {
