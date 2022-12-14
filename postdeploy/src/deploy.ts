@@ -15,8 +15,11 @@ export async function postDeploy(keystore: KeyStore, signer: Signer, protocolAdd
 
 export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, address: string){
     let ops: Transaction[] = []
-    for (const asset of config.tokenMint)
-        ops.push(tokenMint(asset, keystore!, signer!, protocolAddresses!, address, config.mintAmounts[asset]))
+    for (const asset of config.tokenMint){
+        const res = tokenMint(asset, keystore!, signer!, protocolAddresses!, address, config.mintAmounts[asset]);
+        if(res!=undefined)
+            ops.push(res)
+    }
     const counter = await TezosNodeReader.getCounterForAccount(config.tezosNode, keystore.publicKeyHash);
     const opGroup = await TezosNodeWriter.prepareOperationGroup(config.tezosNode, keystore, counter, ops, true);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
@@ -30,6 +33,9 @@ export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protoco
 }
 
 export function tokenMint(asset: string, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, address: string, mintAmount: number, gas: number = 800_000, freight: number = 20_000) {
+    if(!Object.prototype.hasOwnProperty.call(protocolAddresses.underlying, asset)){
+        return undefined
+    }
     let payload = ""
     log.info(`minting ${mintAmount} ${asset} tokens to ${address}`);
     const amount = new BigNumber(10).pow(protocolAddresses.underlying[asset].decimals).multipliedBy(mintAmount).toFixed();
@@ -49,6 +55,9 @@ export function tokenMint(asset: string, keystore: KeyStore, signer: Signer, pro
 
 async function supportMarket(asset: AssetType, priceExp: number, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     // supportMarket
+    if(!Object.prototype.hasOwnProperty.call(protocolAddresses.fTokens, asset)){
+        return
+    }
     log.info(`supportMarket ${asset}`);
     const supportMarket: Governance.SupportMarketPair = {
         comptroller: protocolAddresses.comptroller,
@@ -65,6 +74,9 @@ async function supportMarket(asset: AssetType, priceExp: number, keystore: KeySt
 
 async function unpauseMarkets(asset: AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     // setMintPaused
+    if(!Object.prototype.hasOwnProperty.call(protocolAddresses.fTokens, asset)){
+        return
+    }
     log.info(`setMintPaused: ${asset}`);
     const setMintPaused: Governance.SetMintPausedPair = {
         comptrollerAddress: protocolAddresses.comptroller,

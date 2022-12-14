@@ -52,7 +52,7 @@ export namespace Comptroller {
      * @param server The Tezos node to communicate with
      * @param address
      */
-    export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string, conseilServerInfo: ConseilServerInfo): Promise<Storage> {
+    export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         // get marketsMapId
         const marketsMapId = JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0];
@@ -125,7 +125,7 @@ export namespace Comptroller {
             isListed: JSONPath({ path: '$.args[0].args[2].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
             mintPaused: JSONPath({ path: '$.args[1].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
             price: bigInt(JSONPath({ path: '$.args[2].int', json: result })[0]),
-            updateLevel: JSONPath({ path: '$.args[3].int', json: result })[0],
+            updateLevel: JSONPath({ path: '$.args[4].int', json: result })[0],
         } as Market;
     }
 

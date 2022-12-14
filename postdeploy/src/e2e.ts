@@ -24,7 +24,7 @@ async function test(keystore: KeyStore, signer: Signer, keystore1: KeyStore, sig
         // collateralize for user 1
         await ComptrollerHelper.enterMarkets(["USD"] as AssetType[], keystore1!, signer1!, protocolAddresses!);
         // get comptroller
-        const comptroller = await Comptroller.GetStorage(protocolAddresses!.comptroller, protocolAddresses!, config.tezosNode, config.conseilServer as ConseilServerInfo);
+        const comptroller = await Comptroller.GetStorage(protocolAddresses!.comptroller, protocolAddresses!, config.tezosNode);
         // borrow for user 1
         for (const borrow of ["ETH"])
             await FTokenHelper.borrow(borrow as AssetType, 3, comptroller, protocolAddresses!, keystore1!, signer1!);

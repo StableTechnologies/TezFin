@@ -5,7 +5,7 @@ import * as config from '../config/config.json';
 
 export async function enterMarkets(assets: AssetType[], keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     log.info(`Getting comptroller storage`);
-    const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, config.tezosNode, config.conseilServer as ConseilServerInfo);
+    const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, config.tezosNode);
     let collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, config.tezosNode);
     log.info(`Current collateralized markets for ${keystore.publicKeyHash}:\n${JSON.stringify(collaterals)}`);
     // enterMarkets
@@ -25,7 +25,7 @@ export async function enterMarkets(assets: AssetType[], keystore: KeyStore, sign
 
 export async function exitMarket(asset: AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
     log.info(`Getting comptroller storage`);
-    const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, config.tezosNode, config.conseilServer as ConseilServerInfo);
+    const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, config.tezosNode);
     let collaterals = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, config.tezosNode);
     log.info(`Current collateralized markets for ${keystore.publicKeyHash}:\n${JSON.stringify(collaterals)}`);
     // exitMarket
@@ -42,7 +42,7 @@ export async function exitMarket(asset: AssetType, keystore: KeyStore, signer: S
 
 export async function getCollateral(keystore: KeyStore, protocolAddresses: ProtocolAddresses) {
     log.info(`Get collateralized markets for ${keystore.publicKeyHash}`);
-    const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, config.tezosNode, config.conseilServer as ConseilServerInfo);
+    const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, config.tezosNode);
     const assets = await Comptroller.GetCollaterals(keystore.publicKeyHash, comptroller, protocolAddresses, config.tezosNode);
     log.info(`Current collateralized markets for ${keystore.publicKeyHash}:\n\t ${JSON.stringify(assets)}`);
     return assets;
