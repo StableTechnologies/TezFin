@@ -344,8 +344,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     #     return liquidity
 
     def getAccountLiquidityInternal(self, account):
-        calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(sp.record(
-            cTokenModify=sp.none, account=account, redeemTokens=sp.nat(0), borrowAmount=sp.nat(0)))).value
+        calcLiquidity = sp.local('calcLiquidity', self.calculateAccountLiquidityWithView(
+            sp.record(account=account))).value
         liquidity = sp.compute(
             calcLiquidity.sumCollateral - calcLiquidity.sumBorrowPlusEffects)
         return liquidity
@@ -409,7 +409,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(maxClose.value >= params.repayAmount, EC.CMPT_TOO_MUCH_REPAY)
 
         sp.result(True)
-    
+
     """
         Determines whether a seize is allwed
 
@@ -417,7 +417,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.onchain_view()
     def seizeAllowed(self, params):
-        sp.set_type(params, sp.TRecord(cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
+        sp.set_type(params, sp.TRecord(
+            cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
         # liquidator is not used, left here for future proofing
 
         self.verifyMarketListed(params.cTokenBorrowed)
@@ -425,9 +426,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         borrowComptroller = sp.view("comptroller", params.cTokenBorrowed, sp.unit,
                                     t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-        
+
         collateralComptroller = sp.view("comptroller", params.cTokenCollateral, sp.unit,
-                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
+                                        t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
 
         sp.verify(borrowComptroller == collateralComptroller,
                   EC.CMPT_COMPTROLLER_MISMATCH)
@@ -435,7 +436,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.result(True)
 
     def calculateCurrentAccountLiquidityWithView(self, account):
-        return self.calculateAccountLiquidityWithView(sp.record(cTokenModify=sp.none, account=account, redeemTokens=sp.nat(0), borrowAmount=sp.nat(0)))
+        return self.calculateAccountLiquidityWithView(sp.record(account=account))
 
     def calculateAccountLiquidityWithView(self, params):
         calculation = sp.local('calculation', sp.record(
@@ -447,7 +448,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                 # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
                 # updateAssetPrice() should be executed within 5 blocks prior to this call
                 temp = self.calculateAccountAssetLiquidityView(
-                    asset, params.account, params.cTokenModify, params.redeemTokens, params.borrowAmount)
+                    asset, params.account)
                 calculation.sumCollateral += temp.sumCollateral
                 calculation.sumBorrowPlusEffects += temp.sumBorrowPlusEffects
         sp.if self.data.loans.contains(params.account):
@@ -458,18 +459,18 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                         # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
                         # updateAssetPrice() should be executed within 5 blocks prior to this call
                         temp = self.calculateAccountAssetLiquidityView(
-                            asset, params.account, params.cTokenModify, params.redeemTokens, params.borrowAmount)
+                            asset, params.account)
                         calculation.sumCollateral += temp.sumCollateral
                         calculation.sumBorrowPlusEffects += temp.sumBorrowPlusEffects
                 sp.else:
                     temp = self.calculateAccountAssetLiquidityView(
-                        asset, params.account, params.cTokenModify, params.redeemTokens, params.borrowAmount)
+                        asset, params.account)
                     calculation.sumCollateral += temp.sumCollateral
                     calculation.sumBorrowPlusEffects += temp.sumBorrowPlusEffects
 
         return calculation
 
-    def calculateAccountAssetLiquidityView(self, asset, account, cTokenModify, redeemTokens, borrowAmount):
+    def calculateAccountAssetLiquidityView(self, asset, account):
         params = sp.view("getAccountSnapshotView", asset, account,
                          t=CTI.TAccountSnapshot).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
         exchangeRate = sp.compute(self.makeExp(params.exchangeRateMantissa))
@@ -485,11 +486,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                 tokensToDenom, params.cTokenBalance)
         calc.sumBorrowPlusEffects += self.mulScalarTruncate(
             self.data.markets[asset].price, params.borrowBalance)
-        sp.if sp.some(asset) == cTokenModify:
+        sp.if sp.some(asset) == sp.none:
             calc.sumCollateral += self.mulScalarTruncate(
-                tokensToDenom, redeemTokens)
+                tokensToDenom, sp.nat(0))
             calc.sumBorrowPlusEffects += self.mulScalarTruncate(
-                self.data.markets[asset].price, borrowAmount)
+                self.data.markets[asset].price, sp.nat(0))
         return calc
 
     """
