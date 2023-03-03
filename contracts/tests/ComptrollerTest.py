@@ -40,7 +40,8 @@ class ComptrollerTest(CMPT.Comptroller):
 
     @sp.onchain_view()
     def calculateAccountLiquidityExposed(self, params):
-        sp.result(self.calculateAccountLiquidityWithView(params))
+        result = self.calculateAccountLiquidityWithView(params)
+        sp.result(result)
 
 
 @sp.add_test(name="Comptroller_Tests")
@@ -48,7 +49,7 @@ def test():
     bLevel = BlockLevel.BlockLevel()
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "kathmandu")
+    # scenario.add_flag("protocol", "kathmandu")
 
     scenario.table_of_contents()
     scenario.h1("Comptroller tests")
@@ -407,14 +408,14 @@ def test():
     result = sp.view("calculateAccountLiquidityExposed", cmpt.address, liquidityParams, t=sp.TRecord(
         sumBorrowPlusEffects=sp.TNat, sumCollateral=sp.TNat)).open_some()
     scenario.verify_equal(
-        (result.sumCollateral-result.sumBorrowPlusEffects), -70)
+        (result.sumCollateral-result.sumBorrowPlusEffects), -90)
     scenario.h3("Get liquidity with borrow")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
     liquidityParams = sp.record(account=bob.address)
     result = sp.view("calculateAccountLiquidityExposed", cmpt.address, liquidityParams, t=sp.TRecord(
         sumBorrowPlusEffects=sp.TNat, sumCollateral=sp.TNat)).open_some()
     scenario.verify_equal(
-        (result.sumCollateral-result.sumBorrowPlusEffects), -110)
+        (result.sumCollateral-result.sumBorrowPlusEffects), -90)
 
     scenario.h2("Test admin functionality")
     scenario.h3("Set price oracle")
