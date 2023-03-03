@@ -510,11 +510,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                 tokensToDenom, params.cTokenBalance)
         calc.sumBorrowPlusEffects += self.mulScalarTruncate(
             self.data.markets[asset].price, params.borrowBalance)
-        sp.if sp.some(asset) == sp.none:
-            calc.sumCollateral += self.mulScalarTruncate(
-                tokensToDenom, sp.nat(0))
-            calc.sumBorrowPlusEffects += self.mulScalarTruncate(
-                self.data.markets[asset].price, sp.nat(0))
         return calc
 
     """
