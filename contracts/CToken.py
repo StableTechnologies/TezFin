@@ -345,11 +345,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         self.verifyAccruedInterestRelevance()
 
-        accrualBlockNumber = sp.view("accrualBlockNumber", cTokenCollateral, sp.unit,
-                                     t=sp.TNat).open_some("INVALID ACCRUAL BLOCK NUMBER VIEW")
-
-        sp.verify(sp.level == accrualBlockNumber, EC.CT_INTEREST_OLD)
-
         sp.verify(borrower != liquidator,
                   EC.CT_LIQUIDATE_LIQUIDATOR_IS_BORROWER)
 
