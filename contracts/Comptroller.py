@@ -75,7 +75,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def enterMarkets(self, cTokens):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(cTokens, sp.TList(sp.TAddress))
         sp.for token in cTokens:
             self.addToCollaterals(token, sp.sender)
@@ -102,7 +103,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point
     def exitMarket(self, cToken):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(cToken, sp.TAddress)
         self.activateOp(OP.ComptrollerOperations.EXIT_MARKET)
 
@@ -118,7 +120,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setAccountSnapAndExitMarket(self, accountSnapshot):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(accountSnapshot, CTI.TAccountSnapshot)
         sp.verify(accountSnapshot.borrowBalance ==
                   sp.nat(0), EC.CMPT_BORROW_IN_MARKET)
@@ -141,7 +144,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def mintAllowed(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, CMPTInterface.TMintAllowedParams)
         sp.verify(
             ~ self.data.markets[params.cToken].mintPaused, EC.CMPT_MINT_PAUSED)
@@ -162,7 +166,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def redeemAllowed(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, CMPTInterface.TRedeemAllowedParams)
         self.redeemAllowedInternal(
             params.cToken, params.redeemer, params.redeemAmount)
@@ -198,7 +203,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def borrowAllowed(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, CMPTInterface.TBorrowAllowedParams)
         sp.verify(
             ~ self.data.markets[params.cToken].borrowPaused, EC.CMPT_BORROW_PAUSED)
@@ -225,7 +231,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
     @sp.entry_point(lazify=True)
     def removeFromLoans(self, borrower):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         self.verifyMarketListed(sp.sender)
         sp.if self.data.loans.contains(borrower) & self.data.loans[borrower].contains(sp.sender):
             self.data.loans[borrower].remove(sp.sender)
@@ -241,7 +248,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def repayBorrowAllowed(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, CMPTInterface.TRepayBorrowAllowedParams)
         self.verifyMarketListed(params.cToken)
         self.invalidateLiquidity(params.borrower)
@@ -262,7 +270,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def transferAllowed(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, CMPTInterface.TTransferAllowedParams)
         sp.verify(~ self.data.transferPaused, EC.CMPT_TRANSFER_PAUSED)
         self.redeemAllowedInternal(
@@ -273,7 +282,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point
     def updateAllAssetPricesWithView(self):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         self.updateAllAssetPrices()
 
     def updateAllAssetPrices(self):
@@ -298,7 +308,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point
     def updateAccountLiquidityWithView(self, account):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(account, sp.TAddress)
         self.updateAllAssetPrices()
         self.accrueAllAssetInterests()
@@ -312,7 +323,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setAccountLiquidityWithView(self, account):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(account, sp.TAddress)
         liquidity = sp.local(
             'liquidity', self.calculateCurrentAccountLiquidityWithView(account)).value
@@ -514,7 +526,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setPendingGovernance(self, pendingAdminAddress):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(pendingAdminAddress, sp.TAddress)
         self.verifyAdministrator()
         self.data.pendingAdministrator = sp.some(pendingAdminAddress)
@@ -528,7 +541,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def acceptGovernance(self, unusedArg):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(unusedArg, sp.TUnit)
         sp.verify(sp.sender == self.data.pendingAdministrator.open_some(
             EC.CMPT_NOT_SET_PENDING_ADMIN), EC.CMPT_NOT_PENDING_ADMIN)
@@ -546,7 +560,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setMintPaused(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, sp.TRecord(cToken=sp.TAddress, state=sp.TBool))
         self.verifyMarketListed(params.cToken)
         self.verifyAdministrator()
@@ -563,7 +578,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setBorrowPaused(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, sp.TRecord(cToken=sp.TAddress, state=sp.TBool))
         self.verifyMarketListed(params.cToken)
         self.verifyAdministrator()
@@ -578,7 +594,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setTransferPaused(self, state):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(state, sp.TBool)
         self.verifyAdministrator()
         self.data.transferPaused = state
@@ -592,7 +609,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setPriceOracle(self, priceOracle):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(priceOracle, sp.TAddress)
         self.verifyAdministrator()
         self.data.oracleAddress = priceOracle
@@ -606,7 +624,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setCloseFactor(self, closeFactorMantissa):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(closeFactorMantissa, sp.TNat)
         self.verifyAdministrator()
         self.data.closeFactorMantissa = closeFactorMantissa
@@ -622,7 +641,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setCollateralFactor(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, sp.TRecord(
             cToken=sp.TAddress, newCollateralFactor=sp.TNat))
         self.verifyAdministrator()
@@ -638,7 +658,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setLiquidationIncentive(self, liquidationIncentiveMantissa):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(liquidationIncentiveMantissa, sp.TNat)
         self.verifyAdministrator()
         self.data.liquidationIncentiveMantissa = liquidationIncentiveMantissa
@@ -655,7 +676,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def supportMarket(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, sp.TRecord(cToken=sp.TAddress,
                     name=sp.TString, priceExp=sp.TNat))
         self.verifyAdministrator()
@@ -683,7 +705,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def disableMarket(self, cToken):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(cToken, sp.TAddress)
         self.verifyAdministrator()
         self.verifyMarketListed(cToken)
@@ -700,7 +723,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setMarketBorrowCap(self, params):
-        sp.verify(sp.amount <= 0, "Do not send tez to this entrypoint")
+        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+            0), "Do not send tez to this entrypoint")
         sp.set_type(params, sp.TRecord(
             cToken=sp.TAddress, newBorrowCap=sp.TNat))
         self.verifyAdministrator()
