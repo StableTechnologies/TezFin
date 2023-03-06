@@ -38,9 +38,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Initial exchange rate used when minting the first CTokens
             initialExchangeRateMantissa=initialExchangeRateMantissa_,
             # Fraction of interest currently set aside for reserves
-            reserveFactorMantissa=sp.nat(50000000000000000),  # 5%
+            reserveFactorMantissa=sp.nat(50000000000000000), # 5%
             # protocol share for sezied asstes
-            protocolSeizeShareMantissa=sp.nat(100000000000000),  # 0.01%
+            protocolSeizeShareMantissa=sp.nat(100000000000000), #0.01%
             # Block number that interest was last accrued at
             accrualBlockNumber=sp.nat(0),
             # Accumulator of the total earned interest rate since the opening of the market
@@ -179,7 +179,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def borrow(self, params):
-
         sp.set_type(params, sp.TNat)
         self.verifyNotInternal()
         self.verifyBorrowAllowed(sp.sender, params)
@@ -213,7 +212,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def repayBorrow(self, params):
-
         sp.set_type(params, sp.TNat)
         self.verifyNotInternal()
         self.verifyRepayBorrowAllowed(sp.sender, sp.sender, params)
@@ -232,7 +230,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def repayBorrowBehalf(self, params):
-
         sp.set_type(params, sp.TRecord(
             borrower=sp.TAddress, repayAmount=sp.TNat))
         self.verifyNotInternal()
@@ -275,7 +272,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def seize(self, params):
-
         sp.set_type(params, CTI.TSeize)
         self.seizeInternal(sp.sender, params.liquidator,
                            params.borrower, params.seizeTokens)
@@ -331,7 +327,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point
     def liquidateBorrow(self, params):
-
         sp.set_type(params, CTI.TLiquidate)
 
         self.liquidateBorrowFresh(
@@ -382,7 +377,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def transfer(self, params):
-
         sp.set_type(params, sp.TRecord(from_=sp.TAddress, to_=sp.TAddress,
                     value=sp.TNat).layout(("from_ as from", ("to_ as to", "value"))))
         sp.verify((params.from_ == sp.sender) |
@@ -425,7 +419,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point(lazify=True)
     def approve(self, params):
-
         sp.set_type(params, sp.TRecord(spender=sp.TAddress,
                     value=sp.TNat).layout(("spender", "value")))
         self.verifyNotInternal()
@@ -560,7 +553,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def updateBorrowRatePerBlock(self, params):
-
         sp.set_type(params, sp.TUnit)
         self.activateNewOp(OP.CTokenOperations.BORROW_RATE)
         self.updateCash()
@@ -569,7 +561,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point
     def updateBorrowRateInternal(self, params):
-
         sp.set_type(params, sp.TUnit)
         self.verifyInternal()
         self.verifyActiveOp(OP.CTokenOperations.BORROW_RATE)
@@ -583,7 +574,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def setBorrowRatePerBlock(self, value):
-
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.BORROW_RATE)
         self.data.borrowRatePerBlock = value
@@ -595,7 +585,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def updateSupplyRatePerBlock(self, params):
-
         sp.set_type(params, sp.TUnit)
         self.activateNewOp(OP.CTokenOperations.SUPPLY_RATE)
         self.updateCash()
@@ -604,7 +593,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point
     def updateSupplyRateInternal(self, params):
-
         sp.set_type(params, sp.TUnit)
         self.verifyInternal()
         self.verifyActiveOp(OP.CTokenOperations.SUPPLY_RATE)
@@ -618,7 +606,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def setSupplyRatePerBlock(self, value):
-
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.SUPPLY_RATE)
         self.data.supplyRatePerBlock = value
@@ -753,7 +740,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def accrueInterest(self, params):
-
         sp.set_type(params, sp.TUnit)
         self.updateCash()
         sp.if self.data.accrualBlockNumber == 0:
@@ -773,7 +759,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def doAccrueInterest(self, borrowRateMantissa):
-
         sp.set_type(borrowRateMantissa, sp.TNat)
         self.verifyIRM()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ACCRUE)
@@ -805,7 +790,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point(lazify=True)
     def setPendingGovernance(self, pendingAdminAddress):
-
         sp.set_type(pendingAdminAddress, sp.TAddress)
         self.verifyAdministrator()
         self.data.pendingAdministrator = sp.some(pendingAdminAddress)
@@ -817,7 +801,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point(lazify=True)
     def updateProtocolSeizeShare(self, protocolSeizeShareMantissa):
-
         sp.set_type(protocolSeizeShareMantissa, sp.TNat)
         self.verifyAdministrator()
         self.data.protocolSeizeShareMantissa = protocolSeizeShareMantissa
@@ -831,7 +814,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point(lazify=True)
     def acceptGovernance(self, unusedArg):
-
         sp.set_type(unusedArg, sp.TUnit)
         sp.verify(sp.sender == self.data.pendingAdministrator.open_some(
             EC.CT_NOT_SET_PENDING_ADMIN), EC.CT_NOT_PENDING_ADMIN)
@@ -847,7 +829,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point(lazify=True)
     def removePendingGovernance(self, unusedArg):
-
         sp.set_type(unusedArg, sp.TUnit)
         self.verifyAdministrator()
         self.data.pendingAdministrator = sp.none
@@ -861,7 +842,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point(lazify=True)
     def setComptroller(self, comptrollerAddress):
-
         sp.set_type(comptrollerAddress, sp.TAddress)
         self.verifyAdministrator()
         self.data.comptroller = comptrollerAddress
@@ -875,7 +855,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def setInterestRateModel(self, interestRateModelAddress):
-
         sp.set_type(interestRateModelAddress, sp.TAddress)
         self.verifyAdministrator()
         self.activateNewOp(OP.CTokenOperations.INTEREST_MODEL)
@@ -886,7 +865,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def setInterestRateModelInternal(self, interestRateModelAddress):
-
         sp.set_type(interestRateModelAddress, sp.TAddress)
         self.verifyInternal()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.INTEREST_MODEL)
@@ -901,7 +879,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def setReserveFactor(self, newReserveFactor):
-
         sp.set_type(newReserveFactor, sp.TNat)
         self.verifyAdministrator()
         self.activateNewOp(OP.CTokenOperations.RESERVE_FACTOR)
@@ -912,7 +889,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def setReserveFactorInternal(self, newReserveFactor):
-
         self.verifyInternal()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.RESERVE_FACTOR)
         self.verifyAccruedInterestRelevance()
@@ -927,7 +903,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def addReserves(self, amount):
-
         sp.set_type(amount, sp.TNat)
         self.verifyNotInternal()
         self.activateNewOp(OP.CTokenOperations.ADD_RESERVES)
@@ -938,7 +913,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point
     def addReservesInternal(self, params):
-
         self.verifyInternal()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.ADD_RESERVES)
         self.verifyAccruedInterestRelevance()
@@ -952,7 +926,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.entry_point
     def reduceReserves(self, amount):
-
         sp.set_type(amount, sp.TNat)
         self.verifyAdministrator()
         self.activateNewOp(OP.CTokenOperations.REDUCE_RESERVES)
@@ -963,7 +936,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     @sp.entry_point(lazify=True)
     def reduceReservesInternal(self, amount):
-
         self.verifyInternal()
         self.verifyAndFinishActiveOp(OP.CTokenOperations.REDUCE_RESERVES)
         self.checkCash(amount)

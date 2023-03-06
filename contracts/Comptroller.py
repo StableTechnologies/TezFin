@@ -441,8 +441,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.onchain_view()
     def seizeAllowed(self, params):
-        sp.set_type(params, sp.TRecord(
-            cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
+        sp.set_type(params, sp.TRecord(cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
         # liquidator is not used, left here for future proofing
 
         self.verifyMarketListed(params.cTokenBorrowed)
@@ -452,7 +451,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                                     t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
 
         collateralComptroller = sp.view("comptroller", params.cTokenCollateral, sp.unit,
-                                        t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
+                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
 
         sp.verify(borrowComptroller == collateralComptroller,
                   EC.CMPT_COMPTROLLER_MISMATCH)
