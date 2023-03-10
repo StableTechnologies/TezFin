@@ -456,7 +456,10 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.onchain_view()
     def balanceOf(self, params):
-        sp.result(self.data.balances[params].balance)
+        result = sp.local("result", 0)
+        sp.if self.data.balances.contains(params):
+            result.value = self.data.balances[params].balance
+        sp.result(result.value)
 
     """    
         Get the underlying balance of the account specified in `params`
@@ -644,12 +647,13 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.result(self.getBorrowBalance(params))
 
     def getBorrowBalance(self, account):
-        borrowSnapshot = sp.local(
-            'borrowSnapshot', self.data.balances[account].accountBorrows)
         borrowBalance = sp.local('borrowBalance', sp.nat(0))
-        sp.if borrowSnapshot.value.principal > 0:
-            principalTimesIndex = borrowSnapshot.value.principal * self.data.borrowIndex
-            borrowBalance.value = principalTimesIndex // borrowSnapshot.value.interestIndex
+        sp.if self.data.balances.contains(account):
+            borrowSnapshot = sp.local(
+                'borrowSnapshot', self.data.balances[account].accountBorrows)
+            sp.if borrowSnapshot.value.principal > 0:
+                principalTimesIndex = borrowSnapshot.value.principal * self.data.borrowIndex
+                borrowBalance.value = principalTimesIndex // borrowSnapshot.value.interestIndex
         return borrowBalance.value
 
     """    
