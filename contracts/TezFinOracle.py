@@ -4,7 +4,6 @@ import time
 OracleInterface = sp.io.import_script_from_url(
     "file:contracts/interfaces/OracleInterface.py")
 
-
 class TezFinOracle(OracleInterface.OracleInterface):
     """
         TezFinOracle acts as proxy for the original harbinger oracle(https://github.com/tacoinfra/harbinger-contracts/blob/master/oracle.py)
@@ -18,7 +17,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
             alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD"},
                              tkey=sp.TString, tvalue=sp.TString),
             oracle=oracle,
-            admin=admin
+            admin=admin,
+            pendingAdmin=sp.none,
         )
 
     def is_admin(self, address):
@@ -34,13 +34,17 @@ class TezFinOracle(OracleInterface.OracleInterface):
         self.data.oracle = address
 
     @sp.entry_point
-    def set_admin(self, address):
-        """
-            Sets the admin address for the contract
-        """
-        sp.set_type(address, sp.TAddress)
+    def set_pending_admin(self, pendingAdminAddress):
+        sp.set_type(pendingAdminAddress, sp.TAddress)
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
-        self.data.admin = address
+        self.data.pendingAdmin = sp.some(pendingAdminAddress)
+
+    @sp.entry_point
+    def accept_admin(self, unusedArg):
+        sp.set_type(unusedArg, sp.TUnit)
+        sp.verify(sp.sender == self.data.pendingAdmin.open_some("NOT_SET_PENDING_ADMIN"), "NOT_PENDING_ADMIN")
+        self.data.admin = self.data.pendingAdmin.open_some()
+        self.data.pendingAdmin = sp.none
 
     @sp.entry_point
     def setPrice(self, params):

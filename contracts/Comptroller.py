@@ -384,13 +384,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
     """
         Determines whether a users position can be liquidated
-
-        return: TBool - return true if position can be liquidated else errors out
     """
-    @sp.onchain_view()
+    @sp.entry_point(lazify=True)
     def liquidateBorrowAllowed(self, params):
         sp.set_type(params, CMPTInterface.TLiquidateBorrowAllowed)
-        # liquidator is not used, left here for future proofing
 
         self.verifyMarketListed(params.cTokenBorrowed)
         self.verifyMarketListed(params.cTokenCollateral)
@@ -407,8 +404,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             self.data.closeFactorMantissa), borrowBalance))
 
         sp.verify(maxClose.value >= params.repayAmount, EC.CMPT_TOO_MUCH_REPAY)
-
-        sp.result(True)
+        
+        self.invalidateLiquidity(params.borrower)
+        self.invalidateLiquidity(params.liquidator)
     
     """
         Determines whether a seize is allwed
