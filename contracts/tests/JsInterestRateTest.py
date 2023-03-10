@@ -15,7 +15,7 @@ def test():
     # to stay between 0-~5 when the util is between 0-1
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "ithaca")
+    # scenario.add_flag("protocol", "ithaca")
 
     scenario.table_of_contents()
     scenario.h1("Test cases from the tests in the  JS implemetation for Supply and Borrow  rate")
