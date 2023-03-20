@@ -40,8 +40,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
         self.data.pendingAdmin = sp.some(pendingAdminAddress)
 
     @sp.entry_point
-    def accept_admin(self, unusedArg):
-        sp.set_type(unusedArg, sp.TUnit)
+    def accept_admin(self):
         sp.verify(sp.sender == self.data.pendingAdmin.open_some("NOT_SET_PENDING_ADMIN"), "NOT_PENDING_ADMIN")
         self.data.admin = self.data.pendingAdmin.open_some()
         self.data.pendingAdmin = sp.none
