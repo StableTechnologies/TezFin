@@ -2,15 +2,15 @@ class ErrorCodes:
     # Insufficient supply
     CT_INSUFFICIENT_SUPPLY = "CT_INSUFFICIENT_SUPPLY"
     # Insufficient balance
-    CT_INSUFFICIENT_BALANCE = "CT_INSUFFICIENT_BALANCE"
+    CT_INSUFFICIENT_BALANCE = "FA1.2_InsufficientBalance"
     # Liquidator must be different from borrower
     CT_INVALID_LIQUIDATOR = "CT_INVALID_LIQUIDATOR"
     # Repay amount is zero
     CT_ZERO_REPAY = "CT_ZERO_REPAY"
     # Transfer is not approved
-    CT_TRANSFER_NOT_APPROVED = "CT_TRANSFER_NOT_APPROVED"
+    CT_TRANSFER_NOT_APPROVED = "FA1.2_NotAllowed"
     # Couldn't approve the second time
-    CT_UNSAFE_ALLOWANCE_CHANGE = "CT_UNSAFE_ALLOWANCE_CHANGE"
+    CT_UNSAFE_ALLOWANCE_CHANGE = "FA1.2_UnsafeAllowanceChange"
     # Sender should be interest rate model
     CT_SENDER_NOT_IRM = "CT_SENDER_NOT_IRM"
     # Seize is allowed only to comptroller
