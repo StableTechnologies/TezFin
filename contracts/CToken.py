@@ -68,7 +68,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         params: TNat - The amount of the underlying asset to supply
 
         requirements: 
-            accrueInterest() should be executed within 5 blocks prior to this call
+            accrueInterest() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def mint(self, params):
@@ -107,10 +107,10 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         requirements:
             CToken:
-                accrueInterest() should be executed within 5 blocks prior to this call
+                accrueInterest() should be executed within the same block prior to this call
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def redeem(self, params):
@@ -129,10 +129,10 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         requirements:
             CToken:
-                accrueInterest() should be executed within 5 blocks prior to this call
+                accrueInterest() should be executed within the same block prior to this call
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def redeemUnderlying(self, params):
@@ -172,10 +172,10 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         requirements:
             cToken: 
-                accrueInterest() should be executed within 5 blocks prior to this call
+                accrueInterest() should be executed within the same block prior to this call
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def borrow(self, params):
@@ -208,7 +208,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         params: TNat - The amount to repay
 
         requirements: 
-            accrueInterest() should be executed within 5 blocks prior to this call
+            accrueInterest() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def repayBorrow(self, params):
@@ -226,7 +226,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             repayAmount: TNat - The amount to repay
         
         requirements:
-            accrueInterest() should be executed within 5 blocks prior to this call
+            accrueInterest() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def repayBorrowBehalf(self, params):
@@ -372,8 +372,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         
         requirements:
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def transfer(self, params):
@@ -437,7 +437,10 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.utils.view(sp.TNat)
     def getBalance(self, params):
-        sp.result(self.data.balances[params].balance)
+        result = sp.local("result", 0)
+        sp.if self.data.balances.contains(params):
+            result.value = self.data.balances[params].balance
+        sp.result(result.value)
 
     """    
         Get the CToken balance of the account specified in `params`
@@ -494,7 +497,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.utils.view(sp.TNat)
     def getAllowance(self, params):
-        sp.result(self.data.balances[params.owner].approvals[params.spender])
+        result = sp.local("result", 0)
+        sp.if self.data.balances.contains(params.owner):
+            sp.if self.data.balances[params.owner].approvals.contains(params.spender):
+                result.value = self.data.balances[params.owner].approvals[params.spender]
+        sp.result(result.value)
 
     """    
         Get a snapshot of the account's balances, and the cached exchange rate
@@ -506,8 +513,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         return: TAccountSnapshot - account balance information
     """
-    @sp.utils.view(CTI.TAccountSnapshot)
-    def getAccountSnapshot(self, params):
+    
+    def helpAccountSnapshot(self, params):
         accSnapshot = sp.compute(sp.record(
             account=params,
             cTokenBalance=sp.nat(0),
@@ -519,7 +526,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             accSnapshot.cTokenBalance = self.data.balances[params].balance
             accSnapshot.borrowBalance = self.getBorrowBalance(params)
             accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
-        sp.result(accSnapshot)
+        return accSnapshot;
+    
+    @sp.utils.view(CTI.TAccountSnapshot)
+    def getAccountSnapshot(self, params):
+        sp.result(self.helpAccountSnapshot(params));
 
     """    
         Get a snapshot of the account's balances, and the cached exchange rate
@@ -533,18 +544,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     """
     @sp.onchain_view()
     def getAccountSnapshotView(self, params):
-        accSnapshot = sp.compute(sp.record(
-            account=params,
-            cTokenBalance=sp.nat(0),
-            borrowBalance=sp.nat(0),
-            exchangeRateMantissa=sp.nat(0)
-        ))
-        sp.if self.data.balances.contains(params):
-            self.verifyAccruedInterestRelevance()
-            accSnapshot.cTokenBalance = self.data.balances[params].balance
-            accSnapshot.borrowBalance = self.getBorrowBalance(params)
-            accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
-        sp.result(accSnapshot)
+        sp.result(self.helpAccountSnapshot(params));
 
     """    
         Updates storage value of the current per-block borrow interest rate for this cToken, scaled by 1e18

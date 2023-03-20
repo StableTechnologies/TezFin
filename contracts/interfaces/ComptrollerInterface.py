@@ -44,8 +44,8 @@ class ComptrollerInterface(sp.Contract):
         Removes asset from sender's account liquidity calculation
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         dev: Sender must not have an outstanding borrow balance in the asset,
              or be providing necessary collateral for an outstanding borrow
@@ -72,8 +72,8 @@ class ComptrollerInterface(sp.Contract):
         Checks if the account should be allowed to redeem tokens in the given market
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the redeem against
@@ -88,8 +88,8 @@ class ComptrollerInterface(sp.Contract):
         Checks if the account should be allowed to borrow the underlying asset of the given market
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the borrow against
@@ -117,8 +117,8 @@ class ComptrollerInterface(sp.Contract):
         Checks if the account should be allowed to transfer tokens in the given market
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the transfer against
@@ -134,7 +134,7 @@ class ComptrollerInterface(sp.Contract):
         Determine what the account liquidity would be if the given amounts were redeemed/borrowed
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
 
         dev: With redeemTokens = 0 and borrowAmount = 0 shows current account liquidity
 

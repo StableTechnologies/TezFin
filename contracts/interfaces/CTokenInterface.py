@@ -41,7 +41,7 @@ class CTokenInterface(sp.Contract):
         params: TNat - The amount of the underlying asset to supply
 
         requirements: 
-            accrueInterest() should be executed within 5 blocks prior to this call
+            accrueInterest() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def mint(self, params):
@@ -56,10 +56,10 @@ class CTokenInterface(sp.Contract):
 
         requirements:
             CToken:
-                accrueInterest() should be executed within 5 blocks prior to this call
+                accrueInterest() should be executed within the same block prior to this call
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def redeem(self, params):
@@ -74,10 +74,10 @@ class CTokenInterface(sp.Contract):
 
         requirements:
             CToken:
-                accrueInterest() should be executed within 5 blocks prior to this call
+                accrueInterest() should be executed within the same block prior to this call
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def redeemUnderlying(self, params):
@@ -90,10 +90,10 @@ class CTokenInterface(sp.Contract):
 
         requirements:
             cToken: 
-                accrueInterest() should be executed within 5 blocks prior to this call
+                accrueInterest() should be executed within the same block prior to this call
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def borrow(self, params):
@@ -105,7 +105,7 @@ class CTokenInterface(sp.Contract):
         params: TNat - The amount to repay
 
         requirements: 
-            accrueInterest() should be executed within 5 blocks prior to this call
+            accrueInterest() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def repayBorrow(self, params):
@@ -119,7 +119,7 @@ class CTokenInterface(sp.Contract):
             repayAmount: TNat - The amount to repay
         
         requirements:
-            accrueInterest() should be executed within 5 blocks prior to this call
+            accrueInterest() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def repayBorrowBehalf(self, params):
@@ -135,8 +135,8 @@ class CTokenInterface(sp.Contract):
         
         requirements:
             comptroller:
-                updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-                updateAccountLiquidity() should be executed within 5 blocks prior to this call
+                updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+                updateAccountLiquidity() should be executed within the same block prior to this call
     """
     @sp.entry_point
     def transfer(self, params):

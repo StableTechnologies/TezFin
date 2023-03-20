@@ -93,8 +93,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         Removes asset from sender's account liquidity calculation
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         dev: Sender must not have an outstanding borrow balance in the asset,
              or be providing necessary collateral for an outstanding borrow
@@ -156,8 +156,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         Checks if the account should be allowed to redeem tokens in the given market
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the redeem against
@@ -193,8 +193,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         Checks if the account should be allowed to borrow the underlying asset of the given market
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the borrow against
@@ -259,8 +259,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         Checks if the account should be allowed to transfer tokens in the given market
 
         requirements:
-            updateAssetPrice() should be executed within 5 blocks prior to this call, for all markets entered by the user
-            updateAccountLiquidity() should be executed within 5 blocks prior to this call
+            updateAssetPrice() should be executed within the same block prior to this call, for all markets entered by the user
+            updateAccountLiquidity() should be executed within the same block prior to this call
 
         params: TRecord
             cToken: TAddress - The market to verify the transfer against
@@ -296,9 +296,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                 self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):
-        updatePeriod = sp.compute(self.sub_nat_nat(
-            sp.level, self.data.markets[asset].updateLevel))
-        sp.verify(updatePeriod == 0, EC.CMPT_UPDATE_PRICE)
+        sp.verify(sp.level == self.data.markets[asset].updateLevel, EC.CMPT_UPDATE_PRICE)
         return self.data.markets[asset].price
 
     """
@@ -468,8 +466,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             0), sumBorrowPlusEffects=sp.nat(0))).value
         sp.if self.data.collaterals.contains(params.account):
             sp.for asset in self.data.collaterals[params.account].elements():
-                # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
-                # updateAssetPrice() should be executed within 5 blocks prior to this call
+                # cToken.accrueInterest() for the given asset should be executed within the same block prior to this call
+                # updateAssetPrice() should be executed within the same block prior to this call
                 temp = self.calculateAccountAssetLiquidityView(
                     asset, params.account)
                 calculation.sumCollateral += temp.sumCollateral
@@ -479,8 +477,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                 # only get liquidity for assets that aren't in collaterals to avoid double counting
                 sp.if self.data.collaterals.contains(params.account):
                     sp.if ~self.data.collaterals[params.account].contains(asset):
-                        # cToken.accrueInterest() for the given asset should be executed within 5 blocks prior to this call
-                        # updateAssetPrice() should be executed within 5 blocks prior to this call
+                        # cToken.accrueInterest() for the given asset should be executed within the same block prior to this call
+                        # updateAssetPrice() should be executed within the same block prior to this call
                         temp = self.calculateAccountAssetLiquidityView(
                             asset, params.account)
                         calculation.sumCollateral += temp.sumCollateral
