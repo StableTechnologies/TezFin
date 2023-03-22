@@ -291,25 +291,6 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
         sp.transfer(params.cToken, sp.mutez(0), contract)
 
     """    
-        Set the given borrow cap for the given cToken market. Borrowing that brings total borrows to or above borrow cap will revert.
-
-        params: TRecord
-            comptroller: TAddress - The address of Comptroller contract
-            borrowCap: TRecord
-                cToken: TAddress - The address of the market (token) to change the borrow caps for
-                newBorrowCap: TNat - The new borrow cap value in underlying to be set. A value of 0 corresponds to unlimited borrowing.
-            
-    """
-    @sp.entry_point
-    def setMarketBorrowCap(self, params):
-        self.verifyAdministrator()
-        sp.set_type(params, sp.TRecord(comptroller=sp.TAddress, borrowCap=sp.TRecord(
-            cToken=sp.TAddress, newBorrowCap=sp.TNat)))
-        contract = sp.contract(sp.TRecord(cToken=sp.TAddress, newBorrowCap=sp.TNat),
-                               params.comptroller, "setMarketBorrowCap").open_some()
-        sp.transfer(params.borrowCap, sp.mutez(0), contract)
-
-    """    
         Pause or activate the mint of given CToken
 
         params: TRecord
