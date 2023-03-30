@@ -707,9 +707,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     """    
         Get cash balance of this cToken in the underlying asset
+        Do accrueInterest() before this function to get the up-to-date cash balance
 
         dev: This function does not accrue interest before calculating cash balance
-        dev: Do accrueInterest() before this function to get the up-to-date cash balance
 
         params: TUnit
 

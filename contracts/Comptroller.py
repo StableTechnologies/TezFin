@@ -376,6 +376,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         Determines the amount of collateral tokens that can seized given the 
         borrowed token, the collateral token and the repay amount
 
+        updateAccountLiquidityWithView() needs to be called 
+        before executing this to get up-to-date results
+        
         return: TNat - the no. of collateral tokens that can be seized on repay of the borrowed amount
     """
     @sp.onchain_view()
@@ -406,6 +409,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
     """
         Determines whether a users position can be liquidated
+
+        updateAccountLiquidityWithView() needs to be called 
+        before executing this to get up-to-date results
     """
     @sp.entry_point(lazify=True)
     def liquidateBorrowAllowed(self, params):
