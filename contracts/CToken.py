@@ -285,6 +285,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.verify(borrower != liquidator,
                   EC.CT_LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER)
 
+        self.verifyAccruedInterestRelevance()
+
         borrowerBalance = self.data.balances[borrower].balance
         liquidatorBalance = self.data.balances[liquidator].balance
 
@@ -328,23 +330,24 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.entry_point
     def liquidateBorrow(self, params):
         sp.set_type(params, CTI.TLiquidate)
-
+        self.verifyliquidateBorrowAllowed(params.cTokenCollateral, params.borrower, sp.sender, params.repayAmount)
         self.liquidateBorrowFresh(
             sp.sender, params.borrower, params.repayAmount, params.cTokenCollateral)
 
+    def verifyliquidateBorrowAllowed(self, cTokenCollateral, borrower, liquidator, repayAmount):
+        c = sp.contract(CMPI.TLiquidateBorrowAllowed, self.data.comptroller,
+                        entry_point="liquidateBorrowAllowed").open_some()
+        transferData = sp.record(
+            cTokenBorrowed=sp.self_address, cTokenCollateral=cTokenCollateral, borrower=borrower, liquidator=liquidator, repayAmount=repayAmount)
+        sp.transfer(transferData, sp.mutez(0), c)
+
     def liquidateBorrowFresh(self, liquidator, borrower, repayAmount, cTokenCollateral):
-        allowed = sp.view("liquidateBorrowAllowed", self.data.comptroller, sp.record(
-            cTokenBorrowed=sp.self_address, cTokenCollateral=cTokenCollateral, borrower=borrower, liquidator=liquidator, repayAmount=repayAmount),
-            t=sp.TBool).open_some("INVALID LIQUIDATE BORROW ALLOWED VIEW")
-        sp.verify(allowed, EC.CT_LIQUIDATE_COMPTROLLER_REJECTION)
-
-        self.verifyAccruedInterestRelevance()
-
         sp.verify(borrower != liquidator,
                   EC.CT_LIQUIDATE_LIQUIDATOR_IS_BORROWER)
 
         sp.verify(repayAmount > 0, EC.CT_LIQUIDATE_CLOSE_AMOUNT_IS_INVALID)
 
+        # also verifies interest relevance
         self.repayBorrowInternal(
             sp.record(payer=liquidator, borrower=borrower, repayAmount=repayAmount))
 
