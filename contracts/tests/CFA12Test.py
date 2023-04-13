@@ -14,7 +14,7 @@ def test():
     bLevel = BlockLevel.BlockLevel()
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "kathmandu")
+    scenario.add_flag("protocol", "lima")
 
     scenario.table_of_contents()
     scenario.h1("CFA1.2 tests")
