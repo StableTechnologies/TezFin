@@ -28,7 +28,7 @@
     "big-integer": "^1.6.51",
     "bignumber.js": "9.0.1",
     "chai": "^4.3.6",
-    "conseiljs": "5.2.3",
+    "conseiljs": "5.2.4",
     "decimal.js": "^10.3.1",
     "jsonpath-plus": "^6.0.1",
     "mathjs": "^10.5.3"

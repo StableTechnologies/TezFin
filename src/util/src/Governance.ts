@@ -33,7 +33,7 @@ export namespace Governance {
      *
      * @param
      */
-    export async function SupportMarket(supportMarket: SupportMarketPair, priceExp: number, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function SupportMarket(supportMarket: SupportMarketPair, priceExp: number, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
         const entrypoint = 'supportMarket';
         const parameters = SupportMarketMicheline(supportMarket, priceExp);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, governanceAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
@@ -67,7 +67,7 @@ export namespace Governance {
      *
      * @param
      */
-    export async function DisableMarket(disableMarket: DisableMarketPair, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function DisableMarket(disableMarket: DisableMarketPair, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
         const entrypoint = 'disableMarket';
         const parameters = DisableMarketMicheline(disableMarket);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, governanceAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
@@ -118,7 +118,7 @@ export namespace Governance {
      *
      * @param
      */
-    export async function SetMintPaused(setMintPaused: SetMintPausedPair, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function SetMintPaused(setMintPaused: SetMintPausedPair, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
         const entrypoint = 'setMintPaused';
         const parameters = SetMintPausedMicheline(setMintPaused);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, governanceAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
@@ -128,7 +128,7 @@ export namespace Governance {
     /*
      * Invokes the setBorrowPaused entry point of the Governance contract. Alias for SetMintPaused for clarity.
     */
-    export async function SetBorrowPaused(setBorrowPaused: SetBorrowPausedPair, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function SetBorrowPaused(setBorrowPaused: SetBorrowPausedPair, governanceAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
         const entrypoint = 'setBorrowPaused';
         const parameters = SetBorrowPausedMicheline(setBorrowPaused);
         const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, governanceAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);

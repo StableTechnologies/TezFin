@@ -45,7 +45,7 @@ export namespace PriceFeed {
      * @param priceList list of asset of AssetType and their corresponding price
      * @param oracleAddress tezfin oracle address
      */
-    export async function SetPrice(priceList: Pair[], oracleAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 800_000, freight: number = 20_000): Promise<string> {
+    export async function SetPrice(priceList: Pair[], oracleAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
         let payload = `{`
         for (let i = 0; i < priceList.length; i++) {
             if (i > 0) {
