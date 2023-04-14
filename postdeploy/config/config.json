@@ -61,7 +61,7 @@
     "tx": {
         "amount": 0,
         "fee": 1500000,
-        "gas": 800000,
+        "gas": 200000,
         "freight": 50000
     },
     "tokenMint": [
