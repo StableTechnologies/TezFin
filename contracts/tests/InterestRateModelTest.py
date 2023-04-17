@@ -8,7 +8,7 @@ def test():
     expScale = sp.nat(int(1e18))
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "kathmandu")
+    scenario.add_flag("protocol", "lima")
 
     scenario.table_of_contents()
     scenario.h1("InterestRateModel tests")

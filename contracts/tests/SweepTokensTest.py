@@ -29,7 +29,7 @@ def test():
     admin = sp.test_account("admin")
 
     scenario = sp.test_scenario()
-    scenario.add_flag("protocol", "kathmandu")
+    scenario.add_flag("protocol", "lima")
 
     scenario.table_of_contents()
     scenario.h1("SweepTokens tests")
