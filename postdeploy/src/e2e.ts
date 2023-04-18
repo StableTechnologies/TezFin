@@ -55,7 +55,6 @@ async function runE2E() {
     const { protoAddress, oracle } = await parseProtocolAddress(config.protocolAddressesPath);
     console.log(`protocolAddresses: ${JSON.stringify(protoAddress!)}`);
 
-    console.log("testtt")
     await DeployHelper.postDeploy(keystore!, signer!, protoAddress!);
 
     return test(keystore, signer, keystore1, signer1, protoAddress, oracle);

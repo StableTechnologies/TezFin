@@ -97,7 +97,7 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
         sp.set_type(unusedArg, sp.TAddress)
         
     @sp.entry_point
-    def setPriceOracle(self, params):
+    def setPriceOracleAndTimeDiff(self, params):
         sp.set_type(params, sp.TUnit)
         
     @sp.entry_point
@@ -118,10 +118,6 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
         
     @sp.entry_point
     def disableMarket(self, params):
-        sp.set_type(params, sp.TUnit)
-        
-    @sp.entry_point
-    def setMarketBorrowCap(self, params):
         sp.set_type(params, sp.TUnit)
         
     @sp.entry_point

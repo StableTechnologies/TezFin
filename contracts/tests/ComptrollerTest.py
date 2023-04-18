@@ -99,7 +99,7 @@ def test():
                           price = sp.record(mantissa=sp.nat(0)),
                           priceExp = 1000000000000000000,
                           updateLevel = sp.nat(0),
-                          borrowCap = sp.nat(0))),
+                          priceTimestamp= sp.timestamp(0))),
 
         sp.pair(cTokenMock.address, 
                 sp.record(isListed = sp.bool(True), 
@@ -110,7 +110,7 @@ def test():
                           price = sp.record(mantissa=sp.nat(0)),
                           priceExp = 1000000000000000000,
                           updateLevel = sp.nat(0),
-                          borrowCap = sp.nat(0)))
+                          priceTimestamp= sp.timestamp(0))),
     ]
     initMarkets(scenario, bLevel, markets, cmpt)
     marketsList = [listedMarket, notListedMarket, listedMarketWithoutAccountMembership, cTokenMock.address]
@@ -309,8 +309,8 @@ def test():
 
     scenario.h2("Test admin functionality")
     scenario.h3("Set price oracle")
-    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, cmpt.setPriceOracle,
-        priceOracle)
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, cmpt.setPriceOracleAndTimeDiff,
+        sp.record(priceOracle=priceOracle, timeDiff=86400))
     scenario.verify(cmpt.data.oracleAddress == priceOracle)
 
     scenario.h3("Set close factor")
@@ -352,16 +352,6 @@ def test():
     scenario.h4("Not listed market")
     notListedMarket = sp.test_account("[disableMarket] not listed market").address
     cmpt.disableMarket(notListedMarket).run(sender = admin, level = bLevel.next(), valid = False)
-
-    scenario.h3("Set market borrow cap")
-    borrowCapRecord = sp.record(cToken = newMarket, newBorrowCap = sp.nat(2))
-    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set market borrow cap", bLevel, admin, alice, cmpt.setMarketBorrowCap,
-        borrowCapRecord)
-    scenario.verify(cmpt.data.markets[borrowCapRecord.cToken].borrowCap == borrowCapRecord.newBorrowCap)
-    scenario.h4("Non-existant market")
-    notExistantMarket = sp.test_account("[setMarketBorrowCap] non-existant market").address
-    borrowCapRecord = sp.record(cToken = notExistantMarket, newBorrowCap = sp.nat(2))
-    scenario += cmpt.setMarketBorrowCap(borrowCapRecord).run(sender = admin, level = bLevel.next(), valid = False)
 
     scenario.h3("Pending governance")
     pendingGovernance = sp.test_account("[governance] pending governance")
