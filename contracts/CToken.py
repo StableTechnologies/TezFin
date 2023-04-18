@@ -549,69 +549,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def getAccountSnapshotView(self, params):
         sp.result(self.helpAccountSnapshot(params));
 
-    """    
-        Updates storage value of the current per-block borrow interest rate for this cToken, scaled by 1e18
-
-        params: TUnit
-    """
-    @sp.entry_point
-    def updateBorrowRatePerBlock(self, params):
-        sp.set_type(params, sp.TUnit)
-        self.activateNewOp(OP.CTokenOperations.BORROW_RATE)
-        self.updateCash()
-        sp.transfer(sp.unit, sp.mutez(0), sp.self_entry_point(
-            "updateBorrowRateInternal"))
-
-    @sp.entry_point
-    def updateBorrowRateInternal(self, params):
-        sp.set_type(params, sp.TUnit)
-        self.verifyInternal()
-        self.verifyActiveOp(OP.CTokenOperations.BORROW_RATE)
-        c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
-                        entry_point="getBorrowRate").open_some()
-        transferData = sp.record(cash=self.getCashImpl(),
-                                 borrows=self.data.totalBorrows,
-                                 reserves=self.data.totalReserves,
-                                 cb=sp.self_entry_point("setBorrowRatePerBlock"))
-        sp.transfer(transferData, sp.mutez(0), c)
-
-    @sp.entry_point(lazify=True)
-    def setBorrowRatePerBlock(self, value):
-        self.verifyIRM()
-        self.verifyAndFinishActiveOp(OP.CTokenOperations.BORROW_RATE)
-        self.data.borrowRatePerBlock = value
-
-    """    
-        Updates storage value of the current per-block supply interest rate for this cToken, scaled by 1e18
-
-        params: TUnit
-    """
-    @sp.entry_point
-    def updateSupplyRatePerBlock(self, params):
-        sp.set_type(params, sp.TUnit)
-        self.activateNewOp(OP.CTokenOperations.SUPPLY_RATE)
-        self.updateCash()
-        sp.transfer(sp.unit, sp.mutez(0), sp.self_entry_point(
-            "updateSupplyRateInternal"))
-
-    @sp.entry_point
-    def updateSupplyRateInternal(self, params):
-        sp.set_type(params, sp.TUnit)
-        self.verifyInternal()
-        self.verifyActiveOp(OP.CTokenOperations.SUPPLY_RATE)
-        c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
-                        entry_point="getSupplyRate").open_some()
-        transferData = sp.record(cash=self.getCashImpl(),
-                                 borrows=self.data.totalBorrows,
-                                 reserves=self.data.totalReserves,
-                                 cb=sp.self_entry_point("setSupplyRatePerBlock"))
-        sp.transfer(transferData, sp.mutez(0), c)
-
-    @sp.entry_point(lazify=True)
-    def setSupplyRatePerBlock(self, value):
-        self.verifyIRM()
-        self.verifyAndFinishActiveOp(OP.CTokenOperations.SUPPLY_RATE)
-        self.data.supplyRatePerBlock = value
 
     """    
         Return the borrow balance of account based on stored data
