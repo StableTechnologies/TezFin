@@ -215,23 +215,6 @@ class CTokenInterface(sp.Contract):
     def getAccountSnapshot(self, params):
         pass
 
-    """    
-        Updates storage value of the current per-block borrow interest rate for this cToken, scaled by 1e18
-
-        params: TUnit
-    """
-    @sp.entry_point
-    def updateBorrowRatePerBlock(self, params):
-        pass
-
-    """    
-        Updates storage value of the current per-block supply interest rate for this cToken, scaled by 1e18
-
-        params: TUnit
-    """
-    @sp.entry_point
-    def updateSupplyRatePerBlock(self, params):
-        pass
 
     """    
         Return the borrow balance of account based on stored data

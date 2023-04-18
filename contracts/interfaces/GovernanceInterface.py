@@ -162,19 +162,6 @@ class GovernanceInterface(sp.Contract):
         pass
 
     """    
-        Set the given borrow cap for the given cToken market. Borrowing that brings total borrows to or above borrow cap will revert.
-
-        params: TRecord
-            comptroller: TAddress - The address of Comptroller contract
-            borrowCap: TRecord
-                cToken: TAddress - The address of the market (token) to change the borrow caps for
-                newBorrowCap: TNat - The new borrow cap value in underlying to be set. A value of 0 corresponds to unlimited borrowing.
-    """
-    @sp.entry_point
-    def setMarketBorrowCap(self, params):
-        pass
-
-    """    
         Pause or activate the mint of given CToken
 
         params: TRecord
