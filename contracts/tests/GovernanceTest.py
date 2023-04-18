@@ -178,11 +178,6 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "support market", bLevel, admin, alice, governor.supportMarket, arg)
     scenario.verify(cmpt.data.markets.contains(arg.market.cToken) & cmpt.data.markets[arg.market.cToken].isListed)
 
-    scenario.h3("Set market borrow cap")
-    arg = sp.record(comptroller = cmpt.address, borrowCap = sp.record(cToken = ctoken.address, newBorrowCap = sp.nat(2)))
-    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set market borrow cap", bLevel, admin, alice, governor.setMarketBorrowCap, arg)
-    scenario.verify(cmpt.data.markets[arg.borrowCap.cToken].borrowCap == arg.borrowCap.newBorrowCap)
-
     scenario.h3("Set collateral factor")
     arg = sp.record(comptroller = cmpt.address, collateralFactor = sp.record(cToken = ctoken.address, newCollateralFactor = sp.nat(2)))
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set collateral factor", bLevel, admin, alice, governor.setCollateralFactor, arg)

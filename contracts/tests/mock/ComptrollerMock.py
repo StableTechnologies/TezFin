@@ -121,10 +121,6 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
         sp.set_type(params, sp.TUnit)
         
     @sp.entry_point
-    def setMarketBorrowCap(self, params):
-        sp.set_type(params, sp.TUnit)
-        
-    @sp.entry_point
     def setMintPaused(self, params):
         sp.set_type(params, sp.TUnit)
         
