@@ -174,15 +174,15 @@ class ComptrollerInterface(sp.Contract):
     def acceptGovernance(self, unusedArg):
         pass
 
-    """    
-        Sets a new price oracle for the comptroller
-
-        dev: Governance function to set a new price oracle
-
-        params: TAddress - The address of the new price oracle contract
     """
-    @sp.entry_point
-    def setPriceOracle(self, params):
+        Sets a new price oracle and time diff for the comptroller
+
+        dev: Governance function to set a new price oracle and time diff
+
+        params: TAddress, TInt - The address of the new price oracle contract and max time diff
+    """
+    @sp.entry_point(lazify=True)
+    def setPriceOracleAndTimeDiff(self, params):
         pass
 
     """    
@@ -244,18 +244,14 @@ class ComptrollerInterface(sp.Contract):
     def disableMarket(self, params):
         pass
 
-    """    
-        Set the given borrow cap for the given cToken market. Borrowing that brings total borrows to or above borrow cap will revert.
-
-        dev: Governance function to set the borrow caps. A borrow cap of 0 corresponds to unlimited borrowing.
-
-        params: TRecord
-            cToken: TAddress - The address of the market (token) to change the borrow caps for
-            newBorrowCap: TNat - The new borrow cap value in underlying to be set. A value of 0 corresponds to unlimited borrowing.
     """
-    @sp.entry_point
-    def setMarketBorrowCap(self, params):
-        pass
+        Updates max price time difference
+
+        params: TInt - The max time difference in seconds
+    """
+    # @sp.entry_point(lazify=True)
+    # def updateMaxPriceTimeDifference(self, timeDiff):
+    #     pass
 
     """    
         Pause or activate the mint of given CToken

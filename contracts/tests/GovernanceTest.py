@@ -159,8 +159,8 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     scenario.verify(cmpt.data.administrator == governor.address)
 
     scenario.h3("Set price oracle")
-    arg = sp.record(comptroller = cmpt.address, priceOracle = oracle.address)
-    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, governor.setPriceOracle, arg)
+    arg = sp.record(comptroller = cmpt.address, priceOracle = oracle.address, timeDiff=84600)
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, governor.setPriceOracleAndTimeDiff, arg)
     scenario.verify(cmpt.data.oracleAddress == arg.priceOracle)
 
     scenario.h3("Set close factor")
@@ -177,11 +177,6 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     arg = sp.record(comptroller = cmpt.address, market=sp.record(cToken = ctoken.address, name=sp.string("m1"), priceExp=10^18))
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "support market", bLevel, admin, alice, governor.supportMarket, arg)
     scenario.verify(cmpt.data.markets.contains(arg.market.cToken) & cmpt.data.markets[arg.market.cToken].isListed)
-
-    scenario.h3("Set market borrow cap")
-    arg = sp.record(comptroller = cmpt.address, borrowCap = sp.record(cToken = ctoken.address, newBorrowCap = sp.nat(2)))
-    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set market borrow cap", bLevel, admin, alice, governor.setMarketBorrowCap, arg)
-    scenario.verify(cmpt.data.markets[arg.borrowCap.cToken].borrowCap == arg.borrowCap.newBorrowCap)
 
     scenario.h3("Set collateral factor")
     arg = sp.record(comptroller = cmpt.address, collateralFactor = sp.record(cToken = ctoken.address, newCollateralFactor = sp.nat(2)))

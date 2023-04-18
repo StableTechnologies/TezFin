@@ -93,15 +93,13 @@ class GovernanceInterface(sp.Contract):
 
     # Comptroller functions
 
-    """    
-        Sets a new price oracle for the comptroller
-
-        params: TRecord
-            comptroller: TAddress - The address of Comptroller contract
-            priceOracle: TAddress - The address of the new price oracle contract
     """
-    @sp.entry_point
-    def setPriceOracle(self, params):
+        Sets a new price oracle and time diff for the comptroller
+
+        params: TAddress, TInt - The address of the new price oracle contract and max time diff
+    """
+    @sp.entry_point(lazify=True)
+    def setPriceOracleAndTimeDiff(self, params):
         pass
 
     """    

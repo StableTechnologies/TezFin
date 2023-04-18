@@ -189,21 +189,19 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
 
     # Comptroller functions
 
-    """    
-        Sets a new price oracle for the comptroller
-
-        params: TRecord
-            comptroller: TAddress - The address of Comptroller contract
-            priceOracle: TAddress - The address of the new price oracle contract
     """
-    @sp.entry_point
-    def setPriceOracle(self, params):
+        Sets a new price oracle and time diff for the comptroller
+
+        params: TAddress, TInt - The address of the new price oracle contract and max time diff
+    """
+    @sp.entry_point(lazify=True)
+    def setPriceOracleAndTimeDiff(self, params):
         self.verifyAdministrator()
         sp.set_type(params, sp.TRecord(
-            comptroller=sp.TAddress, priceOracle=sp.TAddress))
+            comptroller=sp.TAddress, priceOracle=sp.TAddress, timeDiff=sp.TInt))
         contract = sp.contract(
-            sp.TAddress, params.comptroller, "setPriceOracle").open_some()
-        sp.transfer(params.priceOracle, sp.mutez(0), contract)
+            sp.TRecord(priceOracle=sp.TAddress, timeDiff=sp.TInt), params.comptroller, "setPriceOracleAndTimeDiff").open_some()
+        sp.transfer(sp.record(priceOracle=params.priceOracle,timeDiff=params.timeDiff), sp.mutez(0), contract)
 
     """    
         Sets the closeFactor used when liquidating borrows
