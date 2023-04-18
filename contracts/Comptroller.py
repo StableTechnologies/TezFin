@@ -28,8 +28,7 @@ TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
                      price=Exponential.TExp,  # The price of the asset
                      priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
                      updateLevel=sp.TNat,  # Block level of last price update
-                     borrowCap=sp.TNat  # Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing
-                     )
+                    )
 
 TLiquidity = sp.TRecord(
     liquidity=sp.TInt,  # Current account liquidity. Negative value indicates shortfall
@@ -313,6 +312,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(account, sp.TAddress)
         self.updateAllAssetPrices()
         self.accrueAllAssetInterests()
+        self.activateOp(OP.ComptrollerOperations.SET_LIQUIDITY)
         sp.transfer(account, sp.mutez(0), sp.self_entry_point(
             "setAccountLiquidityWithView"))
 
@@ -328,6 +328,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(account, sp.TAddress)
         liquidity = sp.local(
             'liquidity', self.calculateCurrentAccountLiquidityWithView(account)).value
+        self.verifyAndFinishActiveOp(OP.ComptrollerOperations.SET_LIQUIDITY)
         self.data.account_liquidity[account] = sp.record(
             liquidity=liquidity.sumCollateral - liquidity.sumBorrowPlusEffects,
             updateLevel=sp.level,
@@ -686,8 +687,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                                                      price=self.makeExp(
                                                          sp.nat(0)),
                                                      priceExp=params.priceExp,
-                                                     updateLevel=sp.nat(0),
-                                                     borrowCap=sp.nat(0))
+                                                     updateLevel=sp.nat(0))
         self.data.marketNameToAddress[params.name+"-USD"] = params.cToken
 
     """
@@ -705,25 +705,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyAdministrator()
         self.verifyMarketListed(cToken)
         self.data.markets[cToken].isListed = sp.bool(False)
-
-    """
-        Set the given borrow cap for the given cToken market. Borrowing that brings total borrows to or above borrow cap will revert.
-
-        dev: Governance function to set the borrow caps. A borrow cap of 0 corresponds to unlimited borrowing.
-
-        params: TRecord
-            cToken: TAddress - The address of the market (token) to change the borrow caps for
-            newBorrowCap: TNat - The new borrow cap value in underlying to be set. A value of 0 corresponds to unlimited borrowing.
-    """
-    @sp.entry_point(lazify=True)
-    def setMarketBorrowCap(self, params):
-        sp.verify(sp.amount == sp.utils.nat_to_mutez(
-            0), "TEZ_TRANSFERED")
-        sp.set_type(params, sp.TRecord(
-            cToken=sp.TAddress, newBorrowCap=sp.TNat))
-        self.verifyAdministrator()
-        self.verifyMarketExists(params.cToken)
-        self.data.markets[params.cToken].borrowCap = params.newBorrowCap
 
     # Helpers
 
