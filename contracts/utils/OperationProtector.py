@@ -28,7 +28,7 @@ class ComptrollerOperations:
     EXIT_MARKET = sp.nat(1)
     UPDATE_PRICE = sp.nat(2)
     GET_LIQUIDITY = sp.nat(3)
-    SET_LIQUIDITY = sp.nat(3)
+    SET_LIQUIDITY = sp.nat(4)
 
 
 class OperationProtector(sp.Contract):
