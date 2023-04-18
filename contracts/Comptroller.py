@@ -60,7 +60,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             # Per-account mapping of current liquidity
             account_liquidity=sp.big_map(
                 l={}, tkey=sp.TAddress, tvalue=TLiquidity),
-            oracleAddress=oracleAddress_,
+            oracleAddress=oracleAddress_, # can only use harbinger or harbinger like oracle
             # Set of currently active operations to protect execution flow
             activeOperations=sp.set(t=sp.TNat),
             closeFactorMantissa=closeFactorMantissa_,
@@ -608,6 +608,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         dev: Governance function to set a new price oracle and time diff
 
         params: TAddress, TInt - The address of the new price oracle contract and max time diff
+        
+        NOTE: can only use harbinger or harbinger like oracle
     """
     @sp.entry_point(lazify=True)
     def setPriceOracleAndTimeDiff(self, params):
