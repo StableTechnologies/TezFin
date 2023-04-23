@@ -124,6 +124,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(accountSnapshot, CTI.TAccountSnapshot)
+        self.verifyAndFinishActiveOp(OP.ComptrollerOperations.EXIT_MARKET)
         sp.verify(accountSnapshot.borrowBalance ==
                   sp.nat(0), EC.CMPT_BORROW_IN_MARKET)
         cTokenAddress = sp.sender
