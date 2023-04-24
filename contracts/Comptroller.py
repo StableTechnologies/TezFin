@@ -124,6 +124,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(accountSnapshot, CTI.TAccountSnapshot)
+        self.verifyAndFinishActiveOp(OP.ComptrollerOperations.EXIT_MARKET)
         sp.verify(accountSnapshot.borrowBalance ==
                   sp.nat(0), EC.CMPT_BORROW_IN_MARKET)
         cTokenAddress = sp.sender
@@ -315,6 +316,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(account, sp.TAddress)
         self.updateAllAssetPrices()
         self.accrueAllAssetInterests()
+        self.activateOp(OP.ComptrollerOperations.SET_LIQUIDITY)
         sp.transfer(account, sp.mutez(0), sp.self_entry_point(
             "setAccountLiquidityWithView"))
 
@@ -330,6 +332,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.set_type(account, sp.TAddress)
         liquidity = sp.local(
             'liquidity', self.calculateCurrentAccountLiquidityWithView(account)).value
+        self.verifyAndFinishActiveOp(OP.ComptrollerOperations.SET_LIQUIDITY)
         self.data.account_liquidity[account] = sp.record(
             liquidity=liquidity.sumCollateral - liquidity.sumBorrowPlusEffects,
             updateLevel=sp.level,
