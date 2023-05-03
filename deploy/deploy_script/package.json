@@ -5,7 +5,7 @@
   "dependencies": {
     "conseiljs": "5.1.0",
     "conseiljs-softsigner": "^5.0.4-1",
-    "glob": "7.1.7",
+    "glob": "7.2.3",
     "loglevel": "^1.7.1",
     "node-fetch": "^2.6.1"
   },
