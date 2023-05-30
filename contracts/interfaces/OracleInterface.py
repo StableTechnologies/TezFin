@@ -9,10 +9,6 @@ TGetPriceParam = sp.TPair(sp.TString, sp.TContract(TSetPriceParam))
 
 
 class OracleInterface(sp.Contract):
-    @sp.entry_point
-    def get(self, requestPair):
-        pass
-
     @sp.onchain_view()
     def getPrice(self, requestedAsset):
         pass

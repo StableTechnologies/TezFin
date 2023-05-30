@@ -12,14 +12,6 @@ class View_consumer(sp.Contract):
         self.init(resp=sp.none)
 
     @sp.entry_point
-    def get(self, asset, resp):
-        self.data.resp = sp.some(resp)
-        handle = sp.contract(OracleInterface.TGetPriceParam,
-                             self.contract, entry_point="get").open_some()
-        priceParams = (asset + "-USD", sp.self_entry_point("setAssetPrice"))
-        sp.transfer(priceParams, sp.mutez(0), handle)
-
-    @sp.entry_point
     def setAssetPrice(self, params):
         sp.set_type(params, OracleInterface.TSetPriceParam)
         pricePair = sp.compute(sp.snd(params))
@@ -68,15 +60,15 @@ def test():
     consumer = View_consumer(tezfinOracle.address)
     scenario += consumer
     scenario.h3("Verify Price")
-    consumer.get(asset="ETH", resp=13425)
-    consumer.get(asset="BTC", resp=2342354345)
-    consumer.get(asset="XTZ", resp=203434)
-    consumer.get(asset="WTZ", resp=203434)
-    consumer.get(asset="OXTZ", resp=203434)
-    consumer.get(asset="RRXTZ", resp=203434)
-    consumer.get(asset="USD", resp=1000000)
-    consumer.get(asset="USD", resp=43000000).run(valid=False)
-    consumer.get(asset="XTZ", resp=43000000).run(valid=False)
+    consumer.getPrice(asset="ETH", resp=13425)
+    consumer.getPrice(asset="BTC", resp=2342354345)
+    consumer.getPrice(asset="XTZ", resp=203434)
+    consumer.getPrice(asset="WTZ", resp=203434)
+    consumer.getPrice(asset="OXTZ", resp=203434)
+    consumer.getPrice(asset="RRXTZ", resp=203434)
+    consumer.getPrice(asset="USD", resp=1000000)
+    consumer.getPrice(asset="USD", resp=43000000).run(valid=False)
+    consumer.getPrice(asset="XTZ", resp=43000000).run(valid=False)
     consumer.getPrice(asset="ETH", resp=13425)
     consumer.getPrice(asset="BTC", resp=2342354345)
     consumer.getPrice(asset="XTZ", resp=203434)

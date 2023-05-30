@@ -284,7 +284,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point
     def updateAllAssetPricesWithView(self):
-        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         self.updateAllAssetPrices()
 
@@ -311,7 +311,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point
     def updateAccountLiquidityWithView(self, account):
-        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(account, sp.TAddress)
         self.updateAllAssetPrices()
@@ -327,7 +327,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def setAccountLiquidityWithView(self, account):
-        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(account, sp.TAddress)
         liquidity = sp.local(
@@ -713,7 +713,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
     @sp.entry_point(lazify=True)
     def disableMarket(self, cToken):
-        sp.verify(sp.amount <= sp.utils.nat_to_mutez(
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(cToken, sp.TAddress)
         self.verifyAdministrator()

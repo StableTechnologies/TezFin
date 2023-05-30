@@ -384,6 +384,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                     value=sp.TNat).layout(("from_ as from", ("to_ as to", "value"))))
         sp.verify((params.from_ == sp.sender) |
                   (self.data.balances[params.from_].approvals[sp.sender] >= params.value), EC.CT_TRANSFER_NOT_APPROVED)
+        self.verifyNotInternal()
         self.verifyTransferAllowed(params.from_, params.to_, params.value)
         self.transferInternal(sp.record(
             from_=params.from_, to_=params.to_, value=params.value, sender=sp.sender))
@@ -681,11 +682,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def accrueInterest(self, params):
         sp.set_type(params, sp.TUnit)
         self.updateCash()
-        sp.if self.data.accrualBlockNumber == 0:
-            self.data.accrualBlockNumber = sp.level
         sp.if sp.level != self.data.accrualBlockNumber:
-            self.activateOp(OP.CTokenOperations.ACCRUE)
-            self.accrueInterestInternal(params)
+            sp.if self.data.accrualBlockNumber == 0:
+                self.data.accrualBlockNumber = sp.level
+            sp.else:
+                self.activateOp(OP.CTokenOperations.ACCRUE)
+                self.accrueInterestInternal(params)
 
     def accrueInterestInternal(self, params):
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,

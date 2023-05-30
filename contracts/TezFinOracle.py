@@ -42,7 +42,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
     @sp.entry_point
     def accept_admin(self):
         sp.verify(sp.sender == self.data.pendingAdmin.open_some("NOT_SET_PENDING_ADMIN"), "NOT_PENDING_ADMIN")
-        self.data.admin = self.data.pendingAdmin.open_some()
+        self.data.admin = sp.sender
         self.data.pendingAdmin = sp.none
 
     @sp.entry_point
@@ -82,30 +82,6 @@ class TezFinOracle(OracleInterface.OracleInterface):
         """
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
         del self.data.alias[asset]
-
-    @sp.entry_point
-    def get(self, requestPair):
-        """
-            Proxies to harbinger get entrypoint if not custom asset
-        """
-        sp.set_type(requestPair, OracleInterface.TGetPriceParam)
-
-        # Destructure the arguments.
-        requestedAsset = sp.compute(sp.fst(requestPair))
-        callback = sp.compute(sp.snd(requestPair))
-
-        sp.if self.data.overrides.contains(requestedAsset):
-            callbackParam = (
-                requestedAsset, self.data.overrides[requestedAsset])
-            sp.transfer(callbackParam, sp.mutez(0), callback)
-        sp.else:
-            asset = sp.local("asset", requestedAsset)
-            sp.if self.data.alias.contains(requestedAsset):
-                asset.value = self.data.alias[requestedAsset]
-            oracle_data = sp.view("getPrice", self.data.oracle, asset.value, t=sp.TPair(
-                sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
-            callbackParam = (asset.value, oracle_data)
-            sp.transfer(callbackParam, sp.mutez(0), callback)
 
     @sp.onchain_view()
     def getPrice(self, requestedAsset):
