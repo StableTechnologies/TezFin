@@ -18,7 +18,6 @@ class CXTZ(CToken.CToken):
                                initialExchangeRateMantissa, administrator_)
 
     def getCashImpl(self):
-        # TODO: test in regards to https://forum.tezosagora.org/t/problems-with-balance/2194/3
         return sp.utils.mutez_to_nat(sp.balance)
 
     def doTransferOut(self, to_, amount, isContract=False):
