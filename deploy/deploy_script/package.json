@@ -4,7 +4,7 @@
   "main": "deploy.js",
   "dependencies": {
     "conseiljs": "5.2.5",
-    "conseiljs-softsigner": "^5.0.4-1",
+    "conseiljs-softsigner": "^5.0.4",
     "glob": "7.2.3",
     "loglevel": "^1.8.1",
     "node-fetch": "^2.6.9"
