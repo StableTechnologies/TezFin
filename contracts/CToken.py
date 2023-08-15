@@ -38,9 +38,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Initial exchange rate used when minting the first CTokens
             initialExchangeRateMantissa=initialExchangeRateMantissa_,
             # Fraction of interest currently set aside for reserves
-            reserveFactorMantissa=sp.nat(50000000000000000), # 5%
+            reserveFactorMantissa=sp.nat(50000000000000000),  # 5%
             # protocol share for sezied asstes
-            protocolSeizeShareMantissa=sp.nat(100000000000000), #0.01%
+            protocolSeizeShareMantissa=sp.nat(100000000000000),  # 0.01%
             # Block number that interest was last accrued at
             accrualBlockNumber=sp.nat(0),
             # Accumulator of the total earned interest rate since the opening of the market
@@ -330,7 +330,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.entry_point
     def liquidateBorrow(self, params):
         sp.set_type(params, CTI.TLiquidate)
-        self.verifyliquidateBorrowAllowed(params.cTokenCollateral, params.borrower, sp.sender, params.repayAmount)
+        self.verifyliquidateBorrowAllowed(
+            params.cTokenCollateral, params.borrower, sp.sender, params.repayAmount)
         self.liquidateBorrowFresh(
             sp.sender, params.borrower, params.repayAmount, params.cTokenCollateral)
 
@@ -517,7 +518,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         return: TAccountSnapshot - account balance information
     """
-    
+
     def helpAccountSnapshot(self, params):
         accSnapshot = sp.compute(sp.record(
             account=params,
@@ -530,11 +531,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             accSnapshot.cTokenBalance = self.data.balances[params].balance
             accSnapshot.borrowBalance = self.getBorrowBalance(params)
             accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
-        return accSnapshot;
-    
+        return accSnapshot
+
     @sp.utils.view(CTI.TAccountSnapshot)
     def getAccountSnapshot(self, params):
-        sp.result(self.helpAccountSnapshot(params));
+        sp.result(self.helpAccountSnapshot(params))
 
     """    
         Get a snapshot of the account's balances, and the cached exchange rate
@@ -687,15 +688,22 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 self.data.accrualBlockNumber = sp.level
             sp.else:
                 self.activateOp(OP.CTokenOperations.ACCRUE)
-                self.accrueInterestInternal(params)
+                # make self contract call to use latest cash values
+                c = sp.contract(IRMI.TCallback, sp.self_address,
+                                entry_point="accrueInterestInternal").open_some()
+                sp.transfer(sp.self_entry_point(
+                    "doAccrueInterest"), sp.mutez(0), c)
 
+    @sp.entry_point(lazify=True)
     def accrueInterestInternal(self, params):
+        sp.set_type(params, IRMI.TCallback)
+        self.verifyInternal()
         c = sp.contract(IRMI.TBorrowRateParams, self.data.interestRateModel,
                         entry_point="getBorrowRate").open_some()
         transferData = sp.record(cash=self.getCashImpl(),
                                  borrows=self.data.totalBorrows,
                                  reserves=self.data.totalReserves,
-                                 cb=sp.self_entry_point("doAccrueInterest"))
+                                 cb=params)
         sp.transfer(transferData, sp.mutez(0), c)
 
     @sp.entry_point(lazify=True)
