@@ -80,9 +80,9 @@
     ],
     "mintAmount": 15000,
     "mintAmounts": {
-        "ETH": 100,
-        "BTC": 100,
-        "USD": 20000,
+        "ETH": 4000,
+        "BTC": 4000,
+        "USD": 2000000,
         "OXTZ": 5000,
         "WTZ": 5000
     },
