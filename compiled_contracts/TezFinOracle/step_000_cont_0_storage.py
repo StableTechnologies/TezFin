@@ -1,0 +1,1 @@
+sp.record(admin = sp.address('tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE'), alias = {'OXTZ-USD' : 'XTZ-USD', 'WTZ-USD' : 'XTZ-USD'}, oracle = sp.address('KT1ENe4jbDE1QVG1euryp23GsAeWuEwJutQX'), overrides = {'USD-USD' : (sp.timestamp(1693278431), 1000000)}, pendingAdmin = sp.none)
