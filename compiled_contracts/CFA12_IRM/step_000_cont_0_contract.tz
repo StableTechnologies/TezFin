@@ -1,0 +1,240 @@
+parameter (or (pair %getBorrowRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (nat %reserves))) (pair %getSupplyRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (pair (nat %reserveFactorMantissa) (nat %reserves)))));
+storage   (pair (nat %baseRatePerBlock) (pair (nat %multiplierPerBlock) (nat %scale)));
+code
+  {
+    UNPAIR;     # @parameter : @storage
+    IF_LEFT
+      {
+        # == getBorrowRate ==
+        # ur = sp.local("ur", 0) # @parameter%getBorrowRate : @storage
+        PUSH nat 0; # nat : @parameter%getBorrowRate : @storage
+        # if params.borrows > 0: # nat : @parameter%getBorrowRate : @storage
+        PUSH nat 0; # nat : nat : @parameter%getBorrowRate : @storage
+        DUP 3;      # @parameter%getBorrowRate : nat : nat : @parameter%getBorrowRate : @storage
+        CAR;        # pair (nat %borrows) (nat %cash) : nat : nat : @parameter%getBorrowRate : @storage
+        CAR;        # nat : nat : nat : @parameter%getBorrowRate : @storage
+        COMPARE;    # int : nat : @parameter%getBorrowRate : @storage
+        GT;         # bool : nat : @parameter%getBorrowRate : @storage
+        IF
+          {
+            DROP;       # @parameter%getBorrowRate : @storage
+            # compute_InterestRateModel_59 = sp.local("compute_InterestRateModel_59", sp.as_nat((params.cash + params.borrows) - params.reserves)) # @parameter%getBorrowRate : @storage
+            DUP;        # @parameter%getBorrowRate : @parameter%getBorrowRate : @storage
+            GET 4;      # nat : @parameter%getBorrowRate : @storage
+            SWAP;       # @parameter%getBorrowRate : nat : @storage
+            DUP;        # @parameter%getBorrowRate : @parameter%getBorrowRate : nat : @storage
+            CAR;        # pair (nat %borrows) (nat %cash) : @parameter%getBorrowRate : nat : @storage
+            CAR;        # nat : @parameter%getBorrowRate : nat : @storage
+            SWAP;       # @parameter%getBorrowRate : nat : nat : @storage
+            DUP;        # @parameter%getBorrowRate : @parameter%getBorrowRate : nat : nat : @storage
+            DUG 3;      # @parameter%getBorrowRate : nat : nat : @parameter%getBorrowRate : @storage
+            CAR;        # pair (nat %borrows) (nat %cash) : nat : nat : @parameter%getBorrowRate : @storage
+            CDR;        # nat : nat : nat : @parameter%getBorrowRate : @storage
+            ADD;        # nat : nat : @parameter%getBorrowRate : @storage
+            SUB;        # int : @parameter%getBorrowRate : @storage
+            ISNAT;      # option nat : @parameter%getBorrowRate : @storage
+            IF_NONE
+              {
+                PUSH int 59; # int : @parameter%getBorrowRate : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @parameter%getBorrowRate : @storage
+            # sp.verify(compute_InterestRateModel_59.value > 0, 'IRM_INSUFFICIENT_CASH') # @some : @parameter%getBorrowRate : @storage
+            DUP;        # @some : @some : @parameter%getBorrowRate : @storage
+            PUSH nat 0; # nat : @some : @some : @parameter%getBorrowRate : @storage
+            COMPARE;    # int : @some : @parameter%getBorrowRate : @storage
+            LT;         # bool : @some : @parameter%getBorrowRate : @storage
+            IF
+              {}
+              {
+                PUSH string "IRM_INSUFFICIENT_CASH"; # string : @some : @parameter%getBorrowRate : @storage
+                FAILWITH;   # FAILED
+              }; # @some : @parameter%getBorrowRate : @storage
+            # ur.value = (params.borrows * self.data.scale) // compute_InterestRateModel_59.value # @some : @parameter%getBorrowRate : @storage
+            DUP 3;      # @storage : @some : @parameter%getBorrowRate : @storage
+            GET 4;      # nat : @some : @parameter%getBorrowRate : @storage
+            DUP 3;      # @parameter%getBorrowRate : nat : @some : @parameter%getBorrowRate : @storage
+            CAR;        # pair (nat %borrows) (nat %cash) : nat : @some : @parameter%getBorrowRate : @storage
+            CAR;        # nat : nat : @some : @parameter%getBorrowRate : @storage
+            MUL;        # nat : @some : @parameter%getBorrowRate : @storage
+            EDIV;       # option (pair nat nat) : @parameter%getBorrowRate : @storage
+            IF_NONE
+              {
+                PUSH int 61; # int : @parameter%getBorrowRate : @storage
+                FAILWITH;   # FAILED
+              }
+              {
+                CAR;        # nat : @parameter%getBorrowRate : @storage
+              }; # nat : @parameter%getBorrowRate : @storage
+          }
+          {}; # nat : @parameter%getBorrowRate : @storage
+        # compute_InterestRateModel_65 = sp.local("compute_InterestRateModel_65", ((ur.value * self.data.multiplierPerBlock) // self.data.scale) + self.data.baseRatePerBlock) # nat : @parameter%getBorrowRate : @storage
+        DIG 2;      # @storage : nat : @parameter%getBorrowRate
+        DUP;        # @storage : @storage : nat : @parameter%getBorrowRate
+        CAR;        # nat : @storage : nat : @parameter%getBorrowRate
+        SWAP;       # @storage : nat : nat : @parameter%getBorrowRate
+        DUP;        # @storage : @storage : nat : nat : @parameter%getBorrowRate
+        GET 4;      # nat : @storage : nat : nat : @parameter%getBorrowRate
+        SWAP;       # @storage : nat : nat : nat : @parameter%getBorrowRate
+        DUP;        # @storage : @storage : nat : nat : nat : @parameter%getBorrowRate
+        DUG 5;      # @storage : nat : nat : nat : @parameter%getBorrowRate : @storage
+        GET 3;      # nat : nat : nat : nat : @parameter%getBorrowRate : @storage
+        DIG 3;      # nat : nat : nat : nat : @parameter%getBorrowRate : @storage
+        MUL;        # nat : nat : nat : @parameter%getBorrowRate : @storage
+        EDIV;       # option (pair nat nat) : nat : @parameter%getBorrowRate : @storage
+        IF_NONE
+          {
+            PUSH int 65; # int : nat : @parameter%getBorrowRate : @storage
+            FAILWITH;   # FAILED
+          }
+          {
+            CAR;        # nat : nat : @parameter%getBorrowRate : @storage
+          }; # nat : nat : @parameter%getBorrowRate : @storage
+        ADD;        # nat : @parameter%getBorrowRate : @storage
+        # sp.transfer(compute_InterestRateModel_65.value, sp.tez(0), params.cb) # nat : @parameter%getBorrowRate : @storage
+        NIL operation; # list operation : nat : @parameter%getBorrowRate : @storage
+        DIG 2;      # @parameter%getBorrowRate : list operation : nat : @storage
+        GET 3;      # contract nat : list operation : nat : @storage
+        PUSH mutez 0; # mutez : contract nat : list operation : nat : @storage
+        DIG 3;      # nat : mutez : contract nat : list operation : @storage
+        TRANSFER_TOKENS; # operation : list operation : @storage
+        CONS;       # list operation : @storage
+      }
+      {
+        # == getSupplyRate ==
+        # ur = sp.local("ur", 0) # @parameter%getSupplyRate : @storage
+        PUSH nat 0; # nat : @parameter%getSupplyRate : @storage
+        # if params.borrows > 0: # nat : @parameter%getSupplyRate : @storage
+        PUSH nat 0; # nat : nat : @parameter%getSupplyRate : @storage
+        DUP 3;      # @parameter%getSupplyRate : nat : nat : @parameter%getSupplyRate : @storage
+        CAR;        # pair (nat %borrows) (nat %cash) : nat : nat : @parameter%getSupplyRate : @storage
+        CAR;        # nat : nat : nat : @parameter%getSupplyRate : @storage
+        COMPARE;    # int : nat : @parameter%getSupplyRate : @storage
+        GT;         # bool : nat : @parameter%getSupplyRate : @storage
+        IF
+          {
+            DROP;       # @parameter%getSupplyRate : @storage
+            # compute_InterestRateModel_59 = sp.local("compute_InterestRateModel_59", sp.as_nat((params.cash + params.borrows) - params.reserves)) # @parameter%getSupplyRate : @storage
+            DUP;        # @parameter%getSupplyRate : @parameter%getSupplyRate : @storage
+            GET 6;      # nat : @parameter%getSupplyRate : @storage
+            SWAP;       # @parameter%getSupplyRate : nat : @storage
+            DUP;        # @parameter%getSupplyRate : @parameter%getSupplyRate : nat : @storage
+            CAR;        # pair (nat %borrows) (nat %cash) : @parameter%getSupplyRate : nat : @storage
+            CAR;        # nat : @parameter%getSupplyRate : nat : @storage
+            SWAP;       # @parameter%getSupplyRate : nat : nat : @storage
+            DUP;        # @parameter%getSupplyRate : @parameter%getSupplyRate : nat : nat : @storage
+            DUG 3;      # @parameter%getSupplyRate : nat : nat : @parameter%getSupplyRate : @storage
+            CAR;        # pair (nat %borrows) (nat %cash) : nat : nat : @parameter%getSupplyRate : @storage
+            CDR;        # nat : nat : nat : @parameter%getSupplyRate : @storage
+            ADD;        # nat : nat : @parameter%getSupplyRate : @storage
+            SUB;        # int : @parameter%getSupplyRate : @storage
+            ISNAT;      # option nat : @parameter%getSupplyRate : @storage
+            IF_NONE
+              {
+                PUSH int 59; # int : @parameter%getSupplyRate : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @parameter%getSupplyRate : @storage
+            # sp.verify(compute_InterestRateModel_59.value > 0, 'IRM_INSUFFICIENT_CASH') # @some : @parameter%getSupplyRate : @storage
+            DUP;        # @some : @some : @parameter%getSupplyRate : @storage
+            PUSH nat 0; # nat : @some : @some : @parameter%getSupplyRate : @storage
+            COMPARE;    # int : @some : @parameter%getSupplyRate : @storage
+            LT;         # bool : @some : @parameter%getSupplyRate : @storage
+            IF
+              {}
+              {
+                PUSH string "IRM_INSUFFICIENT_CASH"; # string : @some : @parameter%getSupplyRate : @storage
+                FAILWITH;   # FAILED
+              }; # @some : @parameter%getSupplyRate : @storage
+            # ur.value = (params.borrows * self.data.scale) // compute_InterestRateModel_59.value # @some : @parameter%getSupplyRate : @storage
+            DUP 3;      # @storage : @some : @parameter%getSupplyRate : @storage
+            GET 4;      # nat : @some : @parameter%getSupplyRate : @storage
+            DUP 3;      # @parameter%getSupplyRate : nat : @some : @parameter%getSupplyRate : @storage
+            CAR;        # pair (nat %borrows) (nat %cash) : nat : @some : @parameter%getSupplyRate : @storage
+            CAR;        # nat : nat : @some : @parameter%getSupplyRate : @storage
+            MUL;        # nat : @some : @parameter%getSupplyRate : @storage
+            EDIV;       # option (pair nat nat) : @parameter%getSupplyRate : @storage
+            IF_NONE
+              {
+                PUSH int 61; # int : @parameter%getSupplyRate : @storage
+                FAILWITH;   # FAILED
+              }
+              {
+                CAR;        # nat : @parameter%getSupplyRate : @storage
+              }; # nat : @parameter%getSupplyRate : @storage
+          }
+          {}; # nat : @parameter%getSupplyRate : @storage
+        # compute_InterestRateModel_65 = sp.local("compute_InterestRateModel_65", ((ur.value * self.data.multiplierPerBlock) // self.data.scale) + self.data.baseRatePerBlock) # nat : @parameter%getSupplyRate : @storage
+        DIG 2;      # @storage : nat : @parameter%getSupplyRate
+        DUP;        # @storage : @storage : nat : @parameter%getSupplyRate
+        CAR;        # nat : @storage : nat : @parameter%getSupplyRate
+        SWAP;       # @storage : nat : nat : @parameter%getSupplyRate
+        DUP;        # @storage : @storage : nat : nat : @parameter%getSupplyRate
+        GET 4;      # nat : @storage : nat : nat : @parameter%getSupplyRate
+        SWAP;       # @storage : nat : nat : nat : @parameter%getSupplyRate
+        DUP;        # @storage : @storage : nat : nat : nat : @parameter%getSupplyRate
+        DUG 5;      # @storage : nat : nat : nat : @parameter%getSupplyRate : @storage
+        GET 3;      # nat : nat : nat : nat : @parameter%getSupplyRate : @storage
+        DUP 4;      # nat : nat : nat : nat : nat : @parameter%getSupplyRate : @storage
+        MUL;        # nat : nat : nat : nat : @parameter%getSupplyRate : @storage
+        EDIV;       # option (pair nat nat) : nat : nat : @parameter%getSupplyRate : @storage
+        IF_NONE
+          {
+            PUSH int 65; # int : nat : nat : @parameter%getSupplyRate : @storage
+            FAILWITH;   # FAILED
+          }
+          {
+            CAR;        # nat : nat : nat : @parameter%getSupplyRate : @storage
+          }; # nat : nat : nat : @parameter%getSupplyRate : @storage
+        ADD;        # nat : nat : @parameter%getSupplyRate : @storage
+        # sp.transfer((ur.value * ((compute_InterestRateModel_65.value * sp.as_nat(self.data.scale - params.reserveFactorMantissa)) // self.data.scale)) // self.data.scale, sp.tez(0), params.cb) # nat : nat : @parameter%getSupplyRate : @storage
+        NIL operation; # list operation : nat : nat : @parameter%getSupplyRate : @storage
+        DUP 4;      # @parameter%getSupplyRate : list operation : nat : nat : @parameter%getSupplyRate : @storage
+        GET 3;      # contract nat : list operation : nat : nat : @parameter%getSupplyRate : @storage
+        PUSH mutez 0; # mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate : @storage
+        DIG 6;      # @storage : mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate
+        DUP;        # @storage : @storage : mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate
+        GET 4;      # nat : @storage : mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate
+        SWAP;       # @storage : nat : mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate
+        DUP;        # @storage : @storage : nat : mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate
+        DUG 8;      # @storage : nat : mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate : @storage
+        GET 4;      # nat : nat : mutez : contract nat : list operation : nat : nat : @parameter%getSupplyRate : @storage
+        DIG 7;      # @parameter%getSupplyRate : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+        GET 5;      # nat : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+        DUP 9;      # @storage : nat : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+        GET 4;      # nat : nat : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+        SUB;        # int : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+        ISNAT;      # option nat : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+        IF_NONE
+          {
+            PUSH int 47; # int : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : nat : nat : mutez : contract nat : list operation : nat : nat : @storage
+        DIG 6;      # nat : @some : nat : nat : mutez : contract nat : list operation : nat : @storage
+        MUL;        # nat : nat : nat : mutez : contract nat : list operation : nat : @storage
+        EDIV;       # option (pair nat nat) : nat : mutez : contract nat : list operation : nat : @storage
+        IF_NONE
+          {
+            PUSH int 52; # int : nat : mutez : contract nat : list operation : nat : @storage
+            FAILWITH;   # FAILED
+          }
+          {
+            CAR;        # nat : nat : mutez : contract nat : list operation : nat : @storage
+          }; # nat : nat : mutez : contract nat : list operation : nat : @storage
+        DIG 5;      # nat : nat : nat : mutez : contract nat : list operation : @storage
+        MUL;        # nat : nat : mutez : contract nat : list operation : @storage
+        EDIV;       # option (pair nat nat) : mutez : contract nat : list operation : @storage
+        IF_NONE
+          {
+            PUSH int 53; # int : mutez : contract nat : list operation : @storage
+            FAILWITH;   # FAILED
+          }
+          {
+            CAR;        # nat : mutez : contract nat : list operation : @storage
+          }; # nat : mutez : contract nat : list operation : @storage
+        TRANSFER_TOKENS; # operation : list operation : @storage
+        CONS;       # list operation : @storage
+      }; # list operation : @storage
+    PAIR;       # pair (list operation) @storage
+  };
