@@ -11,6 +11,8 @@ class ErrorCodes:
     CT_TRANSFER_NOT_APPROVED = "FA1.2_NotAllowed"
     # Couldn't approve the second time
     CT_UNSAFE_ALLOWANCE_CHANGE = "FA1.2_UnsafeAllowanceChange"
+    # Max approvals reached 
+    CT_MAX_APPROVALS = "FA1.2_MaxApprovalsReached"
     # Sender should be interest rate model
     CT_SENDER_NOT_IRM = "CT_SENDER_NOT_IRM"
     # Seize is allowed only to comptroller

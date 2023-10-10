@@ -57,6 +57,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             pendingAdministrator=sp.none,  # Pending administrator`s address for this contract
             # Set of currently active operations to protect execution flow
             activeOperations=sp.set(t=sp.TNat),
+            maxApprovals=1000,
             **extra_storage
         )
 
@@ -401,6 +402,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.if (params.from_ != params.sender):
             self.data.balances[params.from_].approvals[params.sender] = sp.as_nat(
                 self.data.balances[params.from_].approvals[params.sender] - params.value)
+            sp.if self.data.balances[params.from_].approvals[params.sender] == 0:
+                del self.data.balances[params.from_].approvals[params.sender]
 
     def verifyTransferAllowed(self, src_, dst_, transferTokens_):
         self.addAddressIfNecessary(dst_)
@@ -427,11 +430,19 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TRecord(spender=sp.TAddress,
                     value=sp.TNat).layout(("spender", "value")))
         self.verifyNotInternal()
+
+        # check if max approvals reached if new entry in approvals
+        sp.verify((self.data.balances[sp.sender].approvals.contains(params.spender)) | (
+            self.data.maxApprovals > sp.len(self.data.balances[sp.sender].approvals)), EC.CT_MAX_APPROVALS) 
+        
         alreadyApproved = self.data.balances[sp.sender].approvals.get(
             params.spender, 0)
         sp.verify((alreadyApproved == 0) | (params.value == 0),
                   EC.CT_UNSAFE_ALLOWANCE_CHANGE)
-        self.data.balances[sp.sender].approvals[params.spender] = params.value
+        sp.if params.value == 0:
+            del self.data.balances[sp.sender].approvals[params.spender]
+        sp.else:    
+            self.data.balances[sp.sender].approvals[params.spender] = params.value
 
     """    
         Get the CToken balance of the account specified in `params`
@@ -753,6 +764,17 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(protocolSeizeShareMantissa, sp.TNat)
         self.verifyAdministrator()
         self.data.protocolSeizeShareMantissa = protocolSeizeShareMantissa
+
+    """    
+        Sets a max approval value
+
+        params: TNat - max approval no.
+    """
+    @sp.entry_point(lazify=True)
+    def updateMaxApprovals(self, maxApprovals):
+        sp.set_type(maxApprovals, sp.TNat)
+        self.verifyAdministrator()
+        self.data.maxApprovals = maxApprovals
 
     """    
         Accept a new governance for the market
