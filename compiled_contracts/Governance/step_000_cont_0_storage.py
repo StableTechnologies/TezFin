@@ -1,1 +1,1 @@
-sp.record(administrator = sp.address('tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE'), pendingAdministrator = sp.none)
+sp.record(administrator = sp.address('tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL'), pendingAdministrator = sp.none)

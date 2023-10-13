@@ -4,18 +4,18 @@
     {
       "prim": "Pair",
       "args": [
-        { "string": "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE" },
+        { "string": "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL" },
         [ { "prim": "Elt", "args": [ { "string": "OXTZ-USD" }, { "string": "XTZ-USD" } ] }, { "prim": "Elt", "args": [ { "string": "WTZ-USD" }, { "string": "XTZ-USD" } ] } ]
       ]
     },
     {
       "prim": "Pair",
       "args": [
-        { "string": "KT1ENe4jbDE1QVG1euryp23GsAeWuEwJutQX" },
+        { "string": "KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj" },
         {
           "prim": "Pair",
           "args": [
-            [ { "prim": "Elt", "args": [ { "string": "USD-USD" }, { "prim": "Pair", "args": [ { "string": "2023-08-29T03:07:11Z" }, { "int": "1000000" } ] } ] } ],
+            [ { "prim": "Elt", "args": [ { "string": "USD-USD" }, { "prim": "Pair", "args": [ { "string": "2023-10-13T06:58:24Z" }, { "int": "1000000" } ] } ] } ],
             { "prim": "None" }
           ]
         }

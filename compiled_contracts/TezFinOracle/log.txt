@@ -1,10 +1,10 @@
 Creating contract KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1
- -> (Pair (Pair "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE" {Elt "OXTZ-USD" "XTZ-USD"; Elt "WTZ-USD" "XTZ-USD"}) (Pair "KT1ENe4jbDE1QVG1euryp23GsAeWuEwJutQX" (Pair {Elt "USD-USD" (Pair "2023-08-29T03:07:11Z" 1000000)} None)))
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_storage.tz 1
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_storage.json 25
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_sizes.csv 2
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_storage.py 1
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_types.py 7
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_contract.tz 299
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_contract.json 332
- => ./e2e/compiled_contracts/TezFinOracle/step_000_cont_0_contract.py 54
+ -> (Pair (Pair "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL" {Elt "OXTZ-USD" "XTZ-USD"; Elt "WTZ-USD" "XTZ-USD"}) (Pair "KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj" (Pair {Elt "USD-USD" (Pair "2023-10-13T06:58:24Z" 1000000)} None)))
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_storage.tz 1
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_storage.json 25
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_sizes.csv 2
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_storage.py 1
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_types.py 7
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_contract.tz 299
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_contract.json 332
+ => ./TezFinBuild/compiled_contracts/TezFinOracle/step_000_cont_0_contract.py 54

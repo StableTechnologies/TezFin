@@ -3,7 +3,7 @@ import smartpy as sp
 class Contract(sp.Contract):
   def __init__(self):
     self.init_type(sp.TRecord(administrator = sp.TAddress, pendingAdministrator = sp.TOption(sp.TAddress)).layout(("administrator", "pendingAdministrator")))
-    self.init(administrator = sp.address('tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE'),
+    self.init(administrator = sp.address('tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL'),
               pendingAdministrator = sp.none)
 
   @sp.entry_point
