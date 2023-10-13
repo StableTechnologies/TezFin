@@ -57,7 +57,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             pendingAdministrator=sp.none,  # Pending administrator`s address for this contract
             # Set of currently active operations to protect execution flow
             activeOperations=sp.set(t=sp.TNat),
-            maxApprovals=1000,
             **extra_storage
         )
 
@@ -433,7 +432,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         # check if max approvals reached if new entry in approvals
         sp.verify((self.data.balances[sp.sender].approvals.contains(params.spender)) | (
-            self.data.maxApprovals > sp.len(self.data.balances[sp.sender].approvals)), EC.CT_MAX_APPROVALS) 
+            1000 > sp.len(self.data.balances[sp.sender].approvals)), EC.CT_MAX_APPROVALS) 
         
         alreadyApproved = self.data.balances[sp.sender].approvals.get(
             params.spender, 0)
@@ -765,16 +764,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyAdministrator()
         self.data.protocolSeizeShareMantissa = protocolSeizeShareMantissa
 
-    """    
-        Sets a max approval value
-
-        params: TNat - max approval no.
-    """
-    @sp.entry_point(lazify=True)
-    def updateMaxApprovals(self, maxApprovals):
-        sp.set_type(maxApprovals, sp.TNat)
-        self.verifyAdministrator()
-        self.data.maxApprovals = maxApprovals
 
     """    
         Accept a new governance for the market

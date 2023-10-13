@@ -3,10 +3,10 @@ import smartpy as sp
 class Contract(sp.Contract):
   def __init__(self):
     self.init_type(sp.TRecord(admin = sp.TAddress, alias = sp.TBigMap(sp.TString, sp.TString), oracle = sp.TAddress, overrides = sp.TBigMap(sp.TString, sp.TPair(sp.TTimestamp, sp.TNat)), pendingAdmin = sp.TOption(sp.TAddress)).layout((("admin", "alias"), ("oracle", ("overrides", "pendingAdmin")))))
-    self.init(admin = sp.address('tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE'),
+    self.init(admin = sp.address('tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL'),
               alias = {'OXTZ-USD' : 'XTZ-USD', 'WTZ-USD' : 'XTZ-USD'},
-              oracle = sp.address('KT1ENe4jbDE1QVG1euryp23GsAeWuEwJutQX'),
-              overrides = {'USD-USD' : (sp.timestamp(1693278431), 1000000)},
+              oracle = sp.address('KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj'),
+              overrides = {'USD-USD' : (sp.timestamp(1697180304), 1000000)},
               pendingAdmin = sp.none)
 
   @sp.entry_point

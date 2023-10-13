@@ -157,21 +157,6 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
         sp.transfer(params.interestRateModel, sp.mutez(0), contract)
 
     """    
-        Sets a max approval value for ctoken
-
-        params: TRecord
-            cToken: TAddress - The address of CToken contract
-            maxApprovals: TNat - max approval no.
-    """
-    def updateMaxApprovals(self, params):
-        sp.set_type(params, sp.TRecord(
-            cToken=sp.TAddress, maxApprovals=sp.TNat))
-        self.verifyAdministrator()
-        contract = sp.contract(sp.TAddress, params.cToken,
-                               "updateMaxApprovals").open_some()
-        sp.transfer(params.maxApprovals, sp.mutez(0), contract)
-
-    """    
         accrues interest and sets a new reserve factor for the protocol
 
         params: TRecord

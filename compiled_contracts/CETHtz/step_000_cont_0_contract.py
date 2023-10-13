@@ -5,18 +5,18 @@ class Contract(sp.Contract):
     self.init_type(sp.TRecord(accrualBlockNumber = sp.TNat, activeOperations = sp.TSet(sp.TNat), administrator = sp.TAddress, balances = sp.TBigMap(sp.TAddress, sp.TRecord(accountBorrows = sp.TRecord(interestIndex = sp.TNat, principal = sp.TNat).layout(("interestIndex", "principal")), approvals = sp.TMap(sp.TAddress, sp.TNat), balance = sp.TNat).layout(("accountBorrows", ("approvals", "balance")))), borrowIndex = sp.TNat, borrowRateMaxMantissa = sp.TNat, borrowRatePerBlock = sp.TNat, comptroller = sp.TAddress, currentCash = sp.TNat, expScale = sp.TNat, fa1_2_TokenAddress = sp.TAddress, halfExpScale = sp.TNat, initialExchangeRateMantissa = sp.TNat, interestRateModel = sp.TAddress, pendingAdministrator = sp.TOption(sp.TAddress), protocolSeizeShareMantissa = sp.TNat, reserveFactorMantissa = sp.TNat, reserveFactorMaxMantissa = sp.TNat, supplyRatePerBlock = sp.TNat, totalBorrows = sp.TNat, totalReserves = sp.TNat, totalSupply = sp.TNat).layout((((("accrualBlockNumber", "activeOperations"), ("administrator", ("balances", "borrowIndex"))), (("borrowRateMaxMantissa", ("borrowRatePerBlock", "comptroller")), ("currentCash", ("expScale", "fa1_2_TokenAddress")))), ((("halfExpScale", "initialExchangeRateMantissa"), ("interestRateModel", ("pendingAdministrator", "protocolSeizeShareMantissa"))), (("reserveFactorMantissa", ("reserveFactorMaxMantissa", "supplyRatePerBlock")), ("totalBorrows", ("totalReserves", "totalSupply")))))))
     self.init(accrualBlockNumber = 0,
               activeOperations = sp.set([]),
-              administrator = sp.address('KT1AMtB5fLowfKGHdoei4Nrc76XTFSP3XnZD'),
+              administrator = sp.address('KT1KW6McQpHFZPffW6vZt5JSxibvVKAPnYUq'),
               balances = {},
               borrowIndex = 1000000000000000000,
               borrowRateMaxMantissa = 80000000000,
               borrowRatePerBlock = 0,
-              comptroller = sp.address('KT1PQ4M6F2W7qKkugTQHBHDVRFMqg9sGSmYy'),
+              comptroller = sp.address('KT1XnZqyGrEKkf8TiQ2uYE2zyxsp2L5NZ6KW'),
               currentCash = 0,
               expScale = 1000000000000000000,
-              fa1_2_TokenAddress = sp.address('KT1FvwBE5JSGgu2JEFJbGZc59fKqbUy9Qret'),
+              fa1_2_TokenAddress = sp.address('KT19at7rQUvyjxnZ2fBv7D9zc8rkyG7gAoU8'),
               halfExpScale = 500000000000000000,
               initialExchangeRateMantissa = 1000000000000000000,
-              interestRateModel = sp.address('KT1LmZ8Cc61ZciNcJAjJa4aVQcstBvfxq4sb'),
+              interestRateModel = sp.address('KT1QCL5W3heju7SJKvRgYR9xNtP9fEenG1Eq'),
               pendingAdministrator = sp.none,
               protocolSeizeShareMantissa = 100000000000000,
               reserveFactorMantissa = 50000000000000000,
@@ -75,8 +75,12 @@ class Contract(sp.Contract):
   def approve(self, params):
     sp.set_type(params, sp.TRecord(spender = sp.TAddress, value = sp.TNat).layout(("spender", "value")))
     sp.verify(sp.sender != sp.self_address, 'CT_INTERNAL_CALL')
+    sp.verify((self.data.balances[sp.sender].approvals.contains(params.spender)) | (sp.len(self.data.balances[sp.sender].approvals) < 1000), 'FA1.2_MaxApprovalsReached')
     sp.verify((self.data.balances[sp.sender].approvals.get(params.spender, default_value = 0) == 0) | (params.value == 0), 'FA1.2_UnsafeAllowanceChange')
-    self.data.balances[sp.sender].approvals[params.spender] = params.value
+    sp.if params.value == 0:
+      del self.data.balances[sp.sender].approvals[params.spender]
+    sp.else:
+      self.data.balances[sp.sender].approvals[params.spender] = params.value
 
   @sp.entry_point
   def borrow(self, params):
@@ -120,32 +124,32 @@ class Contract(sp.Contract):
     sp.set_type(sp.record(mantissa = params), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
     sp.set_type(sp.as_nat(sp.level - self.data.accrualBlockNumber), sp.TNat)
     sp.set_type(params * sp.as_nat(sp.level - self.data.accrualBlockNumber), sp.TNat)
-    compute_CToken_719 = sp.local("compute_CToken_719", sp.record(mantissa = params * sp.as_nat(sp.level - self.data.accrualBlockNumber)))
-    sp.set_type(compute_CToken_719.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    sp.set_type(compute_CToken_719.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    compute_CToken_729 = sp.local("compute_CToken_729", sp.record(mantissa = params * sp.as_nat(sp.level - self.data.accrualBlockNumber)))
+    sp.set_type(compute_CToken_729.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    sp.set_type(compute_CToken_729.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
     sp.set_type(self.data.totalBorrows, sp.TNat)
-    sp.set_type(compute_CToken_719.value.mantissa * self.data.totalBorrows, sp.TNat)
-    sp.set_type(sp.record(mantissa = compute_CToken_719.value.mantissa * self.data.totalBorrows), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    compute_CToken_721 = sp.local("compute_CToken_721", (compute_CToken_719.value.mantissa * self.data.totalBorrows) // self.data.expScale)
-    self.data.totalBorrows = compute_CToken_721.value + self.data.totalBorrows
+    sp.set_type(compute_CToken_729.value.mantissa * self.data.totalBorrows, sp.TNat)
+    sp.set_type(sp.record(mantissa = compute_CToken_729.value.mantissa * self.data.totalBorrows), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    compute_CToken_731 = sp.local("compute_CToken_731", (compute_CToken_729.value.mantissa * self.data.totalBorrows) // self.data.expScale)
+    self.data.totalBorrows = compute_CToken_731.value + self.data.totalBorrows
     sp.set_type(sp.record(mantissa = self.data.reserveFactorMantissa), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    sp.set_type(compute_CToken_721.value, sp.TNat)
+    sp.set_type(compute_CToken_731.value, sp.TNat)
     sp.set_type(self.data.totalReserves, sp.TNat)
     sp.set_type(sp.record(mantissa = self.data.reserveFactorMantissa), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
     sp.set_type(sp.record(mantissa = self.data.reserveFactorMantissa), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    sp.set_type(compute_CToken_721.value, sp.TNat)
-    sp.set_type(self.data.reserveFactorMantissa * compute_CToken_721.value, sp.TNat)
-    sp.set_type(sp.record(mantissa = self.data.reserveFactorMantissa * compute_CToken_721.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    self.data.totalReserves = ((self.data.reserveFactorMantissa * compute_CToken_721.value) // self.data.expScale) + self.data.totalReserves
-    sp.set_type(compute_CToken_719.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    sp.set_type(compute_CToken_731.value, sp.TNat)
+    sp.set_type(self.data.reserveFactorMantissa * compute_CToken_731.value, sp.TNat)
+    sp.set_type(sp.record(mantissa = self.data.reserveFactorMantissa * compute_CToken_731.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    self.data.totalReserves = ((self.data.reserveFactorMantissa * compute_CToken_731.value) // self.data.expScale) + self.data.totalReserves
+    sp.set_type(compute_CToken_729.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
     sp.set_type(self.data.borrowIndex, sp.TNat)
     sp.set_type(self.data.borrowIndex, sp.TNat)
-    sp.set_type(compute_CToken_719.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    sp.set_type(compute_CToken_719.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    sp.set_type(compute_CToken_729.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    sp.set_type(compute_CToken_729.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
     sp.set_type(self.data.borrowIndex, sp.TNat)
-    sp.set_type(compute_CToken_719.value.mantissa * self.data.borrowIndex, sp.TNat)
-    sp.set_type(sp.record(mantissa = compute_CToken_719.value.mantissa * self.data.borrowIndex), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    self.data.borrowIndex = ((compute_CToken_719.value.mantissa * self.data.borrowIndex) // self.data.expScale) + self.data.borrowIndex
+    sp.set_type(compute_CToken_729.value.mantissa * self.data.borrowIndex, sp.TNat)
+    sp.set_type(sp.record(mantissa = compute_CToken_729.value.mantissa * self.data.borrowIndex), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+    self.data.borrowIndex = ((compute_CToken_729.value.mantissa * self.data.borrowIndex) // self.data.expScale) + self.data.borrowIndex
     self.data.accrualBlockNumber = sp.level
 
   @sp.entry_point
@@ -168,16 +172,16 @@ class Contract(sp.Contract):
 
   @sp.entry_point
   def getAccountSnapshot(self, params):
-    compute_CToken_523 = sp.local("compute_CToken_523", sp.record(account = sp.fst(params), borrowBalance = 0, cTokenBalance = 0, exchangeRateMantissa = 0))
+    compute_CToken_533 = sp.local("compute_CToken_533", sp.record(account = sp.fst(params), borrowBalance = 0, cTokenBalance = 0, exchangeRateMantissa = 0))
     sp.if self.data.balances.contains(sp.fst(params)):
       sp.verify(sp.level == self.data.accrualBlockNumber, 'CT_INTEREST_OLD')
-      compute_CToken_523.value.cTokenBalance = self.data.balances[sp.fst(params)].balance
+      compute_CToken_533.value.cTokenBalance = self.data.balances[sp.fst(params)].balance
       borrowBalance = sp.local("borrowBalance", 0)
       sp.if self.data.balances.contains(sp.fst(params)):
         borrowSnapshot = sp.local("borrowSnapshot", self.data.balances[sp.fst(params)].accountBorrows)
         sp.if borrowSnapshot.value.principal > 0:
           borrowBalance.value = (borrowSnapshot.value.principal * self.data.borrowIndex) // borrowSnapshot.value.interestIndex
-      compute_CToken_523.value.borrowBalance = borrowBalance.value
+      compute_CToken_533.value.borrowBalance = borrowBalance.value
       excRate = sp.local("excRate", self.data.initialExchangeRateMantissa)
       sp.if self.data.totalSupply > 0:
         sp.set_type(self.data.currentCash, sp.TNat)
@@ -189,8 +193,8 @@ class Contract(sp.Contract):
         sp.verify(self.data.totalSupply > 0, 'DIVISION_BY_ZERO')
         sp.set_type((sp.as_nat((sp.as_nat(self.data.currentCash - 0, message = 'SUBTRACTION_UNDERFLOW') + self.data.totalBorrows) - self.data.totalReserves) * self.data.expScale) // self.data.totalSupply, sp.TNat)
         excRate.value = (sp.as_nat((sp.as_nat(self.data.currentCash - 0, message = 'SUBTRACTION_UNDERFLOW') + self.data.totalBorrows) - self.data.totalReserves) * self.data.expScale) // self.data.totalSupply
-      compute_CToken_523.value.exchangeRateMantissa = excRate.value
-    __s3 = sp.local("__s3", compute_CToken_523.value)
+      compute_CToken_533.value.exchangeRateMantissa = excRate.value
+    __s3 = sp.local("__s3", compute_CToken_533.value)
     sp.set_type(sp.snd(params), sp.TContract(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa")))))
     sp.transfer(__s3.value, sp.tez(0), sp.snd(params))
 
@@ -308,8 +312,8 @@ class Contract(sp.Contract):
       sp.set_type(params, sp.TNat)
       sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
       sp.verify(excRate.value > 0, 'DIVISION_BY_ZERO')
-      compute_CToken_922 = sp.local("compute_CToken_922", (params * self.data.expScale) // excRate.value)
-      amount.value = compute_CToken_922.value
+      compute_CToken_933 = sp.local("compute_CToken_933", (params * self.data.expScale) // excRate.value)
+      amount.value = compute_CToken_933.value
     sp.else:
       sp.set_type(excRate.value, sp.TNat)
       sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -317,8 +321,8 @@ class Contract(sp.Contract):
       sp.set_type(params, sp.TNat)
       sp.set_type(excRate.value * params, sp.TNat)
       sp.set_type(sp.record(mantissa = excRate.value * params), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-      compute_CToken_925 = sp.local("compute_CToken_925", (excRate.value * params) // self.data.expScale)
-      amount.value = compute_CToken_925.value
+      compute_CToken_936 = sp.local("compute_CToken_936", (excRate.value * params) // self.data.expScale)
+      amount.value = compute_CToken_936.value
     self.data.totalSupply += amount.value
     self.data.balances[sp.sender].balance += amount.value
 
@@ -348,8 +352,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.verify(excRate.value > 0, 'DIVISION_BY_ZERO')
-        compute_CToken_922 = sp.local("compute_CToken_922", (params * self.data.expScale) // excRate.value)
-        amount.value = compute_CToken_922.value
+        compute_CToken_933 = sp.local("compute_CToken_933", (params * self.data.expScale) // excRate.value)
+        amount.value = compute_CToken_933.value
       sp.else:
         sp.set_type(excRate.value, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -357,8 +361,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(excRate.value * params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value * params), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        compute_CToken_925 = sp.local("compute_CToken_925", (excRate.value * params) // self.data.expScale)
-        amount.value = compute_CToken_925.value
+        compute_CToken_936 = sp.local("compute_CToken_936", (excRate.value * params) // self.data.expScale)
+        amount.value = compute_CToken_936.value
       redeem_amount.value = amount.value
     redeem_tokens = sp.local("redeem_tokens", 0)
     sp.if False:
@@ -379,8 +383,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.verify(excRate.value > 0, 'DIVISION_BY_ZERO')
-        compute_CToken_922 = sp.local("compute_CToken_922", (params * self.data.expScale) // excRate.value)
-        amount.value = compute_CToken_922.value
+        compute_CToken_933 = sp.local("compute_CToken_933", (params * self.data.expScale) // excRate.value)
+        amount.value = compute_CToken_933.value
       sp.else:
         sp.set_type(excRate.value, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -388,8 +392,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(excRate.value * params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value * params), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        compute_CToken_925 = sp.local("compute_CToken_925", (excRate.value * params) // self.data.expScale)
-        amount.value = compute_CToken_925.value
+        compute_CToken_936 = sp.local("compute_CToken_936", (excRate.value * params) // self.data.expScale)
+        amount.value = compute_CToken_936.value
       redeem_tokens.value = amount.value
     sp.else:
       redeem_tokens.value = params
@@ -425,8 +429,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.verify(excRate.value > 0, 'DIVISION_BY_ZERO')
-        compute_CToken_922 = sp.local("compute_CToken_922", (params * self.data.expScale) // excRate.value)
-        amount.value = compute_CToken_922.value
+        compute_CToken_933 = sp.local("compute_CToken_933", (params * self.data.expScale) // excRate.value)
+        amount.value = compute_CToken_933.value
       sp.else:
         sp.set_type(excRate.value, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -434,8 +438,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(excRate.value * params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value * params), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        compute_CToken_925 = sp.local("compute_CToken_925", (excRate.value * params) // self.data.expScale)
-        amount.value = compute_CToken_925.value
+        compute_CToken_936 = sp.local("compute_CToken_936", (excRate.value * params) // self.data.expScale)
+        amount.value = compute_CToken_936.value
       redeem_amount.value = amount.value
     redeem_tokens = sp.local("redeem_tokens", 0)
     sp.if True:
@@ -456,8 +460,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.verify(excRate.value > 0, 'DIVISION_BY_ZERO')
-        compute_CToken_922 = sp.local("compute_CToken_922", (params * self.data.expScale) // excRate.value)
-        amount.value = compute_CToken_922.value
+        compute_CToken_933 = sp.local("compute_CToken_933", (params * self.data.expScale) // excRate.value)
+        amount.value = compute_CToken_933.value
       sp.else:
         sp.set_type(excRate.value, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -465,8 +469,8 @@ class Contract(sp.Contract):
         sp.set_type(params, sp.TNat)
         sp.set_type(excRate.value * params, sp.TNat)
         sp.set_type(sp.record(mantissa = excRate.value * params), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        compute_CToken_925 = sp.local("compute_CToken_925", (excRate.value * params) // self.data.expScale)
-        amount.value = compute_CToken_925.value
+        compute_CToken_936 = sp.local("compute_CToken_936", (excRate.value * params) // self.data.expScale)
+        amount.value = compute_CToken_936.value
       redeem_tokens.value = amount.value
     sp.else:
       redeem_tokens.value = params
@@ -683,6 +687,8 @@ class Contract(sp.Contract):
     self.data.balances[params.to_].balance += params.value
     sp.if params.from_ != sp.sender:
       self.data.balances[params.from_].approvals[sp.sender] = sp.as_nat(self.data.balances[params.from_].approvals[sp.sender] - params.value)
+      sp.if self.data.balances[params.from_].approvals[sp.sender] == 0:
+        del self.data.balances[params.from_].approvals[sp.sender]
 
   @sp.entry_point
   def updateProtocolSeizeShare(self, params):
