@@ -53,7 +53,7 @@ export async function deploy() {
     log.info(`protocolAddresses: ${JSON.stringify(protocolAddresses!)}`);
 
     await DeployHelper.postDeploy(keystore!, signer!, protocolAddresses!);
-    // await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash);
+    await DeployHelper.mintFakeTokens(keystore!, signer!, protocolAddresses!, keystore.publicKeyHash);
 }
 
 
