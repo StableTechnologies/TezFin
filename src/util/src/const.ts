@@ -17,106 +17,106 @@ export const decimals = {
 
 export const testnetAddresses: ProtocolAddresses = {
     fTokens: {
-        "BTC": "KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP",
-        "XTZ": "KT1VeuSXva7i3aae1Y3nZtSNWW2mgWMXqgQE",
-        "ETH": "KT1AEFHLpUMD8CFJkH1gU2TtCCMpZJdumFfn",
-        "USD": "KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37",
-        "WTZ": "KT1Bo6yzhCbLKE7uViSYCPdX4rrYhmqHBeXf",
-        "OXTZ": "KT1WBKgbUP6PN5NSis67JDXBJuaPpJ16uf9u"
+        BTC: "KT1HGmLos8GJuLhU6L5oXY3QJZyzgj8KtSvf",
+        XTZ: "KT1TNYmoKmEDeCsVSLgjsrXRREgy3E3TWn1w",
+        ETH: "KT1W3ToWo2zAAFcJKL2ejif6YyUZY4gkSaT7",
+        USD: "KT1Wd59GWzaRBTwwc5UeetvsrKeaW83YZC3h",
+        WTZ: "KT1KFEe4YMGaxRgFkWeEqfTriuxL5HpuABtC",
+        OXTZ: "KT1U8K7FgzrFLpzDYaZfVjVPFJw49frQ4fw6",
     },
     fTokensReverse: {
-        KT1VeuSXva7i3aae1Y3nZtSNWW2mgWMXqgQE: AssetType.XTZ,
-        KT1AEFHLpUMD8CFJkH1gU2TtCCMpZJdumFfn: AssetType.ETH,
-        KT18jcNXyUPTiBgEWgs2sw8DNJMGttZ5EB37: AssetType.USD,
-        KT1FW8YN5kcB42QrwETBN9Tm8TgE75BNYHpP: AssetType.BTC,
-        KT1Bo6yzhCbLKE7uViSYCPdX4rrYhmqHBeXf: AssetType.WTZ,
-        KT1WBKgbUP6PN5NSis67JDXBJuaPpJ16uf9u: AssetType.OXTZ
+        KT1TNYmoKmEDeCsVSLgjsrXRREgy3E3TWn1w: AssetType.XTZ,
+        KT1W3ToWo2zAAFcJKL2ejif6YyUZY4gkSaT7: AssetType.ETH,
+        KT1Wd59GWzaRBTwwc5UeetvsrKeaW83YZC3h: AssetType.USD,
+        KT1HGmLos8GJuLhU6L5oXY3QJZyzgj8KtSvf: AssetType.BTC,
+        KT1KFEe4YMGaxRgFkWeEqfTriuxL5HpuABtC: AssetType.WTZ,
+        KT1U8K7FgzrFLpzDYaZfVjVPFJw49frQ4fw6: AssetType.OXTZ,
     },
     underlying: {
-        "ETH": {
+        ETH: {
             assetType: AssetType.ETH,
             tokenStandard: TokenStandard.FA12,
             decimals: 18,
-            address: "KT1AAfsTHPnWT5cU77CUNQ2dcQNtAJ1jauPC",
-            balancesMapId: 34651,
-            balancesPath: "$.args[1].int"
+            address: "KT1DADeY8SkaXYfYXqzCD7ZMiyCtvArgjHsN",
+            balancesMapId: 378570,
+            balancesPath: "$.args[1].int",
         },
-        "USD": {
+        USD: {
             assetType: AssetType.USD,
-            address: "KT1XA22D7DazGGefGVGyWHH9Y2MTFmiPjxq3",
-            balancesMapId: 34654,
+            address: "KT1UMyZmnW4MGsLZuPYfGCha3PansY1J18TS",
+            balancesMapId: 378573,
             tokenStandard: TokenStandard.FA12,
             decimals: 6,
-            balancesPath: "$.args[1].int"
+            balancesPath: "$.args[1].int",
         },
-        "OXTZ": {
+        OXTZ: {
             assetType: AssetType.OXTZ,
-            address: "KT1NPYBb3WMs189D25Q7PZBB2yy7Zxa6xUDu",
-            balancesMapId: 167525,
+            address: "KT1T8AJAoc2uDRqQZ3y2JRiQe5DouT4jmY3t",
+            balancesMapId: 378581,
             tokenStandard: TokenStandard.FA12,
             decimals: 6,
-            balancesPath: "$.args[1].int"
+            balancesPath: "$.args[1].int",
         },
-        "WTZ": {
+        WTZ: {
             assetType: AssetType.WTZ,
-            address: "KT1D8Sp3gq62JMPWD8t7nnKPNfLs5YXVLDZV",
-            balancesMapId: 167520,
+            address: "KT1JYMN4q5oUUjSfYqHMeMVAr1hW8ef9yyFm",
+            balancesMapId: 378576,
             tokenStandard: TokenStandard.FA2,
             decimals: 6,
             balancesPath: "$.int",
-            tokenId: 0
+            tokenId: 0,
         },
-        "BTC": {
+        BTC: {
             assetType: AssetType.BTC,
             tokenStandard: TokenStandard.FA2,
             decimals: 8,
-            address: "KT1D11fEJQuUGn4m161mHmZ7Lkayzq4Cv6xW",
+            address: "KT1MMgu7iv1DhwVi23RDFa4qCrUFTaZgn7ND",
             tokenId: 0,
-            balancesMapId: 34646,
-            balancesPath: "$.int"
+            balancesMapId: 378565,
+            balancesPath: "$.int",
         },
-        "XTZ": {
+        XTZ: {
             assetType: AssetType.XTZ,
             tokenStandard: TokenStandard.XTZ,
-            decimals: 6
-        }
+            decimals: 6,
+        },
     },
-    comptroller: "KT1AHeE4ccwhUYv8cCoZcLH3Qb1NncbjT5du",
+    comptroller: "KT1TZvVK5kkJb4KnLSYmv3RsTzoR85xar4py",
     interestRateModel: {
-        XTZ: "KT1Bkw1s6x3JFEnqNBMeF36B2QfszX3BJDJi",
-        ETH: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
-        BTC: "KT1JpWxmJkrDgxuXXVp9QcGFChRfyd9JGanN",
-        USD: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
-        OXTZ: "KT1Piy5qHrEqMzh9maFwJBvbFybpA34bQRmR",
-        WTZ: "KT1JpWxmJkrDgxuXXVp9QcGFChRfyd9JGanN"
+        XTZ: "KT1T1AWvaSs6Tf8fqJHTmKyWdWpBKZLhLBEt",
+        ETH: "KT1Vzz6aRLSEw3cCpUMFCvEijAL3Q5yTf52Z",
+        BTC: "KT1F8o1yGu3k9GGL8dj3v1c1bVk6J5SyRnhW",
+        USD: "KT1Vzz6aRLSEw3cCpUMFCvEijAL3Q5yTf52Z",
+        OXTZ: "KT1Vzz6aRLSEw3cCpUMFCvEijAL3Q5yTf52Z",
+        WTZ: "KT1F8o1yGu3k9GGL8dj3v1c1bVk6J5SyRnhW",
     },
-    governance: "KT1MUbym8DgWvB1ty7gau2RhHQSAomYUgxo5",
+    governance: "KT1PKfuMKy9vYbWs7mZ4gUzioZeNVBtjxMZB",
     oracleMap: {
-        "ETH": {
+        ETH: {
             id: 25877,
-            path: "$.args[0].args[0].int"
+            path: "$.args[0].args[0].int",
         },
-        "USD": {
-            id: 167529,
-            path: "$.args[1].int"
+        USD: {
+            id: 378585,
+            path: "$.args[1].int",
         },
-        "BTC": {
+        BTC: {
             id: 25877,
-            path: "$.args[0].args[0].int"
+            path: "$.args[0].args[0].int",
         },
-        "XTZ": {
+        XTZ: {
             id: 25877,
-            path: "$.args[0].args[0].int"
+            path: "$.args[0].args[0].int",
         },
-        "OXTZ": {
+        OXTZ: {
             id: 25877,
-            path: "$.args[0].args[0].int"
+            path: "$.args[0].args[0].int",
         },
-        "WTZ": {
+        WTZ: {
             id: 25877,
-            path: "$.args[0].args[0].int"
-        }
-    }
+            path: "$.args[0].args[0].int",
+        },
+    },
 };
 
 export const mainnetAddresses: ProtocolAddresses = {
