@@ -16,12 +16,12 @@ import fOXTZ from '../../assets/foxtz.svg';
 import fWTZ from '../../assets/fwtz.svg';
 
 export const tokens = [
-    {
-        title: 'BTCtz', logo: BTCtz, fLogo: fBTCtz, banner: 'BTCtz', assetType: AssetType.BTC
-    },
-    {
-        title: 'ETHtz', logo: Ethtz, fLogo: fEthtz, banner: 'ETH Tez', assetType: AssetType.ETH
-    },
+    // {
+    //     title: 'BTCtz', logo: BTCtz, fLogo: fBTCtz, banner: 'BTCtz', assetType: AssetType.BTC
+    // },
+    // {
+    //     title: 'ETHtz', logo: Ethtz, fLogo: fEthtz, banner: 'ETH Tez', assetType: AssetType.ETH
+    // },
     {
         title: 'XTZ', logo: XTZ, fLogo: fXTZ, banner: 'Tez', assetType: AssetType.XTZ
     },
@@ -33,18 +33,19 @@ export const tokens = [
     //     title: 'CTez', logo: ctez, fLogo: fCtez, banner: 'CTez', assetType: AssetType.CTEZ
     // },
     {
-        title: 'oXTZ', logo: oxtz, fLogo: fOXTZ, banner: 'oXTZ', assetType: AssetType.OXTZ
-    },
-    {
-        title: 'WTZ', logo: wtz, fLogo: fWTZ, banner: 'WTZ', assetType: AssetType.WTZ // TODO:  update fToken for  WTZ
+        title: 'USDt', logo: oxtz, fLogo: fOXTZ, banner: 'USDt', assetType: AssetType.USDT
     }
+    // {
+    //     title: 'WTZ', logo: wtz, fLogo: fWTZ, banner: 'WTZ', assetType: AssetType.WTZ // TODO:  update fToken for  WTZ
+    // }
 ];
 export const tokenColor = {
     XTZ: '#3391F6',
-    ETHtz: '#662F9D',
-    BTCtz: '#F2991A',
+    // ETHtz: '#662F9D',
+    // BTCtz: '#F2991A',
     USDtz: '#189DA3',
-    oXTZ: '#B52B31',
-    WTZ: '#0C2C93'
+    USDt: '#189DA3'
+    // oXTZ: '#B52B31',
+    // WTZ: '#0C2C93'
     // CTEZ: '#2B62F8'
 };

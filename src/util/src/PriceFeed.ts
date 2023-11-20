@@ -24,19 +24,19 @@ export namespace PriceFeed {
      * @param oracleMap map id for harbinger oracle
      * @param server rpc node url
      */
-    export async function GetPrice(asset: AssetType, oracleMap: OracleMap, server: string): Promise<bigInt.BigInteger> {
+    export async function GetPrice(asset: AssetType, oracle: string, level:number, server: string): Promise<bigInt.BigInteger> {
         if (Object.prototype.hasOwnProperty.call(alias, asset)) {
             asset = alias[asset]
         }
-        const packedKey = TezosMessageUtils.encodeBigMapKey(
-            Buffer.from(TezosMessageUtils.writePackedData(asset + "-USD", "string"), "hex")
-        );
-        const mapResult = await TezosNodeReader.getValueForBigMapKey(server, oracleMap.id, packedKey);
-        const balance = JSONPath({
-            path: oracleMap.path,
-            json: mapResult,
-        })[0]
-        return bigInt(balance);
+        const assetPrice = await TezosNodeWriter.runView(
+        server,
+        "main",
+        oracle,
+        "getPrice",
+        { "string": `${asset}-USD` },
+        `${level}`
+    );
+        return bigInt(assetPrice.data.args[1].int);
     }
 
     /**

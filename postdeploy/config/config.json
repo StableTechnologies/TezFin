@@ -1,6 +1,6 @@
 {
     "loglevel": "info",
-    "tezosNode": "https://rpc.ghostnet.teztnets.xyz/",
+    "tezosNode": "https://ghostnet.ecadinfra.com",
     "conseilServer": {
         "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
         "apiKey": "328ac16b-5497-4e73-a97d-45af0e83425c",
@@ -69,7 +69,8 @@
         "BTC",
         "USD",
         "OXTZ",
-        "WTZ"
+        "WTZ",
+        "USDT"
     ],
     "mint": [
         "ETH",
@@ -83,15 +84,14 @@
         "ETH": 4000,
         "BTC": 4000,
         "USD": 2000000,
+        "USDT": 2000000,
         "OXTZ": 5000,
         "WTZ": 5000
     },
     "redeem": [
-        "ETH",
-        "BTC",
         "USD",
-        "OXTZ",
-        "WTZ"
+        "XTZ",
+        "USDT"
     ],
     "redeemAmount": 20,
     "borrow": [
@@ -103,25 +103,14 @@
     ],
     "repayBorrowAmount": 10,
     "enterMarkets": [
-        "ETH",
-        "BTC",
         "USD",
         "XTZ",
-        "OXTZ",
-        "WTZ"
+        "USDT"
     ],
     "exitMarket": [
         "ETH"
     ],
     "supportMarket": [
-        {
-            "name": "ETH",
-            "priceExp": 0
-        },
-        {
-            "name": "BTC",
-            "priceExp": 10
-        },
         {
             "name": "USD",
             "priceExp": 12
@@ -131,22 +120,15 @@
             "priceExp": 12
         },
         {
-            "name": "OXTZ",
-            "priceExp": 12
-        },
-        {
-            "name": "WTZ",
+            "name": "USDT",
             "priceExp": 12
         }
     ],
     "disableMarket": [],
     "unpauseMarkets": [
-        "ETH",
-        "BTC",
         "USD",
         "XTZ",
-        "OXTZ",
-        "WTZ"
+        "USDT"
     ],
     "setPrices": {
         "assets": [],

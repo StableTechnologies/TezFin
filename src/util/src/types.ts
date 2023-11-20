@@ -95,13 +95,13 @@ export interface OracleMap {
     * @param governance Governance contract address
 */
 export interface ProtocolAddresses {
-    fTokens: { [underlying: string]: string };
-    fTokensReverse: { [address: string]: AssetType };
-    underlying: { [assetType: string]: UnderlyingAsset };
-    comptroller: string;
-    interestRateModel: { [underlying: string]: string };
-    governance: string;
-    oracleMap: { [assetType: string]: OracleMap };
+  fTokens: { [underlying: string]: string };
+  fTokensReverse: { [address: string]: AssetType };
+  underlying: { [assetType: string]: UnderlyingAsset };
+  comptroller: string;
+  interestRateModel: { [underlying: string]: string };
+  governance: string;
+  oracle: string;
 }
 
 /*
