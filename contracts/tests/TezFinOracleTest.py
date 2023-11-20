@@ -39,10 +39,10 @@ def test():
     scenario.h2("Accounts")
     scenario.show([admin, alice])
     scenario.h2("Harbinger")
-    harbinger = TezFinOracle(admin.address, admin.address)
+    harbinger = TezFinOracle(admin.address, admin.address, admin.address)
     scenario += harbinger
     scenario.h2("Tezfin Oracle")
-    tezfinOracle = TezFinOracle(admin.address, harbinger.address)
+    tezfinOracle = TezFinOracle(admin.address, harbinger.address, harbinger.address)
     scenario += tezfinOracle
     harbinger.setPrice([sp.record(asset="ETH-USD", price=13425)]
                        ).run(sender=alice, valid=False, now=sp.timestamp(16534534))
