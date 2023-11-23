@@ -10,7 +10,8 @@ export enum AssetType {
     USD = "USD",
     BTC = "BTC",
     WTZ = "WTZ",
-    OXTZ = "OXTZ"
+    OXTZ = "OXTZ",
+    USDT = "USDT"
 }
 
 export enum TokenStandard {

@@ -10,13 +10,14 @@ class TezFinOracle(OracleInterface.OracleInterface):
         It also allows admin to set up custom values for assets that are not be supported by harbinger enabling the use of those assets in TezFin.
     """
 
-    def __init__(self, admin, oracle):
+    def __init__(self, admin, oracle, usdtOracle):
         self.init(
             overrides=sp.big_map(l={"USD-USD": (sp.timestamp(int(time.time())), sp.as_nat(
                 1000000))}, tkey=sp.TString, tvalue=sp.TPair(sp.TTimestamp, sp.TNat)),
             alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD"},
                              tkey=sp.TString, tvalue=sp.TString),
             oracle=oracle,
+            usdtOracle=usdtOracle,
             admin=admin,
             pendingAdmin=sp.none,
         )
@@ -95,6 +96,10 @@ class TezFinOracle(OracleInterface.OracleInterface):
             asset = sp.local("asset", requestedAsset)
             sp.if self.data.alias.contains(requestedAsset):
                 asset.value = self.data.alias[requestedAsset]
-            oracle_data = sp.view("getPrice", self.data.oracle, asset.value, t=sp.TPair(
-                sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
-            sp.result(oracle_data)
+            sp.if asset.value == "USDT-USD" :
+                oracle_data = sp.view("get_price", self.data.usdtOracle, "USDTUSD", t=sp.TNat).open_some("invalid oracle view call")
+                sp.result((sp.now,oracle_data))
+            sp.else:
+                oracle_data = sp.view("getPrice", self.data.oracle, asset.value, t=sp.TPair(
+                    sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+                sp.result(oracle_data)

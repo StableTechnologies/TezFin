@@ -32,6 +32,14 @@ export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protoco
     console.log("confirmed tx - " + tokenMintOpId)
 }
 
+export async function setOracle(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, oracleAddress: string, timeDiff: number){
+    log.info(`setting oracle ${oracleAddress}, timeDiff ${timeDiff}`);
+    const head = await TezosNodeReader.getBlockHead(config.tezosNode)
+    const supportMarketOpId = await Governance.SetOracle({comptrollerAddress: protocolAddresses.comptroller, oracleAddress: oracleAddress,timeDiff:timeDiff}, protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
+    const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, supportMarketOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+}
+
+
 export function tokenMint(asset: string, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, address: string, mintAmount: number, gas: number = 200_000, freight: number = 20_000) {
     if(!Object.prototype.hasOwnProperty.call(protocolAddresses.underlying, asset)){
         return undefined

@@ -82,13 +82,14 @@ export namespace TezosLendingPlatform {
     export async function GetMarkets(comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<MarketMap> {
         // get storage for all contracts
         let markets: MarketMap = {};
+        const head = await TezosNodeReader.getBlockHead(server);
         await Promise.all(Object.keys(protocolAddresses.fTokens).map(async (asset) => {
             const fTokenAddress = protocolAddresses.fTokens[asset];
             const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
             try {
                 const fTokenStorage: FToken.Storage = await FToken.GetStorage(fTokenAddress, protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]], server, fTokenType);
                 const rateModel = await InterestRateModel.GetStorage(server, protocolAddresses.interestRateModel[asset]);
-                const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracleMap[protocolAddresses.fTokensReverse[fTokenAddress]], server)
+                const oraclePrice = await PriceFeed.GetPrice(protocolAddresses.fTokensReverse[fTokenAddress], protocolAddresses.oracle, head.header.level, server)
                 markets[asset] = MakeMarket(fTokenStorage, comptroller, fTokenAddress, protocolAddresses.underlying[asset], rateModel, oraclePrice);
             } catch (e) {
                 log.error(`Failed in GetMarkets for ${asset} at ${protocolAddresses.fTokens[asset]} and ${JSON.stringify(protocolAddresses.underlying[asset])} with ${e}`);
