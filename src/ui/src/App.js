@@ -18,8 +18,6 @@ import Dashboard from './components/Dashboard';
 import DebugDashboard from './components/Debug';
 import ComingSoon from './components/ComingSoon/index.tsx';
 
-import DisclaimerModal from './components/DisclaimerModal';
-
 import Footer from './components/Footer';
 
 import { addWalletAction } from './reduxContent/addWallet/actions';
@@ -62,7 +60,6 @@ const App = () => {
         <Router>
             <Grid className="App">
                 <Nav />
-                <DisclaimerModal />
                 <Switch>
                     <Route exact path='/dashboard'>
                         <Header />
