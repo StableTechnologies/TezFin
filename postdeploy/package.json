@@ -19,7 +19,7 @@
     "immer": "^9.0.15",
     "jsonpath-plus": "6.0.1",
     "loglevel": "1.7.1",
-    "node-fetch": "2.6.1",
+    "node-fetch": "2.7.0",
     "tezoslendingplatformjs": "../src/util/"
   },
   "devDependencies": {
