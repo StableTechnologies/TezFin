@@ -80,7 +80,7 @@ export const mainnetAddresses: ProtocolAddresses = {
       balancesMapId: 36,
       tokenStandard: TokenStandard.FA12,
       decimals: 6,
-      balancesPath: "$.args[1].int",
+      balancesPath: "$.args[0].int",
     },
     USDT: {
       assetType: AssetType.USDT,
