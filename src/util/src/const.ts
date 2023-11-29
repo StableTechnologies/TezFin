@@ -59,7 +59,7 @@ export const testnetAddresses: ProtocolAddresses = {
     USD: "KT1E9RXLcSakXgcYB4FqUm56nfJTJ7LgKUui",
   },
   governance: "KT1GKsnj6zbErQ1QdC4Tt63dUzx63722UGmX",
-  oracle: "KT1L36mgrfw1rxKtLaYSt4asaH5qamz7nRyt",
+  oracle: "KT1SbAsDEcqy9fPyTviNhUiHKLVGbMGX9jQU",
 };
 
 export const mainnetAddresses: ProtocolAddresses = {
@@ -80,7 +80,7 @@ export const mainnetAddresses: ProtocolAddresses = {
       balancesMapId: 36,
       tokenStandard: TokenStandard.FA12,
       decimals: 6,
-      balancesPath: "$.args[1].int",
+      balancesPath: "$.args[0].int",
     },
     USDT: {
       assetType: AssetType.USDT,
@@ -104,7 +104,7 @@ export const mainnetAddresses: ProtocolAddresses = {
     USD: "KT1TSYWvDnHjVj36GYdSrwCRJGEQpQoAbdMN",
   },
   governance: "KT1DBEqCQCwEtEtcJyhCfu3uxkNYp5BYU6er",
-  oracle: "KT1N8vT66Cij6DZDchWVqdVFdnRHCuyWfEDX",
+  oracle: "KT1FU6obZqPu5S7c23R8iUzabDAuG47Jqsrm",
 };
 
 export const tokenNames: { [assetType: string]: string } = {

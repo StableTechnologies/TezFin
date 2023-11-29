@@ -91,7 +91,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
         """
         sp.set_type(requestedAsset, sp.TString)
         sp.if self.data.overrides.contains(requestedAsset):
-            sp.result(self.data.overrides[requestedAsset])
+            sp.result((sp.now, sp.snd(self.data.overrides[requestedAsset])))
         sp.else:
             asset = sp.local("asset", requestedAsset)
             sp.if self.data.alias.contains(requestedAsset):
