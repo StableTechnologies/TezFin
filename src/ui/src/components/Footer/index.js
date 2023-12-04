@@ -56,6 +56,13 @@ const Footer = () => {
                 </Grid>
                 <Grid item xs={12} sm={3} md={2} textAlign="end">
                     <Link
+                        href="https://beta.tezos.finance/"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        Beta App
+                    </Link>
+                    <Link
                         href="https://twitter.com/TezosFinance"
                         target="_blank"
                         rel="noopener"
