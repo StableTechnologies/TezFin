@@ -114,7 +114,7 @@ export const useStyles = makeStyles({
         '@media(max-width: 501px)': {
             width: '2.5rem',
             height: '2.5rem',
-            marginBottom: '-9px'
+            marginBottom: '-15px'
         }
     },
     tokenName: {
