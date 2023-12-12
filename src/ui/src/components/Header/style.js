@@ -126,9 +126,9 @@ export const useStyles = makeStyles({
         lineHeight: '30px'
     },
     box: {
-        paddingTop: '3.4375rem',
+        paddingTop: '3.7375rem',
         '@media(max-width: 768px)': {
-            paddingTop: '2rem'
+            paddingTop: '3rem'
         }
     },
     boxOne: {
