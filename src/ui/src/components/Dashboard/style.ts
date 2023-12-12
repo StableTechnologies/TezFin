@@ -100,6 +100,7 @@ export const useStyles = makeStyles({
         width: '2rem',
         height: '2rem',
         marginBottom: '-10px',
+        marginRight: '7px',
         '@media (min-width: 769px) and (max-width: 1024px)': {
             width: '1.5rem',
             height: '1.5rem',
