@@ -99,8 +99,8 @@ const SuppliedTokenTable = (props) => {
                 <TableHead>
                     <TableRow>
                         <TableCell> Token </TableCell>
-                        <TableCell align="right"> APY </TableCell>
-                        <TableCell align="right"> Balance </TableCell>
+                        <TableCell align="center"> APY </TableCell>
+                        <TableCell align="center"> Balance </TableCell>
                         <TableCell align="right" className={classes.collateralPadding}>
                             Collateral {' '}
                             <img src={questionCircleIcon} alt={'questionIcon'} className={classes.questionCircleIcon} />
@@ -131,7 +131,7 @@ const SuppliedTokenTable = (props) => {
                                     {' '} ꜰ{data.title}
                                 </Typography>
                             </TableCell>
-                            <TableCell align="right" className={classes.clearFont}>
+                            <TableCell align="center" className={classes.clearFont}>
                                 <span>
                                     {(data.rate > 0)
                                         // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
@@ -143,7 +143,7 @@ const SuppliedTokenTable = (props) => {
                                     }%
                                 </span>
                             </TableCell>
-                            <TableCell align="right">
+                            <TableCell align="center">
                                 <LightTooltip
                                     title={`${decimalify((data.balanceUnderlying), decimals[data.title], decimals[data.title])} ${data.title}`}
                                     placement="bottom"
