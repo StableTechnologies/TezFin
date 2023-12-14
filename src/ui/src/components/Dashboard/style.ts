@@ -97,23 +97,24 @@ export const useStyles = makeStyles({
         marginBottom: '-3px'
     },
     img: {
-        width: '2rem',
-        height: '2rem',
-        marginBottom: '-10px',
+        width: '2.5rem',
+        height: '2.5rem',
+        marginBottom: '-15px',
+        marginRight: '7px',
         '@media (min-width: 769px) and (max-width: 1024px)': {
-            width: '1.5rem',
-            height: '1.5rem',
-            marginBottom: '-6px'
+            width: '2.5rem',
+            height: '2.5rem',
+            marginBottom: '-14px'
         },
         '@media(max-width: 768px)': {
-            width: '1.5rem',
-            height: '1.5rem',
-            marginBottom: '-8px'
+            width: '2.5rem',
+            height: '2.5rem',
+            marginBottom: '-15px'
         },
         '@media(max-width: 501px)': {
-            width: '1rem',
-            height: '1rem',
-            marginBottom: '-4px'
+            width: '2.5rem',
+            height: '2.5rem',
+            marginBottom: '-15px'
         }
     },
     tokenName: {
@@ -125,10 +126,10 @@ export const useStyles = makeStyles({
         letterSpacing: '0.005em',
         lineHeight: '1.875rem',
         '@media(max-width: 1200px)': {
-            fontSize: '0.875rem'
+            fontSize: '1rem'
         },
         '@media(max-width: 768px)': {
-            fontSize: '0.75rem'
+            fontSize: '1rem'
         }
     },
     clearFont: {

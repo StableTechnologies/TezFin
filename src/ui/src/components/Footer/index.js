@@ -39,13 +39,13 @@ const Footer = () => {
                     >
                         Dashboard
                     </NavLink>
-                    <NavLink
-                        to="market"
+                    <Link
+                        href="#"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
-                        Market
-                    </NavLink>
+                        Security
+                    </Link>
                     <NavLink
                         to="about"
                         className={classes.footerLink}

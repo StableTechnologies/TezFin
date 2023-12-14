@@ -6,13 +6,13 @@ export const useStyles = makeStyles({
     progressBar: {
         display: 'flex',
         backgroundColor: '#EAEAEA',
-        height: '16px',
+        height: '40px',
         width: '100%',
         maxWidth: '100%'
     },
 
     progress: {
-        height: '16px',
+        height: '40px',
         transition: 'width 0.5s ease-in'
     }
 });
