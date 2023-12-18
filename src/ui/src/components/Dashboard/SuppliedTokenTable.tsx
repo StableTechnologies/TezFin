@@ -143,7 +143,7 @@ const SuppliedTokenTable = (props) => {
                   <div>
                     <div className={classes.token}>
                       <img
-                        src={data.logo}
+                        src={data.fLogo}
                         alt={`${data.title}-Icon`}
                         className={classes.img}
                       />
