@@ -143,15 +143,15 @@ export const useStyles = makeStyles({
     display: "inline",
     color: "#000",
     opacity: "0.87",
-    fontSize: "1rem",
+    fontSize: "0.875rem",
     fontWeight: "400",
     letterSpacing: "0.005em",
     lineHeight: "1.875rem",
     "@media(max-width: 1200px)": {
-      fontSize: "1rem",
+      fontSize: "0.875rem",
     },
     "@media(max-width: 768px)": {
-      fontSize: "1rem",
+      fontSize: "0.875rem",
     },
   },
   clearFont: {
@@ -163,6 +163,7 @@ export const useStyles = makeStyles({
     color: "#000",
     opacity: "0.6",
     fontWeight: "400",
+    fontSize: "0.875rem",
   },
   dashboard: {
     background: "#fff",
