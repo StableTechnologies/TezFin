@@ -143,15 +143,15 @@ export const useStyles = makeStyles({
     display: "inline",
     color: "#000",
     opacity: "0.87",
-    fontSize: "0.875rem",
+    fontSize: "1rem",
     fontWeight: "400",
     letterSpacing: "0.005em",
     lineHeight: "1.875rem",
     "@media(max-width: 1200px)": {
-      fontSize: "0.875rem",
+      fontSize: "1rem",
     },
     "@media(max-width: 768px)": {
-      fontSize: "0.875rem",
+      fontSize: "1rem",
     },
   },
   clearFont: {

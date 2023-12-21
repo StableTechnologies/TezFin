@@ -153,7 +153,7 @@ const SuppliedTokenTable = (props) => {
                           {" "}
                           {data.name}{" "}
                         </Typography>
-                        <Typography className={classes.tokenSymbol}>
+                        <Typography className={classes.faintFont}>
                           {" "}
                           ꜰ{data.title}
                         </Typography>

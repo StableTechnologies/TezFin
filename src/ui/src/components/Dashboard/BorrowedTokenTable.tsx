@@ -133,7 +133,7 @@ const BorrowedTokenTable = (props) => {
                           {" "}
                           {data.name}{" "}
                         </Typography>
-                        <Typography className={classes.tokenSymbol}>
+                        <Typography className={classes.faintFont}>
                           {" "}
                           {data.title}{" "}
                         </Typography>

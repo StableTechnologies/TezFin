@@ -83,7 +83,7 @@ const AllMarketTokenTable = (props) => {
                             {" "}
                             {data.name}{" "}
                           </Typography>
-                          <Typography className={classes.tokenSymbol}>
+                          <Typography className={classes.faintFont}>
                             {" "}
                             {data.title}{" "}
                           </Typography>
