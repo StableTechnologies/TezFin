@@ -223,16 +223,16 @@ export const useStyles = makeStyles({
       width: "85%",
     },
     "@media(max-width: 900px)": {
-      width: "65%",
+      width: "95%",
     },
     "@media(max-width: 768px)": {
-      width: "75%",
+      width: "95%",
     },
     "@media(max-width: 501px)": {
-      width: "85%",
+      width: "95%",
     },
     "@media(max-width: 376px)": {
-      width: "90%",
+      width: "95%",
     },
   },
   addWalletCon: {
