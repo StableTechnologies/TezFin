@@ -14,6 +14,9 @@ export const useStyles = makeStyles({
       "@media(min-width: 900px)": {
         maxHeight: "calc(100% - 2.5rem)",
       },
+      "@media(max-width: 501px)": {
+        minWidth: "90%",
+      },
     },
     "& .MuiDialogTitle-root": {
       padding: "1.625rem 2.5rem 0",
@@ -42,7 +45,11 @@ export const useStyles = makeStyles({
       color: "#fff",
     },
   },
-
+  tabBox: {
+    marginRight: "-20px",
+    marginLeft: "-20px",
+    width: "calc(100% + 40px)",
+  },
   img: {
     width: "1.5rem",
     height: "1.5rem",
@@ -96,7 +103,7 @@ export const useStyles = makeStyles({
       padding: "1.25rem 2.5rem !important",
     },
     "@media(max-width: 501px)": {
-      padding: "1.25rem 0.5rem !important",
+      padding: "1.25rem 2rem !important",
       borderTop: "1px solid #E0E0E0",
       borderBottom: "1px solid #E0E0E0",
     },
@@ -104,7 +111,7 @@ export const useStyles = makeStyles({
   contentBoxTwo: {
     padding: "0 2.5rem .5rem",
     "@media(max-width: 501px)": {
-      padding: "0 0.5rem .5rem",
+      padding: "0 2rem .5rem",
     },
   },
   limit: {
@@ -191,6 +198,10 @@ export const useStyles = makeStyles({
   textField: {
     height: "3.5rem",
     width: "186px",
+
+    "@media(max-width: 501px)": {
+      marginLeft: "16%",
+    },
     "@media(max-width: 320px)": {
       width: "145px",
     },
@@ -230,6 +241,7 @@ export const useStyles = makeStyles({
     },
     "@media(max-width: 501px)": {
       fontSize: "0.875rem",
+      paddingLeft: "0px",
     },
     "@media(max-width: 320px)": {
       fontSize: "0.7rem",

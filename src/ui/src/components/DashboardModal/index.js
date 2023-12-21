@@ -212,19 +212,21 @@ const DashboardModal = (props) => {
           {collateralize ? (
             ""
           ) : (
-            <Tabulator
-              inkBarStyle={
-                mainModal
-                  ? tabValue === "one"
-                    ? inkBarStyle
-                    : inkBarStyleTwo
-                  : inkBarStyle
-              }
-              value={tabValue}
-              onChange={handleTabChange}
-              labelOne={labelOne}
-              labelTwo={labelTwo}
-            />
+            <Box className={classes.tabBox}>
+              <Tabulator
+                inkBarStyle={
+                  mainModal
+                    ? tabValue === "one"
+                      ? inkBarStyle
+                      : inkBarStyleTwo
+                    : inkBarStyle
+                }
+                value={tabValue}
+                onChange={handleTabChange}
+                labelOne={labelOne}
+                labelTwo={labelTwo}
+              />
+            </Box>
           )}
           <Box className={`${classes.contentBoxOne} ${classes.borderBottom0}`}>
             <Grid container justifyContent="space-between">
