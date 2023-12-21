@@ -20,6 +20,7 @@ import XTZ from "../../assets/XTZ.svg";
 export const tokens = [
   {
     title: "XTZ",
+    name: "Tezos (Tez)",
     logo: XTZ,
     fLogo: fXTZ,
     banner: "Tez",
@@ -27,6 +28,7 @@ export const tokens = [
   },
   {
     title: "USDtz",
+    name: "USD Tez",
     logo: USDtz,
     fLogo: fUSDtz,
     banner: "USDtz",
@@ -34,6 +36,7 @@ export const tokens = [
   },
   {
     title: "USDt",
+    name: "USD Tether",
     logo: USDT,
     fLogo: fUSDT,
     banner: "USDt",
@@ -63,4 +66,3 @@ export const tokenColor = {
   // WTZ: '#0C2C93'
   // CTEZ: '#2B62F8'
 };
-
