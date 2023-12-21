@@ -70,15 +70,26 @@ const AllMarketTokenTable = (props) => {
                   onClick={() => handleClickMktModal(data)}
                 >
                   <TableCell>
-                    <img
-                      src={data.logo}
-                      alt={`${data.title}-Icon`}
-                      className={classes.img}
-                    />
-                    <Typography className={classes.tokenName}>
-                      {" "}
-                      {data.title}{" "}
-                    </Typography>
+                    <div>
+                      <div className={classes.token}>
+                        <img
+                          src={data.logo}
+                          alt={`${data.title}-Icon`}
+                          className={classes.img}
+                        />
+
+                        <div className={classes.tokenTitle}>
+                          <Typography className={classes.tokenName}>
+                            {" "}
+                            {data.name}{" "}
+                          </Typography>
+                          <Typography className={classes.tokenSymbol}>
+                            {" "}
+                            {data.title}{" "}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell align="center">
                     <span className={classes.clearFont}>
