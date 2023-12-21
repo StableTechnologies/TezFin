@@ -99,23 +99,45 @@ export const useStyles = makeStyles({
   img: {
     width: "2.5rem",
     height: "2.5rem",
-    marginBottom: "-15px",
     marginRight: "7px",
     "@media (min-width: 769px) and (max-width: 1024px)": {
       width: "2.5rem",
       height: "2.5rem",
-      marginBottom: "-14px",
     },
     "@media(max-width: 768px)": {
       width: "2.5rem",
       height: "2.5rem",
-      marginBottom: "-15px",
     },
     "@media(max-width: 501px)": {
       width: "2.5rem",
       height: "2.5rem",
-      marginBottom: "-15px",
     },
+  },
+  tokenSymbol: {
+    display: "inline",
+    color: "#000",
+    opacity: "0.6",
+    fontSize: "1rem",
+    fontWeight: "400",
+    letterSpacing: "0.005em",
+    lineHeight: "1.875rem",
+    "@media(max-width: 1200px)": {
+      fontSize: "1rem",
+    },
+    "@media(max-width: 768px)": {
+      fontSize: "1rem",
+    },
+  },
+  token: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
+    alignText: "center",
+  },
+  tokenTitle: {
+    display: "flex",
+    flexDirection: "column",
   },
   tokenName: {
     display: "inline",

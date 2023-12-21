@@ -140,15 +140,26 @@ const SuppliedTokenTable = (props) => {
                 onClick={(event) => handleClickMktModal(data, event)}
               >
                 <TableCell>
-                  <img
-                    src={data.fLogo}
-                    alt={`${data.title}-Icon`}
-                    className={classes.img}
-                  />
-                  <Typography className={classes.tokenName}>
-                    {" "}
-                    ꜰ{data.title}
-                  </Typography>
+                  <div>
+                    <div className={classes.token}>
+                      <img
+                        src={data.flogo}
+                        alt={`${data.title}-Icon`}
+                        className={classes.img}
+                      />
+
+                      <div className={classes.tokenTitle}>
+                        <Typography className={classes.tokenName}>
+                          {" "}
+                          {data.name}{" "}
+                        </Typography>
+                        <Typography className={classes.tokenSymbol}>
+                          {" "}
+                          ꜰ{data.title}
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell align="center" className={classes.clearFont}>
                   <span>
