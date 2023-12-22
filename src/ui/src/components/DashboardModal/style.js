@@ -238,8 +238,9 @@ export const useStyles = makeStyles({
       color: "#4F4F4F",
     },
     "@media(max-width: 501px)": {
-      fontSize: "0.875rem",
-      paddingLeft: "0px",
+      fontSize: "0.78rem",
+      paddingLeft: "5px",
+      marginRight: "0px",
     },
     "@media(max-width: 320px)": {
       fontSize: "0.7rem",
