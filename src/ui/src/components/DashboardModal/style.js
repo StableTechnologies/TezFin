@@ -223,6 +223,14 @@ export const useStyles = makeStyles({
       fontSize: "2rem",
     },
   },
+
+  tabBox: {
+    "@media(max-width: 501px)": {
+      marginRight: "-20px",
+      marginLeft: "-20px",
+      width: "calc(100% + 40px)",
+    },
+  },
   inputBtn: {
     fontSize: "1rem",
     fontWeight: "300",
