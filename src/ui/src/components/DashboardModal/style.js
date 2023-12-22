@@ -20,6 +20,9 @@ export const useStyles = makeStyles({
     },
     "& .MuiDialogTitle-root": {
       padding: "1.625rem 2.5rem 0",
+      "@media(max-width: 501px)": {
+        paddingTop: "1.4rem",
+      },
     },
     "& .MuiDialogActions-root": {
       padding: "2.75rem 2.875rem",
@@ -27,7 +30,7 @@ export const useStyles = makeStyles({
         padding: "1.875rem 2.875rem",
       },
       "@media(max-width: 501px)": {
-        padding: "1.875rem",
+        padding: "1.875rem 2rem 1.4rem",
       },
       "@media(max-width: 320px)": {
         paddingLeft: "1rem",
@@ -44,11 +47,6 @@ export const useStyles = makeStyles({
       opacity: "0.5",
       color: "#fff",
     },
-  },
-  tabBox: {
-    marginRight: "-20px",
-    marginLeft: "-20px",
-    width: "calc(100% + 40px)",
   },
   img: {
     width: "1.5rem",
@@ -111,7 +109,7 @@ export const useStyles = makeStyles({
   contentBoxTwo: {
     padding: "0 2.5rem .5rem",
     "@media(max-width: 501px)": {
-      padding: "0 2rem .5rem",
+      padding: "0 2rem ",
     },
   },
   limit: {
