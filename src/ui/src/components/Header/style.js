@@ -125,6 +125,14 @@ export const useStyles = makeStyles({
     fontWeight: "500",
     lineHeight: "30px",
   },
+  compositionGrid: {
+    justifyContent: "space-between",
+    rowGap: "5.6rem",
+
+    "@media(max-width: 768px)": {
+      rowGap: "4.5rem",
+    },
+  },
   box: {
     paddingTop: "3.7375rem",
     "@media(max-width: 768px)": {

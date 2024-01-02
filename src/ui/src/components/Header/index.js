@@ -69,7 +69,7 @@ const Header = () => {
           </Typography>
         </Grid>
       </Grid>
-      <Grid container>
+      <Grid container className={classes.compositionGrid}>
         <Composition
           title="Supply Composition"
           data={supplyComposition}
@@ -81,6 +81,7 @@ const Header = () => {
           progressBarColor={classes.supplyBarColor} // add class
           supplyBar
         />
+
         <Composition
           title="Borrow Limit"
           data={borrowComposition}
