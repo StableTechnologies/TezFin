@@ -616,6 +616,7 @@ export namespace FToken {
     export interface RedeemPair {
         underlying: AssetType;
         amount: number;
+        amountInUnderlying: boolean | undefined;
     }
 
     /*
@@ -633,7 +634,10 @@ export namespace FToken {
      * @param
      */
     export function RedeemOperation(redeem: RedeemPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 200_000, freight: number = 20_000): Transaction {
-        const entrypoint = 'redeem';
+        let entrypoint = 'redeem';
+        if (redeem.amountInUnderlying===true) {
+            entrypoint = 'redeemUnderlying';
+        }
         const parameters = RedeemPairMichelson(redeem);
         return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
     }
