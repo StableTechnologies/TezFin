@@ -36,9 +36,9 @@ export const supplyTokenAction = async (tokenDetails, amount, close, setTokenTex
  * @param  protocolAddresses Addresses of the protocol contracts
  * @param  publicKeyHash address of the connected account.
  */
-export const withdrawTokenAction = async (tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash) => {
+export const withdrawTokenAction = async (tokenDetails, amount, amountInUnderlying, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash) => {
     const underlying = tokenDetails.assetType.toUpperCase();
-    const redeemPair = { underlying, amount };
+    const redeemPair = { underlying, amount, amountInUnderlying };
     close();
     setTokenText('withdraw');
     handleOpenInitialize();

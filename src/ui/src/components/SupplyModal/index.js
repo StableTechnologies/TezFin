@@ -64,7 +64,7 @@ const SupplyModal = (props) => {
 
     const withdrawToken = async () => {
         // eslint-disable-next-line no-shadow
-        const { opGroup, error } = await withdrawTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+        const { opGroup, error } = await withdrawTokenAction(tokenDetails, amount, true, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
         setOpGroup(opGroup);
         setEvaluationError(error);
     };
