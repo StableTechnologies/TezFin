@@ -82,12 +82,17 @@ export namespace TezosLendingPlatform {
             numParticipants: 0,
             totalAmount: fToken.supply.totalSupply,
             rate: FToken.getSupplyRateApy(fToken, rateModel),
+            // TODO: :  create a  dynamic supply rate apy function
+            rateFn: (additionalAmount: bigInt.BigInteger) => {
+                return FToken.getSupplyRateApy(fToken, rateModel);
+            },
         };
         const borrow: MarketData = {
             // numParticipants: fToken.borrow.numBorrowers,
             numParticipants: 0,
             totalAmount: fToken.borrow.totalBorrows,
             rate: FToken.getBorrowRateApy(fToken, rateModel),
+            rateFn: FToken.getDynamicBorrowRateApyFn(fToken, rateModel),
         };
 
         return {
