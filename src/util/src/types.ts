@@ -142,11 +142,14 @@ export interface UnderlyingAssetMetadata {
  * @param numParticipants The number of unique addresses in the market
  * @param totalAmount The total number of tokens in the market, fTokens for supply and underlying for borrow
  * @param rate Current interest rate
+ * @param rateFn Function to dynamically calculate the interest rate by taking into account the amount to be
+ *    borrowed or supplied by the user
  */
 export interface MarketData {
     numParticipants: number;
     totalAmount: bigInt.BigInteger;
     rate: bigInt.BigInteger;
+    rateFn: (additionalAmount: bigInt.BigInteger) => bigInt.BigInteger;
 }
 
 /*
