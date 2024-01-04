@@ -367,6 +367,26 @@ export namespace FToken {
   }
 
   /**
+   * @description  Get the dynamic borrow rate apy function, that takes the additional amount to be borrowed
+   *               and adds it to total borrows to calculate the borrow rate apy.
+   *
+   *
+   * @param storage FToken storage.
+   * @param irStorage InterestRateModel storage.
+   * @returns a function that takes the amount to be borrowed and returns the borrowAPY percent Mantissa as bigInt.BigInteger
+   */
+
+  export function getDynamicBorrowRateApyFn(
+    storage: Storage,
+    irStorage: InterestRateModel.Storage,
+  ): (borrowAmount: bigInt.BigInteger) => bigInt.BigInteger {
+    return (additionalBorrowAmount: bigInt.BigInteger) => {
+      const _storage = storage.borrow.totalBorrows.plus(additionalBorrowAmount);
+      return getBorrowRateApy(_storage, irStorage);
+    };
+  }
+
+  /**
    * @description  Calculates the borrowRatePerBlock matissa as per the contract code using the fomula:
    *
    *  borrowRatePerBlock = (utilizationRate * blockMultiplier / scale) + blockBaseRate
