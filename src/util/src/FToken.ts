@@ -1,5 +1,17 @@
 import { AssetType, TokenStandard } from './enum';
-import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
+import {
+    ConseilOperator,
+    ConseilQuery,
+    ConseilQueryBuilder,
+    KeyStore,
+    Signer,
+    TezosContractUtils,
+    TezosMessageUtils,
+    TezosNodeReader,
+    TezosNodeWriter,
+    TezosParameterFormat,
+    Transaction,
+} from 'conseiljs';
 
 import { BigNumber } from 'bignumber.js';
 import { InterestRateModel } from './contracts/InterestRateModel';
@@ -50,14 +62,25 @@ export namespace FToken {
      * @param
      * @param
      */
-    export async function GetStorage(fTokenAddress: string, underlying: UnderlyingAsset, server: string, type: TokenStandard): Promise<Storage> {
+    export async function GetStorage(
+        fTokenAddress: string,
+        underlying: UnderlyingAsset,
+        server: string,
+        type: TokenStandard,
+    ): Promise<Storage> {
         switch (type) {
             case TokenStandard.FA12: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
-                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0];
+                const balancesMapId = JSONPath({
+                    path: '$.args[0].args[0].args[0].args[2].int',
+                    json: storageResult,
+                })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[2].prim', json: storageResult })[0];
-                const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
-                const protocolSeizeShareMantissa = JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0];
+                const pendingAdministrator: string | undefined = adminJsonPrase === 'None' ? undefined : adminJsonPrase;
+                const protocolSeizeShareMantissa = JSONPath({
+                    path: '$.args[0].args[1].args[3].int',
+                    json: storageResult,
+                })[0];
                 const cash = await TezosLendingPlatform.GetUnderlyingBalanceToken(underlying, fTokenAddress, server);
                 // TODO: implement numSuppliers and numBorrowers
                 // get numSuppliers
@@ -65,38 +88,69 @@ export namespace FToken {
                 // get numBorrowers
                 // const borrowersQuery = makeBorrowersQuery(balancesMapId);
                 return {
-                    accrualBlockNumber: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+                    accrualBlockNumber: JSONPath({
+                        path: '$.args[0].args[0].args[0].args[0].args[0].int',
+                        json: storageResult,
+                    })[0],
+                    administrator: JSONPath({
+                        path: '$.args[0].args[0].args[0].args[1].string',
+                        json: storageResult,
+                    })[0],
                     balancesMapId: balancesMapId,
                     supply: {
                         totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
-                        supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[2].int', json: storageResult })[0])
+                        supplyRatePerBlock: bigInt(
+                            JSONPath({ path: '$.args[0].args[2].args[2].int', json: storageResult })[0],
+                        ),
                     },
                     borrow: {
                         totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
-                        borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0]),
-                        borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
-                        borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
+                        borrowIndex: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
+                        ),
+                        borrowRateMaxMantissa: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                        ),
+                        borrowRatePerBlock: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                        ),
                     },
                     protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
-                    comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[1].args[2].string', json: storageResult })[0],
+                    comptrollerAddress: JSONPath({
+                        path: '$.args[0].args[0].args[1].args[2].string',
+                        json: storageResult,
+                    })[0],
                     expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
-                    halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
-                    initialExchangeRateMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0]),
+                    halfExpScale: bigInt(
+                        JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                    ),
+                    initialExchangeRateMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
+                    ),
                     interestRateModel: JSONPath({ path: '$.args[0].args[1].args[1].string', json: storageResult })[0],
                     pendingAdministrator: pendingAdministrator,
-                    reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
-                    reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0]),
+                    reserveFactorMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0],
+                    ),
+                    reserveFactorMaxMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0],
+                    ),
                     totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
-                    currentCash: cash
+                    currentCash: cash,
                 };
             }
             case TokenStandard.FA2: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
-                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0];
+                const balancesMapId = JSONPath({
+                    path: '$.args[0].args[0].args[0].args[2].int',
+                    json: storageResult,
+                })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[1].prim', json: storageResult })[0];
-                const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
-                const protocolSeizeShareMantissa = JSONPath({ path: '$.args[0].args[1].args[2].int', json: storageResult })[0];
+                const pendingAdministrator: string | undefined = adminJsonPrase === 'None' ? undefined : adminJsonPrase;
+                const protocolSeizeShareMantissa = JSONPath({
+                    path: '$.args[0].args[1].args[2].int',
+                    json: storageResult,
+                })[0];
                 const cash = await TezosLendingPlatform.GetUnderlyingBalanceToken(underlying, fTokenAddress, server);
                 // TODO: implement numSuppliers and numBorrowers
                 // get numSuppliers
@@ -104,39 +158,73 @@ export namespace FToken {
                 // get numBorrowers
                 // const borrowersQuery = makeBorrowersQuery(balancesMapId);
                 return {
-                    accrualBlockNumber: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+                    accrualBlockNumber: JSONPath({
+                        path: '$.args[0].args[0].args[0].args[0].args[0].int',
+                        json: storageResult,
+                    })[0],
+                    administrator: JSONPath({
+                        path: '$.args[0].args[0].args[0].args[1].string',
+                        json: storageResult,
+                    })[0],
                     balancesMapId: balancesMapId,
                     supply: {
                         totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
-                        supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0])
+                        supplyRatePerBlock: bigInt(
+                            JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0],
+                        ),
                     },
                     borrow: {
                         totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
-                        borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0]),
-                        borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
-                        borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
+                        borrowIndex: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
+                        ),
+                        borrowRateMaxMantissa: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                        ),
+                        borrowRatePerBlock: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                        ),
                     },
                     protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
-                    comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[1].args[2].string', json: storageResult })[0],
+                    comptrollerAddress: JSONPath({
+                        path: '$.args[0].args[0].args[1].args[2].string',
+                        json: storageResult,
+                    })[0],
                     expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
-                    halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
-                    initialExchangeRateMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0]),
-                    interestRateModel: JSONPath({ path: '$.args[0].args[1].args[0].args[2].string', json: storageResult })[0],
+                    halfExpScale: bigInt(
+                        JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                    ),
+                    initialExchangeRateMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
+                    ),
+                    interestRateModel: JSONPath({
+                        path: '$.args[0].args[1].args[0].args[2].string',
+                        json: storageResult,
+                    })[0],
                     pendingAdministrator: pendingAdministrator,
-                    reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0]),
-                    reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
+                    reserveFactorMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0],
+                    ),
+                    reserveFactorMaxMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0],
+                    ),
                     totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
-                    currentCash: cash
+                    currentCash: cash,
                 };
             }
             case TokenStandard.XTZ: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
-                const balancesMapId = JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0];
+                const balancesMapId = JSONPath({
+                    path: '$.args[0].args[0].args[0].args[2].int',
+                    json: storageResult,
+                })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[1].prim', json: storageResult })[0];
-                const pendingAdministrator: string | undefined = adminJsonPrase === "None" ? undefined : adminJsonPrase;
+                const pendingAdministrator: string | undefined = adminJsonPrase === 'None' ? undefined : adminJsonPrase;
                 const spendableBalance = await TezosNodeReader.getSpendableBalanceForAccount(server, fTokenAddress);
-                const protocolSeizeShareMantissa = JSONPath({ path: '$.args[0].args[1].args[2].int', json: storageResult })[0];
+                const protocolSeizeShareMantissa = JSONPath({
+                    path: '$.args[0].args[1].args[2].int',
+                    json: storageResult,
+                })[0];
 
                 // TODO: implement numSuppliers and numBorrowers
                 // get numSuppliers
@@ -144,30 +232,53 @@ export namespace FToken {
                 // get numBorrowers
                 // const borrowersQuery = makeBorrowersQuery(balancesMapId);
                 return {
-                    accrualBlockNumber: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+                    accrualBlockNumber: JSONPath({
+                        path: '$.args[0].args[0].args[0].args[0].args[0].int',
+                        json: storageResult,
+                    })[0],
+                    administrator: JSONPath({
+                        path: '$.args[0].args[0].args[0].args[1].string',
+                        json: storageResult,
+                    })[0],
                     balancesMapId: balancesMapId,
                     supply: {
                         totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
-                        supplyRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0])
+                        supplyRatePerBlock: bigInt(
+                            JSONPath({ path: '$.args[0].args[2].args[1].int', json: storageResult })[0],
+                        ),
                     },
                     borrow: {
                         totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
-                        borrowIndex: bigInt(JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0]),
-                        borrowRateMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0]),
-                        borrowRatePerBlock: bigInt(JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0])
+                        borrowIndex: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
+                        ),
+                        borrowRateMaxMantissa: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                        ),
+                        borrowRatePerBlock: bigInt(
+                            JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                        ),
                     },
                     protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
                     comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[2].string', json: storageResult })[0],
                     expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
                     halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0]),
-                    initialExchangeRateMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0]),
-                    interestRateModel: JSONPath({ path: '$.args[0].args[1].args[0].args[1].string', json: storageResult })[0],
+                    initialExchangeRateMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                    ),
+                    interestRateModel: JSONPath({
+                        path: '$.args[0].args[1].args[0].args[1].string',
+                        json: storageResult,
+                    })[0],
                     pendingAdministrator: pendingAdministrator,
-                    reserveFactorMantissa: bigInt(JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0]),
-                    reserveFactorMaxMantissa: bigInt(JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0]),
+                    reserveFactorMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[1].args[3].int', json: storageResult })[0],
+                    ),
+                    reserveFactorMaxMantissa: bigInt(
+                        JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0],
+                    ),
                     totalReserves: bigInt(JSONPath({ path: '$.args[0].args[4].int', json: storageResult })[0]),
-                    currentCash: bigInt(spendableBalance)
+                    currentCash: bigInt(spendableBalance),
                 };
             }
         }
@@ -181,7 +292,9 @@ export namespace FToken {
     export function makeSuppliersQuery(balancesMapId: number): ConseilQuery {
         let suppliersQuery = ConseilQueryBuilder.blankQuery();
         suppliersQuery = ConseilQueryBuilder.addFields(suppliersQuery, 'key', 'value', 'operation_group_id');
-        suppliersQuery = ConseilQueryBuilder.addPredicate(suppliersQuery, 'big_map_id', ConseilOperator.EQ, [balancesMapId]);
+        suppliersQuery = ConseilQueryBuilder.addPredicate(suppliersQuery, 'big_map_id', ConseilOperator.EQ, [
+            balancesMapId,
+        ]);
         // TODO: get all values with value.balance > 0
         suppliersQuery = ConseilQueryBuilder.setLimit(suppliersQuery, 10_000);
         return suppliersQuery;
@@ -195,7 +308,9 @@ export namespace FToken {
     export function makeBorrowersQuery(balancesMapId: number): ConseilQuery {
         let borrowersQuery = ConseilQueryBuilder.blankQuery();
         borrowersQuery = ConseilQueryBuilder.addFields(borrowersQuery, 'key', 'value', 'operation_group_id');
-        borrowersQuery = ConseilQueryBuilder.addPredicate(borrowersQuery, 'big_map_id', ConseilOperator.EQ, [balancesMapId]);
+        borrowersQuery = ConseilQueryBuilder.addPredicate(borrowersQuery, 'big_map_id', ConseilOperator.EQ, [
+            balancesMapId,
+        ]);
         // TODO: get all values with value.principal > 0
         borrowersQuery = ConseilQueryBuilder.setLimit(borrowersQuery, 10_000);
         return borrowersQuery;
@@ -211,38 +326,41 @@ export namespace FToken {
     }
 
     /**
-     * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
+     * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision
      *
      * @param ftokenBalance The ammount of FTokens
-     * @param storage The FToken storage 
+     * @param storage The FToken storage
      * @returns underlyingBalance as BigNumber
      */
     export function applyExchangeRate(ftokenBalance: bigInt.BigInteger, storage: Storage): BigNumber {
-
-
         const exchangeRate = getExchangeRate(storage);
 
         return _calcApplyExchangeRate(ftokenBalance, exchangeRate, storage.expScale);
     }
 
     /**
-     * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision 
+     * @description Given a token storage,it returns the  exchangeRate with 0 adjustment but correct precision
      *
-     * @param storage The FToken storage 
+     * @param storage The FToken storage
      * @returns exchangeRate as BigNumber
      */
     export function getExchangeRate(storage: Storage): BigNumber {
-
-
         const expScale = Decimal.log(storage.expScale.toString());
         const log10 = Decimal.log(10);
         const decimalPlaces = expScale.div(log10);
 
-        const exchangeRate = _calcExchangeRateAdjusted(0, storage.initialExchangeRateMantissa, storage.currentCash, storage.borrow.totalBorrows, storage.totalReserves, storage.supply.totalSupply, storage.expScale);
-        return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())))
+        const exchangeRate = _calcExchangeRateAdjusted(
+            0,
+            storage.initialExchangeRateMantissa,
+            storage.currentCash,
+            storage.borrow.totalBorrows,
+            storage.totalReserves,
+            storage.supply.totalSupply,
+            storage.expScale,
+        );
+        return new BigNumber(exchangeRate.toFixed(parseInt(decimalPlaces.toString())));
     }
 
- 
     /**
      * @description   Once the supplyRate Mantissa is calculated, The APY mantissa
      *                is computed and  multiplied by 100 to get APY percent.
@@ -254,12 +372,12 @@ export namespace FToken {
      * @returns supplyApy percent Mantissa as bigInt.BigInteger
      */
     export function getSupplyRateApy(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
-	    const _blockRate = getSupplyRate(storage, irStorage);
+        const _blockRate = getSupplyRate(storage, irStorage);
         return _calcAnnualizedRate(_blockRate, irStorage.scale).multiply(100);
     }
 
     /**
-     * @description  The rate calculation here is based on the getSupplyRate 
+     * @description  The rate calculation here is based on the getSupplyRate
      *               function of the InterestRateModel contract.
      *
      * @param storage FToken storage.
@@ -267,13 +385,19 @@ export namespace FToken {
      * @returns supplyRate Mantissa as bigInt.BigInteger
      */
     export function getSupplyRate(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
-
-        return _calcSupplyRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate, storage.reserveFactorMantissa);
-
+        return _calcSupplyRate(
+            storage.borrow.totalBorrows,
+            storage.currentCash,
+            storage.totalReserves,
+            irStorage.scale,
+            irStorage.blockMultiplier,
+            irStorage.blockRate,
+            storage.reserveFactorMantissa,
+        );
     }
 
     /**
-     * @description  The rate calculation here is based on the getBorrowRate 
+     * @description  The rate calculation here is based on the getBorrowRate
      *                function of the InterestRateModel contract.
      *
      * @param storage FToken storage.
@@ -281,9 +405,14 @@ export namespace FToken {
      * @returns borrowRate  Mantissa as bigInt.BigInteger
      */
     export function getBorrowRate(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
-
-        return _calcBorrowRate(storage.borrow.totalBorrows, storage.currentCash, storage.totalReserves, irStorage.scale, irStorage.blockMultiplier, irStorage.blockRate);
-
+        return _calcBorrowRate(
+            storage.borrow.totalBorrows,
+            storage.currentCash,
+            storage.totalReserves,
+            irStorage.scale,
+            irStorage.blockMultiplier,
+            irStorage.blockRate,
+        );
     }
 
     /**
@@ -295,15 +424,13 @@ export namespace FToken {
      * @returns borrowAPY percent Mantissa as bigInt.BigInteger
      */
     export function getBorrowRateApy(storage: Storage, irStorage: InterestRateModel.Storage): bigInt.BigInteger {
+        const _blockRate = getBorrowRate(storage, irStorage);
 
-	    const _blockRate = getBorrowRate(storage, irStorage);
-	     
-	    if (_blockRate.greaterOrEquals(storage.borrow.borrowRateMaxMantissa)){
-		    return _calcAnnualizedRate(storage.borrow.borrowRateMaxMantissa, irStorage.scale).multiply(100);
-		}
-	    
+        if (_blockRate.greaterOrEquals(storage.borrow.borrowRateMaxMantissa)) {
+            return _calcAnnualizedRate(storage.borrow.borrowRateMaxMantissa, irStorage.scale).multiply(100);
+        }
+
         return _calcAnnualizedRate(_blockRate, irStorage.scale).multiply(100);
-
     }
 
     /**
@@ -319,11 +446,18 @@ export namespace FToken {
      * @param blockbaserate per-block interest rate, order of magnitude of scale.
      * @returns borrowrateperblock as bigInt.BigInteger
      */
-	function _calcBorrowRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger, blockMultiplier: bigInt.BigInteger, blockBaseRate: bigInt.BigInteger): bigInt.BigInteger {
-	    const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
+    function _calcBorrowRate(
+        loans: bigInt.BigInteger,
+        balance: bigInt.BigInteger,
+        reserves: bigInt.BigInteger,
+        scale: bigInt.BigInteger,
+        blockMultiplier: bigInt.BigInteger,
+        blockBaseRate: bigInt.BigInteger,
+    ): bigInt.BigInteger {
+        const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
 
-	    return utilizationRate.multiply(blockMultiplier).divide(scale).plus(blockBaseRate);
-	}
+        return utilizationRate.multiply(blockMultiplier).divide(scale).plus(blockBaseRate);
+    }
 
     /**
      * @description Calculates the utilizationRate as per the contract code using this formula:
@@ -336,21 +470,27 @@ export namespace FToken {
      * @param scale  The exponential scale all the matissa's are in
      * @returns utilizationRate as BigInteger
      */
-	function _calcUtilizationRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger): bigInt.BigInteger {
+    function _calcUtilizationRate(
+        loans: bigInt.BigInteger,
+        balance: bigInt.BigInteger,
+        reserves: bigInt.BigInteger,
+        scale: bigInt.BigInteger,
+    ): bigInt.BigInteger {
+        if (loans.lesserOrEquals(0)) {
+            return bigInt.zero;
+        }
 
-	    if (loans.lesserOrEquals(0)) { return bigInt.zero; }
+        const divisor = balance.plus(loans).minus(reserves);
 
+        if (divisor.eq(0)) {
+            return bigInt.zero;
+        }
 
-	    const divisor = balance.plus(loans).minus(reserves);
+        const utilizationRate = loans.multiply(scale).divide(divisor);
 
-	    if (divisor.eq(0)) { return bigInt.zero; }
+        return utilizationRate;
+    }
 
-	    const utilizationRate = loans.multiply(scale).divide(divisor);
-
-	    return utilizationRate;
-	}
-
-    
     /**
      * @description  Calculates the supplyRatePerBlock matissa using the fomula below
      *
@@ -369,7 +509,15 @@ export namespace FToken {
      * @param reserveFactor Reserve share order of magnitude of scale.
      * @returns supplyRatePerBlock as bigInt.BigInteger
      */
-    function _calcSupplyRate(loans: bigInt.BigInteger, balance: bigInt.BigInteger, reserves: bigInt.BigInteger, scale: bigInt.BigInteger, blockMultiplier: bigInt.BigInteger, blockBaseRate: bigInt.BigInteger, reserveFactor: bigInt.BigInteger): bigInt.BigInteger {
+    function _calcSupplyRate(
+        loans: bigInt.BigInteger,
+        balance: bigInt.BigInteger,
+        reserves: bigInt.BigInteger,
+        scale: bigInt.BigInteger,
+        blockMultiplier: bigInt.BigInteger,
+        blockBaseRate: bigInt.BigInteger,
+        reserveFactor: bigInt.BigInteger,
+    ): bigInt.BigInteger {
         const _scale = bigInt(scale);
 
         const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
@@ -381,14 +529,12 @@ export namespace FToken {
         return rateToPool.multiply(utilizationRate).divide(scale);
     }
 
-
-
     /**
      * @description Calculates the exchange rate based on the formula :
-     * ( underlyingBalance + totalBorrows - reserves ) / totalSupply 
+     * ( underlyingBalance + totalBorrows - reserves ) / totalSupply
      *
-     * @param adjustment TODO 
-     * @param initialExhangeRateMantissa  Initial exchangeRate's mantissa 
+     * @param adjustment TODO
+     * @param initialExhangeRateMantissa  Initial exchangeRate's mantissa
      * @param balance Underlying balance of the collateral token.
      * @param borrows Total amount of borrowed assets of a given collateral token.
      * @param reserves Reserves of the collateral token.
@@ -396,7 +542,15 @@ export namespace FToken {
      * @param expScale The scale all the mantissa's are in.
      * @returns exchangeRate as BigNumber
      */
-    function _calcExchangeRateAdjusted(adjustment: number, initialExhangeRateMantissa: bigInt.BigInteger, balance: bigInt.BigInteger, borrows: bigInt.BigInteger, reserves: bigInt.BigInteger, totalSupply: bigInt.BigInteger, expScale: bigInt.BigInteger): BigNumber {
+    function _calcExchangeRateAdjusted(
+        adjustment: number,
+        initialExhangeRateMantissa: bigInt.BigInteger,
+        balance: bigInt.BigInteger,
+        borrows: bigInt.BigInteger,
+        reserves: bigInt.BigInteger,
+        totalSupply: bigInt.BigInteger,
+        expScale: bigInt.BigInteger,
+    ): BigNumber {
         const _adjustment = bigInt(adjustment);
         if (bigInt(totalSupply).greater(0)) {
             const _cash = bigInt(balance).minus(adjustment);
@@ -407,7 +561,6 @@ export namespace FToken {
         } else {
             return new BigNumber(initialExhangeRateMantissa.toString()).div(expScale.toString());
         }
-
     }
 
     /**
@@ -420,7 +573,11 @@ export namespace FToken {
      * @param expScale The scale all the mantissa's are in.
      * @returns underlyingBalance  as BigNumber
      */
-    function _calcApplyExchangeRate(ftokenBalance: bigInt.BigInteger, exchangeRate: BigNumber, expScale: bigInt.BigInteger): BigNumber {
+    function _calcApplyExchangeRate(
+        ftokenBalance: bigInt.BigInteger,
+        exchangeRate: BigNumber,
+        expScale: bigInt.BigInteger,
+    ): BigNumber {
         const underlyingBalance = new BigNumber(ftokenBalance.toString()).multipliedBy(exchangeRate);
         return underlyingBalance;
     }
@@ -431,10 +588,14 @@ export namespace FToken {
      * @param annualPeriods 365.25*24*60*2.
      * @returns annualrate APY rate Mantissa as BigInteger.
      */
-     function _calcAnnualizedRate(rate: bigInt.BigInteger, expScale: bigInt.BigInteger, annualPeriods = 1051920): bigInt.BigInteger {
-	 const apyrate = rate.multiply(annualPeriods);
-	 return apyrate;
-     }
+    function _calcAnnualizedRate(
+        rate: bigInt.BigInteger,
+        expScale: bigInt.BigInteger,
+        annualPeriods = 1051920,
+    ): bigInt.BigInteger {
+        const apyrate = rate.multiply(annualPeriods);
+        return apyrate;
+    }
 
     /*
      * @description
@@ -463,7 +624,13 @@ export namespace FToken {
      *
      * @param
      */
-    export async function GetBalance(account: string, assetType: AssetType, currentIndex: bigInt.BigInteger, balancesMapId: number, server: string): Promise<Balance> {
+    export async function GetBalance(
+        account: string,
+        assetType: AssetType,
+        currentIndex: bigInt.BigInteger,
+        balancesMapId: number,
+        server: string,
+    ): Promise<Balance> {
         try {
             const balanceResult = await queryBalance(account, balancesMapId, server);
             return parseBalanceResult(balanceResult, currentIndex, assetType);
@@ -478,20 +645,32 @@ export namespace FToken {
      * @param
      */
     export const normalizeToIndex = {
-        supply: function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
+        supply: function (
+            amount: bigInt.BigInteger,
+            prevIndex: bigInt.BigInteger,
+            currentIndex: bigInt.BigInteger,
+        ): bigInt.BigInteger {
             return amount;
         },
-        borrow: function (amount: bigInt.BigInteger, prevIndex: bigInt.BigInteger, currentIndex: bigInt.BigInteger): bigInt.BigInteger {
-            if (bigInt(prevIndex).eq(0)) { return bigInt(0); }
+        borrow: function (
+            amount: bigInt.BigInteger,
+            prevIndex: bigInt.BigInteger,
+            currentIndex: bigInt.BigInteger,
+        ): bigInt.BigInteger {
+            if (bigInt(prevIndex).eq(0)) {
+                return bigInt(0);
+            }
             return amount.multiply(currentIndex.divide(prevIndex));
-        }
-    }
+        },
+    };
 
     /*
      * @description Queries a big_map for a value associated with an address-type key.
      */
     async function queryBalance(account: string, balancesMapId: number, server: string): Promise<any> {
-        const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(account, 'address'), 'hex'));
+        const packedKey = TezosMessageUtils.encodeBigMapKey(
+            Buffer.from(TezosMessageUtils.writePackedData(account, 'address'), 'hex'),
+        );
         const mapResult = await TezosNodeReader.getValueForBigMapKey(server, balancesMapId, packedKey);
 
         return mapResult || {};
@@ -502,7 +681,11 @@ export namespace FToken {
      *
      * @parameters
      */
-    export function parseBalanceResult(balanceInfo: any, currentIndex: bigInt.BigInteger, assetType: AssetType): Balance {
+    export function parseBalanceResult(
+        balanceInfo: any,
+        currentIndex: bigInt.BigInteger,
+        assetType: AssetType,
+    ): Balance {
         const borrowIndex = JSONPath({ path: '$.args[0].args[0].int', json: balanceInfo })[0] || 0;
         const borrowPrincipal = JSONPath({ path: '$.args[0].args[1].int', json: balanceInfo })[0] || 0;
         const supplyPrincipal = JSONPath({ path: '$.args[2].int', json: balanceInfo })[0] || 0;
@@ -511,9 +694,15 @@ export namespace FToken {
         // return 0 balance if uninitialized in contract
         return {
             assetType: assetType,
-            supplyBalanceUnderlying: supplyPrincipal === undefined ? bigInt(0) : normalizeToIndex.supply(bigInt(supplyPrincipal), bigInt(1_000_000), currentIndex),
-            loanBalanceUnderlying: borrowPrincipal === undefined ? bigInt(0) : normalizeToIndex.borrow(bigInt(borrowPrincipal), borrowIndex, currentIndex)
-        }
+            supplyBalanceUnderlying:
+                supplyPrincipal === undefined
+                    ? bigInt(0)
+                    : normalizeToIndex.supply(bigInt(supplyPrincipal), bigInt(1_000_000), currentIndex),
+            loanBalanceUnderlying:
+                borrowPrincipal === undefined
+                    ? bigInt(0)
+                    : normalizeToIndex.borrow(bigInt(borrowPrincipal), borrowIndex, currentIndex),
+        };
     }
 
     /*
@@ -526,12 +715,32 @@ export namespace FToken {
      * @param gas
      * @param freight
      */
-    export function AccrueInterestOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, gas: number = 200_000, freight: number = 20_000): Transaction[] {
+    export function AccrueInterestOpGroup(
+        collaterals: AssetType[],
+        protocolAddresses: ProtocolAddresses,
+        counter: number,
+        pkh: string,
+        gas: number = 200_000,
+        freight: number = 20_000,
+    ): Transaction[] {
         const entrypoint = 'accrueInterest';
-        const parameters = 'Unit'
+        const parameters = 'Unit';
         let ops: Transaction[] = [];
         for (const collateral of collaterals) {
-            ops.push(TezosNodeWriter.constructContractInvocationOperation(pkh, counter, protocolAddresses.fTokens[collateral], 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson));
+            ops.push(
+                TezosNodeWriter.constructContractInvocationOperation(
+                    pkh,
+                    counter,
+                    protocolAddresses.fTokens[collateral],
+                    0,
+                    0,
+                    freight,
+                    gas,
+                    entrypoint,
+                    parameters,
+                    TezosParameterFormat.Michelson,
+                ),
+            );
         }
         return ops;
     }
@@ -541,10 +750,26 @@ export namespace FToken {
      *
      * @param
      */
-    export async function AccrueInterest(markets: AssetType[], protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
+    export async function AccrueInterest(
+        markets: AssetType[],
+        protocolAddresses: ProtocolAddresses,
+        server: string,
+        signer: Signer,
+        keystore: KeyStore,
+        fee: number,
+        gas: number = 200_000,
+        freight: number = 20_000,
+    ): Promise<string> {
         // get account counter
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        let ops: Transaction[] = AccrueInterestOpGroup(markets, protocolAddresses, counter, keystore.publicKeyHash, gas, freight);
+        let ops: Transaction[] = AccrueInterestOpGroup(
+            markets,
+            protocolAddresses,
+            counter,
+            keystore.publicKeyHash,
+            gas,
+            freight,
+        );
         const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
@@ -562,9 +787,9 @@ export namespace FToken {
     }
 
     /*
-    * Liquidate entrypoint parameters
-    *
-    */
+     * Liquidate entrypoint parameters
+     *
+     */
     export interface LiquidateDetails {
         supplyCollateral: AssetType;
         seizeCollateral: AssetType;
@@ -592,20 +817,58 @@ export namespace FToken {
      * @param gas
      * @param freight
      */
-    export function MintOperation(mint: MintPair, counter: number, fTokenAddress: string, pkh: string, gas: number = 200_000, freight: number = 20_000): Transaction {
+    export function MintOperation(
+        mint: MintPair,
+        counter: number,
+        fTokenAddress: string,
+        pkh: string,
+        gas: number = 200_000,
+        freight: number = 20_000,
+    ): Transaction {
         const entrypoint = 'mint';
         const parameters = MintPairMichelson(mint);
         const xtzAmount = mint.underlying == AssetType.XTZ ? mint.amount : 0;
 
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, xtzAmount, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
+        return TezosNodeWriter.constructContractInvocationOperation(
+            pkh,
+            counter,
+            fTokenAddress,
+            xtzAmount,
+            0,
+            freight,
+            gas,
+            entrypoint,
+            parameters,
+            TezosParameterFormat.Michelson,
+        );
     }
 
-    export function LiquidateOperation(details: LiquidateDetails, counter: number, protocolAddresses: ProtocolAddresses, pkh: string, gas: number = 200_000, freight: number = 20_000): Transaction {
+    export function LiquidateOperation(
+        details: LiquidateDetails,
+        counter: number,
+        protocolAddresses: ProtocolAddresses,
+        pkh: string,
+        gas: number = 200_000,
+        freight: number = 20_000,
+    ): Transaction {
         const entrypoint = 'liquidateBorrow';
-        const parameters = `(Pair "${details.borrower}"(Pair "${protocolAddresses.fTokens[details.seizeCollateral]}" ${details.amount}))`;
+        const parameters = `(Pair "${details.borrower}"(Pair "${protocolAddresses.fTokens[details.seizeCollateral]}" ${
+            details.amount
+        }))`;
         const xtzAmount = details.supplyCollateral == AssetType.XTZ ? details.amount : 0;
 
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, protocolAddresses.fTokens[details.supplyCollateral], xtzAmount, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
+        return TezosNodeWriter.constructContractInvocationOperation(
+            pkh,
+            counter,
+            protocolAddresses.fTokens[details.supplyCollateral],
+            xtzAmount,
+            0,
+            freight,
+            gas,
+            entrypoint,
+            parameters,
+            TezosParameterFormat.Michelson,
+        );
     }
 
     /*
@@ -633,13 +896,32 @@ export namespace FToken {
      *
      * @param
      */
-    export function RedeemOperation(redeem: RedeemPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 200_000, freight: number = 20_000): Transaction {
+    export function RedeemOperation(
+        redeem: RedeemPair,
+        counter: number,
+        fTokenAddress: string,
+        pkh: string,
+        fee: number,
+        gas: number = 200_000,
+        freight: number = 20_000,
+    ): Transaction {
         let entrypoint = 'redeem';
-        if (redeem.amountInUnderlying===true) {
+        if (redeem.amountInUnderlying === true) {
             entrypoint = 'redeemUnderlying';
         }
         const parameters = RedeemPairMichelson(redeem);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
+        return TezosNodeWriter.constructContractInvocationOperation(
+            pkh,
+            counter,
+            fTokenAddress,
+            0,
+            fee,
+            freight,
+            gas,
+            entrypoint,
+            parameters,
+            TezosParameterFormat.Michelson,
+        );
     }
 
     /*
@@ -666,10 +948,29 @@ export namespace FToken {
      *
      * @param
      */
-    export function BorrowOperation(borrow: BorrowPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 200_000, freight: number = 20_000): Transaction {
+    export function BorrowOperation(
+        borrow: BorrowPair,
+        counter: number,
+        fTokenAddress: string,
+        pkh: string,
+        fee: number,
+        gas: number = 200_000,
+        freight: number = 20_000,
+    ): Transaction {
         const entrypoint = 'borrow';
         const parameters = BorrowPairMichelson(borrow);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
+        return TezosNodeWriter.constructContractInvocationOperation(
+            pkh,
+            counter,
+            fTokenAddress,
+            0,
+            fee,
+            freight,
+            gas,
+            entrypoint,
+            parameters,
+            TezosParameterFormat.Michelson,
+        );
     }
 
     /*
@@ -696,11 +997,30 @@ export namespace FToken {
      *
      * @param
      */
-    export function RepayBorrowOperation(repayBorrow: RepayBorrowPair, counter: number, fTokenAddress: string, pkh: string, fee: number, gas: number = 200_000, freight: number = 20_000): Transaction {
+    export function RepayBorrowOperation(
+        repayBorrow: RepayBorrowPair,
+        counter: number,
+        fTokenAddress: string,
+        pkh: string,
+        fee: number,
+        gas: number = 200_000,
+        freight: number = 20_000,
+    ): Transaction {
         const entrypoint = 'repayBorrow';
         const parameters = RepayBorrowPairMichelson(repayBorrow);
         const xtzAmount = repayBorrow.underlying == AssetType.XTZ ? repayBorrow.amount : 0;
 
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, fTokenAddress, xtzAmount, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Michelson);
+        return TezosNodeWriter.constructContractInvocationOperation(
+            pkh,
+            counter,
+            fTokenAddress,
+            xtzAmount,
+            fee,
+            freight,
+            gas,
+            entrypoint,
+            parameters,
+            TezosParameterFormat.Michelson,
+        );
     }
 }
