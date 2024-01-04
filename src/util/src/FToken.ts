@@ -447,12 +447,12 @@ export namespace FToken {
         storage: Storage,
         irStorage: InterestRateModel.Storage,
     ): (borrowAmount: bigInt.BigInteger) => bigInt.BigInteger {
-        return (additionalBorrowAmount: bigInt.BigInteger) => {
+        return (additionalAmount: bigInt.BigInteger) => {
             const _storage = {
                 ...storage,
                 borrow: {
                     ...storage.borrow,
-                    totalBorrows: storage.borrow.totalBorrows.plus(additionalBorrowAmount),
+                    totalBorrows: storage.borrow.totalBorrows.plus(additionalAmount),
                 },
             };
             return getBorrowRateApy(_storage, irStorage);
