@@ -305,7 +305,14 @@ const DashboardModal = (props) => {
                                                 : '0')}
                                         {tabValue === 'two' &&
                                             (tokenDetails.borrowRate > 0
-                                                ? roundValue(decimalify(tokenDetails.borrowRate, 18))
+                                                ? roundValue(
+                                                      decimalify(
+                                                          tokenDetails.borrowRateFn(
+                                                              undecimalify(tokenValue, decimals[tokenDetails.title]),
+                                                          ),
+                                                          18,
+                                                      ),
+                                                  )
                                                 : '0')}
                                         {'%'}
                                     </Grid>
