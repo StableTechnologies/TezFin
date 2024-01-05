@@ -42,6 +42,7 @@ export const allMarketAction = (account, markets) => (dispatch) => {
             token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
             token.supplyRate = markets[token.assetType].supply.rate.toString();
             token.borrowRate = markets[token.assetType].borrow.rate.toString();
+            token.borrowRateFn = markets[token.assetType].borrow.rateFn;
             token.walletBalance = '';
             token.collateralFactor = new BigNumber(markets[token.assetType].collateralFactor.toString())
                 .div(new BigNumber(10).pow(new BigNumber(18)))
