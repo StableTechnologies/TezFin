@@ -304,7 +304,7 @@ const DashboardModal = (props) => {
                                                 ? roundValue(decimalify(tokenDetails.supplyRate, 18))
                                                 : '0')}
                                         {tabValue === 'two' &&
-                                            (tokenDetails.borrowRate > 0
+                                            (tokenDetails.borrowRate > 0 || tokenValue !== ''
                                                 ? roundValue(
                                                       decimalify(
                                                           tokenDetails.borrowRateFn(
