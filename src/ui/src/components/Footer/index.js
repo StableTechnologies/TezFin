@@ -40,7 +40,7 @@ const Footer = () => {
                         Dashboard
                     </NavLink>
                     <Link
-                        href="#"
+                        href="https://github.com/StableTechnologies/TezFin/blob/main/AUDIT_REPORT.pdf"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
