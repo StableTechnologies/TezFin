@@ -41,6 +41,7 @@ const Footer = () => {
                     </NavLink>
                     <Link
                         href="https://github.com/StableTechnologies/TezFin/blob/main/AUDIT_REPORT.pdf"
+                        target="_blank"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
