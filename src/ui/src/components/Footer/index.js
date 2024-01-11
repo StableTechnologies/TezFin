@@ -40,24 +40,25 @@ const Footer = () => {
                         Dashboard
                     </NavLink>
                     <Link
-                        href="https://github.com/StableTechnologies/TezFin/blob/main/AUDIT_REPORT.pdf"
+                        href="https://docs.tezos.finance/welcome/audit-report"
                         target="_blank"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
                         Security
                     </Link>
-                    <NavLink
-                        to="about"
+                    <Link
+                        href="https://docs.tezos.finance"
+                        target="_blank"
                         className={classes.footerLink}
                         activeClassName={classes.activeLink}
                     >
                         About
-                    </NavLink>
+                    </Link>
                 </Grid>
                 <Grid item xs={12} sm={3} md={2} textAlign="end">
                     <Link
-                        href="https://beta.tezos.finance/"
+                        href="https://beta1.tezos.finance/"
                         target="_blank"
                         rel="noopener"
                     >
