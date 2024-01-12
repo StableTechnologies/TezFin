@@ -63,6 +63,11 @@ export const useStyles = makeStyles({
       },
     },
     "& .MuiTableBody-root ": {
+      "& .MuiTableRow-root:last-of-type": {
+        "& .MuiTableCell-root": {
+          borderBottom: "0",
+        }
+      },
       "& .MuiTableRow-root": {
         height: "4.5rem",
         "&:hover": {
