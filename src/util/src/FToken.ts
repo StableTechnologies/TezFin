@@ -649,6 +649,31 @@ export namespace FToken {
         return storage;
     }
 
+    /** @description Creates a function that Calculates the total outstanding borrow repay amount by simulating the accrual of interest up to
+     *             the current block level plus an error block delta.
+     *  @param  loanPrincipal Total amount of borrowed assets of a given collateral token.
+     *  @param  loanInterestIndex Borrow index of the loan.
+     *  @param  currentBlockLevel Current block level.
+     *  @param  storage FToken storage.
+     *   @param  irStorage InterestRateModel storage.
+     **/
+    export function getTotalBorrowRepayAmountBlockDeltaFn(
+        loanPrincipal: bigInt.BigInteger,
+        loanInterestIndex: bigInt.BigInteger,
+        currentBlockLevel: number,
+        storage: Storage,
+        irStorage: InterestRateModel.Storage,
+    ): (errorAsBlockDelta: number) => bigInt.BigInteger {
+        return (errorAsBlockDelta: number = 0) => {
+            return _calcTotalOutstandingBorrowRepayAmount(
+                currentBlockLevel + 1 + errorAsBlockDelta,
+                loanPrincipal,
+                loanInterestIndex,
+                storage,
+                irStorage,
+            );
+        };
+    }
     /** @description Calculates the total outstanding borrow repay amount by
      *             simulating the accrual of interest up to the expected block level the repay will be made.
      *  @param  expectedBlockLevel Expected block level at which the borrow will be repaid.
