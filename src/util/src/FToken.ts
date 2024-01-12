@@ -649,6 +649,22 @@ export namespace FToken {
         return storage;
     }
 
+    /** @description Calculates the interest accrued from the last accrual block to the current block,
+     *               by applying Index Adjustment to the principal.
+     *   @param  loanPrincipal Total amount of borrowed assets of a given collateral token.
+     *   @param  loanInterestIndex Borrow index of the loan.
+     * @param currentBorrowIndex Current borrow index.
+     **/
+    function _applyBorrowInterestToPrincipal(
+        loanPrincipal: bigInt.BigInteger,
+        loanInterestIndex: bigInt.BigInteger,
+        currentBorrowIndex: bigInt.BigInteger,
+    ): bigInt.BigInteger {
+        if (loanInterestIndex.eq(0)) {
+            return bigInt(0);
+        }
+        return loanPrincipal.multiply(currentBorrowIndex.divide(loanInterestIndex));
+    }
     /*
      * @description
      *
