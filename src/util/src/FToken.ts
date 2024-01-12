@@ -650,7 +650,7 @@ export namespace FToken {
     }
 
     /** @description Calculates the total outstanding borrow repay amount by
-     *             simulating the accrual of interest upto the expected block level the repay will be made.
+     *             simulating the accrual of interest up to the expected block level the repay will be made.
      *  @param  expectedBlockLevel Expected block level at which the borrow will be repaid.
      *  @param  borrowPrincipal Total amount of borrowed assets of a given collateral token.
      *  @param  borrowInterestIndex Borrow index of the loan.
