@@ -623,6 +623,32 @@ export namespace FToken {
         return apyrate;
     }
 
+    /**
+     * @description Calculates the interest accrued from the last accrual block to the current block.
+     *              The storage is modified to reflect the application of DoAccrueInterest in the contract.
+     * @param borrowRate Periodic (per-block) borrow interest rate.
+     * @param blockLevel Current block level.
+     * @param storage FToken storage.
+     * @returns storage FToken storage.
+     */
+    function _calcAccrueInterest(borrowRate: bigInt.BigInteger, blockLevel: number, storage: Storage): Storage {
+        if (borrowRate > storage.borrow.borrowRateMaxMantissa) return storage;
+        const blockDelta = blockLevel - storage.accrualBlockNumber;
+        const simpleInterestFactor = borrowRate.multiply(blockDelta);
+        const interestAccumulated = simpleInterestFactor.multiply(storage.borrow.totalBorrows).divide(storage.expScale);
+        storage.borrow.totalBorrows = storage.borrow.totalBorrows.plus(interestAccumulated);
+        storage.totalReserves = storage.totalReserves = storage.reserveFactorMantissa
+            .multiply(interestAccumulated)
+            .divide(storage.expScale)
+            .add(storage.totalReserves);
+        storage.borrow.borrowIndex = simpleInterestFactor
+            .multiply(storage.borrow.borrowIndex)
+            .divide(storage.expScale)
+            .add(storage.borrow.borrowIndex);
+        storage.accrualBlockNumber = blockLevel;
+        return storage;
+    }
+
     /*
      * @description
      *
