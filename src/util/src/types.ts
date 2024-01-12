@@ -49,6 +49,7 @@ export interface BorrowMarket {
     balanceUsd: bigInt.BigInteger;
     liquidityUnderlying: bigInt.BigInteger;
     liquidityUsd: bigInt.BigInteger;
+    getOutstandingLoanAtBlockDelta: (errorAsBlockDelta: number) => bigInt.BigInteger;
 }
 
 /*
