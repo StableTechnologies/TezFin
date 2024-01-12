@@ -586,6 +586,13 @@ export namespace TezosLendingPlatform {
                     balanceUsd: balances[asset].loanBalanceUsd!,
                     liquidityUnderlying: markets[asset].cash,
                     liquidityUsd: markets[asset].cashUsd,
+                    getOutstandingLoanAtBlockDelta: FToken.getTotalBorrowRepayAmountBlockDeltaFn(
+                        balances[asset].loanPrincipal,
+                        balances[asset].loanInterestIndex,
+                        markets[asset].level,
+                        markets[asset].storage,
+                        markets[asset].rateModel,
+                    ),
                 };
             } else {
                 // set balances to 0 for no account
@@ -596,6 +603,7 @@ export namespace TezosLendingPlatform {
                     balanceUsd: bigInt(0),
                     liquidityUnderlying: markets[asset].cash,
                     liquidityUsd: markets[asset].cashUsd,
+                    getOutstandingLoanAtBlockDelta: (errorAsBlockDelta: number = 0) => bigInt(0),
                 };
             }
         }
