@@ -182,6 +182,7 @@ export interface Market {
     exchangeRate: BigNumber;
     storage: FToken.Storage;
     rateModel: InterestRateModel.Storage;
+    level: number;
 }
 
 export type MarketMap = { [assetType: string]: Market };
