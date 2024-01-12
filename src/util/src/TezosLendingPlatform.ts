@@ -70,6 +70,7 @@ export namespace TezosLendingPlatform {
         underlying: UnderlyingAsset,
         rateModel: InterestRateModel.Storage,
         price: bigInt.BigInteger,
+        level: number,
     ): Market {
         const asset: UnderlyingAssetMetadata = {
             name: tokenNames[underlying.assetType],
@@ -110,6 +111,7 @@ export namespace TezosLendingPlatform {
             exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
             rateModel: rateModel,
+            level: level,
         } as Market;
     }
 
