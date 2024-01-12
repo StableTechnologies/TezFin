@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
@@ -53,7 +54,7 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
  * @param borrowLimit Borrow limit of a user.
  * @param setMaxAmount Sets the max amount.
  */
-export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount) => {
+export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount, blockDelta = 0) => {
     if (tabValue === 'one') {
         const limit = new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
         limit >= 0 ? setMaxAmount(limit) : setMaxAmount(0);
@@ -62,7 +63,7 @@ export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAm
     if (tabValue === 'two') {
         setMaxAmount(
             decimalify(
-                tokenDetails.balanceUnderlying.toString(),
+                tokenDetails.getOutstandingLoanAtBlockDelta(blockDelta).toString(),
                 decimals[tokenDetails.title],
                 decimals[tokenDetails.title],
             ),
