@@ -655,7 +655,8 @@ export namespace FToken {
      *  @param  loanInterestIndex Borrow index of the loan.
      *  @param  currentBlockLevel Current block level.
      *  @param  storage FToken storage.
-     *   @param  irStorage InterestRateModel storage.
+     *  @param  irStorage InterestRateModel storage.
+     *  @returns  a function that takes an error block delta and returns the total outstanding borrow repay amount as bigInt.BigInteger
      **/
     export function getTotalBorrowRepayAmountBlockDeltaFn(
         loanPrincipal: bigInt.BigInteger,
@@ -681,6 +682,7 @@ export namespace FToken {
      *  @param  borrowInterestIndex Borrow index of the loan.
      *  @param  storage FToken storage.
      *  @param  irStorage InterestRateModel storage.
+     *  @returns (loan + interestAccumulated) as bigInt.BigInteger
      **/
     function _calcTotalOutstandingBorrowRepayAmount(
         expectedBlockLevel: number,
@@ -702,7 +704,8 @@ export namespace FToken {
      *               by applying Index Adjustment to the principal.
      *   @param  loanPrincipal Total amount of borrowed assets of a given collateral token.
      *   @param  loanInterestIndex Borrow index of the loan.
-     * @param currentBorrowIndex Current borrow index.
+     *   @param currentBorrowIndex Current borrow index.
+     *   @returns (loan + interestAccumulated) as bigInt.BigInteger
      **/
     function _applyBorrowInterestToPrincipal(
         loanPrincipal: bigInt.BigInteger,
