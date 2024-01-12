@@ -727,6 +727,8 @@ export namespace FToken {
      * @param loanBalanceUnderlying Total underlying token amount borrowed
      * @param loanBalanceUsd Total USD value of funds borrowed
      * @param collateral True if market is collateralized, false otherwise
+     * @param loanPrincipal Total amount of borrowed assets for an account
+     * @param loanInterestIndex Borrow index of the loan.
      */
     export interface Balance {
         assetType: AssetType;
@@ -736,6 +738,8 @@ export namespace FToken {
         loanBalanceUnderlying: bigInt.BigInteger;
         loanBalanceUsd?: bigInt.BigInteger;
         collateral?: boolean;
+        loanPrincipal: bigInt.BigInteger;
+        loanInterestIndex: bigInt.BigInteger;
     }
 
     export type BalanceMap = { [assetType: string]: Balance };
@@ -823,6 +827,8 @@ export namespace FToken {
                 borrowPrincipal === undefined
                     ? bigInt(0)
                     : normalizeToIndex.borrow(bigInt(borrowPrincipal), borrowIndex, currentIndex),
+            loanPrincipal: borrowPrincipal === undefined ? bigInt(0) : bigInt(borrowPrincipal),
+            loanInterestIndex: borrowIndex === undefined ? bigInt(0) : bigInt(borrowIndex),
         };
     }
 
