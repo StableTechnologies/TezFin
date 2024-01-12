@@ -63,6 +63,11 @@ export const useStyles = makeStyles({
       },
     },
     "& .MuiTableBody-root ": {
+      "& .MuiTableRow-root:last-of-type": {
+        "& .MuiTableCell-root": {
+          borderBottom: "0",
+        }
+      },
       "& .MuiTableRow-root": {
         height: "4.5rem",
         "&:hover": {
@@ -84,12 +89,13 @@ export const useStyles = makeStyles({
     },
   },
   tableCon: {
-    border: "1px solid #E0E0E0",
+    background: "#fff",
     borderBottom: "0",
     borderRadius: "1rem",
     "&::-webkit-scrollbar": {
       display: "none",
     },
+    boxShadow: "2px 4px 23px 5px rgba(163,163,163,0.096)",
   },
   questionCircleIcon: {
     width: "1rem",
@@ -166,7 +172,7 @@ export const useStyles = makeStyles({
     fontSize: "0.875rem",
   },
   dashboard: {
-    background: "#fff",
+    background: "#F9FAFC",
     padding: "0px 6.25rem 10.125rem",
     "@media(max-width: 1024px)": {
       padding: "0px 4rem 10.125rem",

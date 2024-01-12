@@ -17,7 +17,8 @@ export async function mint(asset: AssetType, amount:number, keystore: KeyStore, 
 export async function redeem(asset: AssetType, amount:number, comptroller: Comptroller.Storage, protocolAddresses: ProtocolAddresses, keystore: KeyStore, signer: Signer) {
     const redeem: FToken.RedeemPair = {
         underlying: asset as AssetType,
-        amount: amount * Math.pow(10,protocolAddresses.underlying[asset].decimals)
+        amount: amount * Math.pow(10,protocolAddresses.underlying[asset].decimals),
+        amountInUnderlying: false
     };
     log.info(`redeem ${asset} parameters: ${JSON.stringify(redeem)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
