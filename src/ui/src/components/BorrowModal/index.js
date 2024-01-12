@@ -22,6 +22,7 @@ import { useStyles } from './style';
 const BorrowModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const blockDelta = 5;
 
     const { open, close, tokenDetails } = props;
 
@@ -78,36 +79,18 @@ const BorrowModal = (props) => {
 
     console.log('acc', account.underlyingBalances[tokenDetails.assetType].value.toString());
     const repayBorrowToken = async () => {
-        if (
-            new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))
-        ) {
-            // sending the contract total wallet underlyingBalance
-            // eslint-disable-next-line no-shadow
-            const { opGroup, error } = await repayBorrowTokenAction(
-                tokenDetails,
-                account.underlyingBalances[tokenDetails.assetType].value.toString(),
-                close,
-                setTokenText,
-                handleOpenInitialize,
-                protocolAddresses,
-                publicKeyHash,
-            );
-            setOpGroup(opGroup);
-            setEvaluationError(error);
-        } else {
-            // eslint-disable-next-line no-shadow
-            const { opGroup, error } = await repayBorrowTokenAction(
-                tokenDetails,
-                amount,
-                close,
-                setTokenText,
-                handleOpenInitialize,
-                protocolAddresses,
-                publicKeyHash,
-            );
-            setOpGroup(opGroup);
-            setEvaluationError(error);
-        }
+        // eslint-disable-next-line no-shadow
+        const { opGroup, error } = await repayBorrowTokenAction(
+            tokenDetails,
+            amount,
+            close,
+            setTokenText,
+            handleOpenInitialize,
+            protocolAddresses,
+            publicKeyHash,
+        );
+        setOpGroup(opGroup);
+        setEvaluationError(error);
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
@@ -178,7 +161,7 @@ const BorrowModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
+        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount, blockDelta);
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
