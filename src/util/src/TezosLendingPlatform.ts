@@ -158,6 +158,7 @@ export namespace TezosLendingPlatform {
                         protocolAddresses.underlying[asset],
                         rateModel,
                         oraclePrice,
+                        head.header.level,
                     );
                 } catch (e) {
                     log.error(
