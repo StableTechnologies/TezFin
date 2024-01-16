@@ -637,7 +637,7 @@ export namespace FToken {
         const simpleInterestFactor = borrowRate.multiply(blockDelta);
         const interestAccumulated = simpleInterestFactor.multiply(storage.borrow.totalBorrows).divide(storage.expScale);
         storage.borrow.totalBorrows = storage.borrow.totalBorrows.plus(interestAccumulated);
-        storage.totalReserves = storage.totalReserves = storage.reserveFactorMantissa
+        storage.totalReserves = storage.reserveFactorMantissa
             .multiply(interestAccumulated)
             .divide(storage.expScale)
             .add(storage.totalReserves);
