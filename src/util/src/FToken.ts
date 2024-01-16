@@ -623,6 +623,101 @@ export namespace FToken {
         return apyrate;
     }
 
+    /**
+     * @description Calculates the interest accrued from the last accrual block to the current block.
+     *              The storage is modified to reflect the application of DoAccrueInterest in the contract.
+     * @param borrowRate Periodic (per-block) borrow interest rate.
+     * @param blockLevel Current block level.
+     * @param storage FToken storage.
+     * @returns storage FToken storage.
+     */
+    function _calcAccrueInterest(borrowRate: bigInt.BigInteger, blockLevel: number, storage: Storage): Storage {
+        if (borrowRate > storage.borrow.borrowRateMaxMantissa) return storage;
+        const blockDelta = blockLevel - storage.accrualBlockNumber;
+        const simpleInterestFactor = borrowRate.multiply(blockDelta);
+        const interestAccumulated = simpleInterestFactor.multiply(storage.borrow.totalBorrows).divide(storage.expScale);
+        storage.borrow.totalBorrows = storage.borrow.totalBorrows.plus(interestAccumulated);
+        storage.totalReserves = storage.reserveFactorMantissa
+            .multiply(interestAccumulated)
+            .divide(storage.expScale)
+            .add(storage.totalReserves);
+        storage.borrow.borrowIndex = simpleInterestFactor
+            .multiply(storage.borrow.borrowIndex)
+            .divide(storage.expScale)
+            .add(storage.borrow.borrowIndex);
+        storage.accrualBlockNumber = blockLevel;
+        return storage;
+    }
+
+    /** @description Creates a function that Calculates the total outstanding borrow repay amount by simulating the accrual of interest up to
+     *             the current block level plus an error block delta.
+     *  @param  loanPrincipal Total amount of borrowed assets of a given collateral token.
+     *  @param  loanInterestIndex Borrow index of the loan.
+     *  @param  currentBlockLevel Current block level.
+     *  @param  storage FToken storage.
+     *  @param  irStorage InterestRateModel storage.
+     *  @returns  a function that takes an error block delta and returns the total outstanding borrow repay amount as bigInt.BigInteger
+     **/
+    export function getTotalBorrowRepayAmountBlockDeltaFn(
+        loanPrincipal: bigInt.BigInteger,
+        loanInterestIndex: bigInt.BigInteger,
+        currentBlockLevel: number,
+        storage: Storage,
+        irStorage: InterestRateModel.Storage,
+    ): (errorAsBlockDelta: number) => bigInt.BigInteger {
+        return (errorAsBlockDelta: number = 0) => {
+            return _calcTotalOutstandingBorrowRepayAmount(
+                currentBlockLevel + 1 + errorAsBlockDelta,
+                loanPrincipal,
+                loanInterestIndex,
+                storage,
+                irStorage,
+            );
+        };
+    }
+    /** @description Calculates the total outstanding borrow repay amount by
+     *             simulating the accrual of interest up to the expected block level the repay will be made.
+     *  @param  expectedBlockLevel Expected block level at which the borrow will be repaid.
+     *  @param  borrowPrincipal Total amount of borrowed assets of a given collateral token.
+     *  @param  borrowInterestIndex Borrow index of the loan.
+     *  @param  storage FToken storage.
+     *  @param  irStorage InterestRateModel storage.
+     *  @returns (loan + interestAccumulated) as bigInt.BigInteger
+     **/
+    function _calcTotalOutstandingBorrowRepayAmount(
+        expectedBlockLevel: number,
+        borrowPrincipal: bigInt.BigInteger,
+        borrowInterestIndex: bigInt.BigInteger,
+        storage: Storage,
+        irStorage: InterestRateModel.Storage,
+    ): bigInt.BigInteger {
+        const borrowRate = getBorrowRate(storage, irStorage);
+        const storageAfterAccrue = _calcAccrueInterest(borrowRate, expectedBlockLevel, storage);
+        return _applyBorrowInterestToPrincipal(
+            borrowPrincipal,
+            borrowInterestIndex,
+            storageAfterAccrue.borrow.borrowIndex,
+        );
+    }
+
+    /** @description Calculates the interest accrued from the last accrual block to the current block,
+     *               by applying Index Adjustment to the principal.
+     *   @param  loanPrincipal Total amount of borrowed assets of a given collateral token.
+     *   @param  loanInterestIndex Borrow index of the loan.
+     *   @param currentBorrowIndex Current borrow index.
+     *   @returns (loan + interestAccumulated) as bigInt.BigInteger
+     **/
+    function _applyBorrowInterestToPrincipal(
+        loanPrincipal: bigInt.BigInteger,
+        loanInterestIndex: bigInt.BigInteger,
+        currentBorrowIndex: bigInt.BigInteger,
+    ): bigInt.BigInteger {
+        if (loanInterestIndex.eq(0)) {
+            return bigInt(0);
+        }
+        return loanPrincipal.multiply(currentBorrowIndex.divide(loanInterestIndex));
+    }
+
     /*
      * @description
      *
@@ -632,6 +727,8 @@ export namespace FToken {
      * @param loanBalanceUnderlying Total underlying token amount borrowed
      * @param loanBalanceUsd Total USD value of funds borrowed
      * @param collateral True if market is collateralized, false otherwise
+     * @param loanPrincipal Total amount of borrowed assets for an account
+     * @param loanInterestIndex Borrow index of the loan.
      */
     export interface Balance {
         assetType: AssetType;
@@ -641,6 +738,8 @@ export namespace FToken {
         loanBalanceUnderlying: bigInt.BigInteger;
         loanBalanceUsd?: bigInt.BigInteger;
         collateral?: boolean;
+        loanPrincipal: bigInt.BigInteger;
+        loanInterestIndex: bigInt.BigInteger;
     }
 
     export type BalanceMap = { [assetType: string]: Balance };
@@ -728,6 +827,8 @@ export namespace FToken {
                 borrowPrincipal === undefined
                     ? bigInt(0)
                     : normalizeToIndex.borrow(bigInt(borrowPrincipal), borrowIndex, currentIndex),
+            loanPrincipal: borrowPrincipal === undefined ? bigInt(0) : bigInt(borrowPrincipal),
+            loanInterestIndex: borrowIndex === undefined ? bigInt(0) : bigInt(borrowIndex),
         };
     }
 

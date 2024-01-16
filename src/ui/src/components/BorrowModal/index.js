@@ -7,9 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { marketAction } from '../../reduxContent/market/actions';
 
-import {
-    confirmTransaction, undecimalify, verifyTransaction
-} from '../../util';
+import { confirmTransaction, undecimalify, verifyTransaction } from '../../util';
 import { borrowingMaxAction } from '../../util/maxAction';
 import { borrowTokenAction, repayBorrowTokenAction } from '../../util/modalActions';
 import { useBorrowErrorText, useRepayErrorText } from '../../util/modalHooks';
@@ -24,6 +22,7 @@ import { useStyles } from './style';
 const BorrowModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const blockDelta = 5;
 
     const { open, close, tokenDetails } = props;
 
@@ -65,25 +64,33 @@ const BorrowModal = (props) => {
 
     const borrowToken = async () => {
         // eslint-disable-next-line no-shadow
-        const { opGroup, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+        const { opGroup, error } = await borrowTokenAction(
+            tokenDetails,
+            amount,
+            close,
+            setTokenText,
+            handleOpenInitialize,
+            protocolAddresses,
+            publicKeyHash,
+        );
         setOpGroup(opGroup);
         setEvaluationError(error);
     };
 
     console.log('acc', account.underlyingBalances[tokenDetails.assetType].value.toString());
     const repayBorrowToken = async () => {
-        if (new BigNumber(undecimalify(useMaxAmount, decimals[tokenDetails.title]).toString()).eq(new BigNumber(amount))) {
-            // sending the contract total wallet underlyingBalance
-            // eslint-disable-next-line no-shadow
-            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, account.underlyingBalances[tokenDetails.assetType].value.toString(), close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-            setOpGroup(opGroup);
-            setEvaluationError(error);
-        } else {
-            // eslint-disable-next-line no-shadow
-            const { opGroup, error } = await repayBorrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-            setOpGroup(opGroup);
-            setEvaluationError(error);
-        }
+        // eslint-disable-next-line no-shadow
+        const { opGroup, error } = await repayBorrowTokenAction(
+            tokenDetails,
+            amount,
+            close,
+            setTokenText,
+            handleOpenInitialize,
+            protocolAddresses,
+            publicKeyHash,
+        );
+        setOpGroup(opGroup);
+        setEvaluationError(error);
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
@@ -154,7 +161,7 @@ const BorrowModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
+        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount, blockDelta);
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
@@ -169,7 +176,9 @@ const BorrowModal = (props) => {
             }
             const pendingBorrowLimit = totalCollateral - pendingBorrowing;
             setPendingLimit(pendingBorrowLimit);
-            setPendingLimitUsed(new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100));
+            setPendingLimitUsed(
+                new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100),
+            );
         }
 
         return () => {
@@ -181,9 +190,28 @@ const BorrowModal = (props) => {
     return (
         <>
             <InitializeModal open={openInitializeModal} close={handleCloseInitialize} />
-            <PendingModal open={openPendingModal} close={handleClosePending} token={tokenDetails.title} tokenText={tokenText} response={response} />
-            <SuccessModal open={openSuccessModal} close={handleCloseSuccess} token={tokenDetails.title} tokenText={tokenText} amount={amount} />
-            <ErrorModal open={openErrorModal} close={handleCloseError} token={tokenDetails.title} tokenText={tokenText} error={error} errType={errType} />
+            <PendingModal
+                open={openPendingModal}
+                close={handleClosePending}
+                token={tokenDetails.title}
+                tokenText={tokenText}
+                response={response}
+            />
+            <SuccessModal
+                open={openSuccessModal}
+                close={handleCloseSuccess}
+                token={tokenDetails.title}
+                tokenText={tokenText}
+                amount={amount}
+            />
+            <ErrorModal
+                open={openErrorModal}
+                close={handleCloseError}
+                token={tokenDetails.title}
+                tokenText={tokenText}
+                error={error}
+                errType={errType}
+            />
             <DashboardModal
                 APYText="Borrow APY"
                 CurrentStateText="Currently Borrowing"
@@ -199,15 +227,20 @@ const BorrowModal = (props) => {
                 btnSub={classes.btnSub}
                 inkBarStyle={classes.inkBarStyle}
                 visibility={true}
-                setAmount={(e) => { setAmount(e); }}
-                inputBtnTextOne = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
-                inputBtnTextTwo = "Use Max"
-                useMaxAmount= {useMaxAmount}
-                errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                setAmount={(e) => {
+                    setAmount(e);
+                }}
+                inputBtnTextOne={`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
+                inputBtnTextTwo="Use Max"
+                useMaxAmount={useMaxAmount}
+                errorText={currentTab === 'one' ? buttonOne.errorText : buttonTwo.errorText}
+                disabled={currentTab === 'one' ? buttonOne.disabled : buttonTwo.disabled}
                 pendingLimit={pendingLimit}
                 pendingLimitUsed={pendingLimitUsed}
-                getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
+                getProps={(tokenAmount, tabValue) => {
+                    setTokenValue(tokenAmount);
+                    setCurrentTab(tabValue);
+                }}
             />
         </>
     );

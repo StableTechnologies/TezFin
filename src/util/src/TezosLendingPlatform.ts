@@ -70,6 +70,7 @@ export namespace TezosLendingPlatform {
         underlying: UnderlyingAsset,
         rateModel: InterestRateModel.Storage,
         price: bigInt.BigInteger,
+        level: number,
     ): Market {
         const asset: UnderlyingAssetMetadata = {
             name: tokenNames[underlying.assetType],
@@ -110,6 +111,7 @@ export namespace TezosLendingPlatform {
             exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
             rateModel: rateModel,
+            level: level,
         } as Market;
     }
 
@@ -156,6 +158,7 @@ export namespace TezosLendingPlatform {
                         protocolAddresses.underlying[asset],
                         rateModel,
                         oraclePrice,
+                        head.header.level,
                     );
                 } catch (e) {
                     log.error(
@@ -583,6 +586,13 @@ export namespace TezosLendingPlatform {
                     balanceUsd: balances[asset].loanBalanceUsd!,
                     liquidityUnderlying: markets[asset].cash,
                     liquidityUsd: markets[asset].cashUsd,
+                    getOutstandingLoanAtBlockDelta: FToken.getTotalBorrowRepayAmountBlockDeltaFn(
+                        balances[asset].loanPrincipal,
+                        balances[asset].loanInterestIndex,
+                        markets[asset].level,
+                        markets[asset].storage,
+                        markets[asset].rateModel,
+                    ),
                 };
             } else {
                 // set balances to 0 for no account
@@ -593,6 +603,7 @@ export namespace TezosLendingPlatform {
                     balanceUsd: bigInt(0),
                     liquidityUnderlying: markets[asset].cash,
                     liquidityUsd: markets[asset].cashUsd,
+                    getOutstandingLoanAtBlockDelta: (errorAsBlockDelta: number = 0) => bigInt(0),
                 };
             }
         }
