@@ -609,6 +609,14 @@ export namespace FToken {
     }
 
     /**
+     * @description get the annual period for a given block rate
+     * @param {number} blocksPerMinute - the number of blocks per minute
+     */
+    function _calcAnnualPeriod(blocksPerMinute: number) {
+        return Math.round(365.25 * 24 * 60 * blocksPerMinute);
+    }
+
+    /**
      * @description Calculates the APY from the Supply or Borrow rate
      * @param rate Periodic (per-block) supply or borrow interest rate.
      * @param annualPeriods 365.25*24*60*2.
@@ -617,7 +625,7 @@ export namespace FToken {
     function _calcAnnualizedRate(
         rate: bigInt.BigInteger,
         expScale: bigInt.BigInteger,
-        annualPeriods = 1051920,
+        annualPeriods = _calcAnnualPeriod(4),
     ): bigInt.BigInteger {
         const apyrate = rate.multiply(annualPeriods);
         return apyrate;
