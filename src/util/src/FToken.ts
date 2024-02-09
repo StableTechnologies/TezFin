@@ -427,8 +427,7 @@ export namespace FToken {
         const _blockRate = getBorrowRate(storage, irStorage);
 
         if (_blockRate.greaterOrEquals(storage.borrow.borrowRateMaxMantissa)) {
-            // return bigint 0 when borrow rate is greater than max borrow rate
-            return bigInt(0);
+            return _calcAnnualizedRate(storage.borrow.borrowRateMaxMantissa, irStorage.scale).multiply(100);
         }
 
         return _calcAnnualizedRate(_blockRate, irStorage.scale).multiply(100);
