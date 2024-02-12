@@ -66,7 +66,7 @@ export const useStyles = makeStyles({
       "& .MuiTableRow-root:last-of-type": {
         "& .MuiTableCell-root": {
           borderBottom: "0",
-        }
+        },
       },
       "& .MuiTableRow-root": {
         height: "4.5rem",
@@ -105,7 +105,7 @@ export const useStyles = makeStyles({
   img: {
     width: "2.5rem",
     height: "2.5rem",
-    marginRight: "7px",
+    marginRight: "12px",
     "@media (min-width: 769px) and (max-width: 1024px)": {
       width: "2.5rem",
       height: "2.5rem",
