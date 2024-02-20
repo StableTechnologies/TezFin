@@ -47,28 +47,6 @@ const Header = () => {
         {network !== "mainnet" &&
           `Note: Tezfin is currently operating on the Tezos test network ${networkType}.`}
       </Typography>
-      <Grid container className={classes.netAPY}>
-        <Grid
-          item
-          sx={{ display: { xl: "none", xs: "none" } }}
-          xs={12}
-          className={classes.netAPY}
-        >
-          <Typography className={classes.netAPYText}>
-            Net APY: 0.00%{" "}
-            <LightTooltip
-              title="Difference of Annual Percentage Yield earned and paid."
-              placement="bottom"
-            >
-              <img
-                src={questionCircle}
-                alt={"questionIcon"}
-                className={classes.netAPYImg}
-              />
-            </LightTooltip>
-          </Typography>
-        </Grid>
-      </Grid>
       <Grid container className={classes.compositionGrid}>
         <Composition
           title="Supply Composition"

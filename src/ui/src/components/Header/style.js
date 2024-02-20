@@ -126,17 +126,17 @@ export const useStyles = makeStyles({
     lineHeight: "30px",
   },
   compositionGrid: {
+    paddingTop: "2rem",
     justifyContent: "space-between",
-    rowGap: "5.6rem",
-
+    rowGap: "2.1rem",
     "@media(max-width: 768px)": {
-      rowGap: "4.5rem",
+      rowGap: "2.1rem",
     },
   },
   box: {
-    paddingTop: "3.7375rem",
+    paddingTop: "2.7375rem",
     "@media(max-width: 768px)": {
-      paddingTop: "3rem",
+      paddingTop: "2.25rem",
     },
   },
   boxOne: {
@@ -341,7 +341,7 @@ export const classes1 = {
 export const HeaderCon = styled("div")(() => ({
   [`&.${classes1.root}`]: {
     backgroundColor: "#F9FAFC",
-    paddingBottom: "3.0625rem",
+    paddingBottom: "2.1rem",
   },
 }));
 export const Title = styled("p")(() => ({
