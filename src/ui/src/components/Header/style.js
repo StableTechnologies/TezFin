@@ -246,13 +246,13 @@ export const useStyles = makeStyles({
     },
     addWalletCon: {
         paddingTop: '2.1875rem',
-        paddingRight: '2.5rem',
+        paddingRight: '3.8rem',
         textAlign: 'end',
         '@media(max-width: 768px)': {
             paddingTop: '1.625rem',
         },
         '@media(max-width: 501px)': {
-            paddingRight: '0.5rem',
+            paddingRight: '1.2rem',
         },
     },
     wallet: {
