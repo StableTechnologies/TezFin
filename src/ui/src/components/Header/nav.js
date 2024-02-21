@@ -53,15 +53,17 @@ const Nav = () => {
     return (
         <Grid container justify="center" alignItems="center" className={classes.navCon}>
             <Grid item xs={6} lg={6} className={classes.tezHeaderCon}>
-                <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
+                <img src={tezHeader} alt="tezHeader" className={classes.tezHeader} />
             </Grid>
             <Grid item xs={6} lg={6} className={classes.addWalletCon}>
                 <Button
                     className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
-                    onClick={(e) => { tezAccount ? setPopover(e.currentTarget) : addWallet(); }}
+                    onClick={(e) => {
+                        tezAccount ? setPopover(e.currentTarget) : addWallet();
+                    }}
                     disableRipple
                 >
-                    {(tezAccount && (shorten(6, 6, tezAccount))) || 'Connect Wallet' }
+                    {(tezAccount && shorten(6, 6, tezAccount)) || 'Connect Wallet'}
                 </Button>
                 <Popover
                     id={id}
@@ -70,7 +72,7 @@ const Nav = () => {
                     onClose={() => setPopover(null)}
                     anchorOrigin={{
                         vertical: 'bottom',
-                        horizontal: 'left'
+                        horizontal: 'left',
                     }}
                     className={classes.root}
                 >
@@ -79,16 +81,29 @@ const Nav = () => {
                         className={`${classes.popoverBtn} ${classes.copyText}`}
                         disableRipple
                     >
-                        {tezAccount && shorten(10, 8, tezAccount)} {' '}
+                        {tezAccount && shorten(10, 8, tezAccount)}{' '}
                         <img src={CopyIcon} alt="copy icon" className={classes.popoverImg} />
                     </Button>
-                    <Button onClick={() => { addWallet(); setPopover(null); }} className={classes.popoverBtn} disableRipple>
-                        <img src={ExchangeIcon} alt="change icon" className={classes.popoverImg} />
-                        {' '} Change Wallet
+                    <Button
+                        onClick={() => {
+                            addWallet();
+                            setPopover(null);
+                        }}
+                        className={classes.popoverBtn}
+                        disableRipple
+                    >
+                        <img src={ExchangeIcon} alt="change icon" className={classes.popoverImg} /> Change Wallet
                     </Button>
-                    <Button onClick={() => { disconnectWallet(); setPopover(null); }} className={classes.popoverBtn} disableRipple>
-                        <img src={DisconnectIcon} alt="disconnect icon" className={classes.popoverImg} />
-                        {' '} Disconnect Wallet
+                    <Button
+                        onClick={() => {
+                            disconnectWallet();
+                            setPopover(null);
+                        }}
+                        className={classes.popoverBtn}
+                        disableRipple
+                    >
+                        <img src={DisconnectIcon} alt="disconnect icon" className={classes.popoverImg} /> Disconnect
+                        Wallet
                     </Button>
                 </Popover>
             </Grid>
