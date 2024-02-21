@@ -15,6 +15,7 @@ export const useStyles = makeStyles({
         },
     },
     navCon: {
+        paddingBottom: '1.625rem',
         backgroundColor: '#F9FAFC',
     },
     tezHeaderCon: {
