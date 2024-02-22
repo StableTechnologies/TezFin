@@ -27,14 +27,7 @@ const Footer = () => {
                         {new Date().getFullYear()} TezFin{' '}
                     </Typography>
                 </Grid>
-                <Grid
-                    item
-                    xs={12}
-                    sm={9}
-                    md={10}
-                    textAlign="end"
-                    sx={{ display: 'flex', flex: 'nowrap', justifyContent: 'flex-end' }}
-                >
+                <Grid item className={classes.grid} xs={12} sm={9} md={10}>
                     <NavLink to="dashboard" className={classes.footerLink} activeClassName={classes.activeLink}>
                         Dashboard
                     </NavLink>

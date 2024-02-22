@@ -51,7 +51,18 @@ export const useStyles = makeStyles({
             fontSize: '0.75rem',
         },
         '@media(max-width: 501px)': {
-            marginLeft: '1.25rem',
+            marginLeft: '1rem',
+        },
+    },
+    grid: {
+        display: 'flex',
+        flex: 'nowrap',
+        justifyContent: 'flex-end',
+        '@media(max-width: 501px)': {
+            justifyContent: 'space-between',
+            textAlign: 'start',
+            paddingLeft: '0px',
+            marginLeft: '0px',
         },
     },
     footerLink: {
@@ -70,7 +81,7 @@ export const useStyles = makeStyles({
             fontSize: '0.75rem',
         },
         '@media(max-width: 501px)': {
-            marginLeft: '1.25rem',
+            marginLeft: '0.3rem',
         },
     },
     activeLink: {
@@ -80,6 +91,10 @@ export const useStyles = makeStyles({
         width: '1.25rem',
         height: '1.25rem',
         marginLeft: '1.6875rem',
+        '@media(max-width: 501px)': {
+            marginLeft: '0.3rem',
+            marginRight: '0.3rem',
+        },
     },
     copyrightIcon: {
         width: '1.3125rem',
