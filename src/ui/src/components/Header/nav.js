@@ -18,11 +18,14 @@ import { shorten, getWallet, deactivateAccount } from '../../util';
 import { addWalletAction, disconnectWalletAction } from '../../reduxContent/addWallet/actions';
 
 import { useStyles } from './style';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
 
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 const Nav = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-
+    const trigger = useScrollTrigger({ disableHysteresis: true, threshold: 0 });
     const [tezAccount, setTezAccount] = useState('');
     const [openPopover, setPopover] = useState(null);
 
@@ -51,48 +54,65 @@ const Nav = () => {
     }, [address]);
 
     return (
-        <Grid container justify="center" alignItems="center" className={classes.navCon}>
-            <Grid item xs={6} lg={6} className={classes.tezHeaderCon}>
-                <img src={tezHeader} alt="tezHeader" className={classes.tezHeader}/>
-            </Grid>
-            <Grid item xs={6} lg={6} className={classes.addWalletCon}>
-                <Button
-                    className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
-                    onClick={(e) => { tezAccount ? setPopover(e.currentTarget) : addWallet(); }}
-                    disableRipple
-                >
-                    {(tezAccount && (shorten(6, 6, tezAccount))) || 'Connect Wallet' }
-                </Button>
-                <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={openPopover}
-                    onClose={() => setPopover(null)}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left'
-                    }}
-                    className={classes.root}
-                >
+        <AppBar position="sticky" elevation={trigger ? 4 : 0}>
+            <Grid container justify="center" alignItems="center" className={classes.navCon}>
+                <Grid item xs={6} lg={6} className={classes.tezHeaderCon}>
+                    <img src={tezHeader} alt="tezHeader" className={classes.tezHeader} />
+                </Grid>
+                <Grid item xs={6} lg={6} className={classes.addWalletCon}>
                     <Button
-                        onClick={() => navigator.clipboard.writeText(tezAccount)}
-                        className={`${classes.popoverBtn} ${classes.copyText}`}
+                        className={`${classes.wallet} ${tezAccount ? classes.connectedWallet : classes.defaultWallet}`}
+                        onClick={(e) => {
+                            tezAccount ? setPopover(e.currentTarget) : addWallet();
+                        }}
                         disableRipple
                     >
-                        {tezAccount && shorten(10, 8, tezAccount)} {' '}
-                        <img src={CopyIcon} alt="copy icon" className={classes.popoverImg} />
+                        {(tezAccount && shorten(6, 6, tezAccount)) || 'Connect Wallet'}
                     </Button>
-                    <Button onClick={() => { addWallet(); setPopover(null); }} className={classes.popoverBtn} disableRipple>
-                        <img src={ExchangeIcon} alt="change icon" className={classes.popoverImg} />
-                        {' '} Change Wallet
-                    </Button>
-                    <Button onClick={() => { disconnectWallet(); setPopover(null); }} className={classes.popoverBtn} disableRipple>
-                        <img src={DisconnectIcon} alt="disconnect icon" className={classes.popoverImg} />
-                        {' '} Disconnect Wallet
-                    </Button>
-                </Popover>
+                    <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={openPopover}
+                        onClose={() => setPopover(null)}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        className={classes.root}
+                    >
+                        <Button
+                            onClick={() => navigator.clipboard.writeText(tezAccount)}
+                            className={`${classes.popoverBtn} ${classes.copyText}`}
+                            disableRipple
+                        >
+                            {tezAccount && shorten(10, 8, tezAccount)}{' '}
+                            <img src={CopyIcon} alt="copy icon" className={classes.popoverImg} />
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                addWallet();
+                                setPopover(null);
+                            }}
+                            className={classes.popoverBtn}
+                            disableRipple
+                        >
+                            <img src={ExchangeIcon} alt="change icon" className={classes.popoverImg} /> Change Wallet
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                disconnectWallet();
+                                setPopover(null);
+                            }}
+                            className={classes.popoverBtn}
+                            disableRipple
+                        >
+                            <img src={DisconnectIcon} alt="disconnect icon" className={classes.popoverImg} /> Disconnect
+                            Wallet
+                        </Button>
+                    </Popover>
+                </Grid>
             </Grid>
-        </Grid>
+        </AppBar>
     );
 };
 
