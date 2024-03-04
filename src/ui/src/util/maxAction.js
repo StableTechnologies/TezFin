@@ -55,7 +55,7 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
  */
 export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmount, blockDelta = 0) => {
     if (tabValue === 'one') {
-        const limit = new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+        const limit = Number(new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).dividedBy(new BigNumber(2)).toFixed(decimals[tokenDetails.title]));
         limit >= 0 ? setMaxAmount(limit) : setMaxAmount(0);
     }
     // TODO: calculate the max value to repay properly.
@@ -101,7 +101,7 @@ export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmou
         }
     }
     if (tabValue === 'two') {
-        const limit = new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+        const limit = Number(new BigNumber(borrowLimit).dividedBy(new BigNumber(tokenDetails.usdPrice)).dividedBy(new BigNumber(2)).toFixed(decimals[tokenDetails.title]));
         limit >= 0 ? setMaxAmount(limit) : setMaxAmount(0);
     }
 };
