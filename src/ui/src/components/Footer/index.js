@@ -22,21 +22,13 @@ const Footer = () => {
                 <Grid item xs={12} sm={3} md={2} alignSelf="center">
                     <Typography>
                         <IconButton disableRipple>
-                            <img
-                                src={copyright}
-                                alt="discord-icon"
-                                className={classes.copyrightIcon}
-                            />
+                            <img src={copyright} alt="discord-icon" className={classes.copyrightIcon} />
                         </IconButton>{' '}
                         {new Date().getFullYear()} TezFin{' '}
                     </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6} md={8} textAlign="end">
-                    <NavLink
-                        to="dashboard"
-                        className={classes.footerLink}
-                        activeClassName={classes.activeLink}
-                    >
+                <Grid item className={classes.grid} xs={12} sm={9} md={10}>
+                    <NavLink to="dashboard" className={classes.footerLink} activeClassName={classes.activeLink}>
                         Dashboard
                     </NavLink>
                     <Link
@@ -55,45 +47,31 @@ const Footer = () => {
                     >
                         About
                     </Link>
-                </Grid>
-                <Grid item xs={12} sm={3} md={2} textAlign="end">
                     <Link
+                        className={classes.betaLink}
                         href="https://beta1.tezos.finance/"
                         target="_blank"
                         rel="noopener"
                     >
                         Beta App
                     </Link>
-                    <Link
-                        href="https://twitter.com/TezosFinance"
-                        target="_blank"
-                        rel="noopener"
-                    >
+                    <Link href="https://twitter.com/TezosFinance" target="_blank" rel="noopener">
                         <IconButton disableRipple>
                             <img src={twitter} alt="twitter-icon" className={classes.icon} />
                         </IconButton>
                     </Link>
-                    <Link
-                        href="https://discord.gg/ccWRCu2Dht"
-                        target="_blank"
-                        rel="noopener"
-                    >
+                    <Link href="https://discord.gg/ccWRCu2Dht" target="_blank" rel="noopener">
                         <IconButton disableRipple>
                             <img src={discord} alt="discord-icon" className={classes.icon} />
                         </IconButton>
                     </Link>
                     <Link href="https://t.me/TezFin" target="_blank" rel="noopener">
                         <IconButton disableRipple>
-                            <img
-                                src={telegram}
-                                alt="telegram-icon"
-                                className={classes.icon}
-                            />
+                            <img src={telegram} alt="telegram-icon" className={classes.icon} />
                         </IconButton>
                     </Link>
                 </Grid>
             </Grid>
-            <Grid></Grid>
         </Grid>
     );
 };
