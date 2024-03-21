@@ -28,7 +28,7 @@ import LightTooltip from '../Tooltip/LightTooltip';
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
-    const blockDelta = 0;
+    const blockDelta = 5;
 
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
