@@ -463,8 +463,8 @@ const DashboardModal = (props) => {
                                         <Typography className={classes.warningText}>
                                             {!isKeyRevealed
                                                 ? 'You need to perform a reveal operation with your new wallet (for example send XTZ) in order to interact with TezFin.'
-                                                : new BigNumber(tezBalance).lt(0.25) &&
-                                                  "Your XTZ balance is low. You may soon not be able to process any new operation if you don't add XTZ to your wallet."}
+                                                : new BigNumber(tezBalance).lt(0.25)
+                                                && 'Your XTZ balance is low. You may soon not be able to process any new operation if you don\'t add XTZ to your wallet.'}
                                         </Typography>
                                     </>
                                 ) : (
