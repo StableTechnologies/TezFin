@@ -40,10 +40,14 @@ export const useSupplyErrorText = (tokenValue, limit) => {
  * @param limit Max amount a user is able to borrow in a transaction.
  * @param tokenDetails Underlying asset data.
  */
-export const useBorrowErrorText = (tokenValue, limit, tokenDetails) => {
+export const useBorrowErrorText = (tokenValue, borrowLimit, tokenDetails) => {
     const [text, setText] = useState('Borrow');
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
+
+    const limit = Number(new BigNumber(borrowLimit)
+        .dividedBy(new BigNumber(tokenDetails.usdPrice))
+        .toFixed(decimals[tokenDetails.title]));
 
     const { allMarkets } = useSelector((state) => state.market);
 
@@ -140,21 +144,24 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
  * @param tokenValue amount to be repaid.
  * @param limit Max amount a user is able to repay in a transaction.
  */
-export const useRepayErrorText = (tokenValue, limit) => {
+export const useRepayErrorText = (tokenValue, limit, tokenDetails) => {
     const [text, setText] = useState('Repay');
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
-        if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
-            setErrorText('You can only repay an amount equal to your borrow amount + interest. Any amount over this threshold will not be taken.');
+        if (new BigNumber(tokenValue).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals[tokenDetails.title].toString()))).gt(new BigNumber(tokenDetails.walletBalance))) {
+            return () => {
+                setErrorText('Insufficient funds for repayment.');
+                setDisabled(true);
+            };
         }
         return () => {
             setText('Repay');
             setErrorText('');
             setDisabled(false);
         };
-    }, [tokenValue, limit]);
+    }, [tokenValue, limit, tokenDetails]);
 
     return { text, errorText, disabled };
 };
