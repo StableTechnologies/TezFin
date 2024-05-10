@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@airgap/beacon-sdk": "^4.1.0",
+    "@airgap/beacon-sdk": "^4.2.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
