@@ -609,26 +609,30 @@ export namespace FToken {
     }
 
     /**
-     * @description get the annual period for a given block rate
+     * @description get the no. of blocks created in a single day (24hrs)
      * @param {number} blocksPerMinute - the number of blocks per minute
      */
-    function _calcAnnualPeriod(blocksPerMinute: number) {
-        return Math.round(365.25 * 24 * 60 * blocksPerMinute);
+    function _blocksPerDay(blocksPerMinute: number) {
+        return Math.round(24 * 60 * blocksPerMinute);
     }
 
     /**
      * @description Calculates the APY from the Supply or Borrow rate
      * @param rate Periodic (per-block) supply or borrow interest rate.
-     * @param annualPeriods 365.25*24*60*2.
+     * @param blocksPerDay 24*60*4.
+     * @param noOfDaysInYear 365.
      * @returns annualrate APY rate Mantissa as BigInteger.
      */
     function _calcAnnualizedRate(
         rate: bigInt.BigInteger,
         expScale: bigInt.BigInteger,
-        annualPeriods = _calcAnnualPeriod(4),
+        blocksPerDay = _blocksPerDay(4),
+        noOfDaysInYear = 365,
     ): bigInt.BigInteger {
-        const apyrate = rate.multiply(annualPeriods);
-        return apyrate;
+        // https://docs.compound.finance/v2/#protocol-math
+        // APY = ((((Rate / Mantissa * Blocks Per Day + 1) ^ Days Per Year)) - 1) * 100
+        const apyrate = new BigNumber(rate.toString()).multipliedBy(blocksPerDay).div(expScale.toString()).plus(1).pow(noOfDaysInYear).minus(1).multipliedBy(expScale.toString()).toFixed(0);
+        return bigInt(apyrate);
     }
 
     /**

@@ -49,11 +49,11 @@ const Footer = () => {
                     </Link>
                     <Link
                         className={classes.betaLink}
-                        href="https://beta1.tezos.finance/"
+                        href="https://v1.tezos.finance/"
                         target="_blank"
                         rel="noopener"
                     >
-                        Beta App
+                        V1 App
                     </Link>
                     <Link href="https://twitter.com/TezosFinance" target="_blank" rel="noopener">
                         <IconButton disableRipple>
