@@ -631,7 +631,14 @@ export namespace FToken {
     ): bigInt.BigInteger {
         // https://docs.compound.finance/v2/#protocol-math
         // APY = ((((Rate / Mantissa * Blocks Per Day + 1) ^ Days Per Year)) - 1) * 100
-        const apyrate = new BigNumber(rate.toString()).multipliedBy(blocksPerDay).div(expScale.toString()).plus(1).pow(noOfDaysInYear).minus(1).multipliedBy(expScale.toString()).toFixed(0);
+        const apyrate = new BigNumber(rate.toString())
+            .multipliedBy(blocksPerDay)
+            .div(expScale.toString())
+            .plus(1)
+            .pow(noOfDaysInYear)
+            .minus(1)
+            .multipliedBy(expScale.toString())
+            .toFixed(0);
         return bigInt(apyrate);
     }
 
@@ -644,7 +651,9 @@ export namespace FToken {
      * @returns storage FToken storage.
      */
     function _calcAccrueInterest(borrowRate: bigInt.BigInteger, blockLevel: number, storage: Storage): Storage {
-        if (borrowRate > storage.borrow.borrowRateMaxMantissa) return storage;
+        if (borrowRate > storage.borrow.borrowRateMaxMantissa) {
+            return storage;
+        }
         const blockDelta = blockLevel - storage.accrualBlockNumber;
         const simpleInterestFactor = borrowRate.multiply(blockDelta);
         const interestAccumulated = simpleInterestFactor.multiply(storage.borrow.totalBorrows).divide(storage.expScale);
@@ -705,11 +714,12 @@ export namespace FToken {
     ): bigInt.BigInteger {
         const borrowRate = getBorrowRate(storage, irStorage);
         const storageAfterAccrue = _calcAccrueInterest(borrowRate, expectedBlockLevel, storage);
-        return _applyBorrowInterestToPrincipal(
+        const principalPlusInterest = _applyBorrowInterestToPrincipal(
             borrowPrincipal,
             borrowInterestIndex,
             storageAfterAccrue.borrow.borrowIndex,
         );
+        return principalPlusInterest;
     }
 
     /** @description Calculates the interest accrued from the last accrual block to the current block,
@@ -727,7 +737,8 @@ export namespace FToken {
         if (loanInterestIndex.eq(0)) {
             return bigInt(0);
         }
-        return loanPrincipal.multiply(currentBorrowIndex.divide(loanInterestIndex));
+        const principalTimesIndex = loanPrincipal.multiply(currentBorrowIndex);
+        return principalTimesIndex.divide(loanInterestIndex);
     }
 
     /*
