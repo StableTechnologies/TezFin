@@ -151,8 +151,15 @@ export namespace TezosLendingPlatform {
                         head.header.level,
                         server,
                     );
-                    markets[asset] = MakeMarket(
+
+                    const borrowRate = FToken.getBorrowRate(fTokenStorage, rateModel);
+                    const fTokenStorageAfterAccrual = FToken.SimulateAccrueInterest(
+                        borrowRate,
+                        head.header.level + 5, // Simulates AccrueInterest 5 blocks in the future
                         fTokenStorage,
+                    );
+                    markets[asset] = MakeMarket(
+                        fTokenStorageAfterAccrual,
                         comptroller,
                         fTokenAddress,
                         protocolAddresses.underlying[asset],
@@ -586,13 +593,11 @@ export namespace TezosLendingPlatform {
                     balanceUsd: balances[asset].loanBalanceUsd!,
                     liquidityUnderlying: markets[asset].cash,
                     liquidityUsd: markets[asset].cashUsd,
-                    outstandingLoan: FToken.getTotalBorrowRepayAmountBlockDeltaFn(
+                    outstandingLoan: FToken.getTotalBorrowRepayAmount(
                         balances[asset].loanPrincipal,
                         balances[asset].loanInterestIndex,
-                        markets[asset].level,
                         markets[asset].storage,
-                        markets[asset].rateModel,
-                    )(5),
+                    ),
                 };
             } else {
                 // set balances to 0 for no account
