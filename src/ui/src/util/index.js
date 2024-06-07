@@ -139,7 +139,7 @@ export const verifyTransaction = async ({ response, head }) => {
             config.infra.tezosNode,
             head - 1,
             groupid,
-            6
+            15
         ).then((res) => {
             if (
                 res.contents[0].metadata.operation_result.status === 'applied'
