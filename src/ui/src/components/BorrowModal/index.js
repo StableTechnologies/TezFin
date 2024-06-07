@@ -53,7 +53,7 @@ const BorrowModal = (props) => {
     const [pendingLimit, setPendingLimit] = useState('');
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useBorrowErrorText(tokenValue,borrowLimit, tokenDetails);
+    const buttonOne = useBorrowErrorText(tokenValue, borrowLimit, tokenDetails);
     const buttonTwo = useRepayErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
