@@ -53,7 +53,7 @@ const AllMarketModal = (props) => {
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
     const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
-    const buttonTwo = useBorrowErrorText(tokenValue, useMaxAmount, tokenDetails);
+    const buttonTwo = useBorrowErrorText(tokenValue, borrowLimit, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
     const handleCloseInitialize = () => setInitializeModal(false);
