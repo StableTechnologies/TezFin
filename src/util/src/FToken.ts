@@ -626,7 +626,7 @@ export namespace FToken {
     function _calcAnnualizedRate(
         rate: bigInt.BigInteger,
         expScale: bigInt.BigInteger,
-        blocksPerDay = _blocksPerDay(4),
+        blocksPerDay = _blocksPerDay(6),
         noOfDaysInYear = 365,
     ): bigInt.BigInteger {
         // https://docs.compound.finance/v2/#protocol-math
