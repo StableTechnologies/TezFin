@@ -1,9 +1,4 @@
-import {
-    KeyStoreCurve,
-    KeyStoreType,
-    TezosNodeReader,
-    TezosNodeWriter
-} from 'conseiljs';
+import { KeyStoreCurve, KeyStoreType, TezosNodeReader, TezosNodeWriter } from 'conseiljs';
 
 import { BigNumber } from 'bignumber.js';
 import { DAppClient } from '@airgap/beacon-sdk';
@@ -32,7 +27,7 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
 export const getWallet = async () => {
     const { network } = config.infra.conseilServer;
     const response = await client.requestPermissions({
-        network: { type: network }
+        network: { type: network },
     });
     const { address } = response;
     return { address };
@@ -80,13 +75,10 @@ export const evaluateTransaction = async (operations) => {
             secretKey: '',
             publicKeyHash: address,
             curve,
-            storeType: KeyStoreType.Mnemonic
+            storeType: KeyStoreType.Mnemonic,
         };
 
-        const counter = await TezosNodeReader.getCounterForAccount(
-            config.infra.tezosNode,
-            address
-        );
+        const counter = await TezosNodeReader.getCounterForAccount(config.infra.tezosNode, address);
 
         console.log('operation', operations);
 
@@ -95,7 +87,7 @@ export const evaluateTransaction = async (operations) => {
             keyStore,
             counter,
             operations,
-            true
+            true,
         );
         return { opGroup };
     } catch (error) {
@@ -114,7 +106,7 @@ export const confirmTransaction = async (opGroup) => {
     try {
         const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
         const response = await client.requestOperation({
-            operationDetails: opGroup
+            operationDetails: opGroup,
         });
         return { response: { response, head: head.header.level } };
     } catch (error) {
@@ -132,18 +124,14 @@ export const confirmTransaction = async (opGroup) => {
  */
 export const verifyTransaction = async ({ response, head }) => {
     try {
-        const groupid = response.transactionHash
-            .replace(/"/g, '')
-            .replace(/\n/, ''); // clean up RPC output
+        const groupid = response.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
         const confirm = await TezosNodeReader.awaitOperationConfirmation(
             config.infra.tezosNode,
             head - 1,
             groupid,
-            15
+            15,
         ).then((res) => {
-            if (
-                res.contents[0].metadata.operation_result.status === 'applied'
-            ) {
+            if (res.contents[0].metadata.operation_result.status === 'applied') {
                 return res;
             }
             throw new Error('operation status not applied');
@@ -219,7 +207,10 @@ export const roundValue = (num, decimals = 2) => BigNumber(num).toFixed(decimals
 // eslint-disable-next-line default-param-last
 export const nFormatter = (num, formatDecimals = 4) => {
     const suffix = [
-        { value: 1, symbol: '' }, { value: 1e3, symbol: 'k' }, { value: 1e6, symbol: 'M' }, { value: 1e9, symbol: 'B' }
+        { value: 1, symbol: '' },
+        { value: 1e3, symbol: 'k' },
+        { value: 1e6, symbol: 'M' },
+        { value: 1e9, symbol: 'B' },
     ];
     let i;
     // eslint-disable-next-line no-plusplus
@@ -231,10 +222,11 @@ export const nFormatter = (num, formatDecimals = 4) => {
 
     let formattedNum = new BigNumber(num).dividedBy(suffix[i].value).toFixed();
     if (formattedNum % 1 !== 0) {
-        formattedNum = +formattedNum.slice(
-            0,
-            formattedNum.toString().indexOf('.') + (formatDecimals + 1)
-        );
+        formattedNum = +formattedNum.slice(0, formattedNum.toString().indexOf('.') + (formatDecimals + 1));
     }
-    return BigNumber(formattedNum).toString().match(/^-?\d+(?:\.\d{0,2})?/) + suffix[i].symbol;
+    return (
+        BigNumber(formattedNum)
+            .toString()
+            .match(/^-?\d+(?:\.\d{0,2})?/) + suffix[i].symbol
+    );
 };
