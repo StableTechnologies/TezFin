@@ -230,3 +230,12 @@ export const nFormatter = (num, formatDecimals = 4) => {
             .match(/^-?\d+(?:\.\d{0,2})?/) + suffix[i].symbol
     );
 };
+/** This function checks if the balance is below a certain threshold.
+ * @param tokenBalance amount of token balance.
+ * @param decimals number of decimal places.
+ * @param threshold threshold value.
+ * @returns boolean value.
+ */
+export const isBalanceBelowThreshold = (tokenBalance, decimals, threshold) => {
+    return decimalify(tokenBalance, decimals, decimals) < threshold;
+};
