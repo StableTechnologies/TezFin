@@ -631,7 +631,14 @@ export namespace FToken {
     ): bigInt.BigInteger {
         // https://docs.compound.finance/v2/#protocol-math
         // APY = ((((Rate / Mantissa * Blocks Per Day + 1) ^ Days Per Year)) - 1) * 100
-        const apyrate = new BigNumber(rate.toString()).multipliedBy(blocksPerDay).div(expScale.toString()).plus(1).pow(noOfDaysInYear).minus(1).multipliedBy(expScale.toString()).toFixed(0);
+        const apyrate = new BigNumber(rate.toString())
+            .multipliedBy(blocksPerDay)
+            .div(expScale.toString())
+            .plus(1)
+            .pow(noOfDaysInYear)
+            .minus(1)
+            .multipliedBy(expScale.toString())
+            .toFixed(0);
         return bigInt(apyrate);
     }
 
@@ -643,8 +650,14 @@ export namespace FToken {
      * @param storage FToken storage.
      * @returns storage FToken storage.
      */
-    function _calcAccrueInterest(borrowRate: bigInt.BigInteger, blockLevel: number, storage: Storage): Storage {
-        if (borrowRate > storage.borrow.borrowRateMaxMantissa) return storage;
+    export function SimulateAccrueInterest(
+        borrowRate: bigInt.BigInteger,
+        blockLevel: number,
+        storage: Storage,
+    ): Storage {
+        if (borrowRate > storage.borrow.borrowRateMaxMantissa) {
+            return storage;
+        }
         const blockDelta = blockLevel - storage.accrualBlockNumber;
         const simpleInterestFactor = borrowRate.multiply(blockDelta);
         const interestAccumulated = simpleInterestFactor.multiply(storage.borrow.totalBorrows).divide(storage.expScale);
@@ -661,55 +674,23 @@ export namespace FToken {
         return storage;
     }
 
-    /** @description Creates a function that Calculates the total outstanding borrow repay amount by simulating the accrual of interest up to
-     *             the current block level plus an error block delta.
+    /** @description Creates a function that Calculates the total outstanding borrow repay amount.
      *  @param  loanPrincipal Total amount of borrowed assets of a given collateral token.
      *  @param  loanInterestIndex Borrow index of the loan.
-     *  @param  currentBlockLevel Current block level.
      *  @param  storage FToken storage.
-     *  @param  irStorage InterestRateModel storage.
-     *  @returns  a function that takes an error block delta and returns the total outstanding borrow repay amount as bigInt.BigInteger
+     *  @returns The total outstanding borrow repay amount as bigInt.BigInteger
      **/
-    export function getTotalBorrowRepayAmountBlockDeltaFn(
+    export function getTotalBorrowRepayAmount(
         loanPrincipal: bigInt.BigInteger,
         loanInterestIndex: bigInt.BigInteger,
-        currentBlockLevel: number,
         storage: Storage,
-        irStorage: InterestRateModel.Storage,
-    ): (errorAsBlockDelta: number) => bigInt.BigInteger {
-        return (errorAsBlockDelta: number = 0) => {
-            return _calcTotalOutstandingBorrowRepayAmount(
-                currentBlockLevel + 1 + errorAsBlockDelta,
-                loanPrincipal,
-                loanInterestIndex,
-                storage,
-                irStorage,
-            );
-        };
-    }
-    /** @description Calculates the total outstanding borrow repay amount by
-     *             simulating the accrual of interest up to the expected block level the repay will be made.
-     *  @param  expectedBlockLevel Expected block level at which the borrow will be repaid.
-     *  @param  borrowPrincipal Total amount of borrowed assets of a given collateral token.
-     *  @param  borrowInterestIndex Borrow index of the loan.
-     *  @param  storage FToken storage.
-     *  @param  irStorage InterestRateModel storage.
-     *  @returns (loan + interestAccumulated) as bigInt.BigInteger
-     **/
-    function _calcTotalOutstandingBorrowRepayAmount(
-        expectedBlockLevel: number,
-        borrowPrincipal: bigInt.BigInteger,
-        borrowInterestIndex: bigInt.BigInteger,
-        storage: Storage,
-        irStorage: InterestRateModel.Storage,
     ): bigInt.BigInteger {
-        const borrowRate = getBorrowRate(storage, irStorage);
-        const storageAfterAccrue = _calcAccrueInterest(borrowRate, expectedBlockLevel, storage);
-        return _applyBorrowInterestToPrincipal(
-            borrowPrincipal,
-            borrowInterestIndex,
-            storageAfterAccrue.borrow.borrowIndex,
+        const principalPlusInterest = _applyBorrowInterestToPrincipal(
+            loanPrincipal,
+            loanInterestIndex,
+            storage.borrow.borrowIndex,
         );
+        return principalPlusInterest;
     }
 
     /** @description Calculates the interest accrued from the last accrual block to the current block,
@@ -727,7 +708,8 @@ export namespace FToken {
         if (loanInterestIndex.eq(0)) {
             return bigInt(0);
         }
-        return loanPrincipal.multiply(currentBorrowIndex.divide(loanInterestIndex));
+        const principalTimesIndex = loanPrincipal.multiply(currentBorrowIndex);
+        return principalTimesIndex.divide(loanInterestIndex);
     }
 
     /*
