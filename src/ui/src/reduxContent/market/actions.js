@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
+import { TezosLendingPlatform, decimals } from 'tezoslendingplatformjs';
 import { GET_ALL_MARKET_DATA, GET_BORROWED_MARKET_DATA, GET_MARKET_DATA, GET_SUPPLIED_MARKET_DATA } from './types';
-import { formatTokenData } from '../../util';
+import { formatTokenData, isBalanceBelowThreshold } from '../../util';
 import { tokens } from '../../components/Constants';
 
 /**
@@ -63,33 +63,45 @@ export const allMarketAction = (account, markets) => (dispatch) => {
  * @returns suppliedMarket
  */
 export const suppliedMarketAction = (markets) => (dispatch) => {
-    const suppliedTokens = markets.map(
-        ({
-            assetType,
-            banner,
-            title,
-            name,
-            logo,
-            fLogo,
-            visibilityThreshold,
-            usdPrice,
-            walletBalance,
-            collateralFactor,
-            supply,
-        }) => ({
-            assetType,
-            banner,
-            title,
-            name,
-            logo,
-            fLogo,
-            visibilityThreshold,
-            usdPrice,
-            walletBalance,
-            collateralFactor,
-            ...supply,
-        }),
-    );
+    const suppliedTokens = markets
+        .filter((market) => {
+            if (!(market.supply?.balanceUnderlying === undefined)) {
+                return !isBalanceBelowThreshold(
+                    market.supply.balanceUnderlying,
+                    decimals[market.title],
+                    market.visibilityThreshold,
+                );
+            } else {
+                return false;
+            }
+        })
+        .map(
+            ({
+                assetType,
+                banner,
+                title,
+                name,
+                logo,
+                fLogo,
+                visibilityThreshold,
+                usdPrice,
+                walletBalance,
+                collateralFactor,
+                supply,
+            }) => ({
+                assetType,
+                banner,
+                title,
+                name,
+                logo,
+                fLogo,
+                visibilityThreshold,
+                usdPrice,
+                walletBalance,
+                collateralFactor,
+                ...supply,
+            }),
+        );
 
     dispatch({
         type: GET_SUPPLIED_MARKET_DATA,
