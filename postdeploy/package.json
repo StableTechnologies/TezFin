@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "bignumber.js": "^9.0.1",
-    "conseiljs": "5.2.5",
+    "conseiljs": "5.3.0",
     "conseiljs-softsigner": "^5.0.4",
     "csv": "^6.1.0",
     "immer": "^9.0.15",

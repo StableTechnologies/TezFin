@@ -41,7 +41,13 @@ const App = () => {
     }, [dispatch, server]);
 
     useEffect(() => {
-        dispatch(marketAction(comptroller, protocolAddresses, server));
+        const doMarketAction = () => {
+            console.log('doMarketAction');
+            dispatch(marketAction(comptroller, protocolAddresses, server));
+        };
+        doMarketAction();
+        const intervalId = setInterval(doMarketAction, 30000);
+        return () => clearInterval(intervalId);
     }, [dispatch, comptroller, protocolAddresses, server]);
 
     useEffect(() => {
@@ -61,15 +67,18 @@ const App = () => {
             <Grid className="App">
                 <Nav />
                 <Switch>
-                    <Route exact path='/dashboard'>
+                    <Route exact path="/dashboard">
                         <Header />
                         <Dashboard />
                     </Route>
                     <Route exact path={['/about', '/market']} component={ComingSoon} />
-                    <Route exact path='/debugDashboard'>
+                    <Route exact path="/debugDashboard">
                         <DebugDashboard />
                     </Route>
-                    <Route exact path={['/', '/dashboard']}> <Home /> </Route>
+                    <Route exact path={['/', '/dashboard']}>
+                        {' '}
+                        <Home />{' '}
+                    </Route>
                 </Switch>
                 <Footer />
             </Grid>

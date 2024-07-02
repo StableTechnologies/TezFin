@@ -81,6 +81,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyAccruedInterestRelevance()
         self.doTransferIn(params.minter, params.mintAmount)
         mintTokens = self.getMintTokens(params.mintAmount)
+        sp.verify(mintTokens > 0, EC.CT_MINT_AMOUNT_IS_INVALID)
         self.data.totalSupply += mintTokens
         self.data.balances[params.minter].balance += mintTokens
 
@@ -147,13 +148,16 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             params.redeemAmount, params.isUnderlying)
         redeemTokens = self.getRedeemTokens(
             params.redeemAmount, params.isUnderlying)
-        self.checkCash(redeemAmount)
-        self.verifyAccruedInterestRelevance()
-        self.data.totalSupply = sp.as_nat(
-            self.data.totalSupply - redeemTokens, "Insufficient supply")
-        self.data.balances[params.redeemer].balance = sp.as_nat(
-            self.data.balances[params.redeemer].balance - redeemTokens, "Insufficient balance")
-        self.doTransferOut(params.redeemer, redeemAmount)
+        # make sure neither token value nor underlying value
+        # is zero before proceeding with redeem
+        sp.if ((redeemAmount > 0) & (redeemTokens > 0)) :
+            self.checkCash(redeemAmount)
+            self.verifyAccruedInterestRelevance()
+            self.data.totalSupply = sp.as_nat(
+                self.data.totalSupply - redeemTokens, "Insufficient supply")
+            self.data.balances[params.redeemer].balance = sp.as_nat(
+                self.data.balances[params.redeemer].balance - redeemTokens, "Insufficient balance")
+            self.doTransferOut(params.redeemer, redeemAmount)
 
     def verifyRedeemAllowed(self, redeemer_, redeemAmount_):
         c = sp.contract(CMPI.TRedeemAllowedParams, self.data.comptroller,

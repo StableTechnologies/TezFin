@@ -22,8 +22,6 @@ import { useStyles } from './style';
 const BorrowModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const blockDelta = 5;
-
     const { open, close, tokenDetails } = props;
 
     const { account } = useSelector((state) => state.addWallet);
@@ -53,7 +51,7 @@ const BorrowModal = (props) => {
     const [pendingLimit, setPendingLimit] = useState('');
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useBorrowErrorText(tokenValue,borrowLimit, tokenDetails);
+    const buttonOne = useBorrowErrorText(tokenValue, borrowLimit, tokenDetails);
     const buttonTwo = useRepayErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
@@ -161,7 +159,7 @@ const BorrowModal = (props) => {
     }, [close]);
 
     useEffect(() => {
-        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount, blockDelta);
+        borrowingMaxAction(currentTab, tokenDetails, borrowLimit, setUseMaxAmount);
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
