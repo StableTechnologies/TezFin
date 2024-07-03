@@ -28,8 +28,6 @@ import LightTooltip from '../Tooltip/LightTooltip';
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
-    const blockDelta = 5;
-
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
     const { totalCollateral } = useSelector((state: any) => state.supplyComposition.supplyComposition);
@@ -40,11 +38,7 @@ const BorrowedTokenTable = (props) => {
 
     const checkLimitUsed = (data) => {
         const val = new BigNumber(
-            decimalify(
-                data.getOutstandingLoanAtBlockDelta(blockDelta) * data.usdPrice,
-                decimals[data.title],
-                decimals[data.title],
-            ),
+            decimalify(data.outstandingLoan * data.usdPrice, decimals[data.title], decimals[data.title]),
         )
             .dividedBy(new BigNumber(totalCollateral))
             .multipliedBy(100)
@@ -129,7 +123,7 @@ const BorrowedTokenTable = (props) => {
                                 <TableCell align="center">
                                     <LightTooltip
                                         title={`${decimalify(
-                                            data.getOutstandingLoanAtBlockDelta(blockDelta), //data.balanceUnderlying,
+                                            data.outstandingLoan,
                                             decimals[data.title],
                                             decimals[data.title],
                                         )} ${data.title}`}
@@ -138,7 +132,7 @@ const BorrowedTokenTable = (props) => {
                                         <span className={classes.clearFont}>
                                             {truncateNum(
                                                 decimalify(
-                                                    data.getOutstandingLoanAtBlockDelta(blockDelta), //data.balanceUnderlying,
+                                                    data.outstandingLoan,
                                                     decimals[data.title],
                                                     decimals[data.title],
                                                 ),
@@ -151,9 +145,7 @@ const BorrowedTokenTable = (props) => {
                                         $
                                         {nFormatter(
                                             decimalify(
-                                                (
-                                                    data.getOutstandingLoanAtBlockDelta(blockDelta) * data.usdPrice
-                                                ).toString(),
+                                                (data.outstandingLoan * data.usdPrice).toString(),
                                                 decimals[data.title],
                                                 decimals[data.title],
                                             ),
