@@ -160,16 +160,23 @@ const SuppliedTokenTable = (props) => {
                                             )} ${data.title}`}
                                             placement="bottom"
                                         >
-                                            <span className={classes.clearFont}>
-                                                {truncateNum(
-                                                    decimalify(
-                                                        data.balanceUnderlying,
-                                                        decimals[data.title],
-                                                        decimals[data.title],
-                                                    ),
-                                                )}{' '}
-                                                {data.title}
-                                            </span>
+                                        <span className={classes.clearFont}>
+                                            {data.balanceUnderlying >= 1 &&
+                                            decimalify(
+                                                data.balanceUnderlying,
+                                                decimals[data.title],
+                                                decimals[data.title],
+                                            ) < 0.01
+                                                ? '>0.00'
+                                                : truncateNum(
+                                                      decimalify(
+                                                          data.balanceUnderlying,
+                                                          decimals[data.title],
+                                                          decimals[data.title],
+                                                      ),
+                                                  )}{' '}
+                                            {data.title}
+                                        </span>
                                         </LightTooltip>
                                         <br />
                                         <span className={classes.faintFont}>
