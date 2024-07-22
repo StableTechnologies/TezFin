@@ -25,7 +25,7 @@ import DisableCollateralModal from '../DisableCollateralModal';
 import questionCircleIcon from '../../assets/questionCircle.svg';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, isBalanceBelowThreshold, formatTokenData, nFormatter, roundValue, truncateNum } from '../../util';
+import { decimalify, formatTokenData, nFormatter, roundValue, truncateNum } from '../../util';
 
 import { useStyles } from './style';
 import LightTooltip from '../Tooltip/LightTooltip';
@@ -112,54 +112,40 @@ const SuppliedTokenTable = (props) => {
                         </>
                     )}
                     {suppliedData &&
-                        suppliedData.map((data) =>
-                            isBalanceBelowThreshold(
-                                data.balanceUnderlying,
-                                decimals[data.title],
-                                data.visibilityThreshold,
-                            ) ? (
-                                <React.Fragment key={data.title} />
-                            ) : (
-                                <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
-                                    <TableCell>
-                                        <div>
-                                            <div className={classes.token}>
-                                                <img
-                                                    src={data.fLogo}
-                                                    alt={`${data.title}-Icon`}
-                                                    className={classes.img}
-                                                />
+                        suppliedData.map((data) => (
+                            <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
+                                <TableCell>
+                                    <div>
+                                        <div className={classes.token}>
+                                            <img src={data.fLogo} alt={`${data.title}-Icon`} className={classes.img} />
 
-                                                <div className={classes.tokenTitle}>
-                                                    <Typography className={classes.tokenName}> {data.name} </Typography>
-                                                    <Typography className={classes.faintFont}>
-                                                        {' '}
-                                                        ꜰ{data.title}
-                                                    </Typography>
-                                                </div>
+                                            <div className={classes.tokenTitle}>
+                                                <Typography className={classes.tokenName}> {data.name} </Typography>
+                                                <Typography className={classes.faintFont}> ꜰ{data.title}</Typography>
                                             </div>
                                         </div>
-                                    </TableCell>
-                                    <TableCell align="center" className={classes.clearFont}>
-                                        <span>
-                                            {data.rate > 0
-                                                ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                                  new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
-                                                    ? roundValue(decimalify(data.rate, 18))
-                                                    : '<0.01'
-                                                : '0'}
-                                            %
-                                        </span>
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <LightTooltip
-                                            title={`${decimalify(
-                                                data.balanceUnderlying,
-                                                decimals[data.title],
-                                                decimals[data.title],
-                                            )} ${data.title}`}
-                                            placement="bottom"
-                                        >
+                                    </div>
+                                </TableCell>
+                                <TableCell align="center" className={classes.clearFont}>
+                                    <span>
+                                        {data.rate > 0
+                                            ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
+                                              new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
+                                                ? roundValue(decimalify(data.rate, 18))
+                                                : '<0.01'
+                                            : '0'}
+                                        %
+                                    </span>
+                                </TableCell>
+                                <TableCell align="center">
+                                    <LightTooltip
+                                        title={`${decimalify(
+                                            data.balanceUnderlying,
+                                            decimals[data.title],
+                                            decimals[data.title],
+                                        )} ${data.title}`}
+                                        placement="bottom"
+                                    >
                                         <span className={classes.clearFont}>
                                             {data.balanceUnderlying >= 1 &&
                                             decimalify(
@@ -177,27 +163,26 @@ const SuppliedTokenTable = (props) => {
                                                   )}{' '}
                                             {data.title}
                                         </span>
-                                        </LightTooltip>
-                                        <br />
-                                        <span className={classes.faintFont}>
-                                            $
-                                            {data.balanceUnderlying > 0
-                                                ? nFormatter(
-                                                      decimalify(
-                                                          (data.balanceUnderlying * data.usdPrice).toString(),
-                                                          decimals[data.title],
-                                                          decimals[data.title],
-                                                      ),
-                                                  )
-                                                : '0.00'}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell align="right" className={classes.switchPadding}>
-                                        <Switch data={data} />
-                                    </TableCell>
-                                </TableRow>
-                            ),
-                        )}
+                                    </LightTooltip>
+                                    <br />
+                                    <span className={classes.faintFont}>
+                                        $
+                                        {data.balanceUnderlying > 0
+                                            ? nFormatter(
+                                                  decimalify(
+                                                      (data.balanceUnderlying * data.usdPrice).toString(),
+                                                      decimals[data.title],
+                                                      decimals[data.title],
+                                                  ),
+                                              )
+                                            : '0.00'}
+                                    </span>
+                                </TableCell>
+                                <TableCell align="right" className={classes.switchPadding}>
+                                    <Switch data={data} />
+                                </TableCell>
+                            </TableRow>
+                        ))}
                 </TableBody>
             </Table>
         </TableContainer>
