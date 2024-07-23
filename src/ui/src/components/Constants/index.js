@@ -25,7 +25,6 @@ export const tokens = [
         fLogo: fXTZ,
         banner: 'Tez',
         assetType: AssetType.XTZ,
-        visibilityThreshold: 0.0001,
     },
     {
         title: 'USDtz',
@@ -34,7 +33,6 @@ export const tokens = [
         fLogo: fUSDtz,
         banner: 'USDtz',
         assetType: AssetType.USD,
-        visibilityThreshold: 0.0001,
     },
     {
         title: 'USDt',
@@ -43,7 +41,6 @@ export const tokens = [
         fLogo: fUSDT,
         banner: 'USDt',
         assetType: AssetType.USDT,
-        visibilityThreshold: 0.0001,
     },
     // {
     //     title: 'BTCtz', logo: BTCtz, fLogo: fBTCtz, banner: 'BTCtz', assetType: AssetType.BTC
