@@ -63,10 +63,34 @@ const SupplyModal = (props) => {
     };
 
     const withdrawToken = async () => {
-        // eslint-disable-next-line no-shadow
-        const { opGroup, error } = await withdrawTokenAction(tokenDetails, amount, true, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-        setOpGroup(opGroup);
-        setEvaluationError(error);
+        if (amount === undecimalify(useMaxAmount, decimals[tokenDetails.title])) {
+            // eslint-disable-next-line no-shadow
+            const { opGroup, error } = await withdrawTokenAction(
+                tokenDetails,
+                tokenDetails.balance.toString(),
+                false,
+                close,
+                setTokenText,
+                handleOpenInitialize,
+                protocolAddresses,
+                publicKeyHash,
+            );
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+        } else {
+            const { opGroup, error } = await withdrawTokenAction(
+                tokenDetails,
+                amount,
+                true,
+                close,
+                setTokenText,
+                handleOpenInitialize,
+                protocolAddresses,
+                publicKeyHash,
+            );
+            setOpGroup(opGroup);
+            setEvaluationError(error);
+        }
     };
 
     useEffect(() => tokenText && handleOpenInitialize(), [tokenText]);
