@@ -14,7 +14,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
         self.init(
             overrides=sp.big_map(l={"USD-USD": (sp.timestamp(int(time.time())), sp.as_nat(
                 1000000))}, tkey=sp.TString, tvalue=sp.TPair(sp.TTimestamp, sp.TNat)),
-            alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD"},
+            alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD", "TZBTC-USD":"BTC-USD"},
                              tkey=sp.TString, tvalue=sp.TString),
             oracle=oracle,
             usdtOracle=usdtOracle,

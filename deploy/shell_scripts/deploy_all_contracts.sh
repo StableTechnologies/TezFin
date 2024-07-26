@@ -34,3 +34,7 @@ node ./deploy/deploy_script/deploy.js
 ($1 compile ./deploy/compile_targets/CompileCXTZ.py ./TezFinBuild/compiled_contracts --purge --protocol kathmandu --erase-comments --erase-var-annots --initial-cast)\
 && echo "CompileCXTZ.py was successfully compiled" || echo
 node ./deploy/deploy_script/deploy.js
+
+($1 compile ./deploy/compile_targets/CompileTzBTC.py ./TezFinBuild/compiled_contracts --purge --protocol kathmandu --erase-comments --erase-var-annots --initial-cast)\
+&& echo "CompileTzBTC.py was successfully compiled" || echo
+node ./deploy/deploy_script/deploy.js

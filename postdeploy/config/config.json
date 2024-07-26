@@ -65,19 +65,14 @@
         "freight": 50000
     },
     "tokenMint": [
-        "ETH",
-        "BTC",
         "USD",
-        "OXTZ",
-        "WTZ",
-        "USDT"
+        "USDT",
+        "TZBTC"
     ],
     "mint": [
-        "ETH",
-        "BTC",
+        "TZBTC",
         "USD",
-        "OXTZ",
-        "WTZ"
+        "USDT"
     ],
     "mintAmount": 15000,
     "mintAmounts": {
@@ -86,12 +81,14 @@
         "USD": 2000000,
         "USDT": 2000000,
         "OXTZ": 5000,
-        "WTZ": 5000
+        "WTZ": 5000,
+        "TZBTC":1000
     },
     "redeem": [
+        "TZBTC",
         "USD",
-        "XTZ",
-        "USDT"
+        "USDT",
+        "XTZ"
     ],
     "redeemAmount": 20,
     "borrow": [
@@ -103,9 +100,10 @@
     ],
     "repayBorrowAmount": 10,
     "enterMarkets": [
+        "TZBTC",
         "USD",
-        "XTZ",
-        "USDT"
+        "USDT",
+        "XTZ"
     ],
     "exitMarket": [
         "ETH"
@@ -122,13 +120,18 @@
         {
             "name": "USDT",
             "priceExp": 12
+        },
+        {
+            "name": "TZBTC",
+            "priceExp": 10
         }
     ],
     "disableMarket": [],
     "unpauseMarkets": [
         "USD",
         "XTZ",
-        "USDT"
+        "USDT",
+        "TZBTC"
     ],
     "setPrices": {
         "assets": [],

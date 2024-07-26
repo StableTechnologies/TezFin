@@ -3,6 +3,10 @@ import fUSDtz from '../../assets/fusdtz.svg';
 import fXTZ from '../../assets/fXTZ.svg';
 import fUSDT from '../../assets/fusdt.svg';
 import USDT from '../../assets/usdt.svg';
+
+import ftzBTC from '../../assets/ftzBTC.svg';
+import tzBTC from '../../assets/tzBTC.svg';
+
 import USDtz from '../../assets/USDtz.svg';
 import XTZ from '../../assets/XTZ.svg';
 // import BTCtz from '../../assets/BTCtez.svg';
@@ -42,6 +46,15 @@ export const tokens = [
         banner: 'USDt',
         assetType: AssetType.USDT,
     },
+    {
+        title: 'tzBTC',
+        name: 'tzBTC',
+        logo: tzBTC,
+        fLogo: ftzBTC,
+        banner: 'tzBTC',
+        assetType: AssetType.TZBTC,
+        visibilityThreshold: 0.0000001,
+    }
     // {
     //     title: 'BTCtz', logo: BTCtz, fLogo: fBTCtz, banner: 'BTCtz', assetType: AssetType.BTC
     // },

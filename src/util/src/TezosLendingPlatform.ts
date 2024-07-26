@@ -21,6 +21,7 @@ import {
     registerLogger,
     Signer,
     TezosContractUtils,
+    TezosLanguageUtil,
     TezosMessageUtils,
     TezosNodeReader,
     TezosNodeWriter,
@@ -386,8 +387,35 @@ export namespace TezosLendingPlatform {
                     ),
                 );
             }
+            // mainnet tzBTC contract needs special handling
+            if (underlying.assetType === AssetType.TZBTC && underlying.balancesMapId === 31) {
+               const accountHex = `0x${TezosMessageUtils.writeAddress(address)}`;
+               packedKey = TezosMessageUtils.encodeBigMapKey(
+                 Buffer.from(TezosMessageUtils.writePackedData(
+                    TezosMessageUtils.writePackedData(
+                    `( Pair "ledger" ${accountHex} )`,
+                    "",
+                    TezosParameterFormat.Michelson
+                  ), "bytes"), "hex")
+               );
+            }
+            
             const mapResult = await TezosNodeReader.getValueForBigMapKey(server, underlying.balancesMapId!, packedKey);
+            
+            // mainnet tzBTC contract needs special handling
+            if (underlying.assetType === AssetType.TZBTC && underlying.balancesMapId === 31) {
+                const result = TezosMessageUtils.readPackedData(
+                  mapResult.bytes.toString(),
+                  "michelson"
+                ).toString()
+               const regex = result.match(/^\(Pair ([0-9]*) \[(.*)\]\)/);
+               if (regex === null || regex[1] === "" || regex[1] == undefined) {
+                 return bigInt(0);
+               }
+               return bigInt(regex[1]);
+            }
             const balance = JSONPath({ path: underlying.balancesPath!, json: mapResult })[0];
+        
             return bigInt(balance);
         } catch (e) {
             log.error(
