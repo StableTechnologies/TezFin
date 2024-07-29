@@ -70,12 +70,13 @@ export const tokens = [
     // }
 ];
 export const tokenColor = {
-    XTZ: '#3391F6',
-    USDtz: '#189DA3',
-    USDt: 'rgb(65 145 146)',
-    // ETHtz: '#662F9D',
-    // BTCtz: '#F2991A',
-    // oXTZ: '#B52B31',
-    // WTZ: '#0C2C93'
-    // CTEZ: '#2B62F8'
+  XTZ: 'rgb(51,145,246)',
+  USDtz: 'rgb(24,157,163)',
+  USDt: 'rgb(65 145 146)',
+  tzBTC: 'rgb(20,89,255)'
+  // ETHtz: '#662F9D',
+  // BTCtz: '#F2991A',
+  // oXTZ: '#B52B31',
+  // WTZ: '#0C2C93'
+  // CTEZ: '#2B62F8'
 };
