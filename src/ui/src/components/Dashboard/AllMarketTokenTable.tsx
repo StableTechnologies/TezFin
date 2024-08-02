@@ -94,14 +94,20 @@ const AllMarketTokenTable = (props) => {
                   <TableCell align="center">
                     <span className={classes.clearFont}>
                       {data.marketSize > 0
-                        ? nFormatter(
-                            decimalify(
-                              data.marketSize.toString(),
-                              decimals[data.title],
-                              decimals[data.title],
-                            ),
-                          )
-                        : "0"}{" "}
+                          ? decimalify(
+                                data.marketSize.toString(),
+                                decimals[data.title],
+                                decimals[data.title],
+                            ) < 0.01
+                              ? '>0.00'
+                              : nFormatter(
+                                    decimalify(
+                                        data.marketSize.toString(),
+                                        decimals[data.title],
+                                        decimals[data.title],
+                                    ),
+                                )
+                          : '0'}{" "}
                       {data.title}
                     </span>{" "}
                     <br />
@@ -121,14 +127,20 @@ const AllMarketTokenTable = (props) => {
                   <TableCell align="center">
                     <span className={classes.clearFont}>
                       {data.totalBorrowed > 0
-                        ? nFormatter(
-                            decimalify(
-                              data.totalBorrowed.toString(),
-                              decimals[data.title],
-                              decimals[data.title],
-                            ),
-                          )
-                        : "0"}{" "}
+                            ? decimalify(
+                                  data.totalBorrowed.toString(),
+                                  decimals[data.title],
+                                  decimals[data.title],
+                              ) < 0.01
+                                ? '>0.00'
+                                : nFormatter(
+                                      decimalify(
+                                          data.totalBorrowed.toString(),
+                                          decimals[data.title],
+                                          decimals[data.title],
+                                      ),
+                                  )
+                            : '0'}{" "}
                       {data.title}
                     </span>{" "}
                     <br />
@@ -174,14 +186,20 @@ const AllMarketTokenTable = (props) => {
                   <TableCell align="center">
                     <span className={classes.clearFont}>
                       {data.walletBalance > 0
-                        ? nFormatter(
-                            decimalify(
-                              data.walletBalance.toString(),
-                              decimals[data.title],
-                              decimals[data.title],
-                            ),
-                          )
-                        : "0"}{" "}
+                            ? decimalify(
+                                  data.walletBalance.toString(),
+                                  decimals[data.title],
+                                  decimals[data.title],
+                              ) < 0.01
+                                ? '>0.00'
+                                : nFormatter(
+                                      decimalify(
+                                          data.walletBalance.toString(),
+                                          decimals[data.title],
+                                          decimals[data.title],
+                                      ),
+                                  )
+                            : '0'}{" "}
                       {data.title}
                     </span>{" "}
                     <br />

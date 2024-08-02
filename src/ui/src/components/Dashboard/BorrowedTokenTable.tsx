@@ -130,13 +130,20 @@ const BorrowedTokenTable = (props) => {
                                         placement="bottom"
                                     >
                                         <span className={classes.clearFont}>
-                                            {truncateNum(
-                                                decimalify(
-                                                    data.outstandingLoan,
-                                                    decimals[data.title],
-                                                    decimals[data.title],
-                                                ),
-                                            )}{' '}
+                                            {data.outstandingLoan > 0 &&
+                                            decimalify(
+                                                data.outstandingLoan.toString(),
+                                                decimals[data.title],
+                                                decimals[data.title],
+                                            ) < 0.01
+                                                ? '>0.00'
+                                                : nFormatter(
+                                                      decimalify(
+                                                          data.outstandingLoan.toString(),
+                                                          decimals[data.title],
+                                                          decimals[data.title],
+                                                      ),
+                                                  )}{' '}
                                             {data.title}
                                         </span>
                                     </LightTooltip>
