@@ -1,1 +1,1 @@
-sp.record(a = sp.record(mantissa = 6))
+sp.record(a = 2, b = sp.record(mantissa = 0))

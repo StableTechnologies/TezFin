@@ -935,7 +935,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         actual_amount = sp.local("amount", sp.nat(0))
         sp.if isUnderlying:
             actual_amount.value = sp.compute(
-                self.div_nat_exp(amount, self.makeExp(exchangeRate)))
+                self.div_nat_exp_ceil(amount, self.makeExp(exchangeRate)))
         sp.else:
             actual_amount.value = sp.compute(
                 self.mulScalarTruncate(self.makeExp(exchangeRate), amount))
