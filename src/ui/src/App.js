@@ -46,7 +46,7 @@ const App = () => {
             dispatch(marketAction(comptroller, protocolAddresses, server));
         };
         doMarketAction();
-        const intervalId = setInterval(doMarketAction, 30000);
+        const intervalId = setInterval(doMarketAction, 30000 * 2 * 4); // 4 minutes
         return () => clearInterval(intervalId);
     }, [dispatch, comptroller, protocolAddresses, server]);
 
