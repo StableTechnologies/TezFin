@@ -1,0 +1,1 @@
+sp.record(a = sp.record(mantissa = 6))

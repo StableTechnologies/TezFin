@@ -1,201 +1,675 @@
 [
  {
-  "shortname": "SweepTokens_Tests",
-  "longname": "SweepTokens_Tests",
+  "shortname": "Exponential_Tests",
+  "longname": "Exponential_Tests",
   "scenario": [
    {
     "action": "flag",
     "flag": [
      "protocol",
-     "florence"
+     "lima"
     ],
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 32)"
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 99)"
    },
    {
     "action": "html",
     "inner": "[[TABLEOFCONTENTS]]",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 34)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 101)",
     "tag": "p"
    },
    {
     "action": "html",
-    "inner": "SweepTokens tests",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 35)",
+    "inner": "Exponential math tests",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 102)",
     "tag": "h1"
    },
    {
     "action": "newContract",
     "accept_unknown_types": false,
-    "export": "(template_id (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \nstorage (record (\"contracts/tests/mock/FA12Mock.py\" 5) (balances (type_annotation (big_map (\"contracts/tests/mock/FA12Mock.py\" 5) ) (bigmap (unknown 1) (record ((approvals (map \"address\" \"nat\")) (balance \"nat\")) None)) (\"contracts/tests/mock/FA12Mock.py\" 5))))\nstorage_type (())\nmessages ((approve True None None True (\"contracts/tests/mock/FA12Mock.py\" 23) ((set_type (params (\"contracts/tests/mock/FA12Mock.py\" 23)) (record ((spender \"address\") (value \"nat\")) (Some ((\"spender\") (\"value\")))) (\"contracts/tests/mock/FA12Mock.py\" 24)) (set (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 26)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 23)) \"spender\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 23)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (\"contracts/tests/mock/FA12Mock.py\" 26)))) (getBalance True None None True (\"contracts/tests/mock/FA12Mock.py\" 39) ((bind \"__s1\" ((result (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (first (params (\"contracts/tests/mock/FA12Mock.py\" 39)) (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/mock/FA12Mock.py\" 40)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 40)) (\"contracts/tests/mock/FA12Mock.py\" 40)))) (set_type (second (params (\"contracts/tests/mock/FA12Mock.py\" 39)) (\"contracts/tests/SweepTokensTest.py\" 40)) (contract \"nat\") (\"contracts/tests/SweepTokensTest.py\" 40)) (set (operations (\"contracts/tests/SweepTokensTest.py\" 40)) (cons (transfer (getLocal \"__s1\" (\"contracts/tests/SweepTokensTest.py\" 40)) (literal (mutez 0) (\"contracts/tests/SweepTokensTest.py\" 40)) (second (params (\"contracts/tests/mock/FA12Mock.py\" 39)) (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/mock/FA12Mock.py\" 39)) (operations (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/SweepTokensTest.py\" 40)) (\"contracts/tests/SweepTokensTest.py\" 40)))) (mint True None None True (\"contracts/tests/mock/FA12Mock.py\" 33) ((set_type (params (\"contracts/tests/mock/FA12Mock.py\" 33)) (record ((address \"address\") (value \"nat\")) None) (\"contracts/tests/mock/FA12Mock.py\" 34)) (ifBlock (not (contains (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 29)) (\"contracts/tests/mock/FA12Mock.py\" 29)) ((set (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 30)) (record (\"contracts/tests/mock/FA12Mock.py\" 30) (approvals (map (\"contracts/tests/mock/FA12Mock.py\" 30) )) (balance (literal (intOrNat 0) (\"contracts/tests/mock/FA12Mock.py\" 30)))) (\"contracts/tests/mock/FA12Mock.py\" 30))) (\"contracts/tests/mock/FA12Mock.py\" 29)) (set (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 36)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 36)) (add (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"address\" (\"contracts/tests/mock/FA12Mock.py\" 35)) (\"contracts/tests/mock/FA12Mock.py\" 36)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 36)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 33)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 36)) (\"contracts/tests/mock/FA12Mock.py\" 36)) (\"contracts/tests/mock/FA12Mock.py\" 36)))) (transfer True None None True (\"contracts/tests/mock/FA12Mock.py\" 8) ((set_type (params (\"contracts/tests/mock/FA12Mock.py\" 8)) (record ((from_ \"address\") (to_ \"address\") (value \"nat\")) (Some ((\"from_ as from\") ((\"to_ as to\") (\"value\"))))) (\"contracts/tests/mock/FA12Mock.py\" 9)) (verify (or (eq (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 11)) (ge (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 12)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 12)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 11)) (ifBlock (not (contains (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 29)) (\"contracts/tests/mock/FA12Mock.py\" 29)) ((set (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 30)) (record (\"contracts/tests/mock/FA12Mock.py\" 30) (approvals (map (\"contracts/tests/mock/FA12Mock.py\" 30) )) (balance (literal (intOrNat 0) (\"contracts/tests/mock/FA12Mock.py\" 30)))) (\"contracts/tests/mock/FA12Mock.py\" 30))) (\"contracts/tests/mock/FA12Mock.py\" 29)) (verify (ge (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 14)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 14)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 14)) (\"contracts/tests/mock/FA12Mock.py\" 14)) (set (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 15)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 15)) (openVariant (isNat (sub (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 16)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 16)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 16)) (\"contracts/tests/mock/FA12Mock.py\" 15)) \"Some\" \"None\" (\"contracts/tests/mock/FA12Mock.py\" 15)) (\"contracts/tests/mock/FA12Mock.py\" 15)) (set (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 17)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 17)) (add (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"to_\" (\"contracts/tests/mock/FA12Mock.py\" 13)) (\"contracts/tests/mock/FA12Mock.py\" 17)) \"balance\" (\"contracts/tests/mock/FA12Mock.py\" 17)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 17)) (\"contracts/tests/mock/FA12Mock.py\" 17)) (ifBlock (neq (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 18)) ((set (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 19)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 19)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 19)) (openVariant (isNat (sub (getItem (attr (getItem (attr (data) \"balances\" (\"contracts/tests/mock/FA12Mock.py\" 26)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"from_\" (\"contracts/tests/mock/FA12Mock.py\" 11)) (\"contracts/tests/mock/FA12Mock.py\" 20)) \"approvals\" (\"contracts/tests/mock/FA12Mock.py\" 20)) (sender) (\"contracts/tests/mock/FA12Mock.py\" 20)) (attr (params (\"contracts/tests/mock/FA12Mock.py\" 8)) \"value\" (\"contracts/tests/mock/FA12Mock.py\" 12)) (\"contracts/tests/mock/FA12Mock.py\" 20)) (\"contracts/tests/mock/FA12Mock.py\" 19)) \"Some\" \"None\" (\"contracts/tests/mock/FA12Mock.py\" 19)) (\"contracts/tests/mock/FA12Mock.py\" 19))) (\"contracts/tests/mock/FA12Mock.py\" 18)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
-    "id": "(static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 40)",
-    "show": true
-   },
-   {
-    "action": "newContract",
-    "accept_unknown_types": false,
-    "export": "(template_id (static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8)) \nstorage (record (\"contracts/tests/SweepTokensTest.py\" 8) (administrator (to_constant (attr (account_of_seed \"admin\" (\"contracts/tests/SweepTokensTest.py\" 29)) \"address\" (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 29))))\nstorage_type (())\nmessages ((sweepFA12 True None None True (\"contracts/utils/SweepTokens.py\" 33) ((set_type (params (\"contracts/utils/SweepTokens.py\" 33)) (record ((amount \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 34)) (set (operations (\"contracts/utils/TransferTokens.py\" 17)) (cons (transfer (record (\"contracts/utils/TransferTokens.py\" 5) (from_ (self_address)) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (value (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"amount\" (\"contracts/utils/SweepTokens.py\" 36)))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 17)) (openVariant (contract \"transfer\" (record ((from_ \"address\") (to_ \"address\") (value \"nat\")) (Some ((\"from_ as from\") ((\"to_ as to\") (\"value\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 35)) (\"contracts/utils/TransferTokens.py\" 11)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 11)) (\"contracts/utils/TransferTokens.py\" 17)) (operations (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)))) (sweepFA2 True None None True (\"contracts/utils/SweepTokens.py\" 48) ((set_type (params (\"contracts/utils/SweepTokens.py\" 48)) (record ((amount \"nat\") (id \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 49)) (set (operations (\"contracts/utils/TransferTokens.py\" 42)) (cons (transfer (list (\"contracts/utils/TransferTokens.py\" 42) (record (\"contracts/utils/TransferTokens.py\" 24) (from_ (self_address)) (txs (list (\"contracts/utils/TransferTokens.py\" 24) (record (\"contracts/utils/TransferTokens.py\" 27) (amount (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"amount\" (\"contracts/utils/SweepTokens.py\" 51))) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (token_id (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"id\" (\"contracts/utils/SweepTokens.py\" 50)))))))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 42)) (openVariant (contract \"transfer\" (list (record ((from_ \"address\") (txs (list (record ((amount \"nat\") (to_ \"address\") (token_id \"nat\")) (Some ((\"to_\") ((\"token_id\") (\"amount\")))))))) (Some ((\"from_\") (\"txs\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 50)) (\"contracts/utils/TransferTokens.py\" 36)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 36)) (\"contracts/utils/TransferTokens.py\" 42)) (operations (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)))) (sweepMutez True None None True (\"contracts/utils/SweepTokens.py\" 14) ((set_type (params (\"contracts/utils/SweepTokens.py\" 14)) \"bool\" (\"contracts/utils/SweepTokens.py\" 15)) (ifBlock (params (\"contracts/utils/SweepTokens.py\" 14)) ((set (operations (\"contracts/utils/SweepTokens.py\" 19)) (cons (transfer (unit) (balance) (openVariant (contract \"receive\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 18)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 18)) (\"contracts/utils/SweepTokens.py\" 19)) (operations (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19))) (\"contracts/utils/SweepTokens.py\" 17)) (elseBlock ((set (operations (\"contracts/utils/SweepTokens.py\" 21)) (cons (transfer (unit) (balance) (openVariant (contract \"\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 21)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (operations (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)))))) (verifyMutezBalance True None None True (\"contracts/tests/SweepTokensTest.py\" 11) ((verify (eq (first (openVariant (ediv (balance) (literal (mutez 1) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) \"Some\" (unit) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) (params (\"contracts/tests/SweepTokensTest.py\" 11)) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
-    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 41)",
+    "export": "(template_id ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0) \nstorage ((\"Exponential\" 21) record (expScale ((\"Exponential\" 21) literal (nat 1000000000000000000))) (halfExpScale ((\"Exponential\" 21) literal (nat 500000000000000000))) (result ((\"contracts/tests/ExponentialTest.py\" 7) literal (nat 0))))\nstorage_type (())\nentry_points ((testAddExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 10) (((\"Exponential\" 145) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 10) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 146) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 10) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 34) set_type ((\"Exponential\" 147) add ((\"Exponential\" 147) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 10) params) \"a\") \"mantissa\") ((\"Exponential\" 147) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 10) params) \"b\") \"mantissa\")) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 11) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 147) add ((\"Exponential\" 147) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 10) params) \"a\") \"mantissa\") ((\"Exponential\" 147) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 10) params) \"b\") \"mantissa\"))))) (testAddExpNat True None None None True None (\"contracts/tests/ExponentialTest.py\" 14) (((\"Exponential\" 157) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 14) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 158) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 14) params) \"b\") \"nat\") ((\"Exponential\" 34) set_type ((\"Exponential\" 159) add ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 14) params) \"a\") \"mantissa\") ((\"Exponential\" 159) mul_homo ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 14) params) \"b\") ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\"))) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 15) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 159) add ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 14) params) \"a\") \"mantissa\") ((\"Exponential\" 159) mul_homo ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 14) params) \"b\") ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")))))) (testDivExpExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 38) (((\"Exponential\" 241) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 38) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 242) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 38) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 243) verify ((\"Exponential\" 243) gt ((\"Exponential\" 243) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 38) params) \"b\") \"mantissa\") ((\"Exponential\" 243) literal (intOrNat 0))) ((\"Exponential\" 243) literal (string \"DIVISION_BY_ZERO\"))) ((\"Exponential\" 34) set_type ((\"Exponential\" 244) div ((\"Exponential\" 244) mul_homo ((\"Exponential\" 244) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 38) params) \"a\") \"mantissa\") ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")) ((\"Exponential\" 243) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 38) params) \"b\") \"mantissa\")) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 39) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 244) div ((\"Exponential\" 244) mul_homo ((\"Exponential\" 244) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 38) params) \"a\") \"mantissa\") ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")) ((\"Exponential\" 243) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 38) params) \"b\") \"mantissa\"))))) (testDivExpNat True None None None True None (\"contracts/tests/ExponentialTest.py\" 42) (((\"Exponential\" 254) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 42) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 255) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 42) params) \"b\") \"nat\") ((\"Exponential\" 256) verify ((\"Exponential\" 256) gt ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 42) params) \"b\") ((\"Exponential\" 256) literal (intOrNat 0))) ((\"Exponential\" 256) literal (string \"DIVISION_BY_ZERO\"))) ((\"Exponential\" 34) set_type ((\"Exponential\" 257) div ((\"Exponential\" 257) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 42) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 42) params) \"b\")) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 43) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 257) div ((\"Exponential\" 257) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 42) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 42) params) \"b\"))))) (testDivNatExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 46) (((\"Exponential\" 267) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 46) params) \"a\") \"nat\") ((\"Exponential\" 268) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 46) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 269) verify ((\"Exponential\" 269) gt ((\"Exponential\" 269) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 46) params) \"b\") \"mantissa\") ((\"Exponential\" 269) literal (intOrNat 0))) ((\"Exponential\" 269) literal (string \"DIVISION_BY_ZERO\"))) ((\"contracts/tests/ExponentialTest.py\" 47) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 270) div ((\"Exponential\" 270) mul_homo ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 46) params) \"a\") ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")) ((\"Exponential\" 269) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 46) params) \"b\") \"mantissa\"))))) (testDivNatExpCeil True None None None True None (\"contracts/tests/ExponentialTest.py\" 50) (((\"Exponential\" 273) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 50) params) \"a\") \"nat\") ((\"Exponential\" 274) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 50) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 275) verify ((\"Exponential\" 275) gt ((\"Exponential\" 275) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 50) params) \"b\") \"mantissa\") ((\"Exponential\" 275) literal (intOrNat 0))) ((\"Exponential\" 275) literal (string \"DIVISION_BY_ZERO\"))) ((\"Exponential\" 277) define_local \"compute_Exponential_277\" ((\"Exponential\" 277) mul_homo ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 50) params) \"a\") ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")) True) ((\"Exponential\" 280) define_local \"compute_Exponential_280\" ((\"Exponential\" 280) div ((\"Exponential\" 277) get_local \"compute_Exponential_277\") ((\"Exponential\" 275) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 50) params) \"b\") \"mantissa\")) True) ((\"Exponential\" 281) if_block ((\"Exponential\" 281) gt ((\"Exponential\" 281) mod ((\"Exponential\" 277) get_local \"compute_Exponential_277\") ((\"Exponential\" 275) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 50) params) \"b\") \"mantissa\")) ((\"Exponential\" 281) literal (intOrNat 0))) ()) ((\"contracts/tests/ExponentialTest.py\" 51) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 282) add ((\"Exponential\" 280) get_local \"compute_Exponential_280\") ((\"Exponential\" 282) literal (intOrNat 1)))))) (testLessThanExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 70) (((\"Exponential\" 117) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 70) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 118) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 70) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"contracts/tests/ExponentialTest.py\" 71) if_block ((\"Exponential\" 119) lt ((\"Exponential\" 119) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 70) params) \"a\") \"mantissa\") ((\"Exponential\" 119) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 70) params) \"b\") \"mantissa\")) (((\"contracts/tests/ExponentialTest.py\" 72) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"contracts/tests/ExponentialTest.py\" 72) literal (nat 1))))) (else_block (((\"contracts/tests/ExponentialTest.py\" 74) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"contracts/tests/ExponentialTest.py\" 74) literal (nat 0))))))) (testLessThanOrEqualExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 77) (((\"Exponential\" 131) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 77) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 132) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 77) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"contracts/tests/ExponentialTest.py\" 78) if_block ((\"Exponential\" 133) le ((\"Exponential\" 133) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 77) params) \"a\") \"mantissa\") ((\"Exponential\" 133) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 77) params) \"b\") \"mantissa\")) (((\"contracts/tests/ExponentialTest.py\" 79) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"contracts/tests/ExponentialTest.py\" 79) literal (nat 1))))) (else_block (((\"contracts/tests/ExponentialTest.py\" 81) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"contracts/tests/ExponentialTest.py\" 81) literal (nat 0))))))) (testMulExpExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 26) (((\"Exponential\" 205) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 26) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 206) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 26) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 34) set_type ((\"Exponential\" 207) div ((\"Exponential\" 207) mul_homo ((\"Exponential\" 207) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 26) params) \"a\") \"mantissa\") ((\"Exponential\" 207) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 26) params) \"b\") \"mantissa\")) ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 27) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 207) div ((\"Exponential\" 207) mul_homo ((\"Exponential\" 207) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 26) params) \"a\") \"mantissa\") ((\"Exponential\" 207) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 26) params) \"b\") \"mantissa\")) ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\"))))) (testMulExpNat True None None None True None (\"contracts/tests/ExponentialTest.py\" 30) (((\"Exponential\" 217) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 30) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 218) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 30) params) \"b\") \"nat\") ((\"Exponential\" 34) set_type ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 30) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 30) params) \"b\")) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 31) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 30) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 30) params) \"b\"))))) (testMulExpRounded True None None None True None (\"contracts/tests/ExponentialTest.py\" 66) (((\"Exponential\" 102) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 66) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 103) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 66) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 34) set_type ((\"Exponential\" 105) div ((\"Exponential\" 104) add ((\"Exponential\" 104) mul_homo ((\"Exponential\" 104) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 66) params) \"a\") \"mantissa\") ((\"Exponential\" 104) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 66) params) \"b\") \"mantissa\")) ((\"Exponential\" 104) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"halfExpScale\")) ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 67) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 105) div ((\"Exponential\" 104) add ((\"Exponential\" 104) mul_homo ((\"Exponential\" 104) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 66) params) \"a\") \"mantissa\") ((\"Exponential\" 104) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 66) params) \"b\") \"mantissa\")) ((\"Exponential\" 104) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"halfExpScale\")) ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\"))))) (testMulNatExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 34) (((\"Exponential\" 229) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 34) params) \"a\") \"nat\") ((\"Exponential\" 230) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 34) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"contracts/tests/ExponentialTest.py\" 35) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 231) div ((\"Exponential\" 231) mul_homo ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 34) params) \"a\") ((\"Exponential\" 231) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 34) params) \"b\") \"mantissa\")) ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\"))))) (testMulScalarTruncate True None None None True None (\"contracts/tests/ExponentialTest.py\" 58) (((\"Exponential\" 73) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 217) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 218) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"scalar\") \"nat\") ((\"Exponential\" 34) set_type ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"scalar\")) \"nat\") ((\"Exponential\" 60) set_type ((\"Exponential\" 35) record (mantissa ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"scalar\")))) (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"contracts/tests/ExponentialTest.py\" 59) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 61) div ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 58) params) \"scalar\")) ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\"))))) (testMulScalarTruncateAdd True None None None True None (\"contracts/tests/ExponentialTest.py\" 62) (((\"Exponential\" 87) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 88) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"scalar\") \"nat\") ((\"Exponential\" 89) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"addend\") \"nat\") ((\"Exponential\" 73) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 217) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 218) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"scalar\") \"nat\") ((\"Exponential\" 34) set_type ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"scalar\")) \"nat\") ((\"Exponential\" 60) set_type ((\"Exponential\" 35) record (mantissa ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"scalar\")))) (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"contracts/tests/ExponentialTest.py\" 63) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 90) add ((\"Exponential\" 61) div ((\"Exponential\" 219) mul_homo ((\"Exponential\" 219) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"a\") \"mantissa\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"scalar\")) ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\")) ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 62) params) \"addend\"))))) (testSubExpExp True None None None True None (\"contracts/tests/ExponentialTest.py\" 22) (((\"Exponential\" 181) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 182) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"b\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"Exponential\" 193) set_type ((\"Exponential\" 183) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"a\") \"mantissa\") \"nat\") ((\"Exponential\" 194) set_type ((\"Exponential\" 183) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"b\") \"mantissa\") \"nat\") ((\"Exponential\" 34) set_type ((\"Exponential\" 195) open_variant ((\"Exponential\" 195) is_nat ((\"Exponential\" 195) sub ((\"Exponential\" 183) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"a\") \"mantissa\") ((\"Exponential\" 183) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"b\") \"mantissa\"))) \"Some\" ((\"Exponential\" 195) literal (string \"SUBTRACTION_UNDERFLOW\"))) \"nat\") ((\"contracts/tests/ExponentialTest.py\" 23) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 195) open_variant ((\"Exponential\" 195) is_nat ((\"Exponential\" 195) sub ((\"Exponential\" 183) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"a\") \"mantissa\") ((\"Exponential\" 183) attr ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 22) params) \"b\") \"mantissa\"))) \"Some\" ((\"Exponential\" 195) literal (string \"SUBTRACTION_UNDERFLOW\")))))) (testSubNatNat True None None None True None (\"contracts/tests/ExponentialTest.py\" 18) (((\"Exponential\" 193) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 18) params) \"a\") \"nat\") ((\"Exponential\" 194) set_type ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 18) params) \"b\") \"nat\") ((\"contracts/tests/ExponentialTest.py\" 19) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 195) open_variant ((\"Exponential\" 195) is_nat ((\"Exponential\" 195) sub ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 18) params) \"a\") ((\"contracts/tests/ExponentialTest.py\" 105) attr ((\"contracts/tests/ExponentialTest.py\" 18) params) \"b\"))) \"Some\" ((\"Exponential\" 195) literal (string \"SUBTRACTION_UNDERFLOW\")))))) (testTruncate True None None None True None (\"contracts/tests/ExponentialTest.py\" 54) (((\"Exponential\" 60) set_type ((\"contracts/tests/ExponentialTest.py\" 55) attr ((\"contracts/tests/ExponentialTest.py\" 54) params) \"a\") (record ((mantissa \"nat\")) None (\"Exponential\" 15))) ((\"contracts/tests/ExponentialTest.py\" 55) set ((\"contracts/tests/ExponentialTest.py\" 11) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"result\") ((\"Exponential\" 61) div ((\"Exponential\" 61) attr ((\"contracts/tests/ExponentialTest.py\" 55) attr ((\"contracts/tests/ExponentialTest.py\" 54) params) \"a\") \"mantissa\") ((\"Exponential\" 159) attr ((\"contracts/tests/ExponentialTest.py\" 105) data) \"expScale\"))))))\nflags ()\nprivates ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 105)",
     "show": true
    },
    {
     "action": "html",
-    "inner": "Test sweep to account",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 44)",
+    "inner": "Test add",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 107)",
     "tag": "h2"
    },
    {
     "action": "html",
-    "inner": "sweepFA12",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 45)",
+    "inner": "Add Exp + Exp",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 108)",
     "tag": "h3"
    },
    {
     "action": "message",
-    "id": "(static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 46)",
-    "message": "mint",
-    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 46) (address (contract_address (static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8))) (value (literal (intOrNat 1000) (\"contracts/tests/SweepTokensTest.py\" 46))))"
-   },
-   {
-    "action": "message",
-    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 47)",
-    "message": "sweepFA12",
-    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 47) (amount (literal (intOrNat 600) (\"contracts/tests/SweepTokensTest.py\" 47))) (tokenAddress (contract_address (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \"\" (\"contracts/tests/mock/FA12Mock.py\" 5))))"
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 109)",
+    "message": "testAddExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 109) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
    },
    {
     "action": "verify",
-    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 46)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 48)) (contract_address (static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8)) (\"contracts/tests/SweepTokensTest.py\" 48)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 48)) (literal (intOrNat 400) (\"contracts/tests/SweepTokensTest.py\" 48)) (\"contracts/tests/SweepTokensTest.py\" 48))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 48)"
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 110) eq ((\"contracts/tests/ExponentialTest.py\" 110) attr ((\"contracts/tests/ExponentialTest.py\" 109) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 110) mul_homo ((\"contracts/tests/ExponentialTest.py\" 110) literal (nat 8)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 110)"
+   },
+   {
+    "action": "html",
+    "inner": "Add Exp + Exp : big numbers",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 111)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 112)",
+    "message": "testAddExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 112) record (a ((\"contracts/tests/ExponentialTest.py\" 94) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 95) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
    },
    {
     "action": "verify",
-    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 46)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 48)) (to_constant (attr (account_of_seed \"admin\" (\"contracts/tests/SweepTokensTest.py\" 29)) \"address\" (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 49)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 49)) (literal (intOrNat 600) (\"contracts/tests/SweepTokensTest.py\" 49)) (\"contracts/tests/SweepTokensTest.py\" 49))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 49)"
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 113) eq ((\"contracts/tests/ExponentialTest.py\" 113) attr ((\"contracts/tests/ExponentialTest.py\" 112) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 113) mul_homo ((\"contracts/tests/ExponentialTest.py\" 113) literal (nat 8000000000000000000000000000000000000000000000000000000)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 113)"
    },
    {
     "action": "html",
-    "inner": "sweepFA12 insufficient",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 51)",
+    "inner": "Add Exp + Nat",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 114)",
     "tag": "h3"
    },
    {
     "action": "message",
-    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 52)",
-    "message": "sweepFA12",
-    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 52) (amount (literal (intOrNat 600) (\"contracts/tests/SweepTokensTest.py\" 52))) (tokenAddress (contract_address (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \"\" (\"contracts/tests/mock/FA12Mock.py\" 5))))",
-    "valid": "(literal (bool False) (\"contracts/tests/SweepTokensTest.py\" 52))"
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 115)",
+    "message": "testAddExpNat",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 115) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 116) eq ((\"contracts/tests/ExponentialTest.py\" 116) attr ((\"contracts/tests/ExponentialTest.py\" 115) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 116) mul_homo ((\"contracts/tests/ExponentialTest.py\" 116) literal (nat 8)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 116)"
    },
    {
     "action": "html",
-    "inner": "sweepMutez",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 54)",
-    "tag": "h3"
-   },
-   {
-    "action": "message",
-    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 55)",
-    "message": "verifyMutezBalance",
-    "params": "(literal (intOrNat 100) (\"contracts/tests/SweepTokensTest.py\" 55))",
-    "amount": "(literal (mutez 100) (\"contracts/tests/SweepTokensTest.py\" 55))"
-   },
-   {
-    "action": "message",
-    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 56)",
-    "message": "sweepMutez",
-    "params": "(literal (bool False) (\"contracts/tests/SweepTokensTest.py\" 56))"
-   },
-   {
-    "action": "message",
-    "id": "(static_id 1 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 57)",
-    "message": "verifyMutezBalance",
-    "params": "(literal (intOrNat 0) (\"contracts/tests/SweepTokensTest.py\" 57))"
-   },
-   {
-    "action": "html",
-    "inner": "Test sweep to contract",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 60)",
+    "inner": "Test sub",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 118)",
     "tag": "h2"
    },
    {
-    "action": "newContract",
-    "accept_unknown_types": false,
-    "export": "(template_id (static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16)) \nstorage (record (\"contracts/tests/SweepTokensTest.py\" 16) (administrator (to_constant (attr (account_of_seed \"admin\" (\"contracts/tests/SweepTokensTest.py\" 29)) \"address\" (\"contracts/tests/SweepTokensTest.py\" 29)) (\"contracts/tests/SweepTokensTest.py\" 29))))\nstorage_type (())\nmessages ((receive True None None True (\"contracts/tests/SweepTokensTest.py\" 23) ((set_type (params (\"contracts/tests/SweepTokensTest.py\" 23)) \"unit\" (\"contracts/tests/SweepTokensTest.py\" 24)))) (stubFn True None None True (\"contracts/tests/SweepTokensTest.py\" 19) ((set_type (params (\"contracts/tests/SweepTokensTest.py\" 19)) \"unit\" (\"contracts/tests/SweepTokensTest.py\" 20)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
-    "id": "(static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 63)",
-    "show": true
-   },
-   {
-    "action": "newContract",
-    "accept_unknown_types": false,
-    "export": "(template_id (static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8)) \nstorage (record (\"contracts/tests/SweepTokensTest.py\" 8) (administrator (contract_address (static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16)) \"\" (\"contracts/tests/SweepTokensTest.py\" 16))))\nstorage_type (())\nmessages ((sweepFA12 True None None True (\"contracts/utils/SweepTokens.py\" 33) ((set_type (params (\"contracts/utils/SweepTokens.py\" 33)) (record ((amount \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 34)) (set (operations (\"contracts/utils/TransferTokens.py\" 17)) (cons (transfer (record (\"contracts/utils/TransferTokens.py\" 5) (from_ (self_address)) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (value (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"amount\" (\"contracts/utils/SweepTokens.py\" 36)))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 17)) (openVariant (contract \"transfer\" (record ((from_ \"address\") (to_ \"address\") (value \"nat\")) (Some ((\"from_ as from\") ((\"to_ as to\") (\"value\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 33)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 35)) (\"contracts/utils/TransferTokens.py\" 11)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 11)) (\"contracts/utils/TransferTokens.py\" 17)) (operations (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)) (\"contracts/utils/TransferTokens.py\" 17)))) (sweepFA2 True None None True (\"contracts/utils/SweepTokens.py\" 48) ((set_type (params (\"contracts/utils/SweepTokens.py\" 48)) (record ((amount \"nat\") (id \"nat\") (tokenAddress \"address\")) None) (\"contracts/utils/SweepTokens.py\" 49)) (set (operations (\"contracts/utils/TransferTokens.py\" 42)) (cons (transfer (list (\"contracts/utils/TransferTokens.py\" 42) (record (\"contracts/utils/TransferTokens.py\" 24) (from_ (self_address)) (txs (list (\"contracts/utils/TransferTokens.py\" 24) (record (\"contracts/utils/TransferTokens.py\" 27) (amount (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"amount\" (\"contracts/utils/SweepTokens.py\" 51))) (to_ (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36))) (token_id (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"id\" (\"contracts/utils/SweepTokens.py\" 50)))))))) (literal (mutez 0) (\"contracts/utils/TransferTokens.py\" 42)) (openVariant (contract \"transfer\" (list (record ((from_ \"address\") (txs (list (record ((amount \"nat\") (to_ \"address\") (token_id \"nat\")) (Some ((\"to_\") ((\"token_id\") (\"amount\")))))))) (Some ((\"from_\") (\"txs\"))))) (attr (params (\"contracts/utils/SweepTokens.py\" 48)) \"tokenAddress\" (\"contracts/utils/SweepTokens.py\" 50)) (\"contracts/utils/TransferTokens.py\" 36)) \"Some\" \"None\" (\"contracts/utils/TransferTokens.py\" 36)) (\"contracts/utils/TransferTokens.py\" 42)) (operations (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)) (\"contracts/utils/TransferTokens.py\" 42)))) (sweepMutez True None None True (\"contracts/utils/SweepTokens.py\" 14) ((set_type (params (\"contracts/utils/SweepTokens.py\" 14)) \"bool\" (\"contracts/utils/SweepTokens.py\" 15)) (ifBlock (params (\"contracts/utils/SweepTokens.py\" 14)) ((set (operations (\"contracts/utils/SweepTokens.py\" 19)) (cons (transfer (unit) (balance) (openVariant (contract \"receive\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 18)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 18)) (\"contracts/utils/SweepTokens.py\" 19)) (operations (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19)) (\"contracts/utils/SweepTokens.py\" 19))) (\"contracts/utils/SweepTokens.py\" 17)) (elseBlock ((set (operations (\"contracts/utils/SweepTokens.py\" 21)) (cons (transfer (unit) (balance) (openVariant (contract \"\" \"unit\" (attr (data) \"administrator\" (\"contracts/utils/SweepTokens.py\" 36)) (\"contracts/utils/SweepTokens.py\" 21)) \"Some\" \"None\" (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (operations (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)) (\"contracts/utils/SweepTokens.py\" 21)))))) (verifyMutezBalance True None None True (\"contracts/tests/SweepTokensTest.py\" 11) ((verify (eq (first (openVariant (ediv (balance) (literal (mutez 1) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) \"Some\" (unit) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)) (params (\"contracts/tests/SweepTokensTest.py\" 11)) (\"contracts/tests/SweepTokensTest.py\" 12)) (\"contracts/tests/SweepTokensTest.py\" 12)))))\nflags ()\nglobals ()\nviews ()\nentry_points_layout ()\ninitial_metadata ()\nbalance ())",
-    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 64)",
-    "show": true
-   },
-   {
     "action": "html",
-    "inner": "sweepFA12",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 66)",
+    "inner": "Sub Nat - Nat",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 119)",
     "tag": "h3"
    },
    {
     "action": "message",
-    "id": "(static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 67)",
-    "message": "mint",
-    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 67) (address (contract_address (static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8))) (value (literal (intOrNat 500) (\"contracts/tests/SweepTokensTest.py\" 67))))"
-   },
-   {
-    "action": "message",
-    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 68)",
-    "message": "sweepFA12",
-    "params": "(record (\"contracts/tests/SweepTokensTest.py\" 68) (amount (literal (intOrNat 200) (\"contracts/tests/SweepTokensTest.py\" 68))) (tokenAddress (contract_address (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) \"\" (\"contracts/tests/mock/FA12Mock.py\" 5))))"
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 120)",
+    "message": "testSubNatNat",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 120) record (a ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6))) (b ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2))))"
    },
    {
     "action": "verify",
-    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 67)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 69)) (contract_address (static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8)) \"\" (\"contracts/tests/SweepTokensTest.py\" 8)) (\"contracts/tests/SweepTokensTest.py\" 69)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 69)) (literal (intOrNat 300) (\"contracts/tests/SweepTokensTest.py\" 69)) (\"contracts/tests/SweepTokensTest.py\" 69))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 69)"
-   },
-   {
-    "action": "verify",
-    "condition": "(eq (attr (getItem (attr (contract_data (static_id 0 (\"contracts/tests/mock/FA12Mock.py\" 5)) (\"contracts/tests/SweepTokensTest.py\" 67)) \"balances\" (\"contracts/tests/SweepTokensTest.py\" 69)) (contract_address (static_id 2 (\"contracts/tests/SweepTokensTest.py\" 16)) \"\" (\"contracts/tests/SweepTokensTest.py\" 16)) (\"contracts/tests/SweepTokensTest.py\" 70)) \"balance\" (\"contracts/tests/SweepTokensTest.py\" 70)) (literal (intOrNat 200) (\"contracts/tests/SweepTokensTest.py\" 70)) (\"contracts/tests/SweepTokensTest.py\" 70))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 70)"
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 121) eq ((\"contracts/tests/ExponentialTest.py\" 121) attr ((\"contracts/tests/ExponentialTest.py\" 120) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 121) literal (nat 4)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 121)"
    },
    {
     "action": "html",
-    "inner": "sweepMutez",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 72)",
+    "inner": "Sub Nat - Nat : underflow",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 122)",
     "tag": "h3"
    },
    {
     "action": "message",
-    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 73)",
-    "message": "verifyMutezBalance",
-    "params": "(literal (intOrNat 100) (\"contracts/tests/SweepTokensTest.py\" 73))",
-    "amount": "(literal (mutez 100) (\"contracts/tests/SweepTokensTest.py\" 73))"
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 123)",
+    "message": "testSubNatNat",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 123) record (a ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2))) (b ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6))))",
+    "valid": "((\"contracts/tests/ExponentialTest.py\" 123) literal (bool False))"
+   },
+   {
+    "action": "html",
+    "inner": "Sub Exp - Exp",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 124)",
+    "tag": "h3"
    },
    {
     "action": "message",
-    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 74)",
-    "message": "sweepMutez",
-    "params": "(literal (bool True) (\"contracts/tests/SweepTokensTest.py\" 74))"
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 125)",
+    "message": "testSubExpExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 125) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 126) eq ((\"contracts/tests/ExponentialTest.py\" 126) attr ((\"contracts/tests/ExponentialTest.py\" 125) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 126) mul_homo ((\"contracts/tests/ExponentialTest.py\" 126) literal (nat 4)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 126)"
+   },
+   {
+    "action": "html",
+    "inner": "Test mul",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 128)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "Mul Exp * Exp",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 129)",
+    "tag": "h3"
    },
    {
     "action": "message",
-    "id": "(static_id 3 (\"contracts/tests/SweepTokensTest.py\" 8))",
-    "line_no": "(\"contracts/tests/SweepTokensTest.py\" 75)",
-    "message": "verifyMutezBalance",
-    "params": "(literal (intOrNat 0) (\"contracts/tests/SweepTokensTest.py\" 75))"
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 130)",
+    "message": "testMulExpExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 130) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 131) eq ((\"contracts/tests/ExponentialTest.py\" 131) attr ((\"contracts/tests/ExponentialTest.py\" 130) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 131) mul_homo ((\"contracts/tests/ExponentialTest.py\" 131) literal (nat 12)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 131)"
+   },
+   {
+    "action": "html",
+    "inner": "Mul Exp * Exp : big numbers",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 132)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 133)",
+    "message": "testMulExpExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 133) record (a ((\"contracts/tests/ExponentialTest.py\" 94) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 94) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 95) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 134) eq ((\"contracts/tests/ExponentialTest.py\" 134) attr ((\"contracts/tests/ExponentialTest.py\" 133) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 134) mul_homo ((\"contracts/tests/ExponentialTest.py\" 134) literal (nat 12000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 134)"
+   },
+   {
+    "action": "html",
+    "inner": "Mul Exp * Nat",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 135)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 136)",
+    "message": "testMulExpNat",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 136) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 137) eq ((\"contracts/tests/ExponentialTest.py\" 137) attr ((\"contracts/tests/ExponentialTest.py\" 136) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 137) mul_homo ((\"contracts/tests/ExponentialTest.py\" 137) literal (nat 12)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 137)"
+   },
+   {
+    "action": "html",
+    "inner": "Mul Nat * Exp",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 138)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 139)",
+    "message": "testMulNatExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 139) record (a ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2))) (b ((\"contracts/tests/ExponentialTest.py\" 93) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 140) eq ((\"contracts/tests/ExponentialTest.py\" 140) attr ((\"contracts/tests/ExponentialTest.py\" 139) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 140) literal (nat 3)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 140)"
+   },
+   {
+    "action": "html",
+    "inner": "Test div",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 142)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "Div Exp / Exp",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 143)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 144)",
+    "message": "testDivExpExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 144) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 145) eq ((\"contracts/tests/ExponentialTest.py\" 145) attr ((\"contracts/tests/ExponentialTest.py\" 144) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 145) mul_homo ((\"contracts/tests/ExponentialTest.py\" 145) literal (nat 3)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 145)"
+   },
+   {
+    "action": "html",
+    "inner": "Div Exp / Exp : big divisor",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 146)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 147)",
+    "message": "testDivExpExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 147) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 95) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 95) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 148) eq ((\"contracts/tests/ExponentialTest.py\" 148) attr ((\"contracts/tests/ExponentialTest.py\" 147) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 148) literal (nat 0)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 148)"
+   },
+   {
+    "action": "html",
+    "inner": "Div Exp / Exp : divide by zero",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 149)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 150)",
+    "message": "testDivExpExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 150) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 150) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 150) literal (nat 0))))))",
+    "valid": "((\"contracts/tests/ExponentialTest.py\" 150) literal (bool False))"
+   },
+   {
+    "action": "html",
+    "inner": "Div Exp / Nat",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 151)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 152)",
+    "message": "testDivExpNat",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 152) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 152) literal (nat 4))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 153) eq ((\"contracts/tests/ExponentialTest.py\" 153) attr ((\"contracts/tests/ExponentialTest.py\" 152) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 153)"
+   },
+   {
+    "action": "html",
+    "inner": "Div Exp / Nat : divide by zero",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 154)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 155)",
+    "message": "testDivExpNat",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 155) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 155) literal (nat 0))))",
+    "valid": "((\"contracts/tests/ExponentialTest.py\" 155) literal (bool False))"
+   },
+   {
+    "action": "html",
+    "inner": "Div Nat / Exp",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 156)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 157)",
+    "message": "testDivNatExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 157) record (a ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6))) (b ((\"contracts/tests/ExponentialTest.py\" 93) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 158) eq ((\"contracts/tests/ExponentialTest.py\" 158) attr ((\"contracts/tests/ExponentialTest.py\" 157) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 158) literal (nat 4)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 158)"
+   },
+   {
+    "action": "html",
+    "inner": "Div Nat / Exp : divide by zero",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 159)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 160)",
+    "message": "testDivNatExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 160) record (a ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6))) (b ((\"contracts/tests/ExponentialTest.py\" 160) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 160) literal (nat 0))))))",
+    "valid": "((\"contracts/tests/ExponentialTest.py\" 160) literal (bool False))"
+   },
+   {
+    "action": "html",
+    "inner": "Div Nat / Exp With Ceil",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 161)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 163)",
+    "message": "testDivNatExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 163) record (a ((\"contracts/tests/ExponentialTest.py\" 89) literal (nat 1))) (b ((\"contracts/tests/ExponentialTest.py\" 93) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 164) eq ((\"contracts/tests/ExponentialTest.py\" 164) attr ((\"contracts/tests/ExponentialTest.py\" 163) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 164) literal (nat 0)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 164)"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 166)",
+    "message": "testDivNatExpCeil",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 166) record (a ((\"contracts/tests/ExponentialTest.py\" 89) literal (nat 1))) (b ((\"contracts/tests/ExponentialTest.py\" 93) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 167) eq ((\"contracts/tests/ExponentialTest.py\" 167) attr ((\"contracts/tests/ExponentialTest.py\" 166) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 167) literal (nat 1)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 167)"
+   },
+   {
+    "action": "html",
+    "inner": "Div Nat / Exp With Ceil : divide by zero",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 168)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 169)",
+    "message": "testDivNatExpCeil",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 169) record (a ((\"contracts/tests/ExponentialTest.py\" 89) literal (nat 1))) (b ((\"contracts/tests/ExponentialTest.py\" 169) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 169) literal (nat 0))))))",
+    "valid": "((\"contracts/tests/ExponentialTest.py\" 169) literal (bool False))"
+   },
+   {
+    "action": "html",
+    "inner": "Test truncate",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 171)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "Truncate integer",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 172)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 173)",
+    "message": "testTruncate",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 173) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 174) eq ((\"contracts/tests/ExponentialTest.py\" 174) attr ((\"contracts/tests/ExponentialTest.py\" 173) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 174)"
+   },
+   {
+    "action": "html",
+    "inner": "Truncate small number",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 175)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 176)",
+    "message": "testTruncate",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 176) record (a ((\"contracts/tests/ExponentialTest.py\" 176) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 177) eq ((\"contracts/tests/ExponentialTest.py\" 177) attr ((\"contracts/tests/ExponentialTest.py\" 176) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 177) literal (nat 0)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 177)"
+   },
+   {
+    "action": "html",
+    "inner": "Truncate real",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 178)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 179)",
+    "message": "testTruncate",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 179) record (a ((\"contracts/tests/ExponentialTest.py\" 93) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 180) eq ((\"contracts/tests/ExponentialTest.py\" 180) attr ((\"contracts/tests/ExponentialTest.py\" 179) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 180) literal (nat 1)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 180)"
+   },
+   {
+    "action": "html",
+    "inner": "Test mul scalar truncate",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 182)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "Mul real and truncate float",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 183)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 184)",
+    "message": "testMulScalarTruncate",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 184) record (a ((\"contracts/tests/ExponentialTest.py\" 93) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000))))) (scalar ((\"contracts/tests/ExponentialTest.py\" 184) literal (nat 3))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 185) eq ((\"contracts/tests/ExponentialTest.py\" 185) attr ((\"contracts/tests/ExponentialTest.py\" 184) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 185) literal (nat 4)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 185)"
+   },
+   {
+    "action": "html",
+    "inner": "Mul real, truncate float and add Nat",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 186)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 187)",
+    "message": "testMulScalarTruncateAdd",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 187) record (a ((\"contracts/tests/ExponentialTest.py\" 93) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 90) literal (nat 1500000000000000000))))) (addend ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2))) (scalar ((\"contracts/tests/ExponentialTest.py\" 187) literal (nat 3))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 188) eq ((\"contracts/tests/ExponentialTest.py\" 188) attr ((\"contracts/tests/ExponentialTest.py\" 187) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 188) literal (nat 6)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 188)"
+   },
+   {
+    "action": "html",
+    "inner": "Test mul rounded",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 190)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "Mul rounded, truncate integer",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 191)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 192)",
+    "message": "testMulExpRounded",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 192) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 193) eq ((\"contracts/tests/ExponentialTest.py\" 193) attr ((\"contracts/tests/ExponentialTest.py\" 192) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 193) mul_homo ((\"contracts/tests/ExponentialTest.py\" 193) literal (nat 12)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000))))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 193)"
+   },
+   {
+    "action": "html",
+    "inner": "Mul rounded, round up",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 194)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 195)",
+    "message": "testMulExpRounded",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 195) record (a ((\"contracts/tests/ExponentialTest.py\" 195) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 195) literal (nat 6))))) (b ((\"contracts/tests/ExponentialTest.py\" 195) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 195) literal (nat 6600000000000000000))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 196) eq ((\"contracts/tests/ExponentialTest.py\" 196) attr ((\"contracts/tests/ExponentialTest.py\" 195) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 196) literal (nat 40)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 196)"
+   },
+   {
+    "action": "html",
+    "inner": "Mul rounded, round down",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 197)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 198)",
+    "message": "testMulExpRounded",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 198) record (a ((\"contracts/tests/ExponentialTest.py\" 198) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 198) literal (nat 4))))) (b ((\"contracts/tests/ExponentialTest.py\" 198) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 198) literal (nat 6600000000000000000))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 199) eq ((\"contracts/tests/ExponentialTest.py\" 199) attr ((\"contracts/tests/ExponentialTest.py\" 198) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 199) literal (nat 26)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 199)"
+   },
+   {
+    "action": "html",
+    "inner": "Test less than",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 201)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "Left less than right",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 202)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 203)",
+    "message": "testLessThanExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 203) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 204) eq ((\"contracts/tests/ExponentialTest.py\" 204) attr ((\"contracts/tests/ExponentialTest.py\" 203) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 204) literal (nat 1)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 204)"
+   },
+   {
+    "action": "html",
+    "inner": "Left equal to right",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 205)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 206)",
+    "message": "testLessThanExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 206) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 207) eq ((\"contracts/tests/ExponentialTest.py\" 207) attr ((\"contracts/tests/ExponentialTest.py\" 206) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 207) literal (nat 0)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 207)"
+   },
+   {
+    "action": "html",
+    "inner": "Left greater than right",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 208)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 209)",
+    "message": "testLessThanExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 209) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 210) eq ((\"contracts/tests/ExponentialTest.py\" 210) attr ((\"contracts/tests/ExponentialTest.py\" 209) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 210) literal (nat 0)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 210)"
+   },
+   {
+    "action": "html",
+    "inner": "Test less than or equal",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 212)",
+    "tag": "h2"
+   },
+   {
+    "action": "html",
+    "inner": "Left less than right",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 213)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 214)",
+    "message": "testLessThanOrEqualExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 214) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 215) eq ((\"contracts/tests/ExponentialTest.py\" 215) attr ((\"contracts/tests/ExponentialTest.py\" 214) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 215) literal (nat 1)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 215)"
+   },
+   {
+    "action": "html",
+    "inner": "Left equal to right",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 216)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 217)",
+    "message": "testLessThanOrEqualExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 217) record (a ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 218) eq ((\"contracts/tests/ExponentialTest.py\" 218) attr ((\"contracts/tests/ExponentialTest.py\" 217) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 218) literal (nat 1)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 218)"
+   },
+   {
+    "action": "html",
+    "inner": "Left greater than right",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 219)",
+    "tag": "h3"
+   },
+   {
+    "action": "message",
+    "id": "((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 220)",
+    "message": "testLessThanOrEqualExp",
+    "params": "((\"contracts/tests/ExponentialTest.py\" 220) record (a ((\"contracts/tests/ExponentialTest.py\" 92) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 92) mul_homo ((\"contracts/tests/ExponentialTest.py\" 88) literal (nat 6)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))) (b ((\"contracts/tests/ExponentialTest.py\" 91) record (mantissa ((\"contracts/tests/ExponentialTest.py\" 91) mul_homo ((\"contracts/tests/ExponentialTest.py\" 87) literal (nat 2)) ((\"contracts/tests/ExponentialTest.py\" 86) literal (nat 1000000000000000000)))))))"
+   },
+   {
+    "action": "verify",
+    "condition": "((\"contracts/tests/ExponentialTest.py\" 221) eq ((\"contracts/tests/ExponentialTest.py\" 221) attr ((\"contracts/tests/ExponentialTest.py\" 220) contract_data ((\"contracts/tests/ExponentialTest.py\" 105) static_id 0)) \"result\") ((\"contracts/tests/ExponentialTest.py\" 221) literal (nat 0)))",
+    "line_no": "(\"contracts/tests/ExponentialTest.py\" 221)"
    }
   ],
   "kind": "test"
