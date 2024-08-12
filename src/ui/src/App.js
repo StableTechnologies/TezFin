@@ -42,8 +42,7 @@ const App = () => {
 
     useEffect(() => {
         const doMarketAction = () => {
-            console.log('doMarketAction');
-            dispatch(marketAction(comptroller, protocolAddresses, server));
+            dispatch(marketAction(comptroller, protocolAddresses, server, markets));
         };
         doMarketAction();
         const intervalId = setInterval(doMarketAction, 30000);

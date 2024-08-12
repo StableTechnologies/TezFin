@@ -11,10 +11,16 @@ import { tokens } from '../../components/Constants';
  * @param protocolAddresses Addresses of the protocol contracts
  * @param server server address
  */
-export const marketAction = (comptroller, protocolAddresses, server) => async (dispatch) => {
+export const marketAction = (comptroller, protocolAddresses, server, prevMarkets) => async (dispatch) => {
+    let markets;
     if (comptroller) {
-        const markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
-        dispatch({ type: GET_MARKET_DATA, payload: markets });
+        try {
+            markets = await TezosLendingPlatform.GetMarkets(comptroller, protocolAddresses, server);
+        } catch (e) {
+            markets = prevMarkets;
+        } finally {
+            dispatch({ type: GET_MARKET_DATA, payload: markets });
+        }
     }
 };
 
