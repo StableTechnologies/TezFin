@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Box, Typography, Link } from '@mui/material';
+
 import Grid from '@mui/material/Grid';
 import { comptrollerAction, granadanetAction, tezosNodeAction } from './reduxContent/nodes/actions';
 import { allMarketAction, marketAction } from './reduxContent/market/actions';
@@ -22,6 +24,31 @@ import Footer from './components/Footer';
 
 import { addWalletAction } from './reduxContent/addWallet/actions';
 import { getActiveAccount } from './util';
+
+const LegacyBanner = () => {
+    return (
+        <Box
+            sx={{
+                backgroundColor: 'warning.main',
+                padding: 2,
+                textAlign: 'center',
+                color: 'white',
+            }}
+        >
+            <Typography variant="body1">
+              This is the legacy app for TezFin v1. Please repay all borrowing positions and/or withdraw deposits, and move to the{' '}
+                <Link
+                    href="https://github.com/StableTechnologies/TezFin/issues/app.tezos.finance"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{ color: 'inherit', textDecoration: 'underline' }}
+                >
+                  latest TezFin
+                </Link>.
+            </Typography>
+        </Box>
+    );
+};
 
 const App = () => {
     const dispatch = useDispatch();
@@ -66,6 +93,7 @@ const App = () => {
         <Router>
             <Grid className="App">
                 <Nav />
+	        <LegacyBanner />
                 <Switch>
                     <Route exact path="/dashboard">
                         <Header />
