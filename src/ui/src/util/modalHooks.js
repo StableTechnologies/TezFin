@@ -26,7 +26,7 @@ export const useSupplyErrorText = (tokenValue, limit) => {
         }
         return () => {
             setText('Supply');
-            setDisabled(false);
+            setDisabled(true);
         };
     }, [tokenValue, limit]);
 
@@ -73,12 +73,12 @@ export const useBorrowErrorText = (tokenValue, borrowLimit, tokenDetails) => {
         } else {
             setText('Borrow');
             setErrorText('');
-            setDisabled(false);
+            setDisabled(true);
         }
         return () => {
             setText('Borrow');
             setErrorText('');
-            setDisabled(false);
+            setDisabled(true);
         };
     }, [tokenValue, limit]);
 
