@@ -1,1 +1,1 @@
-sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')
+(sp.address('KT10'), sp.contract(sp.TNat, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat')).open_some())

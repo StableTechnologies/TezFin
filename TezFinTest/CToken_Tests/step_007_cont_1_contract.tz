@@ -1,0 +1,276 @@
+parameter (or (address %removeFromLoans) (or (or (or (or (address %acceptGovernance) (or (pair %borrowAllowed (address %cToken) (pair (address %borrower) (nat %borrowAmount))) (unit %disableMarket))) (or (unit %enterMarkets) (or (unit %exitMarket) (unit %getHypoAccountLiquidity)))) (or (or (pair %mintAllowed (address %cToken) (pair (address %minter) (nat %mintAmount))) (or (pair %redeemAllowed (address %cToken) (pair (address %redeemer) (nat %redeemAmount))) (pair %repayBorrowAllowed (address %cToken) (pair (address %payer) (pair (address %borrower) (nat %repayAmount)))))) (or (or (bool %setBorrowAllowed) (unit %setBorrowPaused)) (or (unit %setCloseFactor) (unit %setCollateralFactor))))) (or (or (or (unit %setLiquidationIncentive) (or (nat %setLiquidityPeriodRelevance) (bool %setMintAllowed))) (or (or (unit %setMintPaused) (address %setPendingGovernance)) (or (unit %setPriceOracleAndTimeDiff) (nat %setPricePeriodRelevance)))) (or (or (bool %setRedeemAllowed) (or (bool %setRepayBorrowAllowed) (unit %setTransferPaused))) (or (or (unit %supportMarket) (pair %transferAllowed (pair (address %cToken) (address %src)) (pair (address %dst) (nat %transferTokens)))) (or (address %updateAccountLiquidity) (address %updateAssetPrice)))))));
+storage   (pair (pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed))) (big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))));
+code
+  {
+    UNPAIR 3;   # @parameter : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+    IF_LEFT
+      {
+        # == removeFromLoans == # @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        PUSH nat 0; # nat : @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        DUP 4;      # big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool)))) : nat : @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        SWAP;       # nat : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool)))) : @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        GET;        # option (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool)))) : @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        IF_NONE
+          {
+            PUSH int -1; # int : @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+            FAILWITH;   # FAILED
+          }
+          {
+            # missing entry point # @some : @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+          }; # @some : @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        DUG 2;      # @parameter%removeFromLoans : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : @some : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        PAIR;       # pair @parameter%removeFromLoans (pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed))) : @some : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        EXEC;       # pair (list operation) (pair (pair bool bool) (pair bool bool)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        UNPAIR;     # list operation : pair (pair bool bool) (pair bool bool) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+      }
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        # == acceptGovernance == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == borrowAllowed ==
+                            # sp.verify(self.data.borrow_allowed) # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            DUP;        # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            CAR;        # pair (bool %borrow_allowed) (bool %mint_allowed) : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            CAR;        # bool : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            IF
+                              {}
+                              {
+                                PUSH string "WrongCondition: self.data.borrow_allowed"; # string : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                                FAILWITH;   # FAILED
+                              }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == disableMarket == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        # == enterMarkets == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == exitMarket == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == getHypoAccountLiquidity == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        # == mintAllowed ==
+                        # sp.verify(self.data.mint_allowed) # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        DUP;        # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        CAR;        # pair (bool %borrow_allowed) (bool %mint_allowed) : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        CDR;        # bool : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        IF
+                          {}
+                          {
+                            PUSH string "WrongCondition: self.data.mint_allowed"; # string : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            FAILWITH;   # FAILED
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == redeemAllowed ==
+                            # sp.verify(self.data.redeem_allowed) # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            DUP;        # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            GET 3;      # bool : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            IF
+                              {}
+                              {
+                                PUSH string "WrongCondition: self.data.redeem_allowed"; # string : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                                FAILWITH;   # FAILED
+                              }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == repayBorrowAllowed ==
+                            # sp.verify(self.data.repay_borrow_allowed) # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            DUP;        # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            GET 4;      # bool : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            IF
+                              {}
+                              {
+                                PUSH string "WrongCondition: self.data.repay_borrow_allowed"; # string : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                                FAILWITH;   # FAILED
+                              }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        IF_LEFT
+                          {
+                            SWAP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : @parameter%setBorrowAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setBorrowAllowed ==
+                            # self.data.borrow_allowed = params # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : @parameter%setBorrowAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            UNPAIR;     # pair (bool %borrow_allowed) (bool %mint_allowed) : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : @parameter%setBorrowAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            CDR;        # bool : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : @parameter%setBorrowAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            DIG 2;      # @parameter%setBorrowAllowed : bool : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            PAIR;       # pair @parameter%setBorrowAllowed bool : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            PAIR;       # pair (pair @parameter%setBorrowAllowed bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setBorrowPaused == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setCloseFactor == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setCollateralFactor == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+              }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        # == setLiquidationIncentive == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setLiquidityPeriodRelevance == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            SWAP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : @parameter%setMintAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setMintAllowed ==
+                            # self.data.mint_allowed = params # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : @parameter%setMintAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            UNPAIR;     # pair (bool %borrow_allowed) (bool %mint_allowed) : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : @parameter%setMintAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            CAR;        # bool : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : @parameter%setMintAllowed : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            DIG 2;      # @parameter%setMintAllowed : bool : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            SWAP;       # bool : @parameter%setMintAllowed : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            PAIR;       # pair bool @parameter%setMintAllowed : pair (bool %redeem_allowed) (bool %repay_borrow_allowed) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            PAIR;       # pair (pair bool @parameter%setMintAllowed) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setMintPaused == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setPendingGovernance == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setPriceOracleAndTimeDiff == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setPricePeriodRelevance == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+              }
+              {
+                IF_LEFT
+                  {
+                    IF_LEFT
+                      {
+                        # == setRedeemAllowed ==
+                        # self.data.redeem_allowed = params # @parameter%setRedeemAllowed : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                        UPDATE 3;   # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            # == setRepayBorrowAllowed ==
+                            # self.data.repay_borrow_allowed = params # @parameter%setRepayBorrowAllowed : pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            UPDATE 4;   # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == setTransferPaused == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == supportMarket == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == transferAllowed == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }
+                      {
+                        IF_LEFT
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == updateAccountLiquidity == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }
+                          {
+                            DROP;       # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                            # == updateAssetPrice == # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                          }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                      }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+                  }; # pair (pair (bool %borrow_allowed) (bool %mint_allowed)) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+              }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+          }; # pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+        NIL operation; # list operation : pair (pair bool bool) (pair (bool %redeem_allowed) (bool %repay_borrow_allowed)) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+      }; # list operation : pair (pair bool bool) (pair bool bool) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+    NIL operation; # list operation : list operation : pair (pair bool bool) (pair bool bool) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+    SWAP;       # list operation : list operation : pair (pair bool bool) (pair bool bool) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+    ITER
+      {
+        CONS;       # list operation : pair (pair bool bool) (pair bool bool) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+      }; # list operation : pair (pair bool bool) (pair bool bool) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))
+    DUG 2;      # pair (pair bool bool) (pair bool bool) : big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool)))) : list operation
+    PAIR;       # pair (pair (pair bool bool) (pair bool bool)) (big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))) : list operation
+    SWAP;       # list operation : pair (pair (pair bool bool) (pair bool bool)) (big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool)))))
+    PAIR;       # pair (list operation) (pair (pair (pair bool bool) (pair bool bool)) (big_map nat (lambda (pair address (pair (pair bool bool) (pair bool bool))) (pair (list operation) (pair (pair bool bool) (pair bool bool))))))
+  };

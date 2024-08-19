@@ -1,0 +1,49 @@
+parameter (or (or (pair %getBorrowRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (nat %reserves))) (pair %getSupplyRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (nat %reserves)))) (or (nat %setBorrowRate) (nat %setSupplyRate)));
+storage   (pair (nat %borrowRate) (nat %supplyRate));
+code
+  {
+    UNPAIR;     # @parameter : @storage
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            # == getBorrowRate ==
+            # sp.transfer(self.data.borrowRate, sp.tez(0), params.cb) # @parameter%getBorrowRate : @storage
+            GET 3;      # contract nat : @storage
+            NIL operation; # list operation : contract nat : @storage
+            SWAP;       # contract nat : list operation : @storage
+            PUSH mutez 0; # mutez : contract nat : list operation : @storage
+            DUP 4;      # @storage : mutez : contract nat : list operation : @storage
+            CAR;        # nat : mutez : contract nat : list operation : @storage
+            TRANSFER_TOKENS; # operation : list operation : @storage
+            CONS;       # list operation : @storage
+          }
+          {
+            # == getSupplyRate ==
+            # sp.transfer(self.data.supplyRate, sp.tez(0), params.cb) # @parameter%getSupplyRate : @storage
+            GET 3;      # contract nat : @storage
+            NIL operation; # list operation : contract nat : @storage
+            SWAP;       # contract nat : list operation : @storage
+            PUSH mutez 0; # mutez : contract nat : list operation : @storage
+            DUP 4;      # @storage : mutez : contract nat : list operation : @storage
+            CDR;        # nat : mutez : contract nat : list operation : @storage
+            TRANSFER_TOKENS; # operation : list operation : @storage
+            CONS;       # list operation : @storage
+          }; # list operation : @storage
+      }
+      {
+        IF_LEFT
+          {
+            # == setBorrowRate ==
+            # self.data.borrowRate = params # @parameter%setBorrowRate : @storage
+            UPDATE 1;   # @storage
+          }
+          {
+            # == setSupplyRate ==
+            # self.data.supplyRate = params # @parameter%setSupplyRate : @storage
+            UPDATE 2;   # @storage
+          }; # @storage
+        NIL operation; # list operation : @storage
+      }; # list operation : @storage
+    PAIR;       # pair (list operation) @storage
+  };
