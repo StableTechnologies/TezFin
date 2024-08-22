@@ -38,7 +38,7 @@ const LegacyBanner = () => {
             <Typography variant="body1">
               This is the legacy app for TezFin v1. Please repay all borrowing positions and/or withdraw deposits, and move to the{' '}
                 <Link
-                    href="https://github.com/StableTechnologies/TezFin/issues/app.tezos.finance"
+                    href="https://app.tezos.finance"
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{ color: 'inherit', textDecoration: 'underline' }}
