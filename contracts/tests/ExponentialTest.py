@@ -47,6 +47,10 @@ class ExponentialTestContract(Exponential.Exponential):
         self.data.result = self.div_nat_exp(a, b)
 
     @sp.entry_point
+    def testDivNatExpCeil(self, a, b):
+        self.data.result = self.div_nat_exp_ceil(a, b)
+
+    @sp.entry_point
     def testTruncate(self, params):
         self.data.result = self.truncate(params.a)
 
@@ -82,6 +86,7 @@ def test():
     expScale = sp.nat(int(1e18))
     n1 = sp.nat(2)
     n2 = sp.nat(6)
+    n4 = sp.nat(1)
     n3 = sp.nat(1500000000000000000)
     e1 = sp.record(mantissa=(n1 * expScale))
     e2 = sp.record(mantissa=(n2 * expScale))
@@ -153,6 +158,15 @@ def test():
     scenario.verify(c1.data.result == sp.nat(4))
     scenario.h3("Div Nat / Exp : divide by zero")
     scenario += c1.testDivNatExp(a=n2, b=sp.record(mantissa=sp.nat(0))).run(valid=False)
+    scenario.h3("Div Nat / Exp With Ceil")
+    # normal div gives 0
+    scenario += c1.testDivNatExp(a=n4, b=e3)
+    scenario.verify(c1.data.result == sp.nat(0))
+    # ceil dive gives 1
+    scenario += c1.testDivNatExpCeil(a=n4, b=e3)
+    scenario.verify(c1.data.result == sp.nat(1))
+    scenario.h3("Div Nat / Exp With Ceil : divide by zero")
+    scenario += c1.testDivNatExpCeil(a=n4, b=sp.record(mantissa=sp.nat(0))).run(valid=False)
 
     scenario.h2("Test truncate")
     scenario.h3("Truncate integer")

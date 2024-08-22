@@ -941,6 +941,17 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 self.mulScalarTruncate(self.makeExp(exchangeRate), amount))
         return actual_amount.value
 
+    def getActualAmountCeil(self, amount, isUnderlying, adjustment):
+        exchangeRate = self.exchangeRateAdjusted(adjustment)
+        actual_amount = sp.local("amount", sp.nat(0))
+        sp.if isUnderlying:
+            actual_amount.value = sp.compute(
+                self.div_nat_exp_ceil(amount, self.makeExp(exchangeRate)))
+        sp.else:
+            actual_amount.value = sp.compute(
+                self.mulScalarTruncate(self.makeExp(exchangeRate), amount))
+        return actual_amount.value
+
     def getRedeemAmount(self, amount, isUnderlying):
         redeem_amount = sp.local("redeem_amount", sp.nat(0))
         sp.if isUnderlying:
@@ -953,7 +964,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def getRedeemTokens(self, amount, isUnderlying):
         redeem_tokens = sp.local("redeem_tokens", sp.nat(0))
         sp.if isUnderlying:
-            redeem_tokens.value = self.getActualAmount(amount, True, sp.nat(0))
+            redeem_tokens.value = self.getActualAmountCeil(amount, True, sp.nat(0))
         sp.else:
             redeem_tokens.value = amount
         return redeem_tokens.value
