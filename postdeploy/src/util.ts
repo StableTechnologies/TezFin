@@ -107,7 +107,7 @@ export async function deploy() {
     signer!,
     protocolAddresses!,
     protocolAddresses.oracle,
-    31104000 // 12 months
+    91104000 // 36 months
   );
   // set default value for USDT
   await FTokenHelper.updatePrice(
