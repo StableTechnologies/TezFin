@@ -295,11 +295,12 @@ export namespace TezosLendingPlatform {
                         balances[asset] = await GetUnderlyingBalanceXTZ(address, server);
                         break;
                     default: // contract-based assets
-                        balances[asset] = await GetUnderlyingBalanceToken(
+                        var storage = await TezosNodeReader.getContractStorage(server, markets[asset].asset.underlying.address!);
+                        balances[asset] = FToken.applyExchangeRate(await GetUnderlyingBalanceToken(
                             markets[asset].asset.underlying,
                             address,
                             server,
-                        );
+                        ), storage);
                         break;
                 }
             }),
@@ -352,13 +353,14 @@ export namespace TezosLendingPlatform {
         address: string,
         server: string,
     ): Promise<bigInt.BigInteger> {
+	let storage;
         if (underlying.balancesMapId === undefined) {
             // need to get balancesMapId from underlying asset contract's storage
             try {
                 log.info(`Getting balances map id from storage for ${underlying.assetType} at ${address}`);
-                const storage = await TezosNodeReader.getContractStorage(server, underlying.address!);
+                storage = await TezosNodeReader.getContractStorage(server, underlying.address!);
                 if (underlying.tokenStandard === TokenStandard.FA12) {
-                    // TODO: this is not a good heuristic
+    e               // TODO: this is not a good heuristic
                     underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].int', json: storage })[0]);
                 } else if (underlying.tokenStandard === TokenStandard.FA2) {
                     underlying.balancesMapId = Number(JSONPath({ path: '$.args[0].args[1].int', json: storage })[0]);
@@ -416,7 +418,7 @@ export namespace TezosLendingPlatform {
             }
             const balance = JSONPath({ path: underlying.balancesPath!, json: mapResult })[0];
         
-            return bigInt(balance);
+            return FToken.applyExchangeRate(bigInt(balance),storage);
         } catch (e) {
             log.error(
                 `Unable to read balance from storage for underlying ${
