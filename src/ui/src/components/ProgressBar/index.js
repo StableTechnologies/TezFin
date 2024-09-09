@@ -19,10 +19,12 @@ const BorderLinearProgress = styled(LinearProgress)(({ height, value, width }) =
 
     [`& .${linearProgressClasses.bar}`]: {
         background: `${(value < 100)
-            ? (`${(value < 80)
-                ? `linear-gradient(90deg, #39E4B8 ${100 - value}%, rgba(233, 238, 8, 0.99) 100%)`
-                : 'linear-gradient(89.97deg, #39E4B8 28.66%, #E9EE08 45.73%, #E9EE08 73.81%, #EE2408 90.33%)'
-            }`)
+            ? (`${(value <= 35)
+                ? '#39E4B8'
+                : (`${(value <= 75)
+                    ? `linear-gradient(90deg, #39E4B8 ${(34 * 100) / value}%, rgba(233, 238, 8, 0.99) 100%)`
+                    : `linear-gradient(89.97deg, #39E4B8 ${(34 * 100) / value}%, #E9EE08 ${(74 * 100) / value}%, #EE2408 100%)`
+                }`)}`)
             : 'red'
         }`
     }
