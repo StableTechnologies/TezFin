@@ -33,15 +33,19 @@ const Dashboard = () => {
 
     return (
         <Grid container className={classes.dashboard}>
-            <Grid item xs={12} md={6} className={classes.supplyTablePadding}>
+            <Grid item xs={6} md={6} className={classes.supplyTablePadding}>
                 <Typography className={classes.tableTitle}> Supplying </Typography>
                 <SuppliedTokenTable tableData={suppliedMarkets}/>
             </Grid>
-            <Grid item xs={12} md={6} className={classes.borrowTablePadding}>
+            <Grid item xs={6} md={6} className={classes.borrowTablePadding}>
                 <Typography className={classes.tableTitle}> Borrowing </Typography>
                 <BorrowedTokenTable tableData={borrowedMarkets} />
             </Grid>
-            <Grid item xs={12} >
+            <Grid item xs={6} md={6} className={classes.supplyTablePadding}>
+                <Typography className={classes.tableTitle}> Markets </Typography>
+                <AllMarketTokenTable tableData={allMarkets} />
+            </Grid>
+            <Grid item xs={6} md={6} className={classes.borrowTablePadding}>
                 <Typography className={classes.tableTitle}> Markets </Typography>
                 <AllMarketTokenTable tableData={allMarkets} />
             </Grid>

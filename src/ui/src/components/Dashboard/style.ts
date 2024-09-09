@@ -171,42 +171,54 @@ export const useStyles = makeStyles({
     fontWeight: "400",
     fontSize: "0.875rem",
   },
+    compositionOne: {
+    },
   dashboard: {
-    background: "#F9FAFC",
-    padding: "0px 6.25rem 10.125rem",
-    "@media(max-width: 1024px)": {
-      padding: "0px 4rem 10.125rem",
-    },
-    "@media(max-width: 900px)": {
-      padding: "0px 2rem 10.125rem",
-    },
-    "@media(max-width: 768px)": {
-      padding: "0px 4rem 10.125rem",
-    },
-    "@media(max-width: 501px)": {
-      padding: "0px 1rem 10.125rem",
-    },
+        paddingLeft: '6.25rem',
+        paddingRight: '6.25rem',
+        '@media(max-width: 1024px)': {
+            paddingLeft: '4rem',
+            paddingRight: '4rem',
+        },
+        '@media(max-width: 900px)': {
+            paddingLeft: '2rem',
+            paddingRight: '2rem',
+        },
+        '@media(max-width: 768px)': {
+            paddingLeft: '4rem',
+            paddingRight: '4rem',
+        },
+        '@media(max-width: 501px)': {
+            paddingLeft: '1rem',
+            paddingRight: '1rem',
+        },
   },
   borrowTablePadding: {
+    "@media(max-width: 600px)": {
+      paddingRight: "1.975rem",
+    },
     "@media(min-width: 900px)": {
-      paddingLeft: "0.875rem",
-    },
-    "@media(min-width: 1024px)": {
-      paddingLeft: "0.9375rem",
-    },
-    "@media(min-width: 1200px)": {
-      paddingLeft: "1.875rem",
-    },
-  },
-  supplyTablePadding: {
-    "@media(min-width: 900px)": {
-      paddingRight: "0.875rem",
+      paddingRight: "0.975rem",
     },
     "@media(min-width: 1024px)": {
       paddingRight: "0.9375rem",
     },
     "@media(min-width: 1200px)": {
-      paddingRight: "1.875rem",
+      paddingRight: "0.875rem",
+    },
+  },
+  supplyTablePadding: {
+    "@media(min-width: 600px)": {
+      paddingRight: "1rem",
+    },
+    "@media(min-width: 900px)": {
+      paddingRight: "2rem",
+    },
+    "@media(min-width: 1024px)": {
+      paddingRight: "2rem",
+    },
+    "@media(min-width: 1200px)": {
+      paddingRight: "3rem",
     },
   },
   tableTitle: {
