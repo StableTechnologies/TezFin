@@ -23,7 +23,7 @@ import TableSkeleton from "../Skeleton";
 
 import { useStyles } from "./style";
 
-const AllMarketTokenTable = (props) => {
+const SupplyMarketTokenTable = (props) => {
   const classes = useStyles();
   const { tableData } = props;
   const { address } = useSelector((state: any) => state.addWallet.account);
@@ -228,4 +228,4 @@ const AllMarketTokenTable = (props) => {
   );
 };
 
-export default AllMarketTokenTable;
+export default SupplyMarketTokenTable;

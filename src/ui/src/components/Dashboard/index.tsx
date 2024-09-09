@@ -9,7 +9,8 @@ import { Typography } from '@mui/material';
 
 import BorrowedTokenTable from './BorrowedTokenTable';
 import SuppliedTokenTable from './SuppliedTokenTable';
-import AllMarketTokenTable from './AllMarketTokenTable';
+import BorrowMarketTokenTable from './BorrowMarketTokenTable';
+import SupplyMarketTokenTable from './SupplyMarketTokenTable';
 
 import { borrowedMarketAction, allMarketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
 
@@ -42,12 +43,12 @@ const Dashboard = () => {
                 <BorrowedTokenTable tableData={borrowedMarkets} />
             </Grid>
             <Grid item xs={6} md={6} className={classes.supplyTablePadding}>
-                <Typography className={classes.tableTitle}> Markets </Typography>
-                <AllMarketTokenTable tableData={allMarkets} />
+                <Typography className={classes.tableTitle}> Assets to Supply </Typography>
+                <SupplyMarketTokenTable tableData={allMarkets} />
             </Grid>
             <Grid item xs={6} md={6} className={classes.borrowTablePadding}>
-                <Typography className={classes.tableTitle}> Markets </Typography>
-                <AllMarketTokenTable tableData={allMarkets} />
+                <Typography className={classes.tableTitle}> Assets to Borrow </Typography>
+                <BorrowMarketTokenTable tableData={allMarkets} />
             </Grid>
         </Grid>
     );
