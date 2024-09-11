@@ -14,7 +14,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 import { decimalify, nFormatter, roundValue } from "../../util";
 
@@ -134,6 +134,25 @@ const BorrowMarketTokenTable = (props) => {
                       %
                     </span>
                   </TableCell>
+                    <TableCell align="center" className={classes.clearFont}>
+                        <span>
+                            <Button
+                                variant="contained"
+                                size="small"
+                                sx={ { marginRight: "10%" } }
+                                onClick={() => handleClickMktModal(data)}
+                            >
+                                Borrow
+                            </Button>
+                            <Button
+                                variant="contained"
+                                size="small"
+                                onClick={() => handleClickMktModal(data)}
+                            >
+                                Details
+                            </Button>
+                        </span>
+                    </TableCell>
                 </TableRow>
               ) : (
                 <TableSkeleton index={data.title} cell={6} />
