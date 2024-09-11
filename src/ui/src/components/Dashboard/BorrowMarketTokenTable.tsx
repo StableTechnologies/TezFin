@@ -53,11 +53,8 @@ const BorrowMarketTokenTable = (props) => {
         <TableHead>
           <TableRow>
             <TableCell> Token </TableCell>
-            <TableCell align="center"> Market Size </TableCell>
-            <TableCell align="center"> Total Borrowed </TableCell>
-            <TableCell align="center"> Supply APY </TableCell>
+            <TableCell align="center"> Available </TableCell>
             <TableCell align="center"> Borrow APY </TableCell>
-            <TableCell align="center"> Wallet </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -102,7 +99,7 @@ const BorrowMarketTokenTable = (props) => {
                               ? '>0.00'
                               : nFormatter(
                                     decimalify(
-                                        data.marketSize.toString(),
+                                        (data.marketSize - data.totalBorrowed).toString(),
                                         decimals[data.title],
                                         decimals[data.title],
                                     ),
@@ -116,58 +113,12 @@ const BorrowMarketTokenTable = (props) => {
                       {data.marketSize > 0
                         ? nFormatter(
                             decimalify(
-                              (data.marketSize * data.usdPrice).toString(),
+                              ((data.marketSize - data.totalBorrowed) * data.usdPrice).toString(),
                               decimals[data.title],
                               decimals[data.title],
                             ),
                           )
                         : "0.00"}
-                    </span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className={classes.clearFont}>
-                      {data.totalBorrowed > 0
-                            ? decimalify(
-                                  data.totalBorrowed.toString(),
-                                  decimals[data.title],
-                                  decimals[data.title],
-                              ) < 0.01
-                                ? '>0.00'
-                                : nFormatter(
-                                      decimalify(
-                                          data.totalBorrowed.toString(),
-                                          decimals[data.title],
-                                          decimals[data.title],
-                                      ),
-                                  )
-                            : '0'}{" "}
-                      {data.title}
-                    </span>{" "}
-                    <br />
-                    <span className={classes.faintFont}>
-                      $
-                      {data.totalBorrowed > 0
-                        ? nFormatter(
-                            decimalify(
-                              (data.totalBorrowed * data.usdPrice).toString(),
-                              decimals[data.title],
-                              decimals[data.title],
-                            ),
-                          )
-                        : "0.00"}
-                    </span>
-                  </TableCell>
-                  <TableCell align="center" className={classes.clearFont}>
-                    <span>
-                      {data.supplyRate > 0
-                        ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                          new BigNumber(data.supplyRate).gt(
-                            new BigNumber(10000000000000000),
-                          )
-                          ? roundValue(decimalify(data.supplyRate, 18))
-                          : "<0.01"
-                        : "0"}
-                      %
                     </span>
                   </TableCell>
                   <TableCell align="center" className={classes.clearFont}>
@@ -181,39 +132,6 @@ const BorrowMarketTokenTable = (props) => {
                           : "<0.01"
                         : "0"}
                       %
-                    </span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className={classes.clearFont}>
-                      {data.walletBalance > 0
-                            ? decimalify(
-                                  data.walletBalance.toString(),
-                                  decimals[data.title],
-                                  decimals[data.title],
-                              ) < 0.01
-                                ? '>0.00'
-                                : nFormatter(
-                                      decimalify(
-                                          data.walletBalance.toString(),
-                                          decimals[data.title],
-                                          decimals[data.title],
-                                      ),
-                                  )
-                            : '0'}{" "}
-                      {data.title}
-                    </span>{" "}
-                    <br />
-                    <span className={classes.faintFont}>
-                      $
-                      {data.walletBalance > 0
-                        ? nFormatter(
-                            decimalify(
-                              (data.walletBalance * data.usdPrice).toString(),
-                              decimals[data.title],
-                              decimals[data.title],
-                            ),
-                          )
-                        : "0.00"}
                     </span>
                   </TableCell>
                 </TableRow>
