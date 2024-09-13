@@ -1,5 +1,5 @@
 Creating contract KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1
- -> (Pair 950642634 (Pair 76000000000 1000000000000000000))
+ -> (Pair 950642634 (Pair 418000000000 1000000000000000000))
  => ./TezFinBuild/compiled_contracts/CFA2_IRM/step_000_cont_0_storage.tz 1
  => ./TezFinBuild/compiled_contracts/CFA2_IRM/step_000_cont_0_storage.json 1
  => ./TezFinBuild/compiled_contracts/CFA2_IRM/step_000_cont_0_sizes.csv 2

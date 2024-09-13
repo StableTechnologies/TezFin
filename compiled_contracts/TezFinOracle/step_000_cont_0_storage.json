@@ -5,20 +5,24 @@
       "prim": "Pair",
       "args": [
         { "string": "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL" },
-        [ { "prim": "Elt", "args": [ { "string": "OXTZ-USD" }, { "string": "XTZ-USD" } ] }, { "prim": "Elt", "args": [ { "string": "WTZ-USD" }, { "string": "XTZ-USD" } ] } ]
+        {
+          "prim": "Pair",
+          "args": [
+            [
+              { "prim": "Elt", "args": [ { "string": "OXTZ-USD" }, { "string": "XTZ-USD" } ] },
+              { "prim": "Elt", "args": [ { "string": "TZBTC-USD" }, { "string": "BTC-USD" } ] },
+              { "prim": "Elt", "args": [ { "string": "WTZ-USD" }, { "string": "XTZ-USD" } ] }
+            ],
+            { "string": "KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj" }
+          ]
+        }
       ]
     },
     {
       "prim": "Pair",
       "args": [
-        { "string": "KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj" },
-        {
-          "prim": "Pair",
-          "args": [
-            [ { "prim": "Elt", "args": [ { "string": "USD-USD" }, { "prim": "Pair", "args": [ { "string": "2023-10-13T06:58:24Z" }, { "int": "1000000" } ] } ] } ],
-            { "prim": "None" }
-          ]
-        }
+        [ { "prim": "Elt", "args": [ { "string": "USD-USD" }, { "prim": "Pair", "args": [ { "string": "2024-09-13T04:44:45Z" }, { "int": "1000000" } ] } ] } ],
+        { "prim": "Pair", "args": [ { "prim": "None" }, { "string": "KT1KzdDAVkEwLUhemZBp8asMJ9nvfbp6eV9C" } ] }
       ]
     }
   ]

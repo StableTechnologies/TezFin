@@ -5,7 +5,7 @@ class Contract(sp.Contract):
     self.init_type(sp.TRecord(account_liquidity = sp.TBigMap(sp.TAddress, sp.TRecord(liquidity = sp.TInt, updateLevel = sp.TNat, valid = sp.TBool).layout(("liquidity", ("updateLevel", "valid")))), activeOperations = sp.TSet(sp.TNat), administrator = sp.TAddress, closeFactorMantissa = sp.TNat, collaterals = sp.TBigMap(sp.TAddress, sp.TSet(sp.TAddress)), expScale = sp.TNat, halfExpScale = sp.TNat, liquidationIncentiveMantissa = sp.TNat, loans = sp.TBigMap(sp.TAddress, sp.TSet(sp.TAddress)), marketNameToAddress = sp.TMap(sp.TString, sp.TAddress), markets = sp.TBigMap(sp.TAddress, sp.TRecord(borrowPaused = sp.TBool, collateralFactor = sp.TRecord(mantissa = sp.TNat).layout("mantissa"), isListed = sp.TBool, mintPaused = sp.TBool, name = sp.TString, price = sp.TRecord(mantissa = sp.TNat).layout("mantissa"), priceExp = sp.TNat, priceTimestamp = sp.TTimestamp, updateLevel = sp.TNat).layout(((("borrowPaused", "collateralFactor"), ("isListed", "mintPaused")), (("name", "price"), ("priceExp", ("priceTimestamp", "updateLevel")))))), maxPriceTimeDifference = sp.TInt, oracleAddress = sp.TAddress, pendingAdministrator = sp.TOption(sp.TAddress), transferPaused = sp.TBool).layout(((("account_liquidity", ("activeOperations", "administrator")), (("closeFactorMantissa", "collaterals"), ("expScale", "halfExpScale"))), ((("liquidationIncentiveMantissa", "loans"), ("marketNameToAddress", "markets")), (("maxPriceTimeDifference", "oracleAddress"), ("pendingAdministrator", "transferPaused"))))))
     self.init(account_liquidity = {},
               activeOperations = sp.set([]),
-              administrator = sp.address('KT1KW6McQpHFZPffW6vZt5JSxibvVKAPnYUq'),
+              administrator = sp.address('KT1NF6DKX5giazRTzPtEuNX1npkVcaoQkvK2'),
               closeFactorMantissa = 500000000000000000,
               collaterals = {},
               expScale = 1000000000000000000,
@@ -15,7 +15,7 @@ class Contract(sp.Contract):
               marketNameToAddress = {},
               markets = {},
               maxPriceTimeDifference = 86400,
-              oracleAddress = sp.address('KT1RiGPbUciuBFykVoAmRawdvne322K8yV6N'),
+              oracleAddress = sp.address('KT1FU6obZqPu5S7c23R8iUzabDAuG47Jqsrm'),
               pendingAdministrator = sp.none,
               transferPaused = True)
 

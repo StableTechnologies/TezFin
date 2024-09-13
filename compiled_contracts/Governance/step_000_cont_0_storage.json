@@ -108,7 +108,7 @@
               "args": [ { "prim": "pair", "args": [ { "prim": "address", "annots": [ "%priceOracle" ] }, { "prim": "int", "annots": [ "%timeDiff" ] } ] } ],
               "annots": [ "%setPriceOracleAndTimeDiff" ]
             },
-            { "prim": "IF_NONE", "args": [ [ { "prim": "PUSH", "args": [ { "prim": "int" }, { "int": "202" } ] }, { "prim": "FAILWITH" } ], [] ] },
+            { "prim": "IF_NONE", "args": [ [ { "prim": "PUSH", "args": [ { "prim": "int" }, { "int": "203" } ] }, { "prim": "FAILWITH" } ], [] ] },
             { "prim": "NIL", "args": [ { "prim": "operation" } ] },
             { "prim": "SWAP" },
             { "prim": "PUSH", "args": [ { "prim": "mutez" }, { "int": "0" } ] },
