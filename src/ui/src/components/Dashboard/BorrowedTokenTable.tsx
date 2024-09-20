@@ -97,7 +97,7 @@ const BorrowedTokenTable = (props) => {
                     {borrowedData &&
                         borrowedData.map((data) => (
                             <TableRow key={data.title} onClick={() => handleClickMktModal(data)}>
-                                <TableCell>
+				<TableCell className={classes.firstCell}>
                                     <div>
                                         <div className={classes.token}>
                                             <img src={data.logo} alt={`${data.title}-Icon`} className={classes.img} />
@@ -110,7 +110,7 @@ const BorrowedTokenTable = (props) => {
                                     </div>
                                 </TableCell>
                                 <TableCell align="center" className={classes.clearFont}>
-                                    <span>
+				    <span className={classes.clearFont}>
                                         {data.rate > 0
                                             ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
                                               new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
@@ -159,7 +159,7 @@ const BorrowedTokenTable = (props) => {
                                         )}
                                     </span>
                                 </TableCell>
-                                <TableCell align="center">
+				  <TableCell align="center" className={classes.fourthCell}>
                                     <span className={classes.clearFont}>{checkLimitUsed(data)}%</span>
                                 </TableCell>
                             </TableRow>

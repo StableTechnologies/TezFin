@@ -134,7 +134,7 @@ const BorrowMarketTokenTable = (props) => {
                       %
                     </span>
                   </TableCell>
-                    <TableCell align="center" className={classes.clearFont}>
+		  <TableCell align="center" sx={{padding: "0px",width: "150%"}}>
                         <span>
                             <Button
                                 variant="contained"

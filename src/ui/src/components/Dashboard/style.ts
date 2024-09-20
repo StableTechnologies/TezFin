@@ -3,6 +3,7 @@ import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles({
   root: {
+
     "& .MuiTypography-root": {
       "@media(max-width: 501px)": {
         fontSize: "0.75rem",
@@ -12,20 +13,24 @@ export const useStyles = makeStyles({
       },
     },
     "& .MuiTable-root": {
+	  flexDirection: "column",
+	  width: "100%",
+	  alignItems: "center",
+	  justifyContent: "center",
       "& .MuiTableRow-root": {
-        "& .MuiTableCell-root:first-of-type": {
-          padding: "1.25rem",
-          paddingLeft: ".75rem",
-          "@media(min-width: 1200px)": {
-            paddingLeft: "1.5rem",
-          },
-        },
         "& .MuiTableCell-root:last-of-type": {
-          paddingRight: ".75rem",
-          "@media(min-width: 1200px)": {
-            paddingRight: "2.75rem",
-          },
+		display: "block",
+		//marginLeft: "10px",
+		//marginRight: "-100px",
+		paddingLeft: "0px",
+		paddingRight: "0px",
+		//width : "150%",
         },
+        "& .MuiTableCell-root:first-of-type": {
+          paddingLeft: "0.75rem",
+        },
+          paddingRight: "0rem",
+          marginRight: "0rem",
       },
     },
     "& .MuiTableCell-root": {
@@ -89,6 +94,7 @@ export const useStyles = makeStyles({
     },
   },
   tableCon: {
+    padding: "0px",
     background: "#fff",
     borderBottom: "0",
     borderRadius: "1rem",
@@ -103,21 +109,24 @@ export const useStyles = makeStyles({
     marginBottom: "-3px",
   },
   img: {
-    width: "2.5rem",
-    height: "2.5rem",
-    marginRight: "12px",
-    "@media (min-width: 769px) and (max-width: 1024px)": {
-      width: "2.5rem",
-      height: "2.5rem",
-    },
-    "@media(max-width: 768px)": {
-      width: "2.5rem",
-      height: "2.5rem",
-    },
-    "@media(max-width: 501px)": {
-      width: "2.5rem",
-      height: "2.5rem",
-    },
+	  //width: "7%",
+	  //height: "7%",
+    	  // marginRight: "20%",
+	   width: "2.5rem",
+    	   height: "2.5rem",
+    	   marginRight: "1rem",
+    	   "@media (min-width: 769px) and (max-width: 1024px)": {
+    	     width: "2.5rem",
+    	     height: "2.5rem",
+    	   },
+    	   "@media(max-width: 768px)": {
+    	     width: "2.5rem",
+    	     height: "2.5rem",
+    	   },
+    	   "@media(max-width: 501px)": {
+    	     width: "2.5rem",
+    	     height: "2.5rem",
+    	   },
   },
   tokenSymbol: {
     display: "inline",
@@ -140,6 +149,7 @@ export const useStyles = makeStyles({
     alignItems: "center",
     alignContent: "center",
     alignText: "center",
+    padding: "0px",
   },
   tokenTitle: {
     display: "flex",
@@ -221,6 +231,20 @@ export const useStyles = makeStyles({
       paddingRight: "3rem",
     },
   },
+   firstCell: {
+     width: "10%",
+   },
+   secondCell: {
+   },
+   thirdCell: {
+   },
+   fourthCell: {
+	
+   },
+   supplyButton: {
+	   left: "2rem",
+	   width: "100%",
+   },
   tableTitle: {
     color: "#000",
     opacity: "0.87",

@@ -41,7 +41,7 @@ const SupplyMarketTokenTable = (props) => {
   };
 
   return (
-    <TableContainer className={`${classes.root} ${classes.tableCon}`}>
+    <TableContainer  className={`${classes.root} ${classes.tableCon}`}>
       {tokenDetails && (
         <AllMarketModal
           open={openMktModal}
@@ -49,7 +49,7 @@ const SupplyMarketTokenTable = (props) => {
           tokenDetails={tokenDetails}
         />
       )}
-      <Table>
+      <Table size="medium" sx={{marginRight: "0px",}}>
         <TableHead>
           <TableRow>
             <TableCell> Token </TableCell>
@@ -66,7 +66,7 @@ const SupplyMarketTokenTable = (props) => {
                   key={data.title}
                   onClick={() => handleClickMktModal(data)}
                 >
-                  <TableCell>
+		<TableCell className={classes.firstCell}>
                     <div>
                       <div className={classes.token}>
                         <img
@@ -88,7 +88,7 @@ const SupplyMarketTokenTable = (props) => {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell align="center">
+		<TableCell align="center" className={classes.clearFont}>
                     <span className={classes.clearFont}>
                       {data.walletBalance > 0
                             ? decimalify(
@@ -134,12 +134,12 @@ const SupplyMarketTokenTable = (props) => {
                       %
                     </span>
                   </TableCell>
-                    <TableCell align="center" className={classes.clearFont}>
+		  <TableCell align="" className={classes.fourthCell}>
                         <span>
                             <Button
                                 variant="contained"
                                 size="medium"
-                                sx={ { width: "100%" } }
+				className={classes.supplyButton}
                                 onClick={() => handleClickMktModal(data)}
                             >
                                 Supply
