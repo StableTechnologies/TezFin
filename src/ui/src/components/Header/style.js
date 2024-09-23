@@ -11,36 +11,36 @@ export const useStyles = makeStyles({
             background: '#fff',
             marginTop: '0.5rem',
             padding: '1rem 0.5rem',
-            overflow: 'hidden',
-        },
+            overflow: 'hidden'
+        }
     },
     navCon: {
         paddingBottom: '1.625rem',
-        backgroundColor: '#F9FAFC',
+        backgroundColor: '#F9FAFC'
     },
     tezHeaderCon: {
         paddingLeft: '2.6875rem',
         paddingTop: '1.625rem',
         '@media(max-width: 501px)': {
-            paddingLeft: '0.5rem',
-        },
+            paddingLeft: '0.5rem'
+        }
     },
     tezHeader: {
         width: 'max-content',
         height: '3.142rem',
         '@media(max-width: 768px)': {
-            width: '10rem',
+            width: '10rem'
         },
         '@media(max-width: 501px)': {
             width: '8rem',
-            height: '2.642rem',
-        },
+            height: '2.642rem'
+        }
     },
     linkCon: {
         paddingTop: '2.25rem',
         '@media(min-width: 1200px)': {
-            textAlign: 'end',
-        },
+            textAlign: 'end'
+        }
     },
     link: {
         textDecoration: 'none',
@@ -52,93 +52,87 @@ export const useStyles = makeStyles({
         opacity: '0.87',
         '@media(min-width: 501px)': {
             '&:hover': {
-                borderBottom: '1px solid #000',
-            },
-        },
+                borderBottom: '1px solid #000'
+            }
+        }
     },
     activeLink: {
-        borderBottom: '1px solid #000',
+        borderBottom: '1px solid #000'
     },
     netAPY: {
         padding: '2.6875rem 6.25rem 1.5rem',
         '@media(max-width: 1024px)': {
-            paddingLeft: '4rem',
+            paddingLeft: '4rem'
         },
         '@media(max-width: 900px)': {
-            paddingLeft: '2rem',
+            paddingLeft: '2rem'
         },
         '@media(max-width: 768px)': {
-            padding: '2.6875rem 4rem 1.5rem',
+            padding: '2.6875rem 4rem 1.5rem'
         },
         '@media(max-width: 501px)': {
-            padding: '2.6875rem 1rem 1.5rem',
-        },
+            padding: '2.6875rem 1rem 1.5rem'
+        }
     },
     netAPYText: {
         fontWeight: '500',
         fontSize: '1.25rem',
         lineHeight: '1.875rem',
-        color: '#191919',
+        color: '#191919'
     },
     netAPYImg: {
         width: '1rem',
-        height: '1rem',
+        height: '1rem'
     },
     compositionOne: {
-        paddingLeft: '6.25rem',
-        '@media(max-width: 1024px)': {
-            paddingLeft: '4rem',
-        },
-        '@media(max-width: 900px)': {
-            paddingLeft: '2rem',
-        },
-        '@media(max-width: 768px)': {
-            paddingLeft: '4rem',
-        },
-        '@media(max-width: 501px)': {
-            paddingLeft: '1rem',
-        },
     },
     compositionTwo: {
         paddingLeft: '1.875rem',
         '@media(max-width: 1024px)': {
-            paddingLeft: '0.9375rem',
+            paddingLeft: '0.9375rem'
         },
         '@media(max-width: 900px)': {
-            paddingLeft: '2rem',
+            paddingLeft: '2rem'
         },
         '@media(max-width: 899px)': {
-            paddingLeft: '2rem',
-            paddingTop: '1.5rem',
+            paddingLeft: '0rem',
+            paddingTop: '1.5rem'
         },
         '@media(max-width: 768px)': {
-            paddingLeft: '4rem',
-            paddingTop: '1.5rem',
+            paddingLeft: '0rem',
+            paddingTop: '1.5rem'
         },
         '@media(max-width: 501px)': {
-            paddingLeft: '1rem',
-        },
+            paddingLeft: '0rem'
+        }
     },
     compositionTitle: {
         color: '#000',
         opacity: '0.87',
         fontSize: '1.25rem',
         fontWeight: '500',
-        lineHeight: '30px',
+        lineHeight: '30px'
     },
     compositionGrid: {
-        paddingTop: '2rem',
-        justifyContent: 'space-between',
-        rowGap: '2.1rem',
-        '@media(max-width: 768px)': {
-            rowGap: '2.1rem',
+        padding: '2rem 6.25rem 0px',
+        '@media(max-width: 1024px)': {
+            padding: '2rem 4rem 0px'
         },
+        '@media(max-width: 900px)': {
+            padding: '2rem 2rem 0px'
+        },
+        '@media(max-width: 768px)': {
+            padding: '2rem 4rem 0px'
+        },
+        '@media(max-width: 501px)': {
+            padding: '2rem 1rem 0px'
+        }
     },
     box: {
         paddingTop: '2.7375rem',
         '@media(max-width: 768px)': {
-            paddingTop: '2.25rem',
-        },
+            paddingTop: '2.25rem'
+        }
     },
     boxOne: {
         borderRight: '1px solid #BDBDBD',
@@ -146,48 +140,48 @@ export const useStyles = makeStyles({
         maxWidth: 'fit-content',
         paddingRight: '2rem',
         '@media(min-width: 769px) and (max-width: 1200px)': {
-            paddingRight: '1rem',
+            paddingRight: '1rem'
         },
         '@media(max-width: 900px)': {
-            maxWidth: '25%',
+            maxWidth: '25%'
         },
         '@media(max-width: 768px)': {
-            maxWidth: '28%',
+            maxWidth: '28%'
         },
         '@media(max-width: 501px)': {
             paddingRight: '1rem',
             marginRight: '1rem',
-            minWidth: '170px',
+            minWidth: '170px'
         },
         '@media(max-width: 320px)': {
             paddingRight: '0.5rem',
             marginRight: '0.5rem',
-            minWidth: '135px',
-        },
+            minWidth: '135px'
+        }
     },
     boxTwo: {
         '@media(min-width: 501px)': {
             minWidth: 'fit-content',
-            maxWidth: 'fit-content',
+            maxWidth: 'fit-content'
         },
         '@media(min-width: 1201px)': {
-            paddingLeft: '54px',
+            paddingLeft: '54px'
         },
         '@media(min-width: 501px) and (max-width: 1200px)': {
-            paddingLeft: '27px',
+            paddingLeft: '27px'
         },
         '@media(max-width: 501px)': {
             paddingLeft: '0',
-            flexWrap: 'nowrap',
-        },
+            flexWrap: 'nowrap'
+        }
     },
     boxImg: {
         width: '3.5rem',
         height: '3.5rem',
         '@media(max-width: 320px)': {
             width: '2rem',
-            height: '2rem',
-        },
+            height: '2rem'
+        }
     },
     statsTitle: {
         color: '#000',
@@ -195,11 +189,11 @@ export const useStyles = makeStyles({
         fontSize: '0.875rem',
         lineHeight: '26px',
         '@media(max-width: 376px)': {
-            fontSize: '0.75rem',
+            fontSize: '0.75rem'
         },
         '@media(max-width: 320px)': {
-            lineHeight: '13px',
-        },
+            lineHeight: '13px'
+        }
     },
     statsValue: {
         fontSize: '1.25rem',
@@ -207,53 +201,50 @@ export const useStyles = makeStyles({
         color: '#000',
         opacity: '0.87',
         '@media(max-width: 1200px)': {
-            fontSize: '1.125rem',
+            fontSize: '1.125rem'
         },
         '@media(max-width: 768px)': {
-            fontSize: '1rem',
+            fontSize: '1rem'
         },
         '@media(max-width: 501px)': {
-            fontSize: '0.875rem',
+            fontSize: '0.875rem'
         },
         '@media(max-width: 320px)': {
-            fontSize: '0.75rem',
-        },
+            fontSize: '0.75rem'
+        }
     },
-    progressBar: {
-        width: '33rem',
+    progressBarOne: {
         paddingTop: '7px',
-        '@media(min-width: 1441px)': {
-            width: '85%',
-        },
-        '@media(max-width: 1280px)': {
-            width: '80%',
-        },
+        paddingRight: '1.875rem',
         '@media(max-width: 1024px)': {
-            width: '85%',
+            paddingRight: '0.9375rem'
         },
         '@media(max-width: 900px)': {
-            width: '95%',
+            paddingRight: '2rem'
+        },
+        '@media(max-width: 899px)': {
+            paddingRight: '0rem'
         },
         '@media(max-width: 768px)': {
-            width: '95%',
+            paddingRight: '0rem'
         },
         '@media(max-width: 501px)': {
-            width: '95%',
-        },
-        '@media(max-width: 376px)': {
-            width: '95%',
-        },
+            paddingRight: '0rem'
+        }
+    },
+    progressBarTwo: {
+        paddingTop: '7px'
     },
     addWalletCon: {
         paddingTop: '2.1875rem',
         paddingRight: '3.8rem',
         textAlign: 'end',
         '@media(max-width: 768px)': {
-            paddingTop: '1.625rem',
+            paddingTop: '1.625rem'
         },
         '@media(max-width: 501px)': {
-            paddingRight: '1.2rem',
-        },
+            paddingRight: '1.2rem'
+        }
     },
     wallet: {
         width: '10.75rem',
@@ -267,28 +258,28 @@ export const useStyles = makeStyles({
         '@media(max-width: 501px)': {
             width: '8.25rem',
             lineHeight: '1.9rem',
-            fontSize: '.875rem',
+            fontSize: '.875rem'
         },
         '@media(max-width: 320px)': {
             width: '7.5rem',
-            fontSize: '.75rem',
-        },
+            fontSize: '.75rem'
+        }
     },
     defaultWallet: {
         border: '2px solid #2F80ED',
         color: '#2F80ED',
         '&:hover': {
             background: '#2F80ED',
-            color: '#fff',
-        },
+            color: '#fff'
+        }
     },
     connectedWallet: {
         border: '.5px solid #828282',
         color: '#000',
         opacity: '0.87',
         '&:hover': {
-            background: 'transparent',
-        },
+            background: 'transparent'
+        }
     },
     popoverImg: {
         width: '1rem',
@@ -296,8 +287,8 @@ export const useStyles = makeStyles({
         margin: '0 8px',
         '@media(min-width: 1024px)': {
             width: '1.5rem',
-            height: '1.5rem',
-        },
+            height: '1.5rem'
+        }
     },
     popoverBtn: {
         display: 'flex',
@@ -308,15 +299,15 @@ export const useStyles = makeStyles({
         textTransform: 'none',
         lineHeight: '30px',
         '&:hover': {
-            background: 'transparent',
-        },
+            background: 'transparent'
+        }
     },
     copyText: {
         color: '#000',
         opacity: '0.87',
         fontWeight: '400',
         fontSize: '1.25rem',
-        paddingLeft: '1rem',
+        paddingLeft: '1rem'
     },
     networkType: {
         color: '#000',
@@ -328,22 +319,22 @@ export const useStyles = makeStyles({
         textAlign: 'center',
         '@media(max-width: 501px)': {
             fontSize: '0.625rem',
-            paddingBottom: '0.5rem',
-        },
-    },
+            paddingBottom: '0.5rem'
+        }
+    }
 });
 
 const PREFIX = 'Header';
 export const classes1 = {
     root: `${PREFIX}-root`,
     cta: `${PREFIX}-cta`,
-    content: `${PREFIX}-content`,
+    content: `${PREFIX}-content`
 };
 export const HeaderCon = styled('div')(() => ({
     [`&.${classes1.root}`]: {
         backgroundColor: '#F9FAFC',
-        paddingBottom: '2.1rem',
-    },
+        paddingBottom: '2.1rem'
+    }
 }));
 export const Title = styled('p')(() => ({
     [`&.${classes1.content}`]: {
@@ -353,6 +344,6 @@ export const Title = styled('p')(() => ({
         fontWeight: 'bold',
         lineHeight: '70px',
         letterSpacing: '0.005em',
-        maxWidth: '159px',
-    },
+        maxWidth: '159px'
+    }
 }));

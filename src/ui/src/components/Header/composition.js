@@ -15,7 +15,7 @@ import { useStyles } from './style';
 const Composition = (props) => {
     const classes = useStyles();
     const {
-        title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarColor, supplyBar
+        title, data, dataIcon, dataTitle, dataLimitIcon, dataLimitTitle, gridClass, progressBarClass, progressBarColor, supplyBar
     } = props;
 
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
@@ -23,7 +23,7 @@ const Composition = (props) => {
     return (
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
-            <Box className={classes.progressBar}>
+            <Box className={progressBarClass}>
                 {supplyBar
                     ? <StackedBars composition={data} />
                     : <ToolTipProgressBars value={data.borrowUtilization && data.borrowUtilization.toNumber()} backgroundColor={progressBarColor} height='40px'/>

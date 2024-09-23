@@ -56,6 +56,7 @@ const Header = () => {
           dataLimitIcon={collateralizedIcon}
           dataLimitTitle="Collateralized"
           gridClass={classes.compositionOne}
+          progressBarClass={classes.progressBarOne}
           progressBarColor={classes.supplyBarColor} // add class
           supplyBar
         />
@@ -68,6 +69,7 @@ const Header = () => {
           dataLimitIcon={borrowLimitIcon}
           dataLimitTitle="Borrow limit"
           gridClass={classes.compositionTwo}
+          progressBarClass={classes.progressBarTwo}
           progressBarColor={classes.borrowBarColor} // add class
         />
       </Grid>
