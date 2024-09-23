@@ -47,6 +47,7 @@ const BorrowMarketTokenTable = (props) => {
           open={openMktModal}
           close={closeModal}
           tokenDetails={tokenDetails}
+	  tab="two"
         />
       )}
       <Table>
