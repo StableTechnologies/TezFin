@@ -2,12 +2,13 @@ import smartpy as sp
 
 class Contract(sp.Contract):
   def __init__(self):
-    self.init_type(sp.TRecord(admin = sp.TAddress, alias = sp.TBigMap(sp.TString, sp.TString), oracle = sp.TAddress, overrides = sp.TBigMap(sp.TString, sp.TPair(sp.TTimestamp, sp.TNat)), pendingAdmin = sp.TOption(sp.TAddress)).layout((("admin", "alias"), ("oracle", ("overrides", "pendingAdmin")))))
+    self.init_type(sp.TRecord(admin = sp.TAddress, alias = sp.TBigMap(sp.TString, sp.TString), oracle = sp.TAddress, overrides = sp.TBigMap(sp.TString, sp.TPair(sp.TTimestamp, sp.TNat)), pendingAdmin = sp.TOption(sp.TAddress), usdtOracle = sp.TAddress).layout((("admin", ("alias", "oracle")), ("overrides", ("pendingAdmin", "usdtOracle")))))
     self.init(admin = sp.address('tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL'),
-              alias = {'OXTZ-USD' : 'XTZ-USD', 'WTZ-USD' : 'XTZ-USD'},
+              alias = {'OXTZ-USD' : 'XTZ-USD', 'TZBTC-USD' : 'BTC-USD', 'WTZ-USD' : 'XTZ-USD'},
               oracle = sp.address('KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj'),
-              overrides = {'USD-USD' : (sp.timestamp(1697180304), 1000000)},
-              pendingAdmin = sp.none)
+              overrides = {'USD-USD' : (sp.timestamp(1726202685), 1000000)},
+              pendingAdmin = sp.none,
+              usdtOracle = sp.address('KT1KzdDAVkEwLUhemZBp8asMJ9nvfbp6eV9C'))
 
   @sp.entry_point
   def accept_admin(self):

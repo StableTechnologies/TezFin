@@ -7,7 +7,7 @@
         {
           "prim": "Pair",
           "args": [
-            { "prim": "Pair", "args": [ [], { "prim": "Pair", "args": [ [], { "string": "KT1KW6McQpHFZPffW6vZt5JSxibvVKAPnYUq" } ] } ] },
+            { "prim": "Pair", "args": [ [], { "prim": "Pair", "args": [ [], { "string": "KT1NF6DKX5giazRTzPtEuNX1npkVcaoQkvK2" } ] } ] },
             {
               "prim": "Pair",
               "args": [
@@ -24,7 +24,7 @@
             {
               "prim": "Pair",
               "args": [
-                { "prim": "Pair", "args": [ { "int": "86400" }, { "string": "KT1RiGPbUciuBFykVoAmRawdvne322K8yV6N" } ] },
+                { "prim": "Pair", "args": [ { "int": "86400" }, { "string": "KT1FU6obZqPu5S7c23R8iUzabDAuG47Jqsrm" } ] },
                 { "prim": "Pair", "args": [ { "prim": "None" }, { "prim": "True" } ] }
               ]
             }

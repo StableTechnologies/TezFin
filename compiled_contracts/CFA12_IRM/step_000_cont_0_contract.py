@@ -4,7 +4,7 @@ class Contract(sp.Contract):
   def __init__(self):
     self.init_type(sp.TRecord(baseRatePerBlock = sp.TNat, multiplierPerBlock = sp.TNat, scale = sp.TNat).layout(("baseRatePerBlock", ("multiplierPerBlock", "scale"))))
     self.init(baseRatePerBlock = 950642634,
-              multiplierPerBlock = 76000000000,
+              multiplierPerBlock = 418000000000,
               scale = 1000000000000000000)
 
   @sp.entry_point
