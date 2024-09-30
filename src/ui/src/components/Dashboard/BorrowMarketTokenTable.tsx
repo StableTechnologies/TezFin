@@ -56,6 +56,7 @@ const BorrowMarketTokenTable = (props) => {
             <TableCell> Token </TableCell>
             <TableCell align="center"> Available </TableCell>
             <TableCell align="center"> Borrow APY </TableCell>
+            <TableCell align="center"> </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -67,7 +68,7 @@ const BorrowMarketTokenTable = (props) => {
                   key={data.title}
                   onClick={() => handleClickMktModal(data)}
                 >
-                  <TableCell>
+		<TableCell className={classes.firstCell}>
                     <div>
                       <div className={classes.token}>
                         <img
@@ -135,11 +136,11 @@ const BorrowMarketTokenTable = (props) => {
                       %
                     </span>
                   </TableCell>
-		  <TableCell align="center" sx={{padding: "0px",width: "150%"}}>
+		  <TableCell align="center" >
                         <span>
                             <Button
                                 variant="contained"
-                                size="small"
+                                size="medium"
                                 sx={ { marginRight: "10%" } }
                                 onClick={() => handleClickMktModal(data)}
                             >
@@ -147,7 +148,7 @@ const BorrowMarketTokenTable = (props) => {
                             </Button>
                             <Button
                                 variant="contained"
-                                size="small"
+                                size="medium"
                                 onClick={() => handleClickMktModal(data)}
                             >
                                 Details
@@ -156,7 +157,7 @@ const BorrowMarketTokenTable = (props) => {
                     </TableCell>
                 </TableRow>
               ) : (
-                <TableSkeleton index={data.title} cell={6} />
+                <TableSkeleton index={data.title} cell={4} />
               )}
             </React.Fragment>
           ))}

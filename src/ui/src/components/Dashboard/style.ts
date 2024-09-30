@@ -239,10 +239,9 @@ export const useStyles = makeStyles({
    thirdCell: {
    },
    fourthCell: {
-	
+     width: "50%",
    },
    supplyButton: {
-	   left: "2rem",
 	   width: "100%",
    },
   tableTitle: {

@@ -159,7 +159,7 @@ const BorrowedTokenTable = (props) => {
                                         )}
                                     </span>
                                 </TableCell>
-				  <TableCell align="center" className={classes.fourthCell}>
+				  <TableCell align="center">
                                     <span className={classes.clearFont}>{checkLimitUsed(data)}%</span>
                                 </TableCell>
                             </TableRow>

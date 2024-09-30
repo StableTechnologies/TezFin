@@ -55,6 +55,7 @@ const SupplyMarketTokenTable = (props) => {
             <TableCell> Token </TableCell>
             <TableCell align="center"> Wallet </TableCell>
             <TableCell align="center"> Supply APY </TableCell>
+            <TableCell align="center">  </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -134,7 +135,7 @@ const SupplyMarketTokenTable = (props) => {
                       %
                     </span>
                   </TableCell>
-		  <TableCell align="" className={classes.fourthCell}>
+		  <TableCell align="center" className={classes.fourthCell}>
                         <span>
                             <Button
                                 variant="contained"
@@ -148,7 +149,7 @@ const SupplyMarketTokenTable = (props) => {
                     </TableCell>
                 </TableRow>
               ) : (
-                <TableSkeleton index={data.title} cell={6} />
+                <TableSkeleton index={data.title} cell={4} />
               )}
             </React.Fragment>
           ))}
