@@ -106,17 +106,21 @@ export const useStyles = makeStyles({
     width: "2.5rem",
     height: "2.5rem",
     marginRight: "12px",
+
     "@media (min-width: 769px) and (max-width: 1024px)": {
       width: "2.5rem",
       height: "2.5rem",
+      marginLeft: "12px",
     },
     "@media(max-width: 768px)": {
       width: "2.5rem",
       height: "2.5rem",
+      marginLeft: "12px",
     },
     "@media(max-width: 501px)": {
       width: "2.5rem",
       height: "2.5rem",
+      marginLeft: "10px",
     },
   },
   tokenSymbol: {
