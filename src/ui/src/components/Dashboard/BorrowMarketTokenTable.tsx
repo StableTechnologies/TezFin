@@ -35,9 +35,14 @@ const BorrowMarketTokenTable = (props) => {
     setMktModal(false);
   };
 
+  const handleClickDetails = (address) => {
+    const tzktUrl = process.env.REACT_APP_ENV=="dev"? `https://ghostnet.tzkt.io/${address}` : `https://tzkt.io/${address}`;
+    window.open(tzktUrl, '_blank'); 
+  };
+
   const handleClickMktModal = (item) => {
-    setTokenDetails(item);
-    setMktModal(true);
+	      setTokenDetails(item);
+	      setMktModal(true);
   };
 
   return (
@@ -66,7 +71,6 @@ const BorrowMarketTokenTable = (props) => {
               (!address && data.marketSize) ? (
                 <TableRow
                   key={data.title}
-                  onClick={() => handleClickMktModal(data)}
                 >
 		<TableCell className={classes.firstCell}>
                     <div>
@@ -94,17 +98,17 @@ const BorrowMarketTokenTable = (props) => {
                     <span className={classes.clearFont}>
                       {data.marketSize > 0
                           ? decimalify(
-                                data.marketSize.toString(),
+                                data.available.toString(),
                                 decimals[data.title],
                                 decimals[data.title],
                             ) < 0.01
                               ? '>0.00'
                               : nFormatter(
-                                    decimalify(
-                                        (data.marketSize - data.totalBorrowed).toString(),
-                                        decimals[data.title],
-                                        decimals[data.title],
-                                    ),
+					decimalify(
+						data.available.toString(),
+						decimals[data.title],
+						decimals[data.title],
+					    )
                                 )
                           : '0'}{" "}
                       {data.title}
@@ -136,22 +140,40 @@ const BorrowMarketTokenTable = (props) => {
                       %
                     </span>
                   </TableCell>
-		  <TableCell align="center" >
+		  <TableCell align="center" className={classes.fifthCell}>
                         <span>
                             <Button
                                 variant="contained"
                                 size="medium"
-                                sx={ { marginRight: "10%" } }
+				sx={ { marginRight: "0%",
+				       borderRadius: "8px",
+				       right: "18%", } }
                                 onClick={() => handleClickMktModal(data)}
                             >
-                                Borrow
+				    B
+				    <Typography textTransform={'lowercase'}>
+				    orrow
+				</Typography>
                             </Button>
                             <Button
                                 variant="contained"
                                 size="medium"
-                                onClick={() => handleClickMktModal(data)}
+                                onClick={() => handleClickDetails(data.address)}
+				sx={ { 
+					color: "#2C2C2C",
+					border: "1px solid #2C2C2C",
+					borderRadius: "8px",
+					backgroundColor: "#F2F3F7",
+				        '&:hover': {
+					    backgroundColor: 'lightgrey',
+					    boxShadow: 'none',
+					  },
+				} }
                             >
-                                Details
+				    D
+				    <Typography textTransform={'lowercase'}>
+                                etails
+				</Typography>
                             </Button>
                         </span>
                     </TableCell>

@@ -18,17 +18,6 @@ export const useStyles = makeStyles({
 	  alignItems: "center",
 	  justifyContent: "center",
       "& .MuiTableRow-root": {
-        "& .MuiTableCell-root:last-of-type": {
-		display: "block",
-		//marginLeft: "10px",
-		//marginRight: "-100px",
-		paddingLeft: "0px",
-		paddingRight: "0px",
-		//width : "150%",
-        },
-        "& .MuiTableCell-root:first-of-type": {
-          paddingLeft: "0.75rem",
-        },
           paddingRight: "0rem",
           marginRight: "0rem",
       },
@@ -70,6 +59,8 @@ export const useStyles = makeStyles({
     "& .MuiTableBody-root ": {
       "& .MuiTableRow-root:last-of-type": {
         "& .MuiTableCell-root": {
+	  padding: "-10px",
+	  marginRight: "10px",
           borderBottom: "0",
         },
       },
@@ -239,10 +230,17 @@ export const useStyles = makeStyles({
    thirdCell: {
    },
    fourthCell: {
-     width: "50%",
+     width: "30%",
+   },
+   fifthCell: {
+	   width: "30%",
+	   right: "10px",
    },
    supplyButton: {
-	   width: "100%",
+	   borderRadius: "8px",
+	   marginRight: "30%",
+	   marginLeft: "10%",
+	   width: "50%",
    },
   tableTitle: {
     color: "#000",

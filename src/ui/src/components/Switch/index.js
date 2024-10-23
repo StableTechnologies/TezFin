@@ -13,15 +13,17 @@ const CustomSwitch = styled((props) => (
   padding: 0,
   '& .MuiSwitch-switchBase': {
     padding: 0,
-    marginTop: 2.5,
-    margin: 2,
+    margin: 2.9,
     transitionDuration: '300ms',
     transform: 'translateX(1px) scale(0.5)',
     color: '#79747E',
     '&.Mui-checked': {
+	    padding: 0,
+	    margin: 2,
 	    width: "22px",
 	    height: "22px",
-      transform: 'translateX(18px)',
+
+      transform: 'translateX(18px) scale(1)',
        color: '#EADDFF',
       '& + .MuiSwitch-track': {
       border: '0px solid red',

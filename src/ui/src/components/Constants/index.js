@@ -1,4 +1,4 @@
-import { AssetType } from 'tezoslendingplatformjs';
+import { AssetType, testnetAddresses, mainnetAddresses } from 'tezoslendingplatformjs';
 import fUSDtz from '../../assets/fusdtz.svg';
 import fXTZ from '../../assets/fXTZ.svg';
 import fUSDT from '../../assets/fusdt.svg';
@@ -21,6 +21,8 @@ import XTZ from '../../assets/XTZ.svg';
 // import fOXTZ from '../../assets/foxtz.svg';
 // import fWTZ from '../../assets/fwtz.svg';
 
+const addresses = process.env.REACT_APP_ENV=="dev"? testnetAddresses : mainnetAddresses;
+
 export const tokens = [
     {
         title: 'XTZ',
@@ -29,6 +31,7 @@ export const tokens = [
         fLogo: fXTZ,
         banner: 'Tez',
         assetType: AssetType.XTZ,
+	address: ''
     },
     {
         title: 'USDtz',
@@ -37,6 +40,7 @@ export const tokens = [
         fLogo: fUSDtz,
         banner: 'USDtz',
         assetType: AssetType.USD,
+	address: addresses.underlying.USD?.address ?? ''
     },
     {
         title: 'USDt',
@@ -45,6 +49,7 @@ export const tokens = [
         fLogo: fUSDT,
         banner: 'USDt',
         assetType: AssetType.USDT,
+	address: addresses.underlying.USDT?.address ?? ''
     },
     {
         title: 'tzBTC',
@@ -54,6 +59,7 @@ export const tokens = [
         banner: 'tzBTC',
         assetType: AssetType.TZBTC,
         visibilityThreshold: 0.0000001,
+	address: addresses.underlying.TZBTC?.address ?? ''
     }
     // {
     //     title: 'BTCtz', logo: BTCtz, fLogo: fBTCtz, banner: 'BTCtz', assetType: AssetType.BTC
