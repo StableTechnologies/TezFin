@@ -25,7 +25,9 @@ const Dashboard = () => {
     const { suppliedMarkets, borrowedMarkets, allMarkets } = useSelector((state: any) => state.market);
 
     useEffect(() => {
-        if (!markets) { return; }
+        if (!markets) {
+            return;
+        }
         dispatch(allMarketAction(account, markets));
 
         dispatch(suppliedMarketAction(allMarkets));
@@ -36,7 +38,7 @@ const Dashboard = () => {
         <Grid container className={classes.dashboard}>
             <Grid item xs={6} md={6} className={classes.supplyTablePadding}>
                 <Typography className={classes.tableTitle}> Supplying </Typography>
-                <SuppliedTokenTable tableData={suppliedMarkets}/>
+                <SuppliedTokenTable tableData={suppliedMarkets} />
             </Grid>
             <Grid item xs={6} md={6} className={classes.borrowTablePadding}>
                 <Typography className={classes.tableTitle}> Borrowing </Typography>

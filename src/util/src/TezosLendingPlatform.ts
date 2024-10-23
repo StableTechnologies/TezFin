@@ -100,7 +100,6 @@ export namespace TezosLendingPlatform {
                         supply.totalAmount.minus(borrow.totalAmount).minus(fToken.totalReserves),
 		fToken);
 	    
-	console.log("!!! " + underlying.assetType + ": " + " Supply bigint " + supply.totalAmount + ", borrow bigint " + borrow.totalAmount + ", supply - borrow bigint " + borrow.totalAmount.minus(supply.totalAmount)  + ", available BigNumber " + available);
         return {
             currentPrice: price,
             address: address,

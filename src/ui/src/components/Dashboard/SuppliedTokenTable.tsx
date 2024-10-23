@@ -114,7 +114,7 @@ const SuppliedTokenTable = (props) => {
                     {suppliedData &&
                         suppliedData.map((data) => (
                             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
-				<TableCell className={classes.firstCell}>
+                                <TableCell className={classes.firstCell}>
                                     <div>
                                         <div className={classes.token}>
                                             <img src={data.fLogo} alt={`${data.title}-Icon`} className={classes.img} />
@@ -178,7 +178,7 @@ const SuppliedTokenTable = (props) => {
                                             : '0.00'}
                                     </span>
                                 </TableCell>
-				  <TableCell align="center" className={classes.switchPadding}>
+                                <TableCell align="center" className={classes.switchPadding}>
                                     <Switch data={data} />
                                 </TableCell>
                             </TableRow>
