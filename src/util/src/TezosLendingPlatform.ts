@@ -96,7 +96,10 @@ export namespace TezosLendingPlatform {
             rate: FToken.getBorrowRateApy(fToken, rateModel),
             rateFn: FToken.getDynamicBorrowRateApyFn(fToken, rateModel),
         };
-
+	const available =  FToken.applyExchangeRate(
+                        supply.totalAmount.minus(borrow.totalAmount).minus(fToken.totalReserves),
+		fToken);
+	    
         return {
             currentPrice: price,
             address: address,
@@ -105,6 +108,7 @@ export namespace TezosLendingPlatform {
             cashUsd: comptroller.markets[underlying.assetType].price.multiply(FToken.GetCash(fToken)),
             supply: supply,
             borrow: borrow,
+	    available: available,
             dailyInterestPaid: bigInt('0'), // TODO: parse this
             reserves: fToken.totalReserves,
             reserveFactor: fToken.reserveFactorMantissa.toJSNumber(),
