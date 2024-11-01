@@ -194,16 +194,16 @@ export const useStyles = makeStyles({
     },
     borrowTablePadding: {
         '@media(max-width: 600px)': {
-            paddingRight: '1.975rem',
+            paddingLeft: '0.975rem',
         },
         '@media(min-width: 900px)': {
-            paddingRight: '0.975rem',
+            paddingLeft: '0.975rem',
         },
         '@media(min-width: 1024px)': {
-            paddingRight: '0.9375rem',
+            paddingLeft: '0.9375rem',
         },
         '@media(min-width: 1200px)': {
-            paddingRight: '0.875rem',
+            paddingLeft: '0.875rem',
         },
     },
     supplyTablePadding: {
@@ -237,6 +237,15 @@ export const useStyles = makeStyles({
         marginRight: '30%',
         marginLeft: '10%',
         width: '50%',
+    },
+    tableTitle2: {
+        color: '#000',
+        opacity: '0.87',
+        padding: ' 1.5rem 0 .5rem',
+	display: 'inline-block',
+        fontSize: '1.25rem',
+        fontWeight: '500',
+        lineHeight: '30px',
     },
     tableTitle: {
         color: '#000',

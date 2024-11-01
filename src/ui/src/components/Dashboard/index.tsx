@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import BorrowedTokenTable from './BorrowedTokenTable';
 import SuppliedTokenTable from './SuppliedTokenTable';
@@ -45,11 +45,15 @@ const Dashboard = () => {
                 <BorrowedTokenTable tableData={borrowedMarkets} />
             </Grid>
             <Grid item xs={6} md={6} className={classes.supplyTablePadding}>
-                <Typography className={classes.tableTitle}> Assets to Supply </Typography>
+		<Box sx={{width: "100vw", display:"inline-block"}} >
+			<Typography noWrap={false} className={classes.tableTitle}> Assets to Supply </Typography>
+	        </Box>
                 <SupplyMarketTokenTable tableData={allMarkets} />
             </Grid>
             <Grid item xs={6} md={6} className={classes.borrowTablePadding}>
-                <Typography className={classes.tableTitle}> Assets to Borrow </Typography>
+		<Box sx={{width: "100vw", display:"inline-block"}} >
+			<Typography noWrap={false} className={classes.tableTitle}>Assets to Borrow</Typography>
+	        </Box>
                 <BorrowMarketTokenTable tableData={allMarkets} />
             </Grid>
         </Grid>
