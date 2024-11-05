@@ -97,8 +97,9 @@ class TezFinOracle(OracleInterface.OracleInterface):
             sp.if self.data.alias.contains(requestedAsset):
                 asset.value = self.data.alias[requestedAsset]
             sp.if asset.value == "USDT-USD" :
-                oracle_data = sp.view("get_price", self.data.usdtOracle, "USDTUSD", t=sp.TNat).open_some("invalid oracle view call")
-                sp.result((sp.now,oracle_data))
+                oracle_data = sp.view("get_price_with_timestamp", self.data.usdtOracle, "USDTUSD", t=sp.TPair(
+                    sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
+                sp.result((sp.snd(oracle_data), sp.fst(oracle_data)))
             sp.else:
                 oracle_data = sp.view("getPrice", self.data.oracle, asset.value, t=sp.TPair(
                     sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
