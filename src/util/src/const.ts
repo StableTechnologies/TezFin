@@ -128,7 +128,7 @@ export const mainnetAddresses: ProtocolAddresses = {
     TZBTC: "KT1Vzf3fXVBry4TDxWAfYzsn6ZPyMroMKUdW",
   },
   governance: "KT1NF6DKX5giazRTzPtEuNX1npkVcaoQkvK2",
-  oracle: "KT1FU6obZqPu5S7c23R8iUzabDAuG47Jqsrm",
+  oracle: "KT1DCzz5HjXi8STVN5hSLmWmqM3zNJvB7KRk",
 };
 
 export const tokenNames: { [assetType: string]: string } = {
