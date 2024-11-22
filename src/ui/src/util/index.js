@@ -3,6 +3,7 @@ import { KeyStoreCurve, KeyStoreType, TezosNodeReader, TezosNodeWriter } from 'c
 import { BigNumber } from 'bignumber.js';
 import { DAppClient } from '@airgap/beacon-sdk';
 import bigInt from 'big-integer';
+import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../library/${process.env.REACT_APP_ENV || 'prod'}-network-config.json`);
@@ -80,16 +81,21 @@ export const evaluateTransaction = async (operations) => {
 
         const counter = await TezosNodeReader.getCounterForAccount(config.infra.tezosNode, address);
 
-        console.log('operation', operations);
-
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
             counter,
             operations,
-            true,
+            false
         );
-        return { opGroup };
+        const estimatedGroup = await TezosLendingPlatform.estimateWithTaquito(
+          opGroup,
+          config.infra.tezosNode,
+          keyStore
+        );
+
+        console.log("operation", estimatedGroup);
+        return { opGroup: estimatedGroup };
     } catch (error) {
         console.log('evaluateTX', error);
         return { error };

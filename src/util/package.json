@@ -25,6 +25,8 @@
     "typescript": "^4.4.3"
   },
   "dependencies": {
+    "@taquito/michel-codec": "^20.1.0",
+    "@taquito/taquito": "^20.1.0",
     "big-integer": "^1.6.51",
     "bignumber.js": "9.0.1",
     "chai": "^4.3.6",
