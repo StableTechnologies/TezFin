@@ -145,6 +145,28 @@ export const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
     },
+    borrowButton: {
+        marginRight: '0%',
+        borderRadius: '8px',
+        right: '10%',
+        '@media(max-width: 900px)': {
+		right: '10%'
+        },
+        '@media(max-width: 768px)': {
+        },
+        '@media(max-width: 501px)': {
+        },
+    },
+    detailsButton: {
+       color: '#2C2C2C',
+       border: '1px solid #2C2C2C',
+       borderRadius: '8px',
+       backgroundColor: '#F2F3F7',
+       '&:hover': {
+           backgroundColor: 'lightgrey',
+           boxShadow: 'none',
+       },
+    },
     tokenName: {
         display: 'inline',
         color: '#000',
@@ -193,12 +215,12 @@ export const useStyles = makeStyles({
         },
     },
     borrowTablePadding: {
-        '@media(max-width: 600px)': {
-            paddingLeft: '0.975rem',
-        },
-        '@media(min-width: 900px)': {
-            paddingLeft: '0.975rem',
-        },
+	'@media(min-width: 600px)': {
+	    paddingRight: '1rem',
+	},
+	'@media(min-width: 900px)': {
+	    paddingRight: '2rem',
+	},
         '@media(min-width: 1024px)': {
             paddingLeft: '0.9375rem',
         },
@@ -234,9 +256,9 @@ export const useStyles = makeStyles({
     },
     supplyButton: {
         borderRadius: '8px',
-        marginRight: '30%',
-        marginLeft: '10%',
-        width: '50%',
+        marginRight: '50%',
+        marginLeft: '0%',
+        width: '80%',
     },
     tableTitle2: {
         color: '#000',

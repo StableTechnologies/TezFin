@@ -1,13 +1,19 @@
 // eslint-disable-next-line no-use-before-define
-import * as React from 'react';
-import clsx from 'clsx';
+import React, { forwardRef } from 'react';
 import { styled } from '@mui/system';
 import { useSwitch } from '@mui/core/SwitchUnstyled';
 import MuiSwitch from '@mui/material/Switch';
 
-const CustomSwitch = styled((props) => (
-    <MuiSwitch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-))(({ theme }) => ({
+const CustomSwitch = styled(
+    forwardRef((props, ref) => (
+        <MuiSwitch
+            focusVisibleClassName=".Mui-focusVisible"
+            disableRipple
+            ref={ref} 
+            {...props}
+        />
+    )),
+)(({ theme }) => ({
     width: 42,
     height: 26,
     padding: 0,
@@ -22,7 +28,6 @@ const CustomSwitch = styled((props) => (
             margin: 2,
             width: '22px',
             height: '22px',
-
             transform: 'translateX(18px) scale(1)',
             color: '#EADDFF',
             '& + .MuiSwitch-track': {
@@ -53,12 +58,20 @@ const CustomSwitch = styled((props) => (
     },
 }));
 
-function BasicSwitch(props) {
-    const { getInputProps, checked, disabled, focusVisible } = useSwitch(props);
+const BasicSwitch = forwardRef((props, ref) => {
+    const { getInputProps, checked, disabled } = useSwitch(props);
 
-    return <CustomSwitch checked={checked} disabled={disabled} {...getInputProps()} />;
-}
+    return (
+        <CustomSwitch
+            ref={ref} 
+            checked={checked}
+            disabled={disabled}
+            {...getInputProps()}
+        />
+    );
+});
 
+// Switch component
 export default function Switch(props) {
     const { data } = props;
 

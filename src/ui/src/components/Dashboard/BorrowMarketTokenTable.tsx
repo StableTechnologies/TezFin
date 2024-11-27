@@ -136,7 +136,7 @@ const BorrowMarketTokenTable = (props) => {
                                             <Button
                                                 variant="contained"
                                                 size="medium"
-                                                sx={{ marginRight: '0%', borderRadius: '8px', right: '18%' }}
+						className={classes.borrowButton}
                                                 onClick={() => handleClickMktModal(data)}
                                             >
                                                 B<Typography textTransform={'lowercase'}>orrow</Typography>
@@ -144,17 +144,7 @@ const BorrowMarketTokenTable = (props) => {
                                             <Button
                                                 variant="contained"
                                                 size="medium"
-                                                onClick={() => handleClickDetails(data.address)}
-                                                sx={{
-                                                    color: '#2C2C2C',
-                                                    border: '1px solid #2C2C2C',
-                                                    borderRadius: '8px',
-                                                    backgroundColor: '#F2F3F7',
-                                                    '&:hover': {
-                                                        backgroundColor: 'lightgrey',
-                                                        boxShadow: 'none',
-                                                    },
-                                                }}
+						className={classes.detailsButton}
                                             >
                                                 D<Typography textTransform={'lowercase'}>etails</Typography>
                                             </Button>

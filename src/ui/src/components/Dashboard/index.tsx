@@ -36,24 +36,20 @@ const Dashboard = () => {
 
     return (
         <Grid container className={classes.dashboard}>
-            <Grid item xs={6} md={6} className={classes.supplyTablePadding}>
+            <Grid item xs={12} md={6} className={classes.supplyTablePadding}>
                 <Typography className={classes.tableTitle}> Supplying </Typography>
                 <SuppliedTokenTable tableData={suppliedMarkets} />
             </Grid>
-            <Grid item xs={6} md={6} className={classes.borrowTablePadding}>
+            <Grid item xs={12} md={6} sx={{ margin: { xs: 0 } }} className={classes.borrowTablePadding}>
                 <Typography className={classes.tableTitle}> Borrowing </Typography>
                 <BorrowedTokenTable tableData={borrowedMarkets} />
             </Grid>
-            <Grid item xs={6} md={6} className={classes.supplyTablePadding}>
-		<Box sx={{width: "100vw", display:"inline-block"}} >
-			<Typography noWrap={false} className={classes.tableTitle}> Assets to Supply </Typography>
-	        </Box>
+            <Grid item xs={12} md={6} className={classes.supplyTablePadding}>
+		<Typography noWrap={false} className={classes.tableTitle}> Assets to Supply </Typography>
                 <SupplyMarketTokenTable tableData={allMarkets} />
             </Grid>
-            <Grid item xs={6} md={6} className={classes.borrowTablePadding}>
-		<Box sx={{width: "100vw", display:"inline-block"}} >
-			<Typography noWrap={false} className={classes.tableTitle}>Assets to Borrow</Typography>
-	        </Box>
+            <Grid item xs={12} md={6} sx={{ margin: { xs: 0 } }} className={classes.borrowTablePadding}>
+		<Typography noWrap={false} className={classes.tableTitle}>Assets to Borrow</Typography>
                 <BorrowMarketTokenTable tableData={allMarkets} />
             </Grid>
         </Grid>
