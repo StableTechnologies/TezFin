@@ -26,6 +26,18 @@ import CustomizedProgressBars from '../ProgressBar';
 import { useStyles } from './style';
 import LightTooltip from '../Tooltip/LightTooltip';
 
+const sanitizeInput = (input) => {
+    let val = input.replace(/[^0-9.]/g, '');
+    if (val === '.') {
+        val = '0.';
+    }
+    const num = new BigNumber(val);
+    if (num.isNaN()) {
+        return '';
+    }
+    return val;
+};
+
 const DashboardModal = (props) => {
     const classes = useStyles();
 
@@ -150,8 +162,8 @@ const DashboardModal = (props) => {
                                 onBlur={(e) => {
                                     e.target.placeholder = '0';
                                 }}
-                                onInput={(e) => setTokenValue(e.target.value.replace(/[^0-9.]/g, ''))}
-                                onChange={(e) => setAmount(undecimalify(e.target.value, decimals[tokenDetails.title]))}
+                                onInput={(e) => setTokenValue(sanitizeInput(e.target.value))}
+                                onChange={(e) => setAmount(undecimalify(sanitizeInput(e.target.value), decimals[tokenDetails.title]))}
                                 value={tokenValue}
                                 inputProps={{
                                     className: classes.inputText,

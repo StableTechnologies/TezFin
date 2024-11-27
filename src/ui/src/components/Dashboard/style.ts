@@ -104,18 +104,21 @@ export const useStyles = makeStyles({
         // marginRight: "20%",
         width: '2.5rem',
         height: '2.5rem',
-        marginRight: '1rem',
+        marginRight: '12px',
         '@media (min-width: 769px) and (max-width: 1024px)': {
             width: '2.5rem',
             height: '2.5rem',
+            marginRight: '12px',
         },
         '@media(max-width: 768px)': {
             width: '2.5rem',
             height: '2.5rem',
+            marginRight: '12px',
         },
         '@media(max-width: 501px)': {
             width: '2.5rem',
             height: '2.5rem',
+            marginRight: '12px',
         },
     },
     tokenSymbol: {
@@ -150,22 +153,20 @@ export const useStyles = makeStyles({
         borderRadius: '8px',
         right: '10%',
         '@media(max-width: 900px)': {
-		right: '10%'
+            right: '10%',
         },
-        '@media(max-width: 768px)': {
-        },
-        '@media(max-width: 501px)': {
-        },
+        '@media(max-width: 768px)': {},
+        '@media(max-width: 501px)': {},
     },
     detailsButton: {
-       color: '#2C2C2C',
-       border: '1px solid #2C2C2C',
-       borderRadius: '8px',
-       backgroundColor: '#F2F3F7',
-       '&:hover': {
-           backgroundColor: 'lightgrey',
-           boxShadow: 'none',
-       },
+        color: '#2C2C2C',
+        border: '1px solid #2C2C2C',
+        borderRadius: '8px',
+        backgroundColor: '#F2F3F7',
+        '&:hover': {
+            backgroundColor: 'lightgrey',
+            boxShadow: 'none',
+        },
     },
     tokenName: {
         display: 'inline',
@@ -215,12 +216,12 @@ export const useStyles = makeStyles({
         },
     },
     borrowTablePadding: {
-	'@media(min-width: 600px)': {
-	    paddingRight: '1rem',
-	},
-	'@media(min-width: 900px)': {
-	    paddingRight: '2rem',
-	},
+        '@media(min-width: 600px)': {
+            paddingRight: '1rem',
+        },
+        '@media(min-width: 900px)': {
+            paddingRight: '2rem',
+        },
         '@media(min-width: 1024px)': {
             paddingLeft: '0.9375rem',
         },
@@ -264,7 +265,7 @@ export const useStyles = makeStyles({
         color: '#000',
         opacity: '0.87',
         padding: ' 1.5rem 0 .5rem',
-	display: 'inline-block',
+        display: 'inline-block',
         fontSize: '1.25rem',
         fontWeight: '500',
         lineHeight: '30px',
