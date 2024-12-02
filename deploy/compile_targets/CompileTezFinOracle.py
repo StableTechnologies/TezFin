@@ -6,5 +6,4 @@ CFG = sp.io.import_script_from_url("file:deploy/compile_targets/Config.py")
 
 sp.add_compilation_target("TezFinOracle", TezFinOracle(
     admin=sp.address(CFG.deployResult.OriginatorAddress),
-    oracle=sp.address(CFG.deployResult.PriceOracle),
-    usdtOracle=sp.address(CFG.deployResult.USDTPriceOracle)))
+    oracle=sp.address(CFG.deployResult.PriceOracle)))

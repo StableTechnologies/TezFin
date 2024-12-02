@@ -1,9 +1,9 @@
 {
   "OriginatorAddress": "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL",
   "Governance": "KT1NF6DKX5giazRTzPtEuNX1npkVcaoQkvK2",
-  "PriceOracle": "KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj",
+  "PriceOracle": "KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn",
   "USDTPriceOracle": "KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn",
-  "TezFinOracle": "KT1DCzz5HjXi8STVN5hSLmWmqM3zNJvB7KRk",
+  "TezFinOracle": "KT1LDtNKDnpziwSrmSfx3xCbs7nBMg7VFp4m",
   "Comptroller": "KT1DiWBT6RBC97iWrvLHRzKL7AWQKorBiuRG",
   "CFA12_IRM": "KT1Vzf3fXVBry4TDxWAfYzsn6ZPyMroMKUdW",
   "CXTZ_IRM": "KT1B7zvU7EXmPBHazHhtajHaw5swFFxWCEfd",

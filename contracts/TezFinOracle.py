@@ -6,18 +6,18 @@ OracleInterface = sp.io.import_script_from_url(
 
 class TezFinOracle(OracleInterface.OracleInterface):
     """
-        TezFinOracle acts as proxy for the original harbinger oracle(https://github.com/tacoinfra/harbinger-contracts/blob/master/oracle.py)
-        It also allows admin to set up custom values for assets that are not be supported by harbinger enabling the use of those assets in TezFin.
+        TezFinOracle acts as proxy for the original youves oracle
+        It also allows admin to set up custom values for assets that are not be supported by youves enabling the use of those assets in TezFin.
     """
 
-    def __init__(self, admin, oracle, usdtOracle):
+    def __init__(self, admin, oracle):
         self.init(
             overrides=sp.big_map(l={"USD-USD": (sp.timestamp(int(time.time())), sp.as_nat(
+                1000000)),"USDT-USD": (sp.timestamp(int(time.time())), sp.as_nat(
                 1000000))}, tkey=sp.TString, tvalue=sp.TPair(sp.TTimestamp, sp.TNat)),
             alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD", "TZBTC-USD":"BTC-USD"},
                              tkey=sp.TString, tvalue=sp.TString),
             oracle=oracle,
-            usdtOracle=usdtOracle,
             admin=admin,
             pendingAdmin=sp.none,
         )
@@ -28,7 +28,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
     @sp.entry_point
     def set_oracle(self, address):
         """
-            Sets the Harbinger Oracle Address used to resolve asset prices
+            Sets the youves Oracle Address used to resolve asset prices
         """
         sp.set_type(address, sp.TAddress)
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
@@ -49,7 +49,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
     @sp.entry_point
     def setPrice(self, params):
         """
-            Sets the price for custom assets not supported by harbinger eg. USD
+            Sets the price for custom assets not supported by youves eg. USD
         """
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
         sp.set_type(params, sp.TList(
@@ -85,9 +85,26 @@ class TezFinOracle(OracleInterface.OracleInterface):
         del self.data.alias[asset]
 
     @sp.onchain_view()
+    def get_price_with_timestamp(self, requestedAsset):
+        """
+            Proxies to youves getPrice view if not custom asset
+        """
+        sp.set_type(requestedAsset, sp.TString)
+        sp.if self.data.overrides.contains(requestedAsset):
+            sp.result((sp.snd(self.data.overrides[requestedAsset]), sp.now))
+        sp.else:
+            asset = sp.local("asset", requestedAsset)
+            sp.if self.data.alias.contains(requestedAsset):
+                asset.value = self.data.alias[requestedAsset]
+            sliced_asset = sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some("failed to convert asset name")
+            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"USDT", t=sp.TPair(
+                sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
+            sp.result(oracle_data)
+
+    @sp.onchain_view()
     def getPrice(self, requestedAsset):
         """
-            Proxies to harbinger getPrice view if not custom asset
+            Proxies to youves getPrice view if not custom asset
         """
         sp.set_type(requestedAsset, sp.TString)
         sp.if self.data.overrides.contains(requestedAsset):
@@ -96,11 +113,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
             asset = sp.local("asset", requestedAsset)
             sp.if self.data.alias.contains(requestedAsset):
                 asset.value = self.data.alias[requestedAsset]
-            sp.if asset.value == "USDT-USD" :
-                oracle_data = sp.view("get_price_with_timestamp", self.data.usdtOracle, "USDTUSD", t=sp.TPair(
-                    sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
-                sp.result((sp.snd(oracle_data), sp.fst(oracle_data)))
-            sp.else:
-                oracle_data = sp.view("getPrice", self.data.oracle, asset.value, t=sp.TPair(
-                    sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
-                sp.result(oracle_data)
+            sliced_asset = sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some("failed to convert asset name")
+            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"USDT", t=sp.TPair(
+                sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
+            sp.result((sp.snd(oracle_data), sp.fst(oracle_data)))
