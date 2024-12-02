@@ -15,10 +15,12 @@ import {
 } from './types';
 import { AssetType, TokenStandard } from './enum';
 import {
+    Delegation,
     KeyStore,
     MultiAssetTokenHelper,
     registerFetch,
     registerLogger,
+    Reveal,
     Signer,
     TezosContractUtils,
     TezosLanguageUtil,
@@ -41,6 +43,10 @@ import { tokenNames } from './const';
 import log, { LogLevelDesc } from 'loglevel';
 import fetch from 'node-fetch';
 import { BigNumber } from 'bignumber.js';
+import { ParamsWithKind, PreparedOperation, TezosToolkit, Signer as TaquitSigner } from '@taquito/taquito';
+import {Parser} from '@taquito/michel-codec';
+import { OperationContents, OpKind, TransactionOperationParameter } from '@taquito/rpc';
+import { e } from 'mathjs';
 
 export namespace TezosLendingPlatform {
     /*
@@ -1255,4 +1261,60 @@ export namespace TezosLendingPlatform {
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
     }
+
+    export async function estimateWithTaquito(
+      tx: (Transaction | Delegation | Reveal)[],
+      server: string,
+      keystore: KeyStore
+    ): Promise<(Transaction | Delegation | Reveal)[]> {
+      let taquitoOps: ParamsWithKind[] = [];
+      const Tezos = new TezosToolkit(server);
+      Tezos.setProvider({signer:new MockTaquitoSigner(keystore)});
+      tx.forEach((opval) => {
+        switch (opval.kind) {
+          case "transaction":
+            const opt = opval as Transaction;
+            taquitoOps.push({
+              to: opt.destination,
+              kind: OpKind.TRANSACTION,
+              source: opt.source,
+              amount: parseInt(opt.amount) || 0,
+              parameter: opt.parameters as TransactionOperationParameter,
+            });
+            break;
+          default:
+            break;
+        }
+      });
+      const estimates = await Tezos.estimate.batch(taquitoOps);
+      if (estimates.length === tx.length) {
+        let sum = 0;
+        for (let i = 0; i < estimates.length; i++) {
+          sum +=estimates[i].suggestedFeeMutez;
+          tx[i].gas_limit = estimates[i].gasLimit.toString();
+          tx[i].storage_limit = estimates[i].storageLimit.toString();
+        }
+        tx[0].fee = sum.toString();
+      }
+      return tx;
+    }
+}
+
+export class MockTaquitoSigner implements TaquitSigner {
+  private keyStore: KeyStore;
+    constructor(keyStore: KeyStore) {
+        this.keyStore = keyStore;
+    }
+  async publicKey(): Promise<string> {
+    return this.keyStore.publicKey;
+  }
+  async publicKeyHash(): Promise<string> {
+    return this.keyStore.publicKeyHash;
+  }
+  async secretKey(): Promise<string> {
+    return this.keyStore.secretKey;
+  }
+  async sign(_bytes: string, _watermark?: Uint8Array): Promise<any> {
+    return "signature";
+  }
 }
