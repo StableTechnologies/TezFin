@@ -73,9 +73,10 @@ const DashboardModal = (props) => {
         errorText,
         pendingLimit,
         pendingLimitUsed,
+	tab,
     } = props;
 
-    const [tabValue, setTabValue] = useState('one');
+    const [tabValue, setTabValue] = useState(tab);
     const [tokenValue, setTokenValue] = useState('');
     const [limit, setLimit] = useState('');
     const [limitUsed, setLimitUsed] = useState('');
