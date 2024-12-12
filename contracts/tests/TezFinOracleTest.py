@@ -44,15 +44,15 @@ def test():
     scenario.h2("Tezfin Oracle")
     tezfinOracle = TezFinOracle(admin.address, harbinger.address)
     scenario += tezfinOracle
-    harbinger.setPrice([sp.record(asset="ETHUSDT", price=13425)]
+    harbinger.setPrice([sp.record(asset="ETH-USDT", price=13425)]
                        ).run(sender=alice, valid=False, now=sp.timestamp(16534534))
-    harbinger.setPrice([sp.record(asset="ETHUSDT", price=13425), sp.record(
-        asset="BTCUSDT", price=2342354345)]).run(sender=admin, now=sp.timestamp(16534534))
-    harbinger.setPrice([sp.record(asset="XTZUSDT", price=203434)]
+    harbinger.setPrice([sp.record(asset="ETH-USDT", price=13425), sp.record(
+        asset="BTC-USDT", price=2342354345)]).run(sender=admin, now=sp.timestamp(16534534))
+    harbinger.setPrice([sp.record(asset="XTZ-USDT", price=203434)]
                        ).run(sender=admin, now=sp.timestamp(16534534))
-    tezfinOracle.setPrice([sp.record(asset="FINUSDT", price=1000000)]
+    tezfinOracle.setPrice([sp.record(asset="FIN-USDT", price=1000000)]
                           ).run(sender=admin, now=sp.timestamp(16534534))
-    tezfinOracle.removeAsset("FIN-USD").run(sender=admin)
+    tezfinOracle.removeAsset("FIN-USDT").run(sender=admin)
     tezfinOracle.addAlias([sp.record(
         asset="XTZ-USD", alias="WTZ-USD"), sp.record(
         asset="XTZ-USD", alias="RRXTZ-USD"), sp.record(asset="XTZ-USD", alias="oXTZ-USD")]).run(sender=admin, now=sp.timestamp(16534534))
