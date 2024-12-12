@@ -97,7 +97,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
             sp.if self.data.alias.contains(requestedAsset):
                 asset.value = self.data.alias[requestedAsset]
             sliced_asset = sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some("failed to convert asset name")
-            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"USDT", t=sp.TPair(
+            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"-USDT", t=sp.TPair(
                 sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
             sp.result(oracle_data)
 
@@ -114,6 +114,6 @@ class TezFinOracle(OracleInterface.OracleInterface):
             sp.if self.data.alias.contains(requestedAsset):
                 asset.value = self.data.alias[requestedAsset]
             sliced_asset = sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some("failed to convert asset name")
-            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"USDT", t=sp.TPair(
+            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"-USDT", t=sp.TPair(
                 sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
             sp.result((sp.snd(oracle_data), sp.fst(oracle_data)))
