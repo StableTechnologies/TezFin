@@ -1278,7 +1278,7 @@ export namespace TezosLendingPlatform {
               to: opt.destination,
               kind: OpKind.TRANSACTION,
               source: opt.source,
-              amount: parseInt(opt.amount) || 0,
+              amount: Number(opt.amount) || 0,
               parameter: opt.parameters as TransactionOperationParameter,
             });
             break;
