@@ -80,22 +80,17 @@ export const evaluateTransaction = async (operations) => {
         };
 
         const counter = await TezosNodeReader.getCounterForAccount(config.infra.tezosNode, address);
-
+        
+        console.log("operation", operations);
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
             counter,
             operations,
-            false
+            true,
         );
-        const estimatedGroup = await TezosLendingPlatform.estimateWithTaquito(
-          opGroup,
-          config.infra.tezosNode,
-          keyStore
-        );
-
-        console.log("operation", estimatedGroup);
-        return { opGroup: estimatedGroup };
+        
+        return { opGroup };
     } catch (error) {
         console.log('evaluateTX', error);
         return { error };
