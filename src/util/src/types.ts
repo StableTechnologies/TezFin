@@ -175,6 +175,7 @@ export interface Market {
     cashUsd: bigInt.BigInteger;
     supply: MarketData;
     borrow: MarketData;
+    available: BigNumber;
     dailyInterestPaid: bigInt.BigInteger;
     reserves: bigInt.BigInteger;
     currentPrice: bigInt.BigInteger;

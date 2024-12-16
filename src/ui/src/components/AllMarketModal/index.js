@@ -23,7 +23,7 @@ const AllMarketModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { open, close, tokenDetails } = props;
+    const { open, close, tokenDetails, tab} = props;
 
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
@@ -171,6 +171,7 @@ const AllMarketModal = (props) => {
                 APYTextTwo="Borrow APY"
                 CurrentStateText= "Currently Supplying"
                 CurrentStateTextTwo= "Currently Borrowing"
+		tab={tab ? tab : "one"}
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}
