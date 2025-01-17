@@ -1,10 +1,9 @@
-import { BigNumber } from 'bignumber.js';
-import bigInt from 'big-integer';
-import { FToken } from '../src/FToken';
-import { InterestRateModel } from '../src/contracts/InterestRateModel';
-
-const { expect } = require('chai');
-
+import { BigNumber } from "bignumber.js";
+import bigInt from "big-integer";
+import { FToken } from "../src/FToken";
+import { InterestRateModel } from "../src/contracts/InterestRateModel";
+import { describe, it } from "mocha";
+import { expect } from "chai";
 
 interface APYtest {
   args: InterestRateModelArgs;
@@ -34,7 +33,7 @@ function getSupplyRateApy(args: InterestRateModelArgs): bigInt.BigInteger {
 
 describe('APY test ', () => {
     const tests: APYtest[] = [
-	  {
+      {
             desc: 'Test case with 1k lent, 1 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -44,17 +43,17 @@ describe('APY test ', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '950642634',
-                    blockMultiplier: '46581489086',
+                    blockRate: '760514107',
+                    blockMultiplier: '334400000000',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '104895104836896000',
-                supplyAPY: '104685500520000'
+                borrowAPY: '432413120942524500',
+                supplyAPY: '430622245234700'
             }
-	  },
-	  {
+      },
+      {
             desc: 'Test case with 1k lent, 10 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -64,17 +63,17 @@ describe('APY test ', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '950642634',
-                    blockMultiplier: '46581489086',
+                    blockRate: '760514107',
+                    blockMultiplier: '334400000000',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '148514851415232000',
-                supplyAPY: '1468973565288000'
+                borrowAPY: '1617860541284317900',
+                supplyAPY: '15875939381960400'
             }
         },
-	  {
+      {
             desc: 'Test case with 1k lent, 100 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -84,17 +83,17 @@ describe('APY test ', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '950642634',
-                    blockMultiplier: '46581489086',
+                    blockRate: '760514107',
+                    blockMultiplier: '334400000000',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '545454545299128000',
-                supplyAPY: '49537189996416000'
+                borrowAPY: '13067418898709541300',
+                supplyAPY: '1121791201406030100'
             }
         },
-	  {
+      {
             desc: 'Test case with 1k lent, 1k borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -104,14 +103,14 @@ describe('APY test ', () => {
                 annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
-                    blockRate: '950642634',
-                    blockMultiplier: '46581489086',
+                    blockRate: '760514107',
+                    blockMultiplier: '334400000000',
                     scale: '1000000000000000000'
                 }
             },
             expected: {
-                borrowAPY: '2549999999922984000',
-                supplyAPY: '1273724999865648000'
+                borrowAPY: '93769777717586933200',
+                supplyAPY: '39176034983584048400'
             }
         }
 
@@ -120,13 +119,13 @@ describe('APY test ', () => {
     tests.forEach((test: APYtest) => {
         it(`-------------------------------------------------------------
           ${test.desc}
-	  -----------Formula ----------
-	  AYPborrow = borrowRatePerBlock * (annualPeriod = ${test.args.annualPeriod}) 
-	  AYPborrow% = AYPborrow * 100
-	  -----------Formula ----------
-        
-	  The APYBorrow% calculated: ${getBorrowRateApy(test.args)}
-	  should equal expected: ${test.expected.borrowAPY}`, () => {
+      -----------Formula ----------
+      AYPborrow = (((Rate / Mantissa * (Blocks Per Day = 7.5) + 1) ^ 365)) - 1
+      AYPborrow% = AYPborrow * 100
+      -----------Formula ----------
+
+      The APYBorrow% calculated: ${getBorrowRateApy(test.args)}
+      should equal expected: ${test.expected.borrowAPY}`, () => {
             const res = getBorrowRateApy(test.args);
             const _expected = test.expected.borrowAPY;
             expect(res.toString()).to.equal(_expected);
@@ -136,25 +135,125 @@ describe('APY test ', () => {
     tests.forEach((test: APYtest) => {
         it(`-------------------------------------------------------------
           ${test.desc}
-	  -----------Formula ----------
-	  APYsupply = supplyRatePerBlock * (annualPeriod = ${test.args.annualPeriod})
-	  AYPsupply% = AYPborrow * 100 
-	  -----------Formula ----------
-        
-	  The APYsupply rate calculated: ${getSupplyRateApy(test.args)}
-	  should equal expected: ${test.expected.supplyAPY}`, () => {
+      -----------Formula ----------
+      APYsupply = (((Rate / Mantissa * (Blocks Per Day = 7.5) + 1) ^ 365)) - 1
+      AYPsupply% = AYPborrow * 100
+      -----------Formula ----------
+
+      The APYsupply rate calculated: ${getSupplyRateApy(test.args)}
+      should equal expected: ${test.expected.supplyAPY}`, () => {
             const res = getSupplyRateApy(test.args);
             const _expected = test.expected.supplyAPY;
             expect(res.toString()).to.equal(_expected);
         });
     });
+
+    it('should have the same borrow APY after a change in block time from 10s to 8s', () => {
+        const params8s = {
+            reserveFactorMantissa: '1000000000000000',
+            currentCash: '1000000000000000000000',
+            totalBorrows: '100000000000000000000',
+            totalReserves: '0',
+            expScale: '1000000000000000000',
+            interestRateModel: {
+                blockRate: '760514107',
+                blockMultiplier: '334400000000',
+                scale: '1000000000000000000',
+            },
+        };
+        const params10s = {
+            reserveFactorMantissa: '1000000000000000',
+            currentCash: '1000000000000000000000',
+            totalBorrows: '100000000000000000000',
+            totalReserves: '0',
+            expScale: '1000000000000000000',
+            interestRateModel: {
+                blockRate: '950642634',
+                blockMultiplier: '418000000000',
+                scale: '1000000000000000000',
+            },
+        };
+
+        const borrowAPY8s = getBorrowRateApy(params8s);
+
+        // We have to manually calculate APY for 10s block time
+        // because right now it calculates value for 8s block time
+        const scale = bigInt(params10s.interestRateModel.scale);
+        const BLOCKS_PER_DAY = 6 * 60 * 24; // old value with block time = 10s
+        const borrowRate10s = getBorrowRate(params10s);
+
+        // Calculate APY
+        const borrowAPY10s = bigInt(
+            new BigNumber(borrowRate10s)
+                .multipliedBy(BLOCKS_PER_DAY)
+                .div(scale)
+                .plus(1)
+                .pow(365)
+                .minus(1)
+                .multipliedBy(scale)
+                .toFixed(0)
+        ).multiply(100);
+
+        const apy8sInPercents = new BigNumber(borrowAPY8s.toString()).div(scale).toFixed(8);
+        const apy10sInPercents = new BigNumber(borrowAPY10s.toString()).div(scale).toFixed(8);
+
+        // percentage equality of APY up to 8 decimal places (0.00000001%)
+        expect(apy8sInPercents).to.equal(apy10sInPercents);
+    });
+
+    it('should have the same supply APY after a change in block time from 10s to 8s', () => {
+        const params8s = {
+            reserveFactorMantissa: '1000000000000000',
+            currentCash: '1000000000000000000000',
+            totalBorrows: '100000000000000000000',
+            totalReserves: '0',
+            expScale: '1000000000000000000',
+            interestRateModel: {
+                blockRate: '760514107',
+                blockMultiplier: '334400000000',
+                scale: '1000000000000000000',
+            },
+        };
+        const params10s = {
+            reserveFactorMantissa: '1000000000000000',
+            currentCash: '1000000000000000000000',
+            totalBorrows: '100000000000000000000',
+            totalReserves: '0',
+            expScale: '1000000000000000000',
+            interestRateModel: {
+                blockRate: '950642634',
+                blockMultiplier: '418000000000',
+                scale: '1000000000000000000',
+            },
+        };
+
+        const supplyAPY8s = getSupplyRateApy(params8s);
+
+        // We have to manually calculate APY for 10s block time
+        // because right now it calculates value for 8s block time
+        const scale = bigInt(params10s.interestRateModel.scale);
+        const BLOCKS_PER_DAY = 6 * 60 * 24; // old value with block time = 10s
+        const supplyRate10s = getSupplyRate(params10s);
+
+        // Calculate APY
+        const supplyAPY10s = bigInt(
+            new BigNumber(supplyRate10s)
+                .multipliedBy(BLOCKS_PER_DAY)
+                .div(scale)
+                .plus(1)
+                .pow(365)
+                .minus(1)
+                .multipliedBy(scale)
+                .toFixed(0)
+        ).multiply(100);
+
+        const apy8sInPercents = new BigNumber(supplyAPY8s.toString()).div(scale).toFixed(8);
+        const apy10sInPercents = new BigNumber(supplyAPY10s.toString()).div(scale).toFixed(8);
+
+        // percentage equality of APY up to 8 decimal places (0.00000001%)
+        expect(apy8sInPercents).to.equal(apy10sInPercents);
+    });
 });
-
-
-
-
-
-
 
 interface InterestRateModelTest {
   args: InterestRateModelArgs;
@@ -193,7 +292,7 @@ function getStorageInterestRateModelTest(
         borrow: {
             totalBorrows: bigInt(args.totalBorrows),
             borrowIndex: bigInt(0),
-            borrowRateMaxMantissa: bigInt(24241387177),
+            borrowRateMaxMantissa: bigInt(800000000000),
             borrowRatePerBlock: bigInt(0)
         },
         comptrollerAddress: '',
@@ -234,7 +333,7 @@ function getSupplyRate(args: InterestRateModelArgs): bigInt.BigInteger {
 
 describe('GetBorrowRate/GetSupplyRate', () => {
     const tests: InterestRateModelTest[] = [
-	  {
+      {
             desc: 'Test case with 1k lent, 1 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -253,8 +352,8 @@ describe('GetBorrowRate/GetSupplyRate', () => {
                 borrowRate: '997177588',
                 supplyRate: '995185'
             }
-	  },
-	  {
+      },
+      {
             desc: 'Test case with 1k lent, 10 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -274,7 +373,7 @@ describe('GetBorrowRate/GetSupplyRate', () => {
                 supplyRate: '13964689'
             }
         },
-	  {
+      {
             desc: 'Test case with 1k lent, 100 borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -294,7 +393,7 @@ describe('GetBorrowRate/GetSupplyRate', () => {
                 supplyRate: '470921648'
             }
         },
-	  {
+      {
             desc: 'Test case with 1k lent, 1k borrowed',
             args: {
                 reserveFactorMantissa: '1000000000000000',
@@ -522,7 +621,7 @@ describe('getExchangeRate(storage)', () => {
 })totalSupply 
 
 	  -----------Formula ----------
-        
+      
 	should equal expected: ${test.expected}`, () => {
             const res = getExchangeRate(test.args);
             const _expected = new BigNumber(test.expected.toString());

@@ -619,14 +619,14 @@ export namespace FToken {
     /**
      * @description Calculates the APY from the Supply or Borrow rate
      * @param rate Periodic (per-block) supply or borrow interest rate.
-     * @param blocksPerDay 24*60*4.
+     * @param blocksPerDay 24*60*7.5.
      * @param noOfDaysInYear 365.
      * @returns annualrate APY rate Mantissa as BigInteger.
      */
     function _calcAnnualizedRate(
         rate: bigInt.BigInteger,
         expScale: bigInt.BigInteger,
-        blocksPerDay = _blocksPerDay(6),
+        blocksPerDay = _blocksPerDay(7.5),
         noOfDaysInYear = 365,
     ): bigInt.BigInteger {
         // https://docs.compound.finance/v2/#protocol-math
