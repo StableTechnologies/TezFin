@@ -46,10 +46,12 @@ const SupplyMarketTokenTable = (props) => {
             <Table size="medium" sx={{ marginRight: '0px' }}>
                 <TableHead>
                     <TableRow>
-                        <TableCell> Token </TableCell>
+                        <TableCell className={classes.stickyCellLeft}>
+                            Token
+                        </TableCell>
                         <TableCell align="center"> Wallet </TableCell>
                         <TableCell align="center"> Supply APY </TableCell>
-                        <TableCell align="center"> </TableCell>
+                        <TableCell className={classes.stickyCellRight} align="center"> </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -57,22 +59,20 @@ const SupplyMarketTokenTable = (props) => {
                         <React.Fragment key={data.title}>
                             {(address && data.walletBalance) || (!address && data.marketSize) ? (
                                 <TableRow key={data.title} onClick={() => handleClickMktModal(data)}>
-                                    <TableCell className={classes.firstCell}>
-                                        <div>
-                                            <div className={classes.token}>
-                                                <img
-                                                    src={data.logo}
-                                                    alt={`${data.title}-Icon`}
-                                                    className={classes.img}
-                                                />
+                                    <TableCell className={`${classes.firstCell} ${classes.stickyCellLeft}`}>
+                                        <div className={classes.token}>
+                                            <img
+                                                src={data.logo}
+                                                alt={`${data.title}-Icon`}
+                                                className={classes.img}
+                                            />
 
-                                                <div className={classes.tokenTitle}>
-                                                    <Typography className={classes.tokenName}> {data.name} </Typography>
-                                                    <Typography className={classes.faintFont}>
-                                                        {' '}
-                                                        {data.title}{' '}
-                                                    </Typography>
-                                                </div>
+                                            <div className={classes.tokenTitle}>
+                                                <Typography className={classes.tokenName}> {data.name} </Typography>
+                                                <Typography className={classes.faintFont}>
+                                                    {' '}
+                                                    {data.title}{' '}
+                                                </Typography>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -120,7 +120,7 @@ const SupplyMarketTokenTable = (props) => {
                                             %
                                         </span>
                                     </TableCell>
-                                    <TableCell align="center" className={classes.fourthCell}>
+                                    <TableCell align="center" className={`${classes.fourthCell} ${classes.stickyCellRight}`}>
                                         <span>
                                             <Button
                                                 variant="contained"
