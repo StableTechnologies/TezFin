@@ -1,0 +1,26 @@
+diff --git a/node_modules/conseiljs/dist/types/tezos/TezosConstants.d.ts b/node_modules/conseiljs/dist/types/tezos/TezosConstants.d.ts
+index 7cd4479..24a0fb1 100644
+--- a/node_modules/conseiljs/dist/types/tezos/TezosConstants.d.ts
++++ b/node_modules/conseiljs/dist/types/tezos/TezosConstants.d.ts
+@@ -25,7 +25,7 @@ export declare namespace TezosConstants {
+     const P019BlockGasCap = 1733333;
+     const P007OperationGasCap = 1040000;
+     const OperationGasCap = 1040000;
+-    const BlockGasCap = 1733333;
++    const BlockGasCap = 1386666;
+     const P010OperationStorageCap = 60000;
+     const P011OperationStorageCap = 32768;
+     const OperationStorageCap = 32768;
+diff --git a/node_modules/conseiljs/dist/types/tezos/TezosConstants.js b/node_modules/conseiljs/dist/types/tezos/TezosConstants.js
+index 57f1e37..d026543 100644
+--- a/node_modules/conseiljs/dist/types/tezos/TezosConstants.js
++++ b/node_modules/conseiljs/dist/types/tezos/TezosConstants.js
+@@ -29,7 +29,7 @@ var TezosConstants;
+     TezosConstants.P019BlockGasCap = 1733333;
+     TezosConstants.P007OperationGasCap = 1040000;
+     TezosConstants.OperationGasCap = TezosConstants.P007OperationGasCap;
+-    TezosConstants.BlockGasCap = TezosConstants.P019BlockGasCap;
++    TezosConstants.BlockGasCap = 1386666;
+     TezosConstants.P010OperationStorageCap = 60000;
+     TezosConstants.P011OperationStorageCap = 32768;
+     TezosConstants.OperationStorageCap = TezosConstants.P011OperationStorageCap;
