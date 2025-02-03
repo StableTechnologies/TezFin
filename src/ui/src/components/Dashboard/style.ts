@@ -151,12 +151,9 @@ export const useStyles = makeStyles({
     borrowButton: {
         marginRight: '0%',
         borderRadius: '8px',
-        right: '10%',
-        '@media(max-width: 900px)': {
-            right: '10%',
-        },
         '@media(max-width: 768px)': {},
         '@media(max-width: 501px)': {},
+        width: '80%'
     },
     detailsButton: {
         color: '#2C2C2C',
@@ -167,6 +164,7 @@ export const useStyles = makeStyles({
             backgroundColor: 'lightgrey',
             boxShadow: 'none',
         },
+        width: '80%'
     },
     tokenName: {
         display: 'inline',
@@ -252,12 +250,17 @@ export const useStyles = makeStyles({
         width: '30%',
     },
     fifthCell: {
-        width: '30%',
+        width: '15%',
         right: '10px',
+        '@media(max-width: 1300px)': {
+            opacity: '1 !important',
+        },
+        paddingLeft: '1px !important',
+        backgroundColor: '#ECF4FF'
     },
     supplyButton: {
         borderRadius: '8px',
-        marginRight: '50%',
+        marginRight: '25%',
         marginLeft: '0%',
         width: '80%',
     },
@@ -306,5 +309,23 @@ export const useStyles = makeStyles({
         '@media(min-width: 1200px)': {
             paddingRight: '4rem !important',
         },
+    },
+    stickyCellLeft: {
+        '@media(max-width: 1300px)': {
+            position: 'sticky',
+            zIndex: 2,
+            left: 0,
+            opacity: '1 !important',
+        },
+        backgroundColor: '#ECF4FF'
+    },
+    stickyCellRight: {
+        '@media(max-width: 1300px)': {
+            position: 'sticky',
+            zIndex: 2,
+            right: 0,
+            opacity: '1 !important',
+        },
+        backgroundColor: '#ECF4FF'
     },
 });

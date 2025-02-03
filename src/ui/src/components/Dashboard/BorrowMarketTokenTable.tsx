@@ -54,10 +54,13 @@ const BorrowMarketTokenTable = (props) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell> Token </TableCell>
+                        <TableCell className={classes.stickyCellLeft}>
+                            Token
+                        </TableCell>
                         <TableCell align="center"> Available </TableCell>
                         <TableCell align="center"> Borrow APY </TableCell>
-                        <TableCell align="center"> </TableCell>
+                        <TableCell align="center" className={classes.stickyCellRight}> </TableCell>
+                        <TableCell align="center" className={classes.fifthCell}> </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -65,22 +68,20 @@ const BorrowMarketTokenTable = (props) => {
                         <React.Fragment key={data.title}>
                             {(address && data.walletBalance) || (!address && data.marketSize) ? (
                                 <TableRow key={data.title}>
-                                    <TableCell className={classes.firstCell}>
-                                        <div>
-                                            <div className={classes.token}>
-                                                <img
-                                                    src={data.logo}
-                                                    alt={`${data.title}-Icon`}
-                                                    className={classes.img}
-                                                />
+                                    <TableCell className={`${classes.firstCell} ${classes.stickyCellLeft}`}>
+                                        <div className={classes.token}>
+                                            <img
+                                                src={data.logo}
+                                                alt={`${data.title}-Icon`}
+                                                className={classes.img}
+                                            />
 
-                                                <div className={classes.tokenTitle}>
-                                                    <Typography className={classes.tokenName}> {data.name} </Typography>
-                                                    <Typography className={classes.faintFont}>
-                                                        {' '}
-                                                        {data.title}{' '}
-                                                    </Typography>
-                                                </div>
+                                            <div className={classes.tokenTitle}>
+                                                <Typography className={classes.tokenName}> {data.name} </Typography>
+                                                <Typography className={classes.faintFont}>
+                                                    {' '}
+                                                    {data.title}{' '}
+                                                </Typography>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -131,24 +132,24 @@ const BorrowMarketTokenTable = (props) => {
                                             %
                                         </span>
                                     </TableCell>
-                                    <TableCell align="center" className={classes.fifthCell}>
-                                        <span>
-                                            <Button
-                                                variant="contained"
-                                                size="medium"
-						className={classes.borrowButton}
-                                                onClick={() => handleClickMktModal(data)}
-                                            >
-                                                B<Typography textTransform={'lowercase'}>orrow</Typography>
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                size="medium"
-						className={classes.detailsButton}
-                                            >
+                                    <TableCell className={classes.stickyCellRight}>
+                                        <Button
+                                            variant="contained"
+                                            size="medium"
+                                            className={classes.borrowButton}
+                                            onClick={() => handleClickMktModal(data)}
+                                        >
+                                            B<Typography textTransform={'lowercase'}>orrow</Typography>
+                                        </Button>
+                                    </TableCell>
+                                    <TableCell className={classes.fifthCell}>
+                                        <Button
+                                            variant="contained"
+                                            size="medium"
+						                    className={classes.detailsButton}
+                                        >
                                                 D<Typography textTransform={'lowercase'}>etails</Typography>
-                                            </Button>
-                                        </span>
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ) : (
