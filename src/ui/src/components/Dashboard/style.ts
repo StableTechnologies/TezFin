@@ -153,7 +153,6 @@ export const useStyles = makeStyles({
         borderRadius: '8px',
         '@media(max-width: 768px)': {},
         '@media(max-width: 501px)': {},
-        width: '80%'
     },
     detailsButton: {
         color: '#2C2C2C',
@@ -164,7 +163,6 @@ export const useStyles = makeStyles({
             backgroundColor: 'lightgrey',
             boxShadow: 'none',
         },
-        width: '80%'
     },
     tokenName: {
         display: 'inline',
@@ -248,21 +246,31 @@ export const useStyles = makeStyles({
     thirdCell: {},
     fourthCell: {
         width: '30%',
+        '@media(min-width: 1200px)': {
+            paddingRight: '1.5rem !important',
+        }
     },
     fifthCell: {
         width: '15%',
-        right: '10px',
         '@media(max-width: 1300px)': {
             opacity: '1 !important',
+            backgroundColor: 'white'
         },
-        paddingLeft: '1px !important',
-        backgroundColor: '#ECF4FF'
+        '@media(min-width: 1200px)': {
+            paddingRight: '1.5rem !important',
+        },
+        paddingLeft: '0 !important',
+    },
+    borrowCell: {
+        '@media(min-width: 1200px)': {
+            paddingRight: '1.5rem !important',
+        },
     },
     supplyButton: {
         borderRadius: '8px',
-        marginRight: '25%',
+        marginRight: '0%',
         marginLeft: '0%',
-        width: '80%',
+        width: '100%',
     },
     tableTitle2: {
         color: '#000',
@@ -316,8 +324,8 @@ export const useStyles = makeStyles({
             zIndex: 2,
             left: 0,
             opacity: '1 !important',
+            backgroundColor: 'white',
         },
-        backgroundColor: '#ECF4FF'
     },
     stickyCellRight: {
         '@media(max-width: 1300px)': {
@@ -325,7 +333,7 @@ export const useStyles = makeStyles({
             zIndex: 2,
             right: 0,
             opacity: '1 !important',
+            backgroundColor: 'white',
         },
-        backgroundColor: '#ECF4FF'
     },
 });

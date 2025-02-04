@@ -51,7 +51,7 @@ const SupplyMarketTokenTable = (props) => {
                         </TableCell>
                         <TableCell align="center"> Wallet </TableCell>
                         <TableCell align="center"> Supply APY </TableCell>
-                        <TableCell className={classes.stickyCellRight} align="center"> </TableCell>
+                        <TableCell align="center"> </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -120,7 +120,7 @@ const SupplyMarketTokenTable = (props) => {
                                             %
                                         </span>
                                     </TableCell>
-                                    <TableCell align="center" className={`${classes.fourthCell} ${classes.stickyCellRight}`}>
+                                    <TableCell align="center" className={classes.fourthCell}>
                                         <span>
                                             <Button
                                                 variant="contained"
