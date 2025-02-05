@@ -54,9 +54,7 @@ const BorrowMarketTokenTable = (props) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell className={classes.stickyCellLeft}>
-                            Token
-                        </TableCell>
+                        <TableCell>Token</TableCell>
                         <TableCell align="center"> Available </TableCell>
                         <TableCell align="center"> Borrow APY </TableCell>
                         <TableCell align="center" className={classes.stickyCellRight}> </TableCell>
@@ -68,7 +66,7 @@ const BorrowMarketTokenTable = (props) => {
                         <React.Fragment key={data.title}>
                             {(address && data.walletBalance) || (!address && data.marketSize) ? (
                                 <TableRow key={data.title}>
-                                    <TableCell className={`${classes.firstCell} ${classes.stickyCellLeft}`}>
+                                    <TableCell className={classes.firstCell}>
                                         <div className={classes.token}>
                                             <img
                                                 src={data.logo}
@@ -132,7 +130,7 @@ const BorrowMarketTokenTable = (props) => {
                                             %
                                         </span>
                                     </TableCell>
-                                    <TableCell className={classes.stickyCellRight}>
+                                    <TableCell className={`${classes.stickyCellRight} ${classes.borrowCell}`}>
                                         <Button
                                             variant="contained"
                                             size="medium"
