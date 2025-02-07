@@ -153,6 +153,7 @@ export const useStyles = makeStyles({
         borderRadius: '8px',
         '@media(max-width: 768px)': {},
         '@media(max-width: 501px)': {},
+        width: '100%',
     },
     detailsButton: {
         color: '#2C2C2C',
@@ -163,6 +164,7 @@ export const useStyles = makeStyles({
             backgroundColor: 'lightgrey',
             boxShadow: 'none',
         },
+        width: '100%',
     },
     tokenName: {
         display: 'inline',
@@ -194,6 +196,7 @@ export const useStyles = makeStyles({
     dashboard: {
         paddingLeft: '6.25rem',
         paddingRight: '6.25rem',
+        paddingBottom: '1.5rem',
         '@media(max-width: 1024px)': {
             paddingLeft: '4rem',
             paddingRight: '4rem',
@@ -319,21 +322,26 @@ export const useStyles = makeStyles({
         },
     },
     stickyCellLeft: {
-        '@media(max-width: 1300px)': {
-            position: 'sticky',
-            zIndex: 2,
-            left: 0,
-            opacity: '1 !important',
-            backgroundColor: 'white',
-        },
+        position: 'sticky',
+        zIndex: 2,
+        left: 0,
+        opacity: '1 !important',
+        backgroundColor: 'white',
+        borderBottom: '0 !important',
+        boxShadow: 'inset 0 -1px 0 #E0E0E0',
     },
     stickyCellRight: {
-        '@media(max-width: 1300px)': {
-            position: 'sticky',
-            zIndex: 2,
-            right: 0,
-            opacity: '1 !important',
-            backgroundColor: 'white',
-        },
+        position: 'sticky',
+        zIndex: 2,
+        right: 0,
+        opacity: '1 !important',
+        backgroundColor: 'white',
+        boxShadow: 'inset 0 -1px 0 #E0E0E0',
+        borderBottom: '0 !important',
     },
+    stickyCellHover: {
+        '.MuiTableRow-root:hover &': {
+            backgroundColor: '#F5FCFE',
+        }
+    }
 });
