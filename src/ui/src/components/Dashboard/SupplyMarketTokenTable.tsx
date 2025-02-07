@@ -51,7 +51,7 @@ const SupplyMarketTokenTable = (props) => {
                         </TableCell>
                         <TableCell align="center"> Wallet </TableCell>
                         <TableCell align="center"> Supply APY </TableCell>
-                        <TableCell align="center"> </TableCell>
+                        <TableCell className={classes.stickyCellRight} align="center"> </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -59,7 +59,7 @@ const SupplyMarketTokenTable = (props) => {
                         <React.Fragment key={data.title}>
                             {(address && data.walletBalance) || (!address && data.marketSize) ? (
                                 <TableRow key={data.title} onClick={() => handleClickMktModal(data)}>
-                                    <TableCell className={`${classes.firstCell} ${classes.stickyCellLeft}`}>
+                                    <TableCell className={`${classes.firstCell} ${classes.stickyCellLeft} ${classes.stickyCellHover}`}>
                                         <div className={classes.token}>
                                             <img
                                                 src={data.logo}
@@ -120,7 +120,7 @@ const SupplyMarketTokenTable = (props) => {
                                             %
                                         </span>
                                     </TableCell>
-                                    <TableCell align="center" className={classes.fourthCell}>
+                                    <TableCell align="center" className={`${classes.fourthCell} ${classes.stickyCellRight} ${classes.stickyCellHover}`}>
                                         <span>
                                             <Button
                                                 variant="contained"

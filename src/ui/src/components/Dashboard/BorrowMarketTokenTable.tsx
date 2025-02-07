@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { decimals } from 'tezoslendingplatformjs';
+import { AssetType, decimals, mainnetAddresses, testnetAddresses } from 'tezoslendingplatformjs';
 import BigNumber from 'bignumber.js';
 
 import Table from '@mui/material/Table';
@@ -35,9 +35,13 @@ const BorrowMarketTokenTable = (props) => {
         setMktModal(false);
     };
 
-    const handleClickDetails = (address) => {
+    const handleClickDetails = (asset: AssetType) => {
+        const fTokenAddress = 
+            process.env.REACT_APP_ENV == 'dev' ? testnetAddresses.fTokens[asset] : mainnetAddresses.fTokens[asset];
         const tzktUrl =
-            process.env.REACT_APP_ENV == 'dev' ? `https://ghostnet.tzkt.io/${address}` : `https://tzkt.io/${address}`;
+            process.env.REACT_APP_ENV == "dev"
+                ? `https://ghostnet.tzkt.io/${fTokenAddress}/operations`
+                : `https://tzkt.io/${fTokenAddress}/operations`;
         window.open(tzktUrl, '_blank');
     };
 
@@ -54,7 +58,9 @@ const BorrowMarketTokenTable = (props) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Token</TableCell>
+                        <TableCell className={classes.stickyCellLeft}>
+                            Token
+                        </TableCell>
                         <TableCell align="center"> Available </TableCell>
                         <TableCell align="center"> Borrow APY </TableCell>
                         <TableCell align="center" className={classes.stickyCellRight}> </TableCell>
@@ -66,7 +72,7 @@ const BorrowMarketTokenTable = (props) => {
                         <React.Fragment key={data.title}>
                             {(address && data.walletBalance) || (!address && data.marketSize) ? (
                                 <TableRow key={data.title}>
-                                    <TableCell className={classes.firstCell}>
+                                    <TableCell className={`${classes.firstCell} ${classes.stickyCellLeft} ${classes.stickyCellHover}`}>
                                         <div className={classes.token}>
                                             <img
                                                 src={data.logo}
@@ -130,7 +136,7 @@ const BorrowMarketTokenTable = (props) => {
                                             %
                                         </span>
                                     </TableCell>
-                                    <TableCell className={`${classes.stickyCellRight} ${classes.borrowCell}`}>
+                                    <TableCell className={`${classes.stickyCellRight} ${classes.borrowCell} ${classes.stickyCellHover}`}>
                                         <Button
                                             variant="contained"
                                             size="medium"
@@ -145,6 +151,7 @@ const BorrowMarketTokenTable = (props) => {
                                             variant="contained"
                                             size="medium"
 						                    className={classes.detailsButton}
+                                            onClick={() => handleClickDetails(data.assetType)}
                                         >
                                                 D<Typography textTransform={'lowercase'}>etails</Typography>
                                         </Button>
