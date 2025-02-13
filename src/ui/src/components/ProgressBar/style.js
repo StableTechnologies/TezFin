@@ -23,7 +23,17 @@ export const progressBarStyles = makeStyles({
     fillerBackground: {
         height: 'inherit',
         transition: '"width 2s ease-i-out"',
-        background: 'linear-gradient(90deg, #39E4B8 35%, #E9EE08 75%, #EE2408 100%)'
+        background: 'linear-gradient(90deg, '
+        + '#00C000 0%, '
+        + '#60D000 10%, '
+        + '#A0E000 20%, '
+        + '#D8E800 35%, '
+        + '#FFF000 50%, '
+        + '#FFD000 65%, '
+        + '#FFA000 80%, '
+        + '#FF6000 90%, '
+        + '#FF2000 100%'
+        + ')'
     },
     filler: {
         transition: '"width 2s ease-i-out"',
