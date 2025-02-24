@@ -2,9 +2,16 @@ import { makeStyles } from '@mui/styles';
 
 // eslint-disable-next-line import/prefer-default-export
 export const tooltipStyles = makeStyles({
-    tooltip: {
-        backgroundColor: 'transparent',
-        color: '#000',
-        marginBottom: '0 !important'
+    tooltipPrimaryText: {
+        fontSize: '16px',
+        fontWeight: 600,
+        lineHeight: '22.4px',
+        textAlign: 'center'
+    },
+    tooltipSecondaryText: {
+        fontSize: '20px',
+        fontWeight: 400,
+        lineHeight: '24px',
+        textAlign: 'center'
     }
 });

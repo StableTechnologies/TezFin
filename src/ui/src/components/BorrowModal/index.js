@@ -22,7 +22,7 @@ import { useStyles } from './style';
 const BorrowModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { open, close, tokenDetails } = props;
+    const { open, close, tokenDetails, tab } = props;
 
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
@@ -239,6 +239,7 @@ const BorrowModal = (props) => {
                     setTokenValue(tokenAmount);
                     setCurrentTab(tabValue);
                 }}
+                tab={tab}
             />
         </>
     );
