@@ -9,7 +9,7 @@ import { BigNumber } from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import Box from '@mui/material/Box';
-import { Button, Typography } from '@mui/material';
+import { Button, Typography, tooltipClasses } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -93,6 +93,12 @@ const DashboardModal = (props) => {
     };
 
     useEffect(() => {
+        if (tab) {
+            setTabValue(tab);
+        }
+    }, [tab]);
+
+    useEffect(() => {
         setTokenValue('');
     }, [close]);
 
@@ -116,6 +122,11 @@ const DashboardModal = (props) => {
                         <div>
                             <img src={tokenDetails.logo} alt="logo" className={classes.img} />
                             <LightTooltip
+                                sx={{
+                                    [`& .${tooltipClasses.tooltip}`]: {
+                                        marginTop: '0px !important'
+                                    }
+                                }}
                                 title={
                                     tokenDetails.walletBalance
                                         ? `${decimalify(
@@ -221,6 +232,11 @@ const DashboardModal = (props) => {
                             </Grid>
                             {mainModal ? (
                                 <LightTooltip
+                                    sx={{
+                                        [`& .${tooltipClasses.tooltip}`]: {
+                                            marginTop: '0px !important'
+                                        }
+                                    }}
                                     title={`${
                                         tabValue === 'one'
                                             ? tokenDetails.supply.balanceUnderlying > 0
@@ -266,6 +282,11 @@ const DashboardModal = (props) => {
                                 </LightTooltip>
                             ) : (
                                 <LightTooltip
+                                    sx={{
+                                        [`& .${tooltipClasses.tooltip}`]: {
+                                            marginTop: '0px !important'
+                                        }
+                                    }}
                                     title={`${decimalify(
                                         tokenDetails.balanceUnderlying,
                                         decimals[tokenDetails.title],

@@ -302,25 +302,8 @@ export const useStyles = makeStyles({
             padding: '21px 35px 21px 30px !important',
         },
     },
-    collateralPadding: {
-        '@media(min-width: 968px)': {
-            paddingRight: '.5rem !important',
-        },
-        '@media(min-width: 1200px)': {
-            paddingRight: '2rem !important',
-        },
-    },
-    switchPadding: {
-        '@media(min-width: 501px)': {
-            paddingRight: '2.5rem !important',
-        },
-        '@media(min-width: 968px)': {
-            paddingRight: '2rem !important',
-        },
-        '@media(min-width: 1200px)': {
-            paddingRight: '4rem !important',
-        },
-    },
+    collateralPadding: {},
+    switchPadding: {},
     stickyCellLeft: {
         position: 'sticky',
         zIndex: 2,
@@ -343,5 +326,28 @@ export const useStyles = makeStyles({
         '.MuiTableRow-root:hover &': {
             backgroundColor: '#F5FCFE',
         }
+    },
+    tooltipPrimaryText: {
+        fontSize: '16px',
+        fontWeight: 600,
+        lineHeight: '22.4px',
+        textAlign: 'center'
+    },
+    tooltipSecondaryText: {
+        fontSize: '14px',
+        fontWeight: 400,
+        lineHeight: '19.6px',
+        textAlign: 'center'
+    },
+    withdrawCell: {
+        '@media(min-width: 1200px)': {
+            paddingRight: '1.5rem !important',
+        },
+        width: '17%',
+    },
+    repayCell: {
+        '@media(min-width: 1200px)': {
+            paddingRight: '1.5rem !important',
+        },
     }
 });

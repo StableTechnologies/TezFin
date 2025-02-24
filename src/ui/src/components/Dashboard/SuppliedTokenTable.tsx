@@ -14,7 +14,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Typography } from '@mui/material';
+import { Button, Typography, tooltipClasses } from '@mui/material';
 
 import TableSkeleton from '../Skeleton';
 import Switch from '../Switch';
@@ -42,11 +42,13 @@ const SuppliedTokenTable = (props) => {
     const [collModal, setCollModal] = useState(false);
     const [disableCollModal, setDisableCollModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [openWithdrawTab, setWithdrawTab] = useState(false);
 
     const closeModal = () => {
         setSupplyModal(false);
         setDisableCollModal(false);
         setCollModal(false);
+        setWithdrawTab(false);
     };
 
     const handleClickMktModal = (item, event) => {
@@ -61,6 +63,12 @@ const SuppliedTokenTable = (props) => {
         } else {
             setSupplyModal(true);
         }
+    };
+
+    const handleClickWithdraw = (item) => {
+        setTokenDetails(item);
+        setSupplyModal(true);
+        setWithdrawTab(true);
     };
 
     const suppliedData = formatTokenData(tableData);
@@ -78,7 +86,7 @@ const SuppliedTokenTable = (props) => {
         <TableContainer className={`${classes.root} ${classes.tableCon}`}>
             {tokenDetails && (
                 <>
-                    <SupplyModal open={openSupplyModal} close={closeModal} tokenDetails={tokenDetails} />
+                    <SupplyModal open={openSupplyModal} close={closeModal} tokenDetails={tokenDetails} tab={openWithdrawTab ? 'two' : undefined}/>
                     <DisableCollateralModal open={disableCollModal} close={closeModal} tokenDetails={tokenDetails} />
                     <CollateralizeModal open={collModal} close={closeModal} tokenDetails={tokenDetails} />
                 </>
@@ -93,6 +101,7 @@ const SuppliedTokenTable = (props) => {
                             Collateral{' '}
                             <img src={questionCircleIcon} alt={'questionIcon'} className={classes.questionCircleIcon} />
                         </TableCell>
+                        <TableCell align='center'></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -130,7 +139,7 @@ const SuppliedTokenTable = (props) => {
                                     <span>
                                         {data.rate > 0
                                             ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                              new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
+                                            new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
                                                 ? roundValue(decimalify(data.rate, 18))
                                                 : '<0.01'
                                             : '0'}
@@ -139,12 +148,34 @@ const SuppliedTokenTable = (props) => {
                                 </TableCell>
                                 <TableCell align="center">
                                     <LightTooltip
-                                        title={`${decimalify(
-                                            data.balanceUnderlying,
-                                            decimals[data.title],
-                                            decimals[data.title],
-                                        )} ${data.title}`}
-                                        placement="bottom"
+                                        sx={{
+                                            [`& .${tooltipClasses.tooltip}`]: {
+                                                marginBottom: '11px !important'
+                                            }
+                                        }}
+                                        title={
+                                            <>
+                                                <Typography className={classes.tooltipPrimaryText}>
+                                                    {`${decimalify(
+                                                        data.balanceUnderlying,
+                                                        decimals[data.title],
+                                                        decimals[data.title]
+                                                    ).replace(/\.?0+$/, '')} ${data.title}`}
+                                                </Typography>
+                                                <Typography className={classes.tooltipSecondaryText}>
+                                            $
+                                                    {data.balanceUnderlying > 0
+                                                        ? nFormatter(
+                                                            decimalify(
+                                                                (data.balanceUnderlying * data.usdPrice).toString(),
+                                                                decimals[data.title],
+                                                                decimals[data.title]
+                                                            )
+                                                        )
+                                                        : '0.00'}
+                                                </Typography>
+                                            </>}
+                                        placement="top"
                                     >
                                         <span className={classes.clearFont}>
                                             {data.balanceUnderlying >= 1 &&
@@ -180,6 +211,11 @@ const SuppliedTokenTable = (props) => {
                                 </TableCell>
                                 <TableCell align="center" className={classes.switchPadding}>
                                     <Switch data={data} />
+                                </TableCell>
+                                <TableCell className={classes.withdrawCell}>
+                                    <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickWithdraw(data)}>
+                                        W<Typography textTransform={'lowercase'}>ithdraw</Typography>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}

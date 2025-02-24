@@ -21,7 +21,7 @@ const SupplyModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const {
-        open, close, tokenDetails, onClick
+        open, close, tokenDetails, onClick, tab
     } = props;
 
     const { account } = useSelector((state) => state.addWallet);
@@ -193,6 +193,7 @@ const SupplyModal = (props) => {
                 errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
                 disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
+                tab={tab}
             />
         </>
     );

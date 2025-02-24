@@ -14,7 +14,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Typography } from '@mui/material';
+import { Button, tooltipClasses, Typography } from '@mui/material';
 
 // eslint-disable-next-line object-curly-newline
 import { decimalify, formatTokenData, nFormatter, roundValue, truncateNum } from '../../util';
@@ -35,24 +35,23 @@ const BorrowedTokenTable = (props) => {
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [openRepayTab, setRepayTab] = useState(false);
 
-    const checkLimitUsed = (data) => {
-        const val = new BigNumber(
-            decimalify(data.outstandingLoan * data.usdPrice, decimals[data.title], decimals[data.title]),
-        )
-            .dividedBy(new BigNumber(totalCollateral))
-            .multipliedBy(100)
-            .toNumber();
-        return val > 0.01 ? truncateNum(val) : '<0.01';
-    };
 
     const closeModal = () => {
         setMktModal(false);
+        setRepayTab(false);
     };
 
     const handleClickMktModal = (item) => {
         setTokenDetails(item);
         setMktModal(true);
+    };
+
+    const handleClickRepay = (item) => {
+        setTokenDetails(item);
+        setMktModal(true);
+        setRepayTab(true);
     };
 
     const borrowedData = formatTokenData(tableData);
@@ -68,14 +67,14 @@ const BorrowedTokenTable = (props) => {
 
     return (
         <TableContainer className={`${classes.root} ${classes.tableCon}`}>
-            {tokenDetails && <BorrowModal open={openMktModal} close={closeModal} tokenDetails={tokenDetails} />}
+            {tokenDetails && <BorrowModal open={openMktModal} close={closeModal} tokenDetails={tokenDetails} tab={openRepayTab ? 'two' : undefined} />}
             <Table>
                 <TableHead>
                     <TableRow>
                         <TableCell> Token </TableCell>
                         <TableCell align="center"> APY </TableCell>
                         <TableCell align="center"> Balance </TableCell>
-                        <TableCell align="center"> Limit used </TableCell>
+                        <TableCell align="center"> </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -122,12 +121,33 @@ const BorrowedTokenTable = (props) => {
                                 </TableCell>
                                 <TableCell align="center">
                                     <LightTooltip
-                                        title={`${decimalify(
-                                            data.outstandingLoan,
-                                            decimals[data.title],
-                                            decimals[data.title],
-                                        )} ${data.title}`}
-                                        placement="bottom"
+                                        sx={{
+                                            [`& .${tooltipClasses.tooltip}`]: {
+                                                marginBottom: '11px !important'
+                                            }
+                                        }}
+                                        title={ <>
+                                            <Typography className={classes.tooltipPrimaryText}>
+                                                {`${decimalify(
+                                                    data.outstandingLoan,
+                                                    decimals[data.title],
+                                                    decimals[data.title]
+                                                ).replace(/\.?0+$/, '')} ${data.title}`}
+                                            </Typography>
+                                            <Typography className={classes.tooltipSecondaryText}>
+                                                                                    $
+                                                {data.balanceUnderlying > 0
+                                                    ? nFormatter(
+                                                        decimalify(
+                                                            (data.outstandingLoan * data.usdPrice).toString(),
+                                                            decimals[data.title],
+                                                            decimals[data.title]
+                                                        )
+                                                    )
+                                                    : '0.00'}
+                                            </Typography>
+                                        </>}
+                                        placement="top"
                                     >
                                         <span className={classes.clearFont}>
                                             {data.outstandingLoan > 0 &&
@@ -159,8 +179,10 @@ const BorrowedTokenTable = (props) => {
                                         )}
                                     </span>
                                 </TableCell>
-                                <TableCell align="center">
-                                    <span className={classes.clearFont}>{checkLimitUsed(data)}%</span>
+                                <TableCell align="center" className={classes.repayCell}>
+                                    <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickRepay(data)}>
+                                        R<Typography textTransform={'lowercase'}>epay</Typography>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
