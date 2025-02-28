@@ -10,25 +10,20 @@ export const useStyles = makeStyles({
         width: '100%',
         maxWidth: '100%'
     },
-
     progress: {
         height: '40px',
         transition: 'width 0.5s ease-in'
+    },
+    tooltipPrimaryText: {
+        fontSize: '16px',
+        fontWeight: 600,
+        lineHeight: '22.4px',
+        textAlign: 'center'
+    },
+    tooltipSecondaryText: {
+        fontSize: '14px',
+        fontWeight: 400,
+        lineHeight: '19.6px',
+        textAlign: 'center'
     }
 });
-
-export const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} arrow/>
-))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-        backgroundColor: theme.palette.common.white,
-        color: '#000',
-        fontSize: 12,
-        letterSpacing: '0.005em',
-        marginTop: '9px !important',
-        boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.25)'
-    },
-    [`& .${tooltipClasses.arrow}`]: {
-        color: '#fff'
-    }
-}));

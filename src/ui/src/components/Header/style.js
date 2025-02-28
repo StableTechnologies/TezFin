@@ -215,25 +215,33 @@ export const useStyles = makeStyles({
     },
     progressBarOne: {
         paddingTop: '7px',
-        paddingRight: '1.875rem',
-        '@media(max-width: 1024px)': {
-            paddingRight: '0.9375rem'
+        '@media(min-width: 600px)': {
+            paddingRight: '1rem',
         },
-        '@media(max-width: 900px)': {
-            paddingRight: '2rem'
+        '@media(min-width: 900px)': {
+            paddingRight: '2rem',
         },
-        '@media(max-width: 899px)': {
-            paddingRight: '0rem'
+        '@media(min-width: 1024px)': {
+            paddingRight: '2rem',
         },
-        '@media(max-width: 768px)': {
-            paddingRight: '0rem'
+        '@media(min-width: 1200px)': {
+            paddingRight: '3rem',
         },
-        '@media(max-width: 501px)': {
-            paddingRight: '0rem'
-        }
     },
     progressBarTwo: {
-        paddingTop: '7px'
+        paddingTop: '7px',
+        '@media(min-width: 600px)': {
+            paddingRight: '1rem',
+        },
+        '@media(min-width: 900px)': {
+            paddingRight: '2rem',
+        },
+        '@media(min-width: 1024px)': {
+            paddingLeft: '0.9375rem',
+        },
+        '@media(min-width: 1200px)': {
+            paddingLeft: '0.875rem',
+        },
     },
     addWalletCon: {
         paddingTop: '2.1875rem',
