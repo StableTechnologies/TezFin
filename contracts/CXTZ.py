@@ -12,10 +12,10 @@ CToken = sp.io.import_script_from_url("file:contracts/CToken.py")
 
 
 class CXTZ(CToken.CToken):
-    def __init__(self, comptroller_, interestRateModel_, administrator_):
+    def __init__(self, comptroller_, interestRateModel_, administrator_, metadata_, token_metadata_):
         initialExchangeRateMantissa = sp.nat(int(1e18))
         CToken.CToken.__init__(self, comptroller_, interestRateModel_,
-                               initialExchangeRateMantissa, administrator_)
+                               initialExchangeRateMantissa, administrator_, metadata_, token_metadata_)
 
     def getCashImpl(self):
         return sp.utils.mutez_to_nat(sp.balance)

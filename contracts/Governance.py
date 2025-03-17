@@ -187,6 +187,23 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
                                "reduceReserves").open_some()
         sp.transfer(params.amount, sp.mutez(0), contract)
 
+    """
+        Updates the contract metadata of the cToken at specified key with specified value
+        params: TRecord
+            cToken: TAddress - The address of CToken contract
+            key: TString - The key of the metadata to update
+            value: TBytes - The value to update the metadata with
+    """
+    @sp.entry_point
+    def updateMetadata(self, params):
+        self.verifyAdministrator()
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress,
+                    key=sp.TString, value=sp.TBytes))
+        contract = sp.contract(sp.TRecord(
+            key=sp.TString, value=sp.TBytes), params.cToken, "updateMetadata").open_some()
+        sp.transfer(sp.record(key=params.key, value=params.value),
+                    sp.mutez(0), contract)
+
     # Comptroller functions
 
     """

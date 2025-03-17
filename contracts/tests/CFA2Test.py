@@ -1,4 +1,5 @@
 import smartpy as sp
+import json
 
 CFA2 = sp.io.import_script_from_url("file:contracts/CFA2.py")
 IRM = sp.io.import_script_from_url("file:contracts/tests/mock/InterestRateModelMock.py")
@@ -48,6 +49,23 @@ def test():
                    interestRateModel_=irm.address,
                    initialExchangeRateMantissa_=sp.nat(exchange_rate),
                    administrator_=admin.address,
+                   metadata_=sp.big_map({
+                       "": sp.utils.bytes_of_string("tezos-storage:data"),
+                       "data": sp.utils.bytes_of_string(json.dumps({
+                           "name": "...",
+                           "description": "...",
+                           "version": "1.0.0",
+                           "authors": ["ewqenqjw"],
+                           "homepage": "https://some-website.com",
+                           "interfaces": ["TZIP-007"],
+                           "license": {"name": "..."}
+                       }))
+                   }),
+                   token_metadata_={
+                       "name": sp.utils.bytes_of_string("CFA2"),
+                       "symbol": sp.utils.bytes_of_string("cFA2"),
+                       "decimals": sp.utils.bytes_of_string("6"),
+                   },
                    fa2_TokenAddress_ = fa2.address,
                    tokenId_ = tokenId)
     scenario += c1
@@ -71,11 +89,11 @@ def test():
     ]).run(sender = admin)
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.mint(100).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].balance == 100)
+    scenario.verify(c1.data.ledger[alice.address].balance == 100)
     scenario.h3("Second mint")
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.mint(100).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].balance == 200)
+    scenario.verify(c1.data.ledger[alice.address].balance == 200)
     scenario.h3("Try mint with no cash")
     scenario += c1.mint(100).run(sender=alice, level=bLevel.next(), valid=False)
 

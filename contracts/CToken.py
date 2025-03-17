@@ -18,15 +18,17 @@ OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
 
 
 class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
-    def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
+    def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, metadata_, token_metadata_, **extra_storage):
         Exponential.Exponential.__init__(
             self,
-            balances=sp.big_map(tkey=sp.TAddress, tvalue=sp.TRecord(
+            ledger=sp.big_map(tkey=sp.TAddress, tvalue=sp.TRecord(
+                # Official record of token ledger for each account
+                balance=sp.TNat,
                 # Approved token transfer amounts on behalf of others
-                approvals=sp.TMap(sp.TAddress, sp.TNat),
-                # Mapping of account addresses to outstanding borrow balances
-                accountBorrows=CTI.TBorrowSnapshot,
-                balance=sp.TNat)),  # Official record of token balances for each account
+                approvals=sp.TMap(sp.TAddress, sp.TNat)
+            )),
+            # Mapping of account addresses to outstanding borrow ledger
+            borrows=sp.big_map(tkey=sp.TAddress, tvalue=CTI.TBorrowSnapshot),
             totalSupply=sp.nat(0),  # Total number of tokens in circulation
             # Maximum borrow rate that can ever be applied (.0000008% / block)
             borrowRateMaxMantissa=sp.nat(int(800000000000)),
@@ -54,6 +56,17 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             # Current per-block supply interest rate
             supplyRatePerBlock=sp.nat(0),
             administrator=administrator_,  # Administrator`s address for this contract
+            # Metadata of a contract
+            metadata=metadata_, 
+            # Metadata of a token
+            token_metadata=sp.big_map(
+                l={
+                    0: sp.record(token_id=0, token_info=token_metadata_)
+                },
+                tkey=sp.TNat,
+                tvalue=sp.TRecord(token_id=sp.TNat,
+                                  token_info=sp.TMap(sp.TString, sp.TBytes))
+            ),
             pendingAdministrator=sp.none,  # Pending administrator`s address for this contract
             # Set of currently active operations to protect execution flow
             activeOperations=sp.set(t=sp.TNat),
@@ -83,7 +96,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         mintTokens = self.getMintTokens(params.mintAmount)
         sp.verify(mintTokens > 0, EC.CT_MINT_AMOUNT_IS_INVALID)
         self.data.totalSupply += mintTokens
-        self.data.balances[params.minter].balance += mintTokens
+        self.data.ledger[params.minter].balance += mintTokens
 
     def verifyMintAllowed(self, minter_, mintAmount_):
         self.addAddressIfNecessary(minter_)
@@ -155,8 +168,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             self.verifyAccruedInterestRelevance()
             self.data.totalSupply = sp.as_nat(
                 self.data.totalSupply - redeemTokens, "Insufficient supply")
-            self.data.balances[params.redeemer].balance = sp.as_nat(
-                self.data.balances[params.redeemer].balance - redeemTokens, "Insufficient balance")
+            self.data.ledger[params.redeemer].balance = sp.as_nat(
+                self.data.ledger[params.redeemer].balance - redeemTokens, "Insufficient balance")
             self.doTransferOut(params.redeemer, redeemAmount)
 
     def verifyRedeemAllowed(self, redeemer_, redeemAmount_):
@@ -194,8 +207,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.doTransferOut(params.borrower, params.borrowAmount)
         accountBorrows = self.getBorrowBalance(
             params.borrower) + params.borrowAmount
-        self.data.balances[params.borrower].accountBorrows.principal = accountBorrows
-        self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
+        self.data.borrows[params.borrower].principal = accountBorrows
+        self.data.borrows[params.borrower].interestIndex = self.data.borrowIndex
         self.data.totalBorrows += params.borrowAmount
 
     def verifyBorrowAllowed(self, borrower_, borrowAmount_):
@@ -247,12 +260,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         accountBorrows = self.getBorrowBalance(params.borrower)
         repayAmount = sp.min(accountBorrows, params.repayAmount)
         self.doTransferIn(params.payer, repayAmount)
-        self.data.balances[params.borrower].accountBorrows.principal = self.sub_nat_nat(
+        self.data.borrows[params.borrower].principal = self.sub_nat_nat(
             accountBorrows, repayAmount)
-        self.data.balances[params.borrower].accountBorrows.interestIndex = self.data.borrowIndex
+        self.data.borrows[params.borrower].interestIndex = self.data.borrowIndex
         self.data.totalBorrows = self.sub_nat_nat(
             self.data.totalBorrows, repayAmount)
-        sp.if self.data.balances[params.borrower].accountBorrows.principal == 0:
+        sp.if self.data.borrows[params.borrower].principal == 0:
             c = sp.contract(sp.TAddress, self.data.comptroller,
                             entry_point="removeFromLoans").open_some()
             sp.transfer(params.borrower, sp.mutez(0), c)
@@ -291,8 +304,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         self.verifyAccruedInterestRelevance()
 
-        borrowerBalance = self.data.balances[borrower].balance
-        liquidatorBalance = self.data.balances[liquidator].balance
+        borrowerBalance = self.data.ledger[borrower].balance
+        liquidatorBalance = self.data.ledger[liquidator].balance
 
         borrowerTokensNew = self.sub_nat_nat(borrowerBalance, seizeTokens)
 
@@ -318,8 +331,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         self.data.totalReserves = totalReservesNew
         self.data.totalSupply = totalSupplyNew
-        self.data.balances[borrower].balance = borrowerTokensNew
-        self.data.balances[liquidator].balance = liquidatorTokensNew
+        self.data.ledger[borrower].balance = borrowerTokensNew
+        self.data.ledger[liquidator].balance = liquidatorTokensNew
 
     """
         The sender liquidates the borrowers collateral.
@@ -388,7 +401,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TRecord(from_=sp.TAddress, to_=sp.TAddress,
                     value=sp.TNat).layout(("from_ as from", ("to_ as to", "value"))))
         sp.verify((params.from_ == sp.sender) |
-                  (self.data.balances[params.from_].approvals[sp.sender] >= params.value), EC.CT_TRANSFER_NOT_APPROVED)
+                  (self.data.ledger[params.from_].approvals[sp.sender] >= params.value), EC.CT_TRANSFER_NOT_APPROVED)
         self.verifyNotInternal()
         self.verifyTransferAllowed(params.from_, params.to_, params.value)
         self.transferInternal(sp.record(
@@ -397,16 +410,16 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def transferInternal(self, params):
         sp.set_type(params, sp.TRecord(from_=sp.TAddress,
                     to_=sp.TAddress, value=sp.TNat, sender=sp.TAddress))
-        sp.verify(self.data.balances[params.from_].balance >=
+        sp.verify(self.data.ledger[params.from_].balance >=
                   params.value, EC.CT_INSUFFICIENT_BALANCE)
-        self.data.balances[params.from_].balance = sp.as_nat(
-            self.data.balances[params.from_].balance - params.value)
-        self.data.balances[params.to_].balance += params.value
+        self.data.ledger[params.from_].balance = sp.as_nat(
+            self.data.ledger[params.from_].balance - params.value)
+        self.data.ledger[params.to_].balance += params.value
         sp.if (params.from_ != params.sender):
-            self.data.balances[params.from_].approvals[params.sender] = sp.as_nat(
-                self.data.balances[params.from_].approvals[params.sender] - params.value)
-            sp.if self.data.balances[params.from_].approvals[params.sender] == 0:
-                del self.data.balances[params.from_].approvals[params.sender]
+            self.data.ledger[params.from_].approvals[params.sender] = sp.as_nat(
+                self.data.ledger[params.from_].approvals[params.sender] - params.value)
+            sp.if self.data.ledger[params.from_].approvals[params.sender] == 0:
+                del self.data.ledger[params.from_].approvals[params.sender]
 
     def verifyTransferAllowed(self, src_, dst_, transferTokens_):
         self.addAddressIfNecessary(dst_)
@@ -417,9 +430,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.transfer(transferData, sp.mutez(0), c)
 
     def addAddressIfNecessary(self, address):
-        sp.if ~ self.data.balances.contains(address):
-            self.data.balances[address] = sp.record(balance=sp.nat(0), approvals={
-            }, accountBorrows=sp.record(principal=sp.nat(0), interestIndex=sp.nat(0)))
+        sp.if ~ self.data.ledger.contains(address):
+            self.data.ledger[address] = sp.record(balance=sp.nat(0), approvals={
+            })
+        sp.if ~ self.data.borrows.contains(address):
+            self.data.borrows[address] = sp.record(
+                principal=sp.nat(0), interestIndex=sp.nat(0))
 
     """    
         Approve `spender` to transfer up to `amount` from `sp.sender`
@@ -435,17 +451,29 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyNotInternal()
 
         # check if max approvals reached if new entry in approvals
-        sp.verify((self.data.balances[sp.sender].approvals.contains(params.spender)) | (
-            1000 > sp.len(self.data.balances[sp.sender].approvals)), EC.CT_MAX_APPROVALS) 
+        sp.verify((self.data.ledger[sp.sender].approvals.contains(params.spender)) | (
+            1000 > sp.len(self.data.ledger[sp.sender].approvals)), EC.CT_MAX_APPROVALS) 
         
-        alreadyApproved = self.data.balances[sp.sender].approvals.get(
+        alreadyApproved = self.data.ledger[sp.sender].approvals.get(
             params.spender, 0)
         sp.verify((alreadyApproved == 0) | (params.value == 0),
                   EC.CT_UNSAFE_ALLOWANCE_CHANGE)
         sp.if params.value == 0:
-            del self.data.balances[sp.sender].approvals[params.spender]
+            del self.data.ledger[sp.sender].approvals[params.spender]
         sp.else:    
-            self.data.balances[sp.sender].approvals[params.spender] = params.value
+            self.data.ledger[sp.sender].approvals[params.spender] = params.value
+        
+    """
+        Updates the contract metadata at specified key
+        params:
+            key: TString - The key to update
+            value: TBytes - The value to update with
+    """
+    @sp.entry_point
+    def updateMetadata(self, params):
+        sp.set_type(params, sp.TRecord(key=sp.TString, value=sp.TBytes))
+        self.verifyAdministrator()
+        self.data.metadata[params.key] = params.value
 
     """    
         Get the CToken balance of the account specified in `params`
@@ -457,8 +485,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.utils.view(sp.TNat)
     def getBalance(self, params):
         result = sp.local("result", 0)
-        sp.if self.data.balances.contains(params):
-            result.value = self.data.balances[params].balance
+        sp.if self.data.ledger.contains(params):
+            result.value = self.data.ledger[params].balance
         sp.result(result.value)
 
     """    
@@ -471,8 +499,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.onchain_view()
     def balanceOf(self, params):
         result = sp.local("result", 0)
-        sp.if self.data.balances.contains(params):
-            result.value = self.data.balances[params].balance
+        sp.if self.data.ledger.contains(params):
+            result.value = self.data.ledger[params].balance
         sp.result(result.value)
 
     """    
@@ -490,7 +518,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TAddress)
         exchangeRate = self.makeExp(self.exchangeRateStoredImpl())
         balance = self.mulScalarTruncate(
-            exchangeRate, self.data.balances[params].balance)
+            exchangeRate, self.data.ledger[params].balance)
         sp.result(balance)
 
     """    
@@ -517,13 +545,13 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     @sp.utils.view(sp.TNat)
     def getAllowance(self, params):
         result = sp.local("result", 0)
-        sp.if self.data.balances.contains(params.owner):
-            sp.if self.data.balances[params.owner].approvals.contains(params.spender):
-                result.value = self.data.balances[params.owner].approvals[params.spender]
+        sp.if self.data.ledger.contains(params.owner):
+            sp.if self.data.ledger[params.owner].approvals.contains(params.spender):
+                result.value = self.data.ledger[params.owner].approvals[params.spender]
         sp.result(result.value)
 
     """    
-        Get a snapshot of the account's balances, and the cached exchange rate
+        Get a snapshot of the account's ledger, and the cached exchange rate
 
         dev: This is used by comptroller to more efficiently perform liquidity checks.
         dev: Do accrueInterest() before this function to get the up-to-date balance
@@ -540,9 +568,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             borrowBalance=sp.nat(0),
             exchangeRateMantissa=sp.nat(0)
         ))
-        sp.if self.data.balances.contains(params):
+        sp.if self.data.ledger.contains(params):
             self.verifyAccruedInterestRelevance()
-            accSnapshot.cTokenBalance = self.data.balances[params].balance
+            accSnapshot.cTokenBalance = self.data.ledger[params].balance
             accSnapshot.borrowBalance = self.getBorrowBalance(params)
             accSnapshot.exchangeRateMantissa = self.exchangeRateStoredImpl()
         return accSnapshot
@@ -552,7 +580,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.result(self.helpAccountSnapshot(params))
 
     """    
-        Get a snapshot of the account's balances, and the cached exchange rate
+        Get a snapshot of the account's ledger, and the cached exchange rate
 
         dev: This is used by comptroller to more efficiently perform liquidity checks.
         dev: Do accrueInterest() before this function to get the up-to-date balance
@@ -595,9 +623,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     def getBorrowBalance(self, account):
         borrowBalance = sp.local('borrowBalance', sp.nat(0))
-        sp.if self.data.balances.contains(account):
+        sp.if self.data.borrows.contains(account):
             borrowSnapshot = sp.local(
-                'borrowSnapshot', self.data.balances[account].accountBorrows)
+                'borrowSnapshot', self.data.borrows[account])
             sp.if borrowSnapshot.value.principal > 0:
                 principalTimesIndex = borrowSnapshot.value.principal * self.data.borrowIndex
                 borrowBalance.value = principalTimesIndex // borrowSnapshot.value.interestIndex

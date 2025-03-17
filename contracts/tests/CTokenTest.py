@@ -1,4 +1,5 @@
 import smartpy as sp
+import json
 
 CToken = sp.io.import_script_from_url("file:contracts/CToken.py")
 IRM = sp.io.import_script_from_url("file:contracts/tests/mock/InterestRateModelMock.py")
@@ -10,8 +11,8 @@ DataRelevance = sp.io.import_script_from_url("file:contracts/tests/utils/DataRel
 
 
 class TestCToken(CToken.CToken):
-    def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, **extra_storage):
-        CToken.CToken.__init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_,
+    def __init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, metadata_, token_metadata_, **extra_storage):
+        CToken.CToken.__init__(self, comptroller_, interestRateModel_, initialExchangeRateMantissa_, administrator_, metadata_, token_metadata_,
                                accCTokenBalance=sp.nat(0), accBorrowBalance=sp.nat(0), accExchangeRateMantissa=sp.nat(0))
 
     def getCashImpl(self):
@@ -67,10 +68,27 @@ def test():
     scenario += cmpt
     irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(80000000000), supplyRate_=sp.nat(180000000000))
     scenario += irm
-    c1 = TestCToken(comptroller_=cmpt.address, 
-                    interestRateModel_=irm.address, 
+    c1 = TestCToken(comptroller_=cmpt.address,
+                    interestRateModel_=irm.address,
                     initialExchangeRateMantissa_=sp.nat(exchange_rate),
-                    administrator_=admin.address)
+                    administrator_=admin.address,
+                    metadata_=sp.big_map({
+                        "": sp.utils.bytes_of_string("tezos-storage:data"),
+                        "data": sp.utils.bytes_of_string(json.dumps({
+                            "name": "...",
+                            "description": "...",
+                            "version": "1.0.0",
+                            "authors": ["ewqenqjw"],
+                            "homepage": "https://some-website.com",
+                            "interfaces": ["TZIP-007"],
+                            "license": {"name": "..."}
+                        }))
+                    }),
+                    token_metadata_={
+                        "name": sp.utils.bytes_of_string("Compound token"),
+                        "symbol": sp.utils.bytes_of_string("cToken"),
+                        "decimals": sp.utils.bytes_of_string("x"),
+                    })
 
     scenario += c1
 
@@ -86,7 +104,7 @@ def test():
     scenario.h2("Test mint")
     scenario.h3("Mint allowed")
     DataRelevance.validateAccrueInterestRelevance(scenario, "mint", bLevel, alice, c1, c1.mint, 100)
-    scenario.verify(c1.data.balances[alice.address].balance == sp.nat(100 * ctoken_decimals))
+    scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(100 * ctoken_decimals))
     scenario.h3("Mint not allowed")
     scenario += cmpt.setMintAllowed(sp.bool(False))
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
@@ -95,15 +113,15 @@ def test():
     scenario += cmpt.setMintAllowed(sp.bool(True))
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.mint(1000).run(sender=bob, level=bLevel.current())
-    scenario.verify(c1.data.balances[bob.address].balance == sp.nat(1000 * ctoken_decimals))
+    scenario.verify(c1.data.ledger[bob.address].balance == sp.nat(1000 * ctoken_decimals))
     scenario.h3("Try mint in callback")
     scenario += c1.getCash(sp.pair(sp.unit, c1.typed.mint)).run(sender=alice, level=bLevel.next(), valid=False)
 
     scenario.h2("Test Borrow")
     scenario.h3("Borrow allowed")
     DataRelevance.validateAllRelevance(scenario, "borrow", bLevel, carl, c1, c1.borrow, 10, cmpt, c1.address, carl.address)
-    scenario.verify(c1.data.balances[carl.address].balance == sp.nat(0))
-    scenario.verify(c1.data.balances[carl.address].accountBorrows.principal == sp.nat(10))
+    scenario.verify(c1.data.ledger[carl.address].balance == sp.nat(0))
+    scenario.verify(c1.data.borrows[carl.address].principal == sp.nat(10))
     scenario.h3("Borrow not allowed")
     scenario += cmpt.setBorrowAllowed(sp.bool(False))
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
@@ -112,8 +130,8 @@ def test():
     DataRelevance.updateAllRelevance(scenario, bLevel, carl, c1, cmpt, c1.address, carl.address)
     scenario += cmpt.setBorrowAllowed(sp.bool(True))
     scenario += c1.borrow(10).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].balance == sp.nat(100 * ctoken_decimals))
-    scenario.verify(c1.data.balances[alice.address].accountBorrows.principal == sp.nat(10))
+    scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(100 * ctoken_decimals))
+    scenario.verify(c1.data.borrows[alice.address].principal == sp.nat(10))
     scenario.h3("Try borrow with insufficient cash")
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.borrow(1100 * ctoken_decimals + 1).run(sender=carl, level=bLevel.current(), valid=False)
@@ -123,7 +141,7 @@ def test():
     scenario.h2("Test Redeem")
     scenario.h3("Redeem allowed")
     DataRelevance.validateAllRelevance(scenario, "redeem", bLevel, alice, c1, c1.redeem, 50 * ctoken_decimals, cmpt, c1.address, alice.address)
-    scenario.verify(c1.data.balances[alice.address].balance == sp.nat(50 * ctoken_decimals))
+    scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(50 * ctoken_decimals))
     scenario.h3("Redeem not allowed")
     scenario += cmpt.setRedeemAllowed(sp.bool(False))
     DataRelevance.updateAllRelevance(scenario, bLevel, carl, c1, cmpt, c1.address, carl.address)
@@ -132,14 +150,14 @@ def test():
     DataRelevance.updateAllRelevance(scenario, bLevel, carl, c1, cmpt, c1.address, carl.address)
     scenario += cmpt.setRedeemAllowed(sp.bool(True))
     scenario += c1.redeem(10 * ctoken_decimals).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].balance == sp.nat(40 * ctoken_decimals))
+    scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(40 * ctoken_decimals))
     scenario.h3("Try redeem with insufficient balance")
     DataRelevance.updateAllRelevance(scenario, bLevel, carl, c1, cmpt, c1.address, carl.address)
     scenario += c1.redeem(50 * ctoken_decimals).run(sender=alice, level=bLevel.current(), valid=False)
     scenario.h3("Redeem underlying")
     DataRelevance.updateAllRelevance(scenario, bLevel, carl, c1, cmpt, c1.address, carl.address)
     scenario += c1.redeemUnderlying(10).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].balance == sp.nat(30188680)) # due to exchange rate changes: 10 underlying < 10 000 000 CToken
+    scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(30188680)) # due to exchange rate changes: 10 underlying < 10 000 000 CToken
     scenario.h3("Try redeem in callback")
     scenario += c1.getCash(sp.pair(sp.unit, c1.typed.redeem)).run(sender=alice, level=bLevel.next(), valid=False)
     scenario.h3("Try redeem underlying in callback")
@@ -148,7 +166,7 @@ def test():
     scenario.h2("Test Repay borrow")
     scenario.h3("Repay borrow allowed")
     DataRelevance.validateAccrueInterestRelevance(scenario, "repayBorrow", bLevel, alice, c1, c1.repayBorrow, 1)
-    scenario.verify(c1.data.balances[alice.address].accountBorrows.principal == sp.nat(9))
+    scenario.verify(c1.data.borrows[alice.address].principal == sp.nat(9))
     scenario.h3("Repay borrow not allowed")
     scenario += cmpt.setRepayBorrowAllowed(sp.bool(False))
     DataRelevance.updateAccrueInterest(scenario, bLevel, carl, c1)
@@ -157,16 +175,16 @@ def test():
     DataRelevance.updateAccrueInterest(scenario, bLevel, carl, c1)
     scenario += cmpt.setRepayBorrowAllowed(sp.bool(True))
     scenario += c1.repayBorrow(1).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].accountBorrows.principal == sp.nat(8))
+    scenario.verify(c1.data.borrows[alice.address].principal == sp.nat(8))
     scenario.h3("Repay borrow behalf")
     DataRelevance.updateAccrueInterest(scenario, bLevel, carl, c1)
     scenario += c1.repayBorrowBehalf(sp.record(borrower=alice.address, repayAmount=sp.nat(1))).run(sender=bob, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].accountBorrows.principal == sp.nat(7))
+    scenario.verify(c1.data.borrows[alice.address].principal == sp.nat(7))
     scenario.h3("Repay more than borrowed")
     DataRelevance.updateAccrueInterest(scenario, bLevel, carl, c1)
     scenario += c1.repayBorrow(1007).run(sender=alice, level=bLevel.current())
-    scenario.show(c1.data.balances[alice.address].accountBorrows.principal)
-    scenario.verify(c1.data.balances[alice.address].accountBorrows.principal == sp.nat(0))
+    scenario.show(c1.data.borrows[alice.address].principal)
+    scenario.verify(c1.data.borrows[alice.address].principal == sp.nat(0))
     scenario.h3("Try repayBorrow in callback")
     scenario += c1.getCash(sp.pair(sp.unit, c1.typed.redeem)).run(sender=alice, level=bLevel.current(), valid=False)
     
@@ -185,7 +203,7 @@ def test():
     scenario += c1.getAllowance(sp.pair(sp.record(owner=carl.address, spender=alice.address), view_result.typed.targetNat)).run(sender=carl, level=bLevel.next())
     scenario.verify_equal(view_result.data.last, sp.some(100))
     scenario += c1.transfer(from_=carl.address, to_=alice.address, value=100).run(sender=alice, level=bLevel.next())
-    scenario.verify(c1.data.balances[carl.address].balance == sp.nat(0))
+    scenario.verify(c1.data.ledger[carl.address].balance == sp.nat(0))
 
     scenario.h2("Admin functions")   
     scenario.h3("Pending governance")  

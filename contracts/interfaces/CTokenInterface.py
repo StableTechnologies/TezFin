@@ -153,6 +153,18 @@ class CTokenInterface(sp.Contract):
     def approve(self, params):
         pass
 
+    """
+        Updates the contract metadata at specified key
+        params:
+            key: TString - The key to update
+            value: TBytes - The value to update with
+        requirements:
+            Can be called only by the contract administrator
+    """
+    @sp.entry_point
+    def updateMetadata(self, params):
+        pass
+
     """    
         Get the current allowance from `owner` for `spender`
 
