@@ -1,4 +1,5 @@
 import smartpy as sp
+import json
 
 GOV = sp.io.import_script_from_url("file:contracts/Governance.py")
 BlockLevel = sp.io.import_script_from_url("file:contracts/tests/utils/BlockLevel.py")
@@ -48,11 +49,46 @@ def test():
                         interestRateModel_=irm.address,
                         initialExchangeRateMantissa_=sp.nat(int(1e12)),
                         administrator_=governor.address,
+                        metadata_=sp.big_map({
+                            "": sp.utils.bytes_of_string("tezos-storage:data"),
+                            "data": sp.utils.bytes_of_string(json.dumps({
+                                "name": "...",
+                                "description": "...",
+                                "version": "1.0.0",
+                                "authors": ["ewqenqjw"],
+                                "homepage": "https://some-website.com",
+                                "interfaces": ["TZIP-007"],
+                                "license": {"name": "..."}
+                            }))
+                        }),
+                        token_metadata_={
+                            "name": sp.utils.bytes_of_string("Compound XTZ"),
+                            "symbol": sp.utils.bytes_of_string("fXTZ"),
+                            "decimals": sp.utils.bytes_of_string("6"),
+                        },
                         fa1_2_TokenAddress_ = fa12Target.address)
     scenario += cfa12
-    cxtz = CXTZ.CXTZ(comptroller_=cmpt.address, 
-                   interestRateModel_=irm.address, 
-                   administrator_=governor.address)
+    cxtz = CXTZ.CXTZ(comptroller_=cmpt.address,
+                     interestRateModel_=irm.address,
+                     administrator_=governor.address,
+                     metadata_=sp.big_map({
+                         "": sp.utils.bytes_of_string("tezos-storage:data"),
+                         "data": sp.utils.bytes_of_string(json.dumps({
+                             "name": "...",
+                             "description": "...",
+                             "version": "1.0.0",
+                             "authors": ["ewqenqjw"],
+                             "homepage": "https://some-website.com",
+                             "interfaces": ["TZIP-007"],
+                             "license": {"name": "..."}
+                         }))
+                     }),
+                     token_metadata_={
+                         "name": sp.utils.bytes_of_string("Compound XTZ"),
+                         "symbol": sp.utils.bytes_of_string("fXTZ"),
+                         "decimals": sp.utils.bytes_of_string("6"),
+                     },
+                     )
     scenario += cxtz
     oracle = OracleMock.OracleMock()
     scenario += oracle
