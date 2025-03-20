@@ -147,6 +147,19 @@ def testCToken(scenario, ctoken, bLevel, alice, admin, governor, cmpt, irm, orac
     arg = sp.record(cToken = ctoken.address, newReserveFactor = sp.nat(2))
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set reserve factor", bLevel, admin, alice, governor.setReserveFactor, arg)
     scenario.verify(ctoken.data.reserveFactorMantissa == arg.newReserveFactor)
+
+    scenario.h3("Update contract metadata")
+    arg = sp.record(cToken=ctoken.address, key=sp.string("data"), value=sp.utils.bytes_of_string(json.dumps({
+        "name": "New name",
+        "description": "new description",
+        "version": "1.0.0",
+        "authors": ["ewqenqjw"],
+        "homepage": "https://some-website.com",
+        "interfaces": ["TZIP-007"],
+        "license": {"name": "my token"}
+    })))
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "update contract metadata", bLevel, admin, alice, governor.updateMetadata, arg)
+    scenario.verify(ctoken.data.metadata[arg.key] == arg.value)
     
 def testCxtzReserves(scenario, cxtz, bLevel, alice, admin, governor):
     scenario.h3("Add reserves to reduce")
