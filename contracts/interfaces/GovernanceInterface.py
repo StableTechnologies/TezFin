@@ -91,6 +91,17 @@ class GovernanceInterface(sp.Contract):
     def reduceReserves(self, params):
         pass
 
+    """
+        Updates the contract metadata of the cToken at specified key with specified value
+        params: TRecord
+            cToken: TAddress - The address of CToken contract
+            key: TString - The key of the metadata to update
+            value: TBytes - The value to update the metadata with
+    """
+    @sp.entry_point
+    def updateMetadata(self, params):
+        pass
+
     # Comptroller functions
 
     """

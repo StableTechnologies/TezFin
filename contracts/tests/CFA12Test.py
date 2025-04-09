@@ -1,4 +1,5 @@
 import smartpy as sp
+import json
 
 CFA12 = sp.io.import_script_from_url("file:contracts/CFA12.py")
 IRM = sp.io.import_script_from_url("file:contracts/tests/mock/InterestRateModelMock.py")
@@ -41,6 +42,23 @@ def test():
                      interestRateModel_=irm.address,
                      initialExchangeRateMantissa_=sp.nat(exchange_rate),
                      administrator_=admin.address,
+                     metadata_=sp.big_map({
+                         "": sp.utils.bytes_of_string("tezos-storage:data"),
+                         "data": sp.utils.bytes_of_string(json.dumps({
+                             "name": "...",
+                             "description": "...",
+                             "version": "1.0.0",
+                             "authors": ["ewqenqjw"],
+                             "homepage": "https://some-website.com",
+                             "interfaces": ["TZIP-007"],
+                             "license": {"name": "..."}
+                         }))
+                     }),
+                     token_metadata_={
+                         "name": sp.utils.bytes_of_string("Compound XTZ"),
+                         "symbol": sp.utils.bytes_of_string("fXTZ"),
+                         "decimals": sp.utils.bytes_of_string("6"),
+                     },
                      fa1_2_TokenAddress_ = fa12.address)
 
     scenario += c1
@@ -54,13 +72,13 @@ def test():
     scenario += fa12.approve(sp.record(spender = c1.address, value = 100)).run(sender=alice)
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.mint(100).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.balances[alice.address].balance == 100)
+    scenario.verify(c1.data.ledger[alice.address].balance == 100)
     scenario.h3("Second mint")
     scenario += fa12.mint(sp.record(address = admin.address, value = 10))
     scenario += fa12.approve(sp.record(spender = c1.address, value = 10)).run(sender=admin)
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.mint(10).run(sender=admin, level=bLevel.current())
-    scenario.verify(c1.data.balances[admin.address].balance == 10)
+    scenario.verify(c1.data.ledger[admin.address].balance == 10)
 
     scenario.h2("Check getCash")
     scenario.h3("Before accrueInterest")
