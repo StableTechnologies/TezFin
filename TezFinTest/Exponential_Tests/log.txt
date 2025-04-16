@@ -22,6 +22,8 @@ Table Of Contents
 ## Div Exp / Nat : divide by zero
 ## Div Nat / Exp
 ## Div Nat / Exp : divide by zero
+## Div Nat / Exp With Ceil
+## Div Nat / Exp With Ceil : divide by zero
 # Test truncate
 ## Truncate integer
 ## Truncate small number
@@ -43,42 +45,42 @@ Table Of Contents
 ## Left greater than right
 Comment...
  h1: Exponential math tests
-Creating contract
+Creating contract KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1
  -> (Pair 1000000000000000000 (Pair 500000000000000000 0))
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_storage.tz 1
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_storage.json 1
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_sizes.csv 2
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_storage.py 1
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_types.py 7
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_contract.tz 379
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_contract.json 556
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_contract.py 131
- => ../TezFinTest/Exponential_Tests/step_002_cont_0_contract.py.html 2199
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_storage.tz 1
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_storage.json 1
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_sizes.csv 2
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_storage.py 1
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_types.py 7
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_contract.tz 421
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_contract.json 496
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_contract.py 144
+ => ./TezFinTest/Exponential_Tests/step_003_cont_0_contract.py.html 2034
 Comment...
  h2: Test add
 Comment...
  h3: Add Exp + Exp
- => ../TezFinTest/Exponential_Tests/step_005_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_005_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_005_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_006_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_006_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_006_cont_0_params.json 1
 Executing testAddExp(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = 6 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 8000000000000000000))
 Verifying sp.contract_data(0).result == (8 * 1000000000000000000)...
  OK
 Comment...
  h3: Add Exp + Exp : big numbers
- => ../TezFinTest/Exponential_Tests/step_008_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_008_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_008_cont_0_params.json 7
+ => ./TezFinTest/Exponential_Tests/step_009_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_009_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_009_cont_0_params.json 6
 Executing testAddExp(sp.record(a = sp.record(mantissa = (((2 * 1000000000000000000) * 1000000000000000000) * 1000000000000000000) * 1000000000000000000), b = sp.record(mantissa = (((6 * 1000000000000000000) * 1000000000000000000) * 1000000000000000000) * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 8000000000000000000000000000000000000000000000000000000000000000000000000))
 Verifying sp.contract_data(0).result == (8000000000000000000000000000000000000000000000000000000 * 1000000000000000000)...
  OK
 Comment...
  h3: Add Exp + Nat
- => ../TezFinTest/Exponential_Tests/step_011_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_011_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_011_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_012_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_012_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_012_cont_0_params.json 1
 Executing testAddExpNat(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = 6))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 8000000000000000000))
 Verifying sp.contract_data(0).result == (8 * 1000000000000000000)...
@@ -87,28 +89,28 @@ Comment...
  h2: Test sub
 Comment...
  h3: Sub Nat - Nat
- => ../TezFinTest/Exponential_Tests/step_015_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_015_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_015_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_016_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_016_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_016_cont_0_params.json 1
 Executing testSubNatNat(sp.record(a = 6, b = 2))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 4))
 Verifying sp.contract_data(0).result == 4...
  OK
 Comment...
  h3: Sub Nat - Nat : underflow
- => ../TezFinTest/Exponential_Tests/step_018_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_018_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_018_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_019_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_019_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_019_cont_0_params.json 1
 Executing testSubNatNat(sp.record(a = 2, b = 6))...
  -> --- Expected failure in transaction --- Not the proper variant constructor [Some] != [None]
-(sp.as_nat(params.a - params.b, message = 'SUBTRACTION_UNDERFLOW') : sp.TNat) (Exponential, line 178)
+(sp.as_nat(params.a - params.b, message = 'SUBTRACTION_UNDERFLOW') : sp.TNat)
 Message: 'SUBTRACTION_UNDERFLOW'
- (Exponential, line 178)
+ (Exponential, line 195)
 Comment...
  h3: Sub Exp - Exp
- => ../TezFinTest/Exponential_Tests/step_020_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_020_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_020_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_021_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_021_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_021_cont_0_params.json 1
 Executing testSubExpExp(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000), b = sp.record(mantissa = 2 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 4000000000000000000))
 Verifying sp.contract_data(0).result == (4 * 1000000000000000000)...
@@ -117,36 +119,36 @@ Comment...
  h2: Test mul
 Comment...
  h3: Mul Exp * Exp
- => ../TezFinTest/Exponential_Tests/step_024_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_024_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_024_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_025_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_025_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_025_cont_0_params.json 1
 Executing testMulExpExp(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = 6 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 12000000000000000000))
 Verifying sp.contract_data(0).result == (12 * 1000000000000000000)...
  OK
 Comment...
  h3: Mul Exp * Exp : big numbers
- => ../TezFinTest/Exponential_Tests/step_027_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_027_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_027_cont_0_params.json 7
+ => ./TezFinTest/Exponential_Tests/step_028_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_028_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_028_cont_0_params.json 6
 Executing testMulExpExp(sp.record(a = sp.record(mantissa = (((2 * 1000000000000000000) * 1000000000000000000) * 1000000000000000000) * 1000000000000000000), b = sp.record(mantissa = (((6 * 1000000000000000000) * 1000000000000000000) * 1000000000000000000) * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 12000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))
 Verifying sp.contract_data(0).result == (12000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 * 1000000000000000000)...
  OK
 Comment...
  h3: Mul Exp * Nat
- => ../TezFinTest/Exponential_Tests/step_030_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_030_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_030_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_031_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_031_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_031_cont_0_params.json 1
 Executing testMulExpNat(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = 6))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 12000000000000000000))
 Verifying sp.contract_data(0).result == (12 * 1000000000000000000)...
  OK
 Comment...
  h3: Mul Nat * Exp
- => ../TezFinTest/Exponential_Tests/step_033_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_033_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_033_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_034_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_034_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_034_cont_0_params.json 1
 Executing testMulNatExp(sp.record(a = 2, b = sp.record(mantissa = 1500000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 3))
 Verifying sp.contract_data(0).result == 3...
@@ -155,92 +157,113 @@ Comment...
  h2: Test div
 Comment...
  h3: Div Exp / Exp
- => ../TezFinTest/Exponential_Tests/step_037_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_037_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_037_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_038_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_038_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_038_cont_0_params.json 1
 Executing testDivExpExp(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000), b = sp.record(mantissa = 2 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 3000000000000000000))
 Verifying sp.contract_data(0).result == (3 * 1000000000000000000)...
  OK
 Comment...
  h3: Div Exp / Exp : big divisor
- => ../TezFinTest/Exponential_Tests/step_040_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_040_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_040_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_041_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_041_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_041_cont_0_params.json 1
 Executing testDivExpExp(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = (((6 * 1000000000000000000) * 1000000000000000000) * 1000000000000000000) * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 0))
 Verifying sp.contract_data(0).result == 0...
  OK
 Comment...
  h3: Div Exp / Exp : divide by zero
- => ../TezFinTest/Exponential_Tests/step_043_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_043_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_043_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_044_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_044_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_044_cont_0_params.json 1
 Executing testDivExpExp(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000), b = sp.record(mantissa = 0)))...
- -> --- Expected failure in transaction --- Wrong condition: (params.b.mantissa > 0 : sp.TBool) (Exponential, line 222)
+ -> --- Expected failure in transaction --- Exponential:243:: Wrong condition: (params.b.mantissa > 0 : sp.TBool)
 Message: 'DIVISION_BY_ZERO'
- (Exponential, line 222)
 Comment...
  h3: Div Exp / Nat
- => ../TezFinTest/Exponential_Tests/step_045_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_045_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_045_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_046_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_046_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_046_cont_0_params.json 1
 Executing testDivExpNat(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000), b = 4))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 1500000000000000000))
 Verifying sp.contract_data(0).result == 1500000000000000000...
  OK
 Comment...
  h3: Div Exp / Nat : divide by zero
- => ../TezFinTest/Exponential_Tests/step_048_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_048_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_048_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_049_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_049_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_049_cont_0_params.json 1
 Executing testDivExpNat(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000), b = 0))...
- -> --- Expected failure in transaction --- Wrong condition: (params.b > 0 : sp.TBool) (Exponential, line 234)
+ -> --- Expected failure in transaction --- Exponential:256:: Wrong condition: (params.b > 0 : sp.TBool)
 Message: 'DIVISION_BY_ZERO'
- (Exponential, line 234)
 Comment...
  h3: Div Nat / Exp
- => ../TezFinTest/Exponential_Tests/step_050_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_050_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_050_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_051_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_051_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_051_cont_0_params.json 1
 Executing testDivNatExp(sp.record(a = 6, b = sp.record(mantissa = 1500000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 4))
 Verifying sp.contract_data(0).result == 4...
  OK
 Comment...
  h3: Div Nat / Exp : divide by zero
- => ../TezFinTest/Exponential_Tests/step_053_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_053_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_053_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_054_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_054_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_054_cont_0_params.json 1
 Executing testDivNatExp(sp.record(a = 6, b = sp.record(mantissa = 0)))...
- -> --- Expected failure in transaction --- Wrong condition: (params.b.mantissa > 0 : sp.TBool) (Exponential, line 246)
+ -> --- Expected failure in transaction --- Exponential:269:: Wrong condition: (params.b.mantissa > 0 : sp.TBool)
 Message: 'DIVISION_BY_ZERO'
- (Exponential, line 246)
+Comment...
+ h3: Div Nat / Exp With Ceil
+ => ./TezFinTest/Exponential_Tests/step_056_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_056_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_056_cont_0_params.json 1
+Executing testDivNatExp(sp.record(a = 1, b = sp.record(mantissa = 1500000000000000000)))...
+ -> (Pair 1000000000000000000 (Pair 500000000000000000 0))
+Verifying sp.contract_data(0).result == 0...
+ OK
+ => ./TezFinTest/Exponential_Tests/step_058_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_058_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_058_cont_0_params.json 1
+Executing testDivNatExpCeil(sp.record(a = 1, b = sp.record(mantissa = 1500000000000000000)))...
+ -> (Pair 1000000000000000000 (Pair 500000000000000000 1))
+Verifying sp.contract_data(0).result == 1...
+ OK
+Comment...
+ h3: Div Nat / Exp With Ceil : divide by zero
+ => ./TezFinTest/Exponential_Tests/step_061_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_061_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_061_cont_0_params.json 1
+Executing testDivNatExpCeil(sp.record(a = 1, b = sp.record(mantissa = 0)))...
+ -> --- Expected failure in transaction --- Exponential:275:: Wrong condition: (params.b.mantissa > 0 : sp.TBool)
+Message: 'DIVISION_BY_ZERO'
 Comment...
  h2: Test truncate
 Comment...
  h3: Truncate integer
- => ../TezFinTest/Exponential_Tests/step_056_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_056_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_056_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_064_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_064_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_064_cont_0_params.json 1
 Executing testTruncate(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 6))
 Verifying sp.contract_data(0).result == 6...
  OK
 Comment...
  h3: Truncate small number
- => ../TezFinTest/Exponential_Tests/step_059_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_059_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_059_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_067_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_067_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_067_cont_0_params.json 1
 Executing testTruncate(sp.record(a = sp.record(mantissa = 6)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 0))
 Verifying sp.contract_data(0).result == 0...
  OK
 Comment...
  h3: Truncate real
- => ../TezFinTest/Exponential_Tests/step_062_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_062_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_062_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_070_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_070_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_070_cont_0_params.json 1
 Executing testTruncate(sp.record(a = sp.record(mantissa = 1500000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 1))
 Verifying sp.contract_data(0).result == 1...
@@ -249,18 +272,18 @@ Comment...
  h2: Test mul scalar truncate
 Comment...
  h3: Mul real and truncate float
- => ../TezFinTest/Exponential_Tests/step_066_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_066_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_066_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_074_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_074_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_074_cont_0_params.json 1
 Executing testMulScalarTruncate(sp.record(a = sp.record(mantissa = 1500000000000000000), scalar = 3))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 4))
 Verifying sp.contract_data(0).result == 4...
  OK
 Comment...
  h3: Mul real, truncate float and add Nat
- => ../TezFinTest/Exponential_Tests/step_069_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_069_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_069_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_077_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_077_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_077_cont_0_params.json 1
 Executing testMulScalarTruncateAdd(sp.record(a = sp.record(mantissa = 1500000000000000000), addend = 2, scalar = 3))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 6))
 Verifying sp.contract_data(0).result == 6...
@@ -269,27 +292,27 @@ Comment...
  h2: Test mul rounded
 Comment...
  h3: Mul rounded, truncate integer
- => ../TezFinTest/Exponential_Tests/step_073_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_073_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_073_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_081_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_081_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_081_cont_0_params.json 1
 Executing testMulExpRounded(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = 6 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 12000000000000000000))
 Verifying sp.contract_data(0).result == (12 * 1000000000000000000)...
  OK
 Comment...
  h3: Mul rounded, round up
- => ../TezFinTest/Exponential_Tests/step_076_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_076_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_076_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_084_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_084_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_084_cont_0_params.json 1
 Executing testMulExpRounded(sp.record(a = sp.record(mantissa = 6), b = sp.record(mantissa = 6600000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 40))
 Verifying sp.contract_data(0).result == 40...
  OK
 Comment...
  h3: Mul rounded, round down
- => ../TezFinTest/Exponential_Tests/step_079_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_079_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_079_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_087_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_087_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_087_cont_0_params.json 1
 Executing testMulExpRounded(sp.record(a = sp.record(mantissa = 4), b = sp.record(mantissa = 6600000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 26))
 Verifying sp.contract_data(0).result == 26...
@@ -298,27 +321,27 @@ Comment...
  h2: Test less than
 Comment...
  h3: Left less than right
- => ../TezFinTest/Exponential_Tests/step_083_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_083_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_083_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_091_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_091_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_091_cont_0_params.json 1
 Executing testLessThanExp(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = 6 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 1))
 Verifying sp.contract_data(0).result == 1...
  OK
 Comment...
  h3: Left equal to right
- => ../TezFinTest/Exponential_Tests/step_086_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_086_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_086_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_094_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_094_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_094_cont_0_params.json 1
 Executing testLessThanExp(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = 2 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 0))
 Verifying sp.contract_data(0).result == 0...
  OK
 Comment...
  h3: Left greater than right
- => ../TezFinTest/Exponential_Tests/step_089_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_089_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_089_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_097_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_097_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_097_cont_0_params.json 1
 Executing testLessThanExp(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000), b = sp.record(mantissa = 2 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 0))
 Verifying sp.contract_data(0).result == 0...
@@ -327,29 +350,29 @@ Comment...
  h2: Test less than or equal
 Comment...
  h3: Left less than right
- => ../TezFinTest/Exponential_Tests/step_093_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_093_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_093_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_101_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_101_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_101_cont_0_params.json 1
 Executing testLessThanOrEqualExp(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = 6 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 1))
 Verifying sp.contract_data(0).result == 1...
  OK
 Comment...
  h3: Left equal to right
- => ../TezFinTest/Exponential_Tests/step_096_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_096_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_096_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_104_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_104_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_104_cont_0_params.json 1
 Executing testLessThanOrEqualExp(sp.record(a = sp.record(mantissa = 2 * 1000000000000000000), b = sp.record(mantissa = 2 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 1))
 Verifying sp.contract_data(0).result == 1...
  OK
 Comment...
  h3: Left greater than right
- => ../TezFinTest/Exponential_Tests/step_099_cont_0_params.py 1
- => ../TezFinTest/Exponential_Tests/step_099_cont_0_params.tz 1
- => ../TezFinTest/Exponential_Tests/step_099_cont_0_params.json 1
+ => ./TezFinTest/Exponential_Tests/step_107_cont_0_params.py 1
+ => ./TezFinTest/Exponential_Tests/step_107_cont_0_params.tz 1
+ => ./TezFinTest/Exponential_Tests/step_107_cont_0_params.json 1
 Executing testLessThanOrEqualExp(sp.record(a = sp.record(mantissa = 6 * 1000000000000000000), b = sp.record(mantissa = 2 * 1000000000000000000)))...
  -> (Pair 1000000000000000000 (Pair 500000000000000000 0))
 Verifying sp.contract_data(0).result == 0...
  OK
- => ../TezFinTest/Exponential_Tests/log.html 2466
+ => ./TezFinTest/Exponential_Tests/log.html 2320

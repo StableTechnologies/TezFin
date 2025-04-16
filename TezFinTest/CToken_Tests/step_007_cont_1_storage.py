@@ -1,0 +1,1 @@
+sp.record(borrow_allowed = True, mint_allowed = True, redeem_allowed = True, repay_borrow_allowed = True)
