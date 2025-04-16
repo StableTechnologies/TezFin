@@ -1,0 +1,1 @@
+sp.record(borrower = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi'), repayAmount = 1)

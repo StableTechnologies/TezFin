@@ -268,3 +268,16 @@ class Exponential(sp.Contract):
         sp.set_type(b, TExp)
         sp.verify(b.mantissa > 0, EC.DIVISION_BY_ZERO)
         return a * self.data.expScale // b.mantissa
+    
+    def div_nat_exp_ceil(self, a, b):
+        sp.set_type(a, sp.TNat)
+        sp.set_type(b, TExp)
+        sp.verify(b.mantissa > 0, EC.DIVISION_BY_ZERO)
+
+        numerator = sp.compute(a * self.data.expScale)
+        denominator = b.mantissa
+        
+        result = sp.compute(numerator // denominator)
+        sp.if numerator % denominator > 0:
+            result += 1
+        return result

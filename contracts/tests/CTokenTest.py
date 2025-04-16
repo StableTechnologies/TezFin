@@ -157,7 +157,7 @@ def test():
     scenario.h3("Redeem underlying")
     DataRelevance.updateAllRelevance(scenario, bLevel, carl, c1, cmpt, c1.address, carl.address)
     scenario += c1.redeemUnderlying(10).run(sender=alice, level=bLevel.current())
-    scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(30188680)) # due to exchange rate changes: 10 underlying < 10 000 000 CToken
+    scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(30188679)) # due to exchange rate changes: 10 underlying < 10 000 000 CToken
     scenario.h3("Try redeem in callback")
     scenario += c1.getCash(sp.pair(sp.unit, c1.typed.redeem)).run(sender=alice, level=bLevel.next(), valid=False)
     scenario.h3("Try redeem underlying in callback")
@@ -275,6 +275,6 @@ def test():
     scenario.h2("Test getAccountSnapshot")
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.updateAccountSnapshot(alice.address).run(sender = alice, level = bLevel.current())
-    scenario.verify(c1.data.accCTokenBalance == sp.nat(129723818))
+    scenario.verify(c1.data.accCTokenBalance == sp.nat(129723817))
     scenario.verify(c1.data.accBorrowBalance == sp.nat(0))
-    scenario.verify(c1.data.accExchangeRateMantissa == sp.nat(1003785156984))    
+    scenario.verify(c1.data.accExchangeRateMantissa == sp.nat(1003785157872))    

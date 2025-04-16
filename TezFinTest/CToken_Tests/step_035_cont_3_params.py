@@ -1,0 +1,1 @@
+(sp.unit, sp.contract(sp.TNat, sp.address('KT1Tezooo3zzSmartPyzzSTATiCzzzseJjWC%mint')).open_some())

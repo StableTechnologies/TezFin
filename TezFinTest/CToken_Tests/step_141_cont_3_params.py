@@ -1,0 +1,1 @@
+(sp.record(owner = sp.address('tz1cFgiCfHJbTYrrQXHXHad6b8J1JoGxDX58'), spender = sp.address('tz1WxrQuZ4CK1MBUa2GqUWK1yJ4J6EtG1Gwi')), sp.contract(sp.TNat, sp.address('KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1%targetNat')).open_some())

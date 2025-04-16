@@ -1,0 +1,421 @@
+parameter (or (or (or (or (pair %testAddExp (nat %a) (nat %b)) (pair %testAddExpNat (nat %a) (nat %b))) (or (pair %testDivExpExp (nat %a) (nat %b)) (pair %testDivExpNat (nat %a) (nat %b)))) (or (or (pair %testDivNatExp (nat %a) (nat %b)) (pair %testDivNatExpCeil (nat %a) (nat %b))) (or (pair %testLessThanExp (nat %a) (nat %b)) (pair %testLessThanOrEqualExp (nat %a) (nat %b))))) (or (or (or (pair %testMulExpExp (nat %a) (nat %b)) (pair %testMulExpNat (nat %a) (nat %b))) (or (pair %testMulExpRounded (nat %a) (nat %b)) (pair %testMulNatExp (nat %a) (nat %b)))) (or (or (pair %testMulScalarTruncate (nat %a) (nat %scalar)) (pair %testMulScalarTruncateAdd (nat %a) (pair (nat %addend) (nat %scalar)))) (or (pair %testSubExpExp (nat %a) (nat %b)) (or (pair %testSubNatNat (nat %a) (nat %b)) (nat %testTruncate))))));
+storage   (pair (nat %expScale) (pair (nat %halfExpScale) (nat %result)));
+code
+  {
+    UNPAIR;     # @parameter : @storage
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    # == testAddExp ==
+                    # self.data.result = params.a.mantissa + params.b.mantissa # @parameter%testAddExp : @storage
+                    UNPAIR;     # nat : nat : @storage
+                    ADD;        # nat : @storage
+                    UPDATE 4;   # @storage
+                  }
+                  {
+                    # == testAddExpNat ==
+                    # self.data.result = params.a.mantissa + (params.b * self.data.expScale) # @parameter%testAddExpNat : @storage
+                    DUP 2;      # @storage : @parameter%testAddExpNat : @storage
+                    CAR;        # nat : @parameter%testAddExpNat : @storage
+                    DUP 2;      # @parameter%testAddExpNat : nat : @parameter%testAddExpNat : @storage
+                    CDR;        # nat : nat : @parameter%testAddExpNat : @storage
+                    MUL;        # nat : @parameter%testAddExpNat : @storage
+                    SWAP;       # @parameter%testAddExpNat : nat : @storage
+                    CAR;        # nat : nat : @storage
+                    ADD;        # nat : @storage
+                    UPDATE 4;   # @storage
+                  }; # @storage
+              }
+              {
+                IF_LEFT
+                  {
+                    # == testDivExpExp ==
+                    # sp.verify(params.b.mantissa > 0, 'DIVISION_BY_ZERO') # @parameter%testDivExpExp : @storage
+                    PUSH nat 0; # nat : @parameter%testDivExpExp : @storage
+                    DUP 2;      # @parameter%testDivExpExp : nat : @parameter%testDivExpExp : @storage
+                    CDR;        # nat : nat : @parameter%testDivExpExp : @storage
+                    COMPARE;    # int : @parameter%testDivExpExp : @storage
+                    GT;         # bool : @parameter%testDivExpExp : @storage
+                    IF
+                      {}
+                      {
+                        PUSH string "DIVISION_BY_ZERO"; # string : @parameter%testDivExpExp : @storage
+                        FAILWITH;   # FAILED
+                      }; # @parameter%testDivExpExp : @storage
+                    # self.data.result = (params.a.mantissa * self.data.expScale) // params.b.mantissa # @parameter%testDivExpExp : @storage
+                    DUP;        # @parameter%testDivExpExp : @parameter%testDivExpExp : @storage
+                    CDR;        # nat : @parameter%testDivExpExp : @storage
+                    DUP 3;      # @storage : nat : @parameter%testDivExpExp : @storage
+                    CAR;        # nat : nat : @parameter%testDivExpExp : @storage
+                    DIG 2;      # @parameter%testDivExpExp : nat : nat : @storage
+                    CAR;        # nat : nat : nat : @storage
+                    MUL;        # nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : @storage
+                    IF_NONE
+                      {
+                        PUSH int 244; # int : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : @storage
+                      }; # nat : @storage
+                    UPDATE 4;   # @storage
+                  }
+                  {
+                    # == testDivExpNat ==
+                    # sp.verify(params.b > 0, 'DIVISION_BY_ZERO') # @parameter%testDivExpNat : @storage
+                    PUSH nat 0; # nat : @parameter%testDivExpNat : @storage
+                    DUP 2;      # @parameter%testDivExpNat : nat : @parameter%testDivExpNat : @storage
+                    CDR;        # nat : nat : @parameter%testDivExpNat : @storage
+                    COMPARE;    # int : @parameter%testDivExpNat : @storage
+                    GT;         # bool : @parameter%testDivExpNat : @storage
+                    IF
+                      {}
+                      {
+                        PUSH string "DIVISION_BY_ZERO"; # string : @parameter%testDivExpNat : @storage
+                        FAILWITH;   # FAILED
+                      }; # @parameter%testDivExpNat : @storage
+                    # self.data.result = params.a.mantissa // params.b # @parameter%testDivExpNat : @storage
+                    UNPAIR;     # nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : @storage
+                    IF_NONE
+                      {
+                        PUSH int 257; # int : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : @storage
+                      }; # nat : @storage
+                    UPDATE 4;   # @storage
+                  }; # @storage
+              }; # @storage
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    # == testDivNatExp ==
+                    # sp.verify(params.b.mantissa > 0, 'DIVISION_BY_ZERO') # @parameter%testDivNatExp : @storage
+                    PUSH nat 0; # nat : @parameter%testDivNatExp : @storage
+                    DUP 2;      # @parameter%testDivNatExp : nat : @parameter%testDivNatExp : @storage
+                    CDR;        # nat : nat : @parameter%testDivNatExp : @storage
+                    COMPARE;    # int : @parameter%testDivNatExp : @storage
+                    GT;         # bool : @parameter%testDivNatExp : @storage
+                    IF
+                      {}
+                      {
+                        PUSH string "DIVISION_BY_ZERO"; # string : @parameter%testDivNatExp : @storage
+                        FAILWITH;   # FAILED
+                      }; # @parameter%testDivNatExp : @storage
+                    # self.data.result = (params.a * self.data.expScale) // params.b.mantissa # @parameter%testDivNatExp : @storage
+                    DUP;        # @parameter%testDivNatExp : @parameter%testDivNatExp : @storage
+                    CDR;        # nat : @parameter%testDivNatExp : @storage
+                    DUP 3;      # @storage : nat : @parameter%testDivNatExp : @storage
+                    CAR;        # nat : nat : @parameter%testDivNatExp : @storage
+                    DIG 2;      # @parameter%testDivNatExp : nat : nat : @storage
+                    CAR;        # nat : nat : nat : @storage
+                    MUL;        # nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : @storage
+                    IF_NONE
+                      {
+                        PUSH int 270; # int : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : @storage
+                      }; # nat : @storage
+                    UPDATE 4;   # @storage
+                  }
+                  {
+                    # == testDivNatExpCeil ==
+                    # sp.verify(params.b.mantissa > 0, 'DIVISION_BY_ZERO') # @parameter%testDivNatExpCeil : @storage
+                    PUSH nat 0; # nat : @parameter%testDivNatExpCeil : @storage
+                    DUP 2;      # @parameter%testDivNatExpCeil : nat : @parameter%testDivNatExpCeil : @storage
+                    CDR;        # nat : nat : @parameter%testDivNatExpCeil : @storage
+                    COMPARE;    # int : @parameter%testDivNatExpCeil : @storage
+                    GT;         # bool : @parameter%testDivNatExpCeil : @storage
+                    IF
+                      {}
+                      {
+                        PUSH string "DIVISION_BY_ZERO"; # string : @parameter%testDivNatExpCeil : @storage
+                        FAILWITH;   # FAILED
+                      }; # @parameter%testDivNatExpCeil : @storage
+                    # compute_Exponential_277 = sp.local("compute_Exponential_277", params.a * self.data.expScale) # @parameter%testDivNatExpCeil : @storage
+                    DUP 2;      # @storage : @parameter%testDivNatExpCeil : @storage
+                    CAR;        # nat : @parameter%testDivNatExpCeil : @storage
+                    DUP 2;      # @parameter%testDivNatExpCeil : nat : @parameter%testDivNatExpCeil : @storage
+                    CAR;        # nat : nat : @parameter%testDivNatExpCeil : @storage
+                    MUL;        # nat : @parameter%testDivNatExpCeil : @storage
+                    # compute_Exponential_280 = sp.local("compute_Exponential_280", compute_Exponential_277.value // params.b.mantissa) # nat : @parameter%testDivNatExpCeil : @storage
+                    DUP 2;      # @parameter%testDivNatExpCeil : nat : @parameter%testDivNatExpCeil : @storage
+                    CDR;        # nat : nat : @parameter%testDivNatExpCeil : @storage
+                    DUP 2;      # nat : nat : nat : @parameter%testDivNatExpCeil : @storage
+                    EDIV;       # option (pair nat nat) : nat : @parameter%testDivNatExpCeil : @storage
+                    IF_NONE
+                      {
+                        PUSH int 280; # int : nat : @parameter%testDivNatExpCeil : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : nat : @parameter%testDivNatExpCeil : @storage
+                      }; # nat : nat : @parameter%testDivNatExpCeil : @storage
+                    # if (compute_Exponential_277.value % params.b.mantissa) > 0: # nat : nat : @parameter%testDivNatExpCeil : @storage
+                    PUSH nat 0; # nat : nat : nat : @parameter%testDivNatExpCeil : @storage
+                    DUP 4;      # @parameter%testDivNatExpCeil : nat : nat : nat : @parameter%testDivNatExpCeil : @storage
+                    CDR;        # nat : nat : nat : nat : @parameter%testDivNatExpCeil : @storage
+                    DUP 4;      # nat : nat : nat : nat : nat : @parameter%testDivNatExpCeil : @storage
+                    EDIV;       # option (pair nat nat) : nat : nat : nat : @parameter%testDivNatExpCeil : @storage
+                    IF_NONE
+                      {
+                        PUSH int 281; # int : nat : nat : nat : @parameter%testDivNatExpCeil : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        DROP 2;     # nat : nat : @parameter%testDivNatExpCeil : @storage
+                        SWAP;       # nat : nat : @parameter%testDivNatExpCeil : @storage
+                        DROP;       # nat : @parameter%testDivNatExpCeil : @storage
+                        SWAP;       # @parameter%testDivNatExpCeil : nat : @storage
+                        DROP;       # nat : @storage
+                      }; # nat : @storage
+                    SWAP;       # @storage : nat
+                    # self.data.result = compute_Exponential_280.value + 1 # @storage : nat
+                    PUSH nat 1; # nat : @storage : nat
+                    DIG 2;      # nat : nat : @storage
+                    ADD;        # nat : @storage
+                    UPDATE 4;   # @storage
+                  }; # @storage
+              }
+              {
+                IF_LEFT
+                  {
+                    # == testLessThanExp ==
+                    # if params.a.mantissa < params.b.mantissa: # @parameter%testLessThanExp : @storage
+                    UNPAIR;     # nat : nat : @storage
+                    COMPARE;    # int : @storage
+                    LT;         # bool : @storage
+                    IF
+                      {
+                        # self.data.result = 1 # @storage
+                        PUSH nat 1; # nat : @storage
+                        UPDATE 4;   # @storage
+                      }
+                      {
+                        # self.data.result = 0 # @storage
+                        PUSH nat 0; # nat : @storage
+                        UPDATE 4;   # @storage
+                      }; # @storage
+                  }
+                  {
+                    # == testLessThanOrEqualExp ==
+                    # if params.a.mantissa <= params.b.mantissa: # @parameter%testLessThanOrEqualExp : @storage
+                    UNPAIR;     # nat : nat : @storage
+                    COMPARE;    # int : @storage
+                    LE;         # bool : @storage
+                    IF
+                      {
+                        # self.data.result = 1 # @storage
+                        PUSH nat 1; # nat : @storage
+                        UPDATE 4;   # @storage
+                      }
+                      {
+                        # self.data.result = 0 # @storage
+                        PUSH nat 0; # nat : @storage
+                        UPDATE 4;   # @storage
+                      }; # @storage
+                  }; # @storage
+              }; # @storage
+          }; # @storage
+      }
+      {
+        IF_LEFT
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    SWAP;       # @storage : @parameter%testMulExpExp
+                    # == testMulExpExp ==
+                    # self.data.result = (params.a.mantissa * params.b.mantissa) // self.data.expScale # @storage : @parameter%testMulExpExp
+                    DUP;        # @storage : @storage : @parameter%testMulExpExp
+                    CAR;        # nat : @storage : @parameter%testMulExpExp
+                    DIG 2;      # @parameter%testMulExpExp : nat : @storage
+                    UNPAIR;     # nat : nat : nat : @storage
+                    MUL;        # nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : @storage
+                    IF_NONE
+                      {
+                        PUSH int 207; # int : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : @storage
+                      }; # nat : @storage
+                    UPDATE 4;   # @storage
+                  }
+                  {
+                    # == testMulExpNat ==
+                    # self.data.result = params.a.mantissa * params.b # @parameter%testMulExpNat : @storage
+                    UNPAIR;     # nat : nat : @storage
+                    MUL;        # nat : @storage
+                    UPDATE 4;   # @storage
+                  }; # @storage
+              }
+              {
+                IF_LEFT
+                  {
+                    # == testMulExpRounded ==
+                    # self.data.result = ((params.a.mantissa * params.b.mantissa) + self.data.halfExpScale) // self.data.expScale # @parameter%testMulExpRounded : @storage
+                    DUP 2;      # @storage : @parameter%testMulExpRounded : @storage
+                    CAR;        # nat : @parameter%testMulExpRounded : @storage
+                    DUP 3;      # @storage : nat : @parameter%testMulExpRounded : @storage
+                    GET 3;      # nat : nat : @parameter%testMulExpRounded : @storage
+                    DIG 2;      # @parameter%testMulExpRounded : nat : nat : @storage
+                    UNPAIR;     # nat : nat : nat : nat : @storage
+                    MUL;        # nat : nat : nat : @storage
+                    ADD;        # nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : @storage
+                    IF_NONE
+                      {
+                        PUSH int 105; # int : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : @storage
+                      }; # nat : @storage
+                    UPDATE 4;   # @storage
+                  }
+                  {
+                    SWAP;       # @storage : @parameter%testMulNatExp
+                    # == testMulNatExp ==
+                    # self.data.result = (params.a * params.b.mantissa) // self.data.expScale # @storage : @parameter%testMulNatExp
+                    DUP;        # @storage : @storage : @parameter%testMulNatExp
+                    CAR;        # nat : @storage : @parameter%testMulNatExp
+                    DIG 2;      # @parameter%testMulNatExp : nat : @storage
+                    UNPAIR;     # nat : nat : nat : @storage
+                    MUL;        # nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : @storage
+                    IF_NONE
+                      {
+                        PUSH int 231; # int : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : @storage
+                      }; # nat : @storage
+                    UPDATE 4;   # @storage
+                  }; # @storage
+              }; # @storage
+          }
+          {
+            IF_LEFT
+              {
+                IF_LEFT
+                  {
+                    SWAP;       # @storage : @parameter%testMulScalarTruncate
+                    # == testMulScalarTruncate ==
+                    # self.data.result = (params.a.mantissa * params.scalar) // self.data.expScale # @storage : @parameter%testMulScalarTruncate
+                    DUP;        # @storage : @storage : @parameter%testMulScalarTruncate
+                    CAR;        # nat : @storage : @parameter%testMulScalarTruncate
+                    DIG 2;      # @parameter%testMulScalarTruncate : nat : @storage
+                    UNPAIR;     # nat : nat : nat : @storage
+                    MUL;        # nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : @storage
+                    IF_NONE
+                      {
+                        PUSH int 61; # int : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : @storage
+                      }; # nat : @storage
+                    UPDATE 4;   # @storage
+                  }
+                  {
+                    # == testMulScalarTruncateAdd ==
+                    # self.data.result = ((params.a.mantissa * params.scalar) // self.data.expScale) + params.addend # @parameter%testMulScalarTruncateAdd : @storage
+                    DUP;        # @parameter%testMulScalarTruncateAdd : @parameter%testMulScalarTruncateAdd : @storage
+                    GET 3;      # nat : @parameter%testMulScalarTruncateAdd : @storage
+                    DUP 3;      # @storage : nat : @parameter%testMulScalarTruncateAdd : @storage
+                    CAR;        # nat : nat : @parameter%testMulScalarTruncateAdd : @storage
+                    DIG 2;      # @parameter%testMulScalarTruncateAdd : nat : nat : @storage
+                    DUP;        # @parameter%testMulScalarTruncateAdd : @parameter%testMulScalarTruncateAdd : nat : nat : @storage
+                    GET 4;      # nat : @parameter%testMulScalarTruncateAdd : nat : nat : @storage
+                    SWAP;       # @parameter%testMulScalarTruncateAdd : nat : nat : nat : @storage
+                    CAR;        # nat : nat : nat : nat : @storage
+                    MUL;        # nat : nat : nat : @storage
+                    EDIV;       # option (pair nat nat) : nat : @storage
+                    IF_NONE
+                      {
+                        PUSH int 61; # int : nat : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {
+                        CAR;        # nat : nat : @storage
+                      }; # nat : nat : @storage
+                    ADD;        # nat : @storage
+                    UPDATE 4;   # @storage
+                  }; # @storage
+              }
+              {
+                IF_LEFT
+                  {
+                    # == testSubExpExp ==
+                    # self.data.result = sp.as_nat(params.a.mantissa - params.b.mantissa, message = 'SUBTRACTION_UNDERFLOW') # @parameter%testSubExpExp : @storage
+                    UNPAIR;     # nat : nat : @storage
+                    SUB;        # int : @storage
+                    ISNAT;      # option nat : @storage
+                    IF_NONE
+                      {
+                        PUSH string "SUBTRACTION_UNDERFLOW"; # string : @storage
+                        FAILWITH;   # FAILED
+                      }
+                      {}; # @some : @storage
+                    UPDATE 4;   # @storage
+                  }
+                  {
+                    IF_LEFT
+                      {
+                        # == testSubNatNat ==
+                        # self.data.result = sp.as_nat(params.a - params.b, message = 'SUBTRACTION_UNDERFLOW') # @parameter%testSubNatNat : @storage
+                        UNPAIR;     # nat : nat : @storage
+                        SUB;        # int : @storage
+                        ISNAT;      # option nat : @storage
+                        IF_NONE
+                          {
+                            PUSH string "SUBTRACTION_UNDERFLOW"; # string : @storage
+                            FAILWITH;   # FAILED
+                          }
+                          {}; # @some : @storage
+                        UPDATE 4;   # @storage
+                      }
+                      {
+                        SWAP;       # @storage : @parameter%testTruncate
+                        # == testTruncate ==
+                        # self.data.result = params.a.mantissa // self.data.expScale # @storage : @parameter%testTruncate
+                        DUP;        # @storage : @storage : @parameter%testTruncate
+                        CAR;        # nat : @storage : @parameter%testTruncate
+                        DIG 2;      # @parameter%testTruncate : nat : @storage
+                        EDIV;       # option (pair nat nat) : @storage
+                        IF_NONE
+                          {
+                            PUSH int 61; # int : @storage
+                            FAILWITH;   # FAILED
+                          }
+                          {
+                            CAR;        # nat : @storage
+                          }; # nat : @storage
+                        UPDATE 4;   # @storage
+                      }; # @storage
+                  }; # @storage
+              }; # @storage
+          }; # @storage
+      }; # @storage
+    NIL operation; # list operation : @storage
+    PAIR;       # pair (list operation) @storage
+  };

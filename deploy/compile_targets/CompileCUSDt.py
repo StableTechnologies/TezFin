@@ -16,19 +16,18 @@ sp.add_compilation_target("CUSDt", CFA2.CFA2(
     metadata_ = sp.big_map({
         "": sp.utils.bytes_of_string("tezos-storage:data"),
         "data": sp.utils.bytes_of_string(json.dumps({
-            "name": "...",
-            "description": "...",
-            "version": "1.0.0",
-            "authors": ["..."],
-            "homepage": "https://some-website.com",
-            "interfaces": ["TZIP-007"],
-            "license": {"name": "..."}
+            "name": "TezFin Interest-Bearing USD Tether",
+            "description": "Interest-bearing token for USD Tether (USDt) supplied to the TezFin lending protocol.",
+            "version": "3.0",
+            "authors": ["Tezos Finance Protocol"],
+            "homepage": "https://tezos.finance",
+            "interfaces": ["TZIP-007", "TZIP-016"],
         }))
     }),
     token_metadata_ = {
-        "name": sp.utils.bytes_of_string("..."),
-        "symbol": sp.utils.bytes_of_string("..."),
-        "decimals": sp.utils.bytes_of_string("..."),
+        "name": sp.utils.bytes_of_string("TezFin Interest-Bearing USD Tether"),
+        "symbol": sp.utils.bytes_of_string("\ua730USDt"),
+        "decimals": sp.utils.bytes_of_string("6"),
     },
     fa2_TokenAddress_ = sp.address(CFG.deployResult.USDt),
     tokenId_ = sp.nat(CFG.CFA2.tokenId)
