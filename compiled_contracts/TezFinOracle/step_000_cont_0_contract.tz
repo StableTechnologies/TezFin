@@ -8,8 +8,6 @@ code
         IF_LEFT
           {
             DROP;       # @storage
-            # == accept_admin ==
-            # sp.verify(sp.sender == self.data.pendingAdmin.open_some(message = 'NOT_SET_PENDING_ADMIN'), 'NOT_PENDING_ADMIN') # @storage
             DUP;        # @storage : @storage
             GET 6;      # option address : @storage
             IF_NONE
@@ -19,6 +17,7 @@ code
               }
               {}; # @some : @storage
             SENDER;     # @sender : @some : @storage
+            RENAME;     # address : @some : @storage
             COMPARE;    # int : @storage
             EQ;         # bool : @storage
             IF
@@ -27,27 +26,23 @@ code
                 PUSH string "NOT_PENDING_ADMIN"; # string : @storage
                 FAILWITH;   # FAILED
               }; # @storage
-            # self.data.admin = sp.sender # @storage
             UNPAIR;     # pair (address %admin) (big_map %alias string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
             CDR;        # big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
             SENDER;     # @sender : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-            PAIR;       # pair @sender (big_map string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-            PAIR;       # pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-            # self.data.pendingAdmin = sp.none # pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-            NONE address; # option address : pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-            UPDATE 6;   # pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+            RENAME;     # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
+            PAIR;       # pair address (big_map string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
+            PAIR;       # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+            NONE address; # option address : pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+            UPDATE 6;   # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
           }
           {
             IF_LEFT
               {
-                SWAP;       # @storage : @parameter%addAlias
-                # == addAlias ==
-                # sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN') # @storage : @parameter%addAlias
-                DUP;        # @storage : @storage : @parameter%addAlias
-                DUG 2;      # @storage : @parameter%addAlias : @storage
+                DUP 2;      # @storage : @parameter%addAlias : @storage
                 CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%addAlias : @storage
                 CAR;        # address : @parameter%addAlias : @storage
                 SENDER;     # @sender : address : @parameter%addAlias : @storage
+                RENAME;     # address : address : @parameter%addAlias : @storage
                 COMPARE;    # int : @parameter%addAlias : @storage
                 EQ;         # bool : @parameter%addAlias : @storage
                 IF
@@ -56,11 +51,9 @@ code
                     PUSH string "NOT_ADMIN"; # string : @parameter%addAlias : @storage
                     FAILWITH;   # FAILED
                   }; # @parameter%addAlias : @storage
-                # for item in params: ... # @parameter%addAlias : @storage
                 DUP;        # @parameter%addAlias : @parameter%addAlias : @storage
                 ITER
                   {
-                    # self.data.alias[item.alias] = item.asset # pair (string %alias) (string %asset) : @parameter%addAlias : @storage
                     DIG 2;      # @storage : pair (string %alias) (string %asset) : @parameter%addAlias
                     UNPAIR;     # pair (address %admin) (big_map %alias string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
                     UNPAIR;     # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
@@ -79,14 +72,11 @@ code
                 DROP;       # @storage
               }
               {
-                SWAP;       # @storage : @parameter%removeAlias
-                # == removeAlias ==
-                # sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN') # @storage : @parameter%removeAlias
-                DUP;        # @storage : @storage : @parameter%removeAlias
-                DUG 2;      # @storage : @parameter%removeAlias : @storage
+                DUP 2;      # @storage : @parameter%removeAlias : @storage
                 CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%removeAlias : @storage
                 CAR;        # address : @parameter%removeAlias : @storage
                 SENDER;     # @sender : address : @parameter%removeAlias : @storage
+                RENAME;     # address : address : @parameter%removeAlias : @storage
                 COMPARE;    # int : @parameter%removeAlias : @storage
                 EQ;         # bool : @parameter%removeAlias : @storage
                 IF
@@ -96,7 +86,6 @@ code
                     FAILWITH;   # FAILED
                   }; # @parameter%removeAlias : @storage
                 SWAP;       # @storage : @parameter%removeAlias
-                # del self.data.alias[params] # @storage : @parameter%removeAlias
                 UNPAIR;     # pair (address %admin) (big_map %alias string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%removeAlias
                 UNPAIR;     # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%removeAlias
                 SWAP;       # big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%removeAlias
@@ -114,14 +103,11 @@ code
           {
             IF_LEFT
               {
-                SWAP;       # @storage : @parameter%removeAsset
-                # == removeAsset ==
-                # sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN') # @storage : @parameter%removeAsset
-                DUP;        # @storage : @storage : @parameter%removeAsset
-                DUG 2;      # @storage : @parameter%removeAsset : @storage
+                DUP 2;      # @storage : @parameter%removeAsset : @storage
                 CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%removeAsset : @storage
                 CAR;        # address : @parameter%removeAsset : @storage
                 SENDER;     # @sender : address : @parameter%removeAsset : @storage
+                RENAME;     # address : address : @parameter%removeAsset : @storage
                 COMPARE;    # int : @parameter%removeAsset : @storage
                 EQ;         # bool : @parameter%removeAsset : @storage
                 IF
@@ -131,7 +117,6 @@ code
                     FAILWITH;   # FAILED
                   }; # @parameter%removeAsset : @storage
                 SWAP;       # @storage : @parameter%removeAsset
-                # del self.data.overrides[params] # @storage : @parameter%removeAsset
                 DUP;        # @storage : @storage : @parameter%removeAsset
                 GET 5;      # big_map string (pair timestamp nat) : @storage : @parameter%removeAsset
                 NONE (pair timestamp nat); # option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : @parameter%removeAsset
@@ -140,14 +125,11 @@ code
                 UPDATE 5;   # @storage
               }
               {
-                SWAP;       # @storage : @parameter%setPrice
-                # == setPrice ==
-                # sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN') # @storage : @parameter%setPrice
-                DUP;        # @storage : @storage : @parameter%setPrice
-                DUG 2;      # @storage : @parameter%setPrice : @storage
+                DUP 2;      # @storage : @parameter%setPrice : @storage
                 CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%setPrice : @storage
                 CAR;        # address : @parameter%setPrice : @storage
                 SENDER;     # @sender : address : @parameter%setPrice : @storage
+                RENAME;     # address : address : @parameter%setPrice : @storage
                 COMPARE;    # int : @parameter%setPrice : @storage
                 EQ;         # bool : @parameter%setPrice : @storage
                 IF
@@ -156,21 +138,20 @@ code
                     PUSH string "NOT_ADMIN"; # string : @parameter%setPrice : @storage
                     FAILWITH;   # FAILED
                   }; # @parameter%setPrice : @storage
-                # for item in params: ... # @parameter%setPrice : @storage
                 DUP;        # @parameter%setPrice : @parameter%setPrice : @storage
                 ITER
                   {
-                    # self.data.overrides[item.asset] = (sp.now, item.price) # pair (string %asset) (nat %price) : @parameter%setPrice : @storage
                     DIG 2;      # @storage : pair (string %asset) (nat %price) : @parameter%setPrice
                     DUP;        # @storage : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
                     GET 5;      # big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
                     DUP 3;      # pair (string %asset) (nat %price) : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
                     CDR;        # nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
                     NOW;        # @now : nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    PAIR;       # pair @now nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    SOME;       # option (pair @now nat) : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    DIG 3;      # pair (string %asset) (nat %price) : option (pair @now nat) : big_map string (pair timestamp nat) : @storage : @parameter%setPrice
-                    CAR;        # string : option (pair @now nat) : big_map string (pair timestamp nat) : @storage : @parameter%setPrice
+                    RENAME;     # timestamp : nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
+                    PAIR;       # pair timestamp nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
+                    SOME;       # option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
+                    DIG 3;      # pair (string %asset) (nat %price) : option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : @parameter%setPrice
+                    CAR;        # string : option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : @parameter%setPrice
                     UPDATE;     # big_map string (pair timestamp nat) : @storage : @parameter%setPrice
                     UPDATE 5;   # @storage : @parameter%setPrice
                     SWAP;       # @parameter%setPrice : @storage
@@ -181,14 +162,11 @@ code
           {
             IF_LEFT
               {
-                SWAP;       # @storage : @parameter%set_oracle
-                # == set_oracle ==
-                # sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN') # @storage : @parameter%set_oracle
-                DUP;        # @storage : @storage : @parameter%set_oracle
-                DUG 2;      # @storage : @parameter%set_oracle : @storage
+                DUP 2;      # @storage : @parameter%set_oracle : @storage
                 CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%set_oracle : @storage
                 CAR;        # address : @parameter%set_oracle : @storage
                 SENDER;     # @sender : address : @parameter%set_oracle : @storage
+                RENAME;     # address : address : @parameter%set_oracle : @storage
                 COMPARE;    # int : @parameter%set_oracle : @storage
                 EQ;         # bool : @parameter%set_oracle : @storage
                 IF
@@ -197,18 +175,14 @@ code
                     PUSH string "NOT_ADMIN"; # string : @parameter%set_oracle : @storage
                     FAILWITH;   # FAILED
                   }; # @parameter%set_oracle : @storage
-                # self.data.oracle = params # @parameter%set_oracle : @storage
                 UPDATE 3;   # @storage
               }
               {
-                SWAP;       # @storage : @parameter%set_pending_admin
-                # == set_pending_admin ==
-                # sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN') # @storage : @parameter%set_pending_admin
-                DUP;        # @storage : @storage : @parameter%set_pending_admin
-                DUG 2;      # @storage : @parameter%set_pending_admin : @storage
+                DUP 2;      # @storage : @parameter%set_pending_admin : @storage
                 CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%set_pending_admin : @storage
                 CAR;        # address : @parameter%set_pending_admin : @storage
                 SENDER;     # @sender : address : @parameter%set_pending_admin : @storage
+                RENAME;     # address : address : @parameter%set_pending_admin : @storage
                 COMPARE;    # int : @parameter%set_pending_admin : @storage
                 EQ;         # bool : @parameter%set_pending_admin : @storage
                 IF
@@ -217,7 +191,6 @@ code
                     PUSH string "NOT_ADMIN"; # string : @parameter%set_pending_admin : @storage
                     FAILWITH;   # FAILED
                   }; # @parameter%set_pending_admin : @storage
-                # self.data.pendingAdmin = sp.some(params) # @parameter%set_pending_admin : @storage
                 SOME;       # option address : @storage
                 UPDATE 6;   # @storage
               }; # @storage
@@ -230,33 +203,29 @@ view
   "getPrice" string (pair timestamp nat)
   {
     UNPAIR;     # @parameter : @storage
-    SWAP;       # @storage : @parameter
-    # if self.data.overrides.contains(params): # @storage : @parameter
-    DUP;        # @storage : @storage : @parameter
-    DUG 2;      # @storage : @parameter : @storage
+    DUP 2;      # @storage : @parameter : @storage
     GET 5;      # big_map string (pair timestamp nat) : @parameter : @storage
-    SWAP;       # @parameter : big_map string (pair timestamp nat) : @storage
-    DUP;        # @parameter : @parameter : big_map string (pair timestamp nat) : @storage
-    DUG 2;      # @parameter : big_map string (pair timestamp nat) : @parameter : @storage
+    DUP 2;      # @parameter : big_map string (pair timestamp nat) : @parameter : @storage
     MEM;        # bool : @parameter : @storage
     IF
       {
         SWAP;       # @storage : @parameter
-        # sp.result(self.data.overrides[params]) # @storage : @parameter
         GET 5;      # big_map string (pair timestamp nat) : @parameter
         SWAP;       # @parameter : big_map string (pair timestamp nat)
         GET;        # option (pair timestamp nat)
         IF_NONE
           {
-            PUSH int 93; # int
+            PUSH int 111; # int
             FAILWITH;   # FAILED
           }
           {}; # @some
+        CDR;        # nat
+        NOW;        # @now : nat
+        RENAME;     # timestamp : nat
+        PAIR;       # pair timestamp nat
       }
       {
-        # asset = sp.local("asset", params) # @parameter : @storage
         DUP;        # @parameter : @parameter : @storage
-        # if self.data.alias.contains(params): # @parameter : @parameter : @storage
         DUP 3;      # @storage : @parameter : @parameter : @storage
         CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @parameter : @storage
         CDR;        # big_map string string : @parameter : @parameter : @storage
@@ -265,17 +234,134 @@ view
         IF
           {
             DROP;       # @parameter : @storage
-            SWAP;       # @storage : @parameter
-            # asset.value = self.data.alias[params] # @storage : @parameter
-            DUP;        # @storage : @storage : @parameter
-            DUG 2;      # @storage : @parameter : @storage
+            DUP 2;      # @storage : @parameter : @storage
             CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @storage
             CDR;        # big_map string string : @parameter : @storage
             SWAP;       # @parameter : big_map string string : @storage
             GET;        # option string : @storage
             IF_NONE
               {
-                PUSH int 97; # int : @storage
+                PUSH int 115; # int : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @storage
+          }
+          {
+            SWAP;       # @parameter : @parameter : @storage
+            DROP;       # @parameter : @storage
+          }; # string : @storage
+        DUP 2;      # @storage : string : @storage
+        GET 3;      # address : string : @storage
+        PUSH string "USDT"; # string : address : string : @storage
+        DUP 3;      # string : string : address : string : @storage
+        PUSH nat 4; # nat : string : string : address : string : @storage
+        DUP 5;      # string : nat : string : string : address : string : @storage
+        SIZE;       # nat : nat : string : string : address : string : @storage
+        SUB;        # int : string : string : address : string : @storage
+        ISNAT;      # option nat : string : string : address : string : @storage
+        RENAME;     # option nat : string : string : address : string : @storage
+        IF_NONE
+          {
+            PUSH int 116; # int : string : string : address : string : @storage
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : string : string : address : string : @storage
+        PUSH nat 0; # nat : @some : string : string : address : string : @storage
+        SLICE;      # option string : string : address : string : @storage
+        IF_NONE
+          {
+            PUSH string "failed to convert asset name"; # string : string : address : string : @storage
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : string : address : string : @storage
+        CONCAT;     # string : address : string : @storage
+        VIEW "get_price_with_timestamp" (pair nat timestamp); # option (pair nat timestamp) : string : @storage
+        IF_NONE
+          {
+            PUSH string "invalid oracle view call"; # string : string : @storage
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : string : @storage
+        CAR;        # nat : string : @storage
+        DIG 2;      # @storage : nat : string
+        GET 3;      # address : nat : string
+        PUSH string "USDT"; # string : address : nat : string
+        DUP 4;      # string : string : address : nat : string
+        PUSH nat 4; # nat : string : string : address : nat : string
+        DIG 5;      # string : nat : string : string : address : nat
+        SIZE;       # nat : nat : string : string : address : nat
+        SUB;        # int : string : string : address : nat
+        ISNAT;      # option nat : string : string : address : nat
+        RENAME;     # option nat : string : string : address : nat
+        IF_NONE
+          {
+            PUSH int 116; # int : string : string : address : nat
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : string : string : address : nat
+        PUSH nat 0; # nat : @some : string : string : address : nat
+        SLICE;      # option string : string : address : nat
+        IF_NONE
+          {
+            PUSH string "failed to convert asset name"; # string : string : address : nat
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : string : address : nat
+        CONCAT;     # string : address : nat
+        VIEW "get_price_with_timestamp" (pair nat timestamp); # option (pair nat timestamp) : nat
+        IF_NONE
+          {
+            PUSH string "invalid oracle view call"; # string : nat
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : nat
+        CDR;        # timestamp : nat
+        PAIR;       # pair timestamp nat
+      }; # pair timestamp nat
+  };
+view
+  "get_price_with_timestamp" string (pair nat timestamp)
+  {
+    UNPAIR;     # @parameter : @storage
+    DUP 2;      # @storage : @parameter : @storage
+    GET 5;      # big_map string (pair timestamp nat) : @parameter : @storage
+    DUP 2;      # @parameter : big_map string (pair timestamp nat) : @parameter : @storage
+    MEM;        # bool : @parameter : @storage
+    IF
+      {
+        NOW;        # @now : @parameter : @storage
+        RENAME;     # timestamp : @parameter : @storage
+        DIG 2;      # @storage : timestamp : @parameter
+        GET 5;      # big_map string (pair timestamp nat) : timestamp : @parameter
+        DIG 2;      # @parameter : big_map string (pair timestamp nat) : timestamp
+        GET;        # option (pair timestamp nat) : timestamp
+        IF_NONE
+          {
+            PUSH int 94; # int : timestamp
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : timestamp
+        CDR;        # nat : timestamp
+        PAIR;       # pair nat timestamp
+      }
+      {
+        DUP;        # @parameter : @parameter : @storage
+        DUP 3;      # @storage : @parameter : @parameter : @storage
+        CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @parameter : @storage
+        CDR;        # big_map string string : @parameter : @parameter : @storage
+        DUP 3;      # @parameter : big_map string string : @parameter : @parameter : @storage
+        MEM;        # bool : @parameter : @parameter : @storage
+        IF
+          {
+            DROP;       # @parameter : @storage
+            DUP 2;      # @storage : @parameter : @storage
+            CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @storage
+            CDR;        # big_map string string : @parameter : @storage
+            SWAP;       # @parameter : big_map string string : @storage
+            GET;        # option string : @storage
+            IF_NONE
+              {
+                PUSH int 98; # int : @storage
                 FAILWITH;   # FAILED
               }
               {}; # @some : @storage
@@ -285,15 +371,36 @@ view
             DROP;       # @parameter : @storage
           }; # string : @storage
         SWAP;       # @storage : string
-        # sp.result(sp.view("getPrice", asset.value, self.data.oracle, sp.TPair(sp.TTimestamp, sp.TNat)).open_some(message = 'invalid oracle view call')) # @storage : string
         GET 3;      # address : string
-        SWAP;       # string : address
-        VIEW "getPrice" (pair timestamp nat); # option (pair timestamp nat)
+        PUSH string "USDT"; # string : address : string
+        DUP 3;      # string : string : address : string
+        PUSH nat 4; # nat : string : string : address : string
+        DIG 4;      # string : nat : string : string : address
+        SIZE;       # nat : nat : string : string : address
+        SUB;        # int : string : string : address
+        ISNAT;      # option nat : string : string : address
+        RENAME;     # option nat : string : string : address
+        IF_NONE
+          {
+            PUSH int 99; # int : string : string : address
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : string : string : address
+        PUSH nat 0; # nat : @some : string : string : address
+        SLICE;      # option string : string : address
+        IF_NONE
+          {
+            PUSH string "failed to convert asset name"; # string : string : address
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : string : address
+        CONCAT;     # string : address
+        VIEW "get_price_with_timestamp" (pair nat timestamp); # option (pair nat timestamp)
         IF_NONE
           {
             PUSH string "invalid oracle view call"; # string
             FAILWITH;   # FAILED
           }
           {}; # @some
-      }; # @some
+      }; # pair nat timestamp
   };
