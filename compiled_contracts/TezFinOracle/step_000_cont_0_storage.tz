@@ -1,1 +1,1 @@
-(Pair (Pair "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL" {Elt "OXTZ-USD" "XTZ-USD"; Elt "WTZ-USD" "XTZ-USD"}) (Pair "KT1KBrn1udLLrGNbQ3n1mWgMVXkr26krj6Nj" (Pair {Elt "USD-USD" (Pair "2023-10-13T06:58:24Z" 1000000)} None)))
+(Pair (Pair "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL" {Elt "OXTZ-USD" "XTZ-USD"; Elt "TZBTC-USD" "BTC-USD"; Elt "WTZ-USD" "XTZ-USD"}) (Pair "KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn" (Pair {Elt "USD-USD" (Pair "2025-04-25T08:36:06Z" 1000000); Elt "USDT-USD" (Pair "2025-04-25T08:36:06Z" 1000000)} None)))
