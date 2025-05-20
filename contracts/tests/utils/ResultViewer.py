@@ -18,6 +18,15 @@ class ViewerNat(Viewer):
         sp.set_type(params, sp.TNat)
         self.data.last = sp.some(params)
 
+class ViewerNatPair(Viewer):
+    def __init__(self):
+        Viewer.__init__(self, sp.TPair(sp.TNat, sp.TNat))
+
+    @sp.entry_point
+    def targetNatPair(self, params):
+        sp.set_type(params, sp.TPair(sp.TNat, sp.TNat))
+        self.data.last = sp.some(params)
+
 class ViewerInt(Viewer):
     def __init__(self):
         Viewer.__init__(self, sp.TInt)

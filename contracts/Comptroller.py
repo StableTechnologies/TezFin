@@ -386,7 +386,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         updateAccountLiquidityWithView() needs to be called 
         before executing this to get up-to-date results
         
-        return: TNat - the no. of collateral tokens that can be seized on repay of the borrowed amount
+        return: sp.TPair of TNat - the no. of collateral tokens that can be seized on repay of the borrowed amount , TNat - last accrual block number
     """
     @sp.onchain_view()
     def liquidateCalculateSeizeTokens(self, params):
@@ -400,8 +400,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify((priceBorrowedMantissa.value.mantissa != sp.nat(0)) & (
             priceCollateralMantissa.value.mantissa != sp.nat(0)), EC.CMPT_PRICE_ERROR)
 
-        exchangeRateMantissa = sp.view("exchangeRateStoredView", params.cTokenCollateral, sp.unit,
-                                       t=sp.TNat).open_some("INVALID EXCHANGE RATE VIEW")
+        exchangeRateData = sp.view("exchangeRateStoredView", params.cTokenCollateral, sp.unit,
+                                       t=sp.TPair(sp.TNat, sp.TNat)).open_some("INVALID EXCHANGE RATE VIEW")
+
+        exchangeRateMantissa = sp.fst(exchangeRateData)
+        lastAccrual = sp.snd(exchangeRateData)
 
         numerator = sp.local("numerator", self.mul_exp_exp(self.makeExp(
             self.data.liquidationIncentiveMantissa), priceBorrowedMantissa.value))
@@ -411,8 +414,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         ratio = sp.local("ratio", self.div_exp_exp(
             numerator.value, denominator.value))
 
-        sp.result(self.mulScalarTruncate(
-            ratio.value, params.actualRepayAmount))
+        sp.result(sp.pair(self.mulScalarTruncate(
+            ratio.value, params.actualRepayAmount), lastAccrual))
 
     """
         Determines whether a users position can be liquidated
@@ -434,8 +437,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         sp.verify(liquidity.value < 0, EC.CMPT_INSUFFICIENT_SHORTFALL)
 
-        borrowBalance = sp.view("borrowBalanceStoredView", params.cTokenBorrowed, params.borrower,
-                                t=sp.TNat).open_some("INVALID ACCOUNT BORROW BALANCE VIEW")
+        borrowBalance = sp.fst(sp.view("borrowBalanceStoredView", params.cTokenBorrowed, params.borrower,
+                                t=sp.TPair(sp.TNat, sp.TNat)).open_some("INVALID ACCOUNT BORROW BALANCE VIEW"))
 
         maxClose = sp.local("maxClose", self.mulScalarTruncate(self.makeExp(
             self.data.closeFactorMantissa), borrowBalance))

@@ -36,7 +36,9 @@ def test():
     scenario += irm
     
     view_result = RV.ViewerNat()
+    view_result_pair = RV.ViewerNatPair()
     scenario += view_result
+    scenario += view_result_pair
 
     c1 = CXTZ.CXTZ(comptroller_=cmpt.address,
                    interestRateModel_=irm.address,
@@ -71,8 +73,8 @@ def test():
     scenario.verify(c1.data.ledger[admin.address].balance == sp.nat(20))
 
     scenario.h2("getCash")
-    scenario += c1.getCash(sp.pair(sp.unit, view_result.typed.targetNat)).run(sender=alice, level=bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(797))
+    scenario += c1.getCash(sp.pair(sp.unit, view_result_pair.typed.targetNatPair)).run(sender=alice, level=bLevel.next())
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 797)
     
     scenario.h2("getTotalSupply")
     scenario += c1.getTotalSupply(sp.pair(sp.unit, view_result.typed.targetNat)).run(sender=alice, level=bLevel.next())
@@ -83,8 +85,8 @@ def test():
     scenario += c1.borrow(sp.nat(777)).run(sender=alice, level=bLevel.current())
 
     scenario.h2("getCash after transferOut call")
-    scenario += c1.getCash(sp.pair(sp.unit, view_result.typed.targetNat)).run(sender=alice, level=bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(20))
+    scenario += c1.getCash(sp.pair(sp.unit, view_result_pair.typed.targetNatPair)).run(sender=alice, level=bLevel.next())
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 20)
     
     scenario.h2("Try sweepMutez")
     scenario += c1.sweepMutez(sp.bool(False)).run(sender=admin, level=bLevel.next(), valid=False)

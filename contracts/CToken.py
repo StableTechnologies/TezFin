@@ -369,9 +369,9 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.repayBorrowInternal(
             sp.record(payer=liquidator, borrower=borrower, repayAmount=repayAmount))
 
-        seizeTokens = sp.view("liquidateCalculateSeizeTokens", self.data.comptroller, sp.record(
+        seizeTokens = sp.fst(sp.view("liquidateCalculateSeizeTokens", self.data.comptroller, sp.record(
             cTokenBorrowed=sp.self_address, cTokenCollateral=cTokenCollateral, actualRepayAmount=repayAmount),
-            t=sp.TNat).open_some("INVALID LIQUIDATE CALC SEIZE TOKEN VIEW")
+            t=sp.TPair(sp.TNat, sp.TNat)).open_some("INVALID LIQUIDATE CALC SEIZE TOKEN VIEW"))
 
         borrowerBalance = sp.view("balanceOf", cTokenCollateral, borrower,
                                   t=sp.TNat).open_some("INVALID BALANCE OF VIEW")
@@ -514,15 +514,15 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         params: TAddress - The address of the account to query
 
-        return: The amount of underlying owned by `params`
+        return: The amount of underlying owned by `params` and the last interest accrual block
     """
-    @sp.utils.view(sp.TNat)
+    @sp.utils.view(sp.TPair(sp.TNat, sp.TNat))
     def getBalanceOfUnderlying(self, params):
         sp.set_type(params, sp.TAddress)
         exchangeRate = self.makeExp(self.exchangeRateStoredImpl())
         balance = self.mulScalarTruncate(
             exchangeRate, self.data.ledger[params].balance)
-        sp.result(balance)
+        sp.result(sp.pair(balance, self.data.accrualBlockNumber))
 
     """    
         Get total supply of the CToken
@@ -603,12 +603,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         params: TAddress - The address whose balance should be calculated
 
-        return: The calculated balance
+        return: The calculated balance and last accrual block
     """
-    @sp.utils.view(sp.TNat)
+    @sp.utils.view(sp.TPair(sp.TNat, sp.TNat))
     def borrowBalanceStored(self, params):
         sp.set_type(params, sp.TAddress)
-        sp.result(self.getBorrowBalance(params))
+        sp.result(sp.pair(self.getBorrowBalance(params), self.data.accrualBlockNumber))
 
     """    
         Return the borrow balance of account based on stored data
@@ -617,12 +617,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         params: TAddress - The address whose balance should be calculated
 
-        return: The calculated balance
+        return: The calculated balance and last accrual block
     """
     @sp.onchain_view()
     def borrowBalanceStoredView(self, params):
         sp.set_type(params, sp.TAddress)
-        sp.result(self.getBorrowBalance(params))
+        sp.result(sp.pair(self.getBorrowBalance(params), self.data.accrualBlockNumber))
 
     def getBorrowBalance(self, account):
         borrowBalance = sp.local('borrowBalance', sp.nat(0))
@@ -642,12 +642,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         params: TUnit
 
-        return: Calculated exchange rate scaled by 1e18
+        return: Calculated exchange rate scaled by 1e18 and last accrual block number
     """
-    @sp.utils.view(sp.TNat)
+    @sp.utils.view(sp.TPair(sp.TNat, sp.TNat))
     def exchangeRateStored(self, params):
         sp.set_type(params, sp.TUnit)
-        sp.result(self.exchangeRateStoredImpl())
+        sp.result(sp.pair(self.exchangeRateStoredImpl(), self.data.accrualBlockNumber))
 
     """    
         Calculates the exchange rate from the underlying to the CToken
@@ -657,12 +657,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         params: TUnit
 
-        return: Calculated exchange rate scaled by 1e18
+        return: Calculated exchange rate scaled by 1e18 and last accrual block number
     """
     @sp.onchain_view()
     def exchangeRateStoredView(self, params):
         sp.set_type(params, sp.TUnit)
-        sp.result(self.exchangeRateStoredImpl())
+        sp.result(sp.pair(self.exchangeRateStoredImpl(), self.data.accrualBlockNumber))
 
     def exchangeRateStoredImpl(self):
         return self.exchangeRateAdjusted(sp.nat(0))
@@ -696,12 +696,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         params: TUnit
 
-        return: The quantity of underlying asset owned by this contract
+        return: The quantity of underlying asset owned by this contract and the last interest accrual block
     """
-    @sp.utils.view(sp.TNat)
+    @sp.utils.view(sp.TPair(sp.TNat, sp.TNat))
     def getCash(self, params):
         sp.set_type(params, sp.TUnit)
-        sp.result(self.getCashImpl())
+        sp.result(sp.pair(self.getCashImpl(), self.data.accrualBlockNumber))
 
     """
         dev: Do updateCash() before this function to get the up-to-date cash balance
