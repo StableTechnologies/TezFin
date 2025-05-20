@@ -401,7 +401,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TRecord(from_=sp.TAddress, to_=sp.TAddress,
                     value=sp.TNat).layout(("from_ as from", ("to_ as to", "value"))))
         sp.verify((params.from_ == sp.sender) |
-                  (self.data.ledger[params.from_].approvals[sp.sender] >= params.value), EC.CT_TRANSFER_NOT_APPROVED)
+                  (self.data.ledger[params.from_].approvals[sp.sender] >= params.value), 
+                    sp.pair("NotEnoughAllowance", sp.pair(params.value, self.data.ledger[params.from_].approvals[sp.sender])))
         self.verifyNotInternal()
         self.verifyTransferAllowed(params.from_, params.to_, params.value)
         self.transferInternal(sp.record(
@@ -411,7 +412,7 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TRecord(from_=sp.TAddress,
                     to_=sp.TAddress, value=sp.TNat, sender=sp.TAddress))
         sp.verify(self.data.ledger[params.from_].balance >=
-                  params.value, EC.CT_INSUFFICIENT_BALANCE)
+                  params.value, sp.pair("NotEnoughBalance", sp.pair(params.value, self.data.ledger[params.from_].balance)))
         self.data.ledger[params.from_].balance = sp.as_nat(
             self.data.ledger[params.from_].balance - params.value)
         self.data.ledger[params.to_].balance += params.value
@@ -452,12 +453,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         # check if max approvals reached if new entry in approvals
         sp.verify((self.data.ledger[sp.sender].approvals.contains(params.spender)) | (
-            1000 > sp.len(self.data.ledger[sp.sender].approvals)), EC.CT_MAX_APPROVALS) 
+            1000 > sp.len(self.data.ledger[sp.sender].approvals)), sp.pair(EC.CT_MAX_APPROVALS, sp.unit)) 
         
         alreadyApproved = self.data.ledger[sp.sender].approvals.get(
             params.spender, 0)
         sp.verify((alreadyApproved == 0) | (params.value == 0),
-                  EC.CT_UNSAFE_ALLOWANCE_CHANGE)
+                  sp.pair("UnsafeAllowanceChange", alreadyApproved))
         sp.if params.value == 0:
             del self.data.ledger[sp.sender].approvals[params.spender]
         sp.else:    
