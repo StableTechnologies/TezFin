@@ -450,6 +450,8 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TRecord(spender=sp.TAddress,
                     value=sp.TNat).layout(("spender", "value")))
         self.verifyNotInternal()
+        # Allow approvals for users with zero balance
+        self.addAddressIfNecessary(sp.sender)
 
         # check if max approvals reached if new entry in approvals
         sp.verify((self.data.ledger[sp.sender].approvals.contains(params.spender)) | (
