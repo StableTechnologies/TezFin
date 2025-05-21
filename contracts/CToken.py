@@ -590,11 +590,15 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
         params: TAddress - The address of the account to snapshot
 
-        return: TAccountSnapshot - account balance information
+        return: some(TAccountSnapshot) - account balance information (the fields will be set to 0 if account does not exist)
+                or none if the data is not relevant
     """
     @sp.onchain_view()
     def getAccountSnapshotView(self, params):
-        sp.result(self.helpAccountSnapshot(params))
+        sp.if (self.data.accrualBlockNumber == sp.level) | (~self.data.ledger.contains(params)):
+            sp.result(sp.some(self.helpAccountSnapshot(params)))
+        sp.else:
+            sp.result(sp.none)
 
     """    
         Return the borrow balance of account based on stored data

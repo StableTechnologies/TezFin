@@ -451,26 +451,31 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
         Determines whether a seize is allwed
 
-        return: TBool - return true if a seize is allowed
+        return: TBool - return true if a seize is allowed , false otherwise
     """
     @sp.onchain_view()
     def seizeAllowed(self, params):
         sp.set_type(params, sp.TRecord(cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
         # liquidator is not used, left here for future proofing
 
-        self.verifyMarketListed(params.cTokenBorrowed)
-        self.verifyMarketListed(params.cTokenCollateral)
+        borrowMarketValid = self.data.markets.contains(params.cTokenBorrowed) & \
+                       self.data.markets[params.cTokenBorrowed].isListed
+    
+        collateralMarketValid = self.data.markets.contains(params.cTokenCollateral) & \
+                           self.data.markets[params.cTokenCollateral].isListed
 
-        borrowComptroller = sp.view("comptroller", params.cTokenBorrowed, sp.unit,
-                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-
-        collateralComptroller = sp.view("comptroller", params.cTokenCollateral, sp.unit,
-                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-
-        sp.verify(borrowComptroller == collateralComptroller,
-                  EC.CMPT_COMPTROLLER_MISMATCH)
-
-        sp.result(True)
+        sp.if ~borrowMarketValid | ~collateralMarketValid:
+            sp.result(False)
+        sp.else:
+            borrowComptrollerOpt = sp.view("comptroller", params.cTokenBorrowed, sp.unit, t=sp.TAddress)
+            collateralComptrollerOpt = sp.view("comptroller", params.cTokenCollateral, sp.unit, t=sp.TAddress)
+            
+            sp.if borrowComptrollerOpt.is_none() | collateralComptrollerOpt.is_none():
+                sp.result(False)
+            sp.else:
+                borrowComptroller = borrowComptrollerOpt.open_some()
+                collateralComptroller = collateralComptrollerOpt.open_some()
+                sp.result(borrowComptroller == collateralComptroller)
 
     def calculateCurrentAccountLiquidityWithView(self, account):
         return self.calculateAccountLiquidityWithView(sp.record(account=account))
@@ -508,8 +513,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         return calculation
 
     def calculateAccountAssetLiquidityView(self, asset, account):
-        params = sp.view("getAccountSnapshotView", asset, account,
-                         t=CTI.TAccountSnapshot).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
+        paramsOption = sp.view("getAccountSnapshotView", asset, account,
+                         t=sp.TOption(CTI.TAccountSnapshot)).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
+        sp.verify(paramsOption.is_some(), EC.CMPT_OUTDATED_ACCOUNT_SNAPSHOT)
+        params = paramsOption.open_some()
         exchangeRate = sp.compute(self.makeExp(params.exchangeRateMantissa))
         self.checkPriceErrors(asset)
         priceIndex = self.mul_exp_exp(
