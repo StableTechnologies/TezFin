@@ -25,6 +25,12 @@ TSupplyRateParams:
 TSupplyRateParams = sp.TRecord(cash=sp.TNat, borrows=sp.TNat,
                                reserves=sp.TNat, reserveFactorMantissa=sp.TNat, cb=TCallback)
 
+TUtilizationParams = sp.TRecord(
+    cash=sp.TNat,
+    borrows=sp.TNat,
+    reserves=sp.TNat
+)
+
 
 class InterestRateModelInterface(sp.Contract):
 

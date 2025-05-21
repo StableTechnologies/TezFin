@@ -291,13 +291,15 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def updateAllAssetPrices(self):
         sp.for asset in self.data.marketNameToAddress.values():
             sp.if self.data.markets[asset].updateLevel < sp.level:
-                pricePair = sp.view("getPrice", self.data.oracleAddress, self.data.markets[asset].name + "-USD", t=sp.TPair(
-                    sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+                pricePair = sp.local("pricePair", 
+                    sp.view("getPrice", self.data.oracleAddress, self.data.markets[asset].name + "-USD", 
+                        t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+                )
                 sp.if self.data.markets[asset].priceTimestamp!= sp.timestamp(0):
-                    sp.verify(sp.now - sp.fst(pricePair) <= self.data.maxPriceTimeDifference, "STALE_ASSET_PRICE")
+                    sp.verify(sp.now - sp.fst(pricePair.value) <= self.data.maxPriceTimeDifference, "STALE_ASSET_PRICE")
                 self.data.markets[asset].price = self.makeExp(
-                    sp.snd(pricePair)*self.data.markets[asset].priceExp)
-                self.data.markets[asset].priceTimestamp = sp.fst(pricePair)
+                    sp.snd(pricePair.value)*self.data.markets[asset].priceExp)
+                self.data.markets[asset].priceTimestamp = sp.fst(pricePair.value)
                 self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):
@@ -516,8 +518,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         paramsOption = sp.view("getAccountSnapshotView", asset, account,
                          t=sp.TOption(CTI.TAccountSnapshot)).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
         sp.verify(paramsOption.is_some(), EC.CMPT_OUTDATED_ACCOUNT_SNAPSHOT)
-        params = paramsOption.open_some()
-        exchangeRate = sp.compute(self.makeExp(params.exchangeRateMantissa))
+        params = sp.local("params", paramsOption.open_some())
+        exchangeRate = sp.compute(self.makeExp(params.value.exchangeRateMantissa))
         self.checkPriceErrors(asset)
         priceIndex = self.mul_exp_exp(
             self.data.markets[asset].price, self.data.markets[asset].collateralFactor)
@@ -525,11 +527,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         calc = sp.local('calc', sp.record(sumCollateral=sp.nat(
             0), sumBorrowPlusEffects=sp.nat(0))).value
         # incase of only borrow don't consider supply as collateral
-        sp.if self.data.collaterals.contains(params.account) & self.data.collaterals[params.account].contains(asset):
+        sp.if self.data.collaterals.contains(params.value.account) & self.data.collaterals[params.value.account].contains(asset):
             calc.sumCollateral += self.mulScalarTruncate(
-                tokensToDenom, params.cTokenBalance)
+                tokensToDenom, params.value.cTokenBalance)
         calc.sumBorrowPlusEffects += self.mulScalarTruncate(
-            self.data.markets[asset].price, params.borrowBalance)
+            self.data.markets[asset].price, params.value.borrowBalance)
         return calc
 
     """
