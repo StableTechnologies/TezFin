@@ -259,12 +259,15 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         self.verifyAccruedInterestRelevance()
         accountBorrows = self.getBorrowBalance(params.borrower)
         repayAmount = sp.local("repayAmount", sp.min(accountBorrows, params.repayAmount))
+        # Underflow protection
+        actualRepayAmount = sp.local("actualRepayAmount", 
+                                sp.min(repayAmount.value, self.data.totalBorrows))
         self.doTransferIn(params.payer, repayAmount.value)
         self.data.borrows[params.borrower].principal = self.sub_nat_nat(
             accountBorrows, repayAmount.value)
         self.data.borrows[params.borrower].interestIndex = self.data.borrowIndex
         self.data.totalBorrows = self.sub_nat_nat(
-            self.data.totalBorrows, repayAmount.value)
+            self.data.totalBorrows, actualRepayAmount.value)
         sp.if self.data.borrows[params.borrower].principal == 0:
             c = sp.contract(sp.TAddress, self.data.comptroller,
                             entry_point="removeFromLoans").open_some()
