@@ -6,7 +6,7 @@ class Contract(sp.Contract):
     self.init(admin = sp.address('tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL'),
               alias = {'OXTZ-USD' : 'XTZ-USD', 'TZBTC-USD' : 'BTC-USD', 'WTZ-USD' : 'XTZ-USD'},
               oracle = sp.address('KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn'),
-              overrides = {'USD-USD' : (sp.timestamp(1745570166), 1000000), 'USDT-USD' : (sp.timestamp(1745570166), 1000000)},
+              overrides = {'USD-USD' : (sp.timestamp(1748012658), 1000000), 'USDT-USD' : (sp.timestamp(1748012658), 1000000)},
               pendingAdmin = sp.none)
 
   @sp.entrypoint
@@ -17,24 +17,24 @@ class Contract(sp.Contract):
 
   @sp.entrypoint
   def addAlias(self, params):
-    sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN')
+    sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN')
     sp.set_type(params, sp.TList(sp.TRecord(alias = sp.TString, asset = sp.TString).layout(("alias", "asset"))))
     sp.for item in params:
       self.data.alias[item.alias] = item.asset
 
   @sp.entrypoint
   def removeAlias(self, params):
-    sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN')
+    sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN')
     del self.data.alias[params]
 
   @sp.entrypoint
   def removeAsset(self, params):
-    sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN')
+    sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN')
     del self.data.overrides[params]
 
   @sp.entrypoint
   def setPrice(self, params):
-    sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN')
+    sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN')
     sp.set_type(params, sp.TList(sp.TRecord(asset = sp.TString, price = sp.TNat).layout(("asset", "price"))))
     sp.for item in params:
       self.data.overrides[item.asset] = (sp.now, item.price)
@@ -42,13 +42,17 @@ class Contract(sp.Contract):
   @sp.entrypoint
   def set_oracle(self, params):
     sp.set_type(params, sp.TAddress)
-    sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN')
+    sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN')
     self.data.oracle = params
 
   @sp.entrypoint
   def set_pending_admin(self, params):
     sp.set_type(params, sp.TAddress)
-    sp.verify(sp.sender == self.data.admin, 'NOT_ADMIN')
+    sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN')
     self.data.pendingAdmin = sp.some(params)
+
+  @sp.private_lambda()
+  def is_admin(_x0):
+    sp.result(_x0 == self.data.admin)
 
 sp.add_compilation_target("test", Contract())
