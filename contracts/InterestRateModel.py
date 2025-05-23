@@ -29,8 +29,8 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
     @sp.entry_point
     def getBorrowRate(self, params):
         sp.set_type(params, IRMInterface.TBorrowRateParams)
-        utRate = self.utilizationRate(
-            params.cash, params.borrows, params.reserves)
+        utRate = self.utilizationRate(sp.record(
+            cash=params.cash, borrows=params.borrows, reserves=params.reserves))
         result = self.calculateBorrowRate(utRate)
         sp.transfer(result, sp.mutez(0), params.cb)
 
@@ -46,20 +46,23 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
         sp.set_type(params, IRMInterface.TSupplyRateParams)
         oneMinusReserveFactor = sp.as_nat(
             self.data.scale - params.reserveFactorMantissa)
-        utRate = self.utilizationRate(
-            params.cash, params.borrows, params.reserves)
+        utRate = self.utilizationRate(sp.record(
+            cash=params.cash, borrows=params.borrows, reserves=params.reserves))
         borrowRate = self.calculateBorrowRate(utRate)
         rateToPool = borrowRate * oneMinusReserveFactor // self.data.scale
         result = utRate * rateToPool // self.data.scale
         sp.transfer(result, sp.mutez(0), params.cb)
 
-    def utilizationRate(self, cash, borrows, reserves):
+    @sp.private_lambda(with_storage="read-only")
+    def utilizationRate(self, params):
+        sp.set_type(params, IRMInterface.TUtilizationParams)
         ur = sp.local('ur', sp.nat(0))
-        sp.if borrows > sp.nat(0):
-            divisor = sp.compute(sp.as_nat(cash + borrows - reserves))
+        sp.if params.borrows > sp.nat(0):
+            divisor = sp.compute(sp.as_nat(params.cash + params.borrows - params.reserves))
             sp.verify(divisor > 0, EC.IRM_INSUFFICIENT_CASH)
-            ur.value = borrows * self.data.scale // divisor
-        return ur.value
+            ur.value = params.borrows * self.data.scale // divisor
+        sp.result(ur.value)
 
+    @sp.private_lambda(with_storage="read-only")
     def calculateBorrowRate(self, utRate):
-        return sp.compute(utRate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock)
+        sp.result(sp.compute(utRate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock))

@@ -22,8 +22,9 @@ class TezFinOracle(OracleInterface.OracleInterface):
             pendingAdmin=sp.none,
         )
 
+    @sp.private_lambda(with_storage="read-only")
     def is_admin(self, address):
-        return address == self.data.admin
+        sp.result(address == self.data.admin)
 
     @sp.entry_point
     def set_oracle(self, address):

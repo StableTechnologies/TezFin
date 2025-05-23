@@ -36,7 +36,9 @@ def test():
     fa12 = FA12Mock.FA12Mock()
     scenario += fa12
     view_result = RV.ViewerNat()
+    view_result_pair = RV.ViewerNatPair()
     scenario += view_result
+    scenario += view_result_pair
     exchange_rate = int(1e18)
     c1 = CFA12.CFA12(comptroller_=cmpt.address, 
                      interestRateModel_=irm.address,
@@ -82,13 +84,13 @@ def test():
 
     scenario.h2("Check getCash")
     scenario.h3("Before accrueInterest")
-    scenario += c1.getCash(sp.pair(sp.unit, view_result.typed.targetNat)).run(sender=alice, level=bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(100))
+    scenario += c1.getCash(sp.pair(sp.unit, view_result_pair.typed.targetNatPair)).run(sender=alice, level=bLevel.next())
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 100)
 
     scenario.h3("After accrueInterest")
     scenario += c1.accrueInterest().run(sender=alice, level=bLevel.next())
-    scenario += c1.getCash(sp.pair(sp.unit, view_result.typed.targetNat)).run(sender=alice, level=bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(110))
+    scenario += c1.getCash(sp.pair(sp.unit, view_result_pair.typed.targetNatPair)).run(sender=alice, level=bLevel.next())
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 110)
     
     scenario.h3("getTotalSupply")
     scenario += c1.getTotalSupply(sp.pair(sp.unit, view_result.typed.targetNat)).run(sender=alice, level=bLevel.next())
