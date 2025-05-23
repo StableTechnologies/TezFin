@@ -2,12 +2,31 @@ parameter (or (or (unit %accept_admin) (or (list %addAlias (pair (string %alias)
 storage   (pair (pair (address %admin) (big_map %alias string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))));
 code
   {
-    UNPAIR;     # @parameter : @storage
+    # Private variable: is_admin # pair @parameter @storage
+    LAMBDA
+      (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+      (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+      {
+        UNPAIR;     # address : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+        # sp.result(_x0 == self.data.admin) # address : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+        DUP 2;      # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : address : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+        CAR;        # pair address (big_map string string) : address : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+        CAR;        # address : address : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+        COMPARE;    # int : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+        EQ;         # bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+        PAIR;       # pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))
+      }; # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : pair @parameter @storage
+    SWAP;       # pair @parameter @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+    UNPAIR;     # @parameter : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
     IF_LEFT
       {
         IF_LEFT
           {
+            DROP;       # @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+            SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @storage
             DROP;       # @storage
+            # == accept_admin ==
+            # sp.verify(sp.sender == self.data.pendingAdmin.open_some(message = 'NOT_SET_PENDING_ADMIN'), 'NOT_PENDING_ADMIN') # @storage
             DUP;        # @storage : @storage
             GET 6;      # option address : @storage
             IF_NONE
@@ -17,7 +36,6 @@ code
               }
               {}; # @some : @storage
             SENDER;     # @sender : @some : @storage
-            RENAME;     # address : @some : @storage
             COMPARE;    # int : @storage
             EQ;         # bool : @storage
             IF
@@ -26,183 +44,230 @@ code
                 PUSH string "NOT_PENDING_ADMIN"; # string : @storage
                 FAILWITH;   # FAILED
               }; # @storage
+            # self.data.admin = sp.sender # @storage
             UNPAIR;     # pair (address %admin) (big_map %alias string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
             CDR;        # big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
             SENDER;     # @sender : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-            RENAME;     # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-            PAIR;       # pair address (big_map string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-            PAIR;       # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-            NONE address; # option address : pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-            UPDATE 6;   # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+            PAIR;       # pair @sender (big_map string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
+            PAIR;       # pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+            # self.data.pendingAdmin = sp.none # pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+            NONE address; # option address : pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+            UPDATE 6;   # pair (pair @sender (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
           }
           {
             IF_LEFT
               {
-                DUP 2;      # @storage : @parameter%addAlias : @storage
-                CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%addAlias : @storage
-                CAR;        # address : @parameter%addAlias : @storage
-                SENDER;     # @sender : address : @parameter%addAlias : @storage
-                RENAME;     # address : address : @parameter%addAlias : @storage
-                COMPARE;    # int : @parameter%addAlias : @storage
-                EQ;         # bool : @parameter%addAlias : @storage
+                # == addAlias ==
+                # sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN') # @parameter%addAlias : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DUP 3;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%addAlias : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                SENDER;     # @sender : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%addAlias : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%addAlias : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 3;      # @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 2;      # @sender : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                PAIR;       # pair @sender @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                EXEC;       # pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                UNPAIR;     # bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 3;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%addAlias
+                DIG 2;      # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : bool : @parameter%addAlias
+                DIG 3;      # @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : bool
+                DIG 3;      # bool : @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
                 IF
                   {}
                   {
-                    PUSH string "NOT_ADMIN"; # string : @parameter%addAlias : @storage
+                    PUSH string "NOT_ADMIN"; # string : @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
                     FAILWITH;   # FAILED
-                  }; # @parameter%addAlias : @storage
-                DUP;        # @parameter%addAlias : @parameter%addAlias : @storage
+                  }; # @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                # for item in params: ... # @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DUP;        # @parameter%addAlias : @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
                 ITER
                   {
-                    DIG 2;      # @storage : pair (string %alias) (string %asset) : @parameter%addAlias
-                    UNPAIR;     # pair (address %admin) (big_map %alias string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
-                    UNPAIR;     # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
-                    SWAP;       # big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
-                    DUP 4;      # pair (string %alias) (string %asset) : big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
-                    CDR;        # string : big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
-                    SOME;       # option string : big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : pair (string %alias) (string %asset) : @parameter%addAlias
-                    DIG 4;      # pair (string %alias) (string %asset) : option string : big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%addAlias
-                    CAR;        # string : option string : big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%addAlias
-                    UPDATE;     # big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%addAlias
-                    SWAP;       # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%addAlias
-                    PAIR;       # pair address (big_map string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%addAlias
-                    PAIR;       # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))) : @parameter%addAlias
-                    SWAP;       # @parameter%addAlias : pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-                  }; # @parameter%addAlias : @storage
-                DROP;       # @storage
+                    # self.data.alias[item.alias] = item.asset # pair (string %alias) (string %asset) : @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    DIG 2;      # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %alias) (string %asset) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    UNPAIR;     # pair address (big_map string string) : pair address (pair (big_map string (pair timestamp nat)) (option address)) : pair (string %alias) (string %asset) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    UNPAIR;     # address : big_map string string : pair address (pair (big_map string (pair timestamp nat)) (option address)) : pair (string %alias) (string %asset) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    SWAP;       # big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : pair (string %alias) (string %asset) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    DUP 4;      # pair (string %alias) (string %asset) : big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : pair (string %alias) (string %asset) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    CDR;        # string : big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : pair (string %alias) (string %asset) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    SOME;       # option string : big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : pair (string %alias) (string %asset) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    DIG 4;      # pair (string %alias) (string %asset) : option string : big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    CAR;        # string : option string : big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    UPDATE;     # big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    SWAP;       # address : big_map string string : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    PAIR;       # pair address (big_map string string) : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    PAIR;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%addAlias : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    SWAP;       # @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                  }; # @parameter%addAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DROP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                DROP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
               }
               {
-                DUP 2;      # @storage : @parameter%removeAlias : @storage
-                CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%removeAlias : @storage
-                CAR;        # address : @parameter%removeAlias : @storage
-                SENDER;     # @sender : address : @parameter%removeAlias : @storage
-                RENAME;     # address : address : @parameter%removeAlias : @storage
-                COMPARE;    # int : @parameter%removeAlias : @storage
-                EQ;         # bool : @parameter%removeAlias : @storage
+                # == removeAlias ==
+                # sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN') # @parameter%removeAlias : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 2;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAlias : @storage
+                SENDER;     # @sender : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAlias : @storage
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%removeAlias : @storage
+                DIG 3;      # @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%removeAlias
+                DIG 2;      # @sender : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAlias
+                PAIR;       # pair @sender @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAlias
+                EXEC;       # pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))) : @parameter%removeAlias
+                UNPAIR;     # bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAlias
+                SWAP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : bool : @parameter%removeAlias
+                DUG 2;      # bool : @parameter%removeAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                 IF
                   {}
                   {
-                    PUSH string "NOT_ADMIN"; # string : @parameter%removeAlias : @storage
+                    PUSH string "NOT_ADMIN"; # string : @parameter%removeAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                     FAILWITH;   # FAILED
-                  }; # @parameter%removeAlias : @storage
-                SWAP;       # @storage : @parameter%removeAlias
-                UNPAIR;     # pair (address %admin) (big_map %alias string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%removeAlias
-                UNPAIR;     # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%removeAlias
-                SWAP;       # big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%removeAlias
-                NONE string; # option string : big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)) : @parameter%removeAlias
-                DIG 4;      # @parameter%removeAlias : option string : big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-                UPDATE;     # big_map string string : address : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-                SWAP;       # address : big_map string string : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-                PAIR;       # pair address (big_map string string) : pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))
-                PAIR;       # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-              }; # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-          }; # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
+                  }; # @parameter%removeAlias : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                SWAP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAlias
+                # del self.data.alias[params] # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAlias
+                UNPAIR;     # pair address (big_map string string) : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%removeAlias
+                UNPAIR;     # address : big_map string string : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%removeAlias
+                SWAP;       # big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%removeAlias
+                NONE string; # option string : big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address)) : @parameter%removeAlias
+                DIG 4;      # @parameter%removeAlias : option string : big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address))
+                UPDATE;     # big_map string string : address : pair address (pair (big_map string (pair timestamp nat)) (option address))
+                SWAP;       # address : big_map string string : pair address (pair (big_map string (pair timestamp nat)) (option address))
+                PAIR;       # pair address (big_map string string) : pair address (pair (big_map string (pair timestamp nat)) (option address))
+                PAIR;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+              }; # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+          }; # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
       }
       {
         IF_LEFT
           {
             IF_LEFT
               {
-                DUP 2;      # @storage : @parameter%removeAsset : @storage
-                CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%removeAsset : @storage
-                CAR;        # address : @parameter%removeAsset : @storage
-                SENDER;     # @sender : address : @parameter%removeAsset : @storage
-                RENAME;     # address : address : @parameter%removeAsset : @storage
-                COMPARE;    # int : @parameter%removeAsset : @storage
-                EQ;         # bool : @parameter%removeAsset : @storage
+                # == removeAsset ==
+                # sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN') # @parameter%removeAsset : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 2;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAsset : @storage
+                SENDER;     # @sender : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAsset : @storage
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%removeAsset : @storage
+                DIG 3;      # @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%removeAsset
+                DIG 2;      # @sender : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAsset
+                PAIR;       # pair @sender @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%removeAsset
+                EXEC;       # pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))) : @parameter%removeAsset
+                UNPAIR;     # bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAsset
+                SWAP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : bool : @parameter%removeAsset
+                DUG 2;      # bool : @parameter%removeAsset : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                 IF
                   {}
                   {
-                    PUSH string "NOT_ADMIN"; # string : @parameter%removeAsset : @storage
+                    PUSH string "NOT_ADMIN"; # string : @parameter%removeAsset : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                     FAILWITH;   # FAILED
-                  }; # @parameter%removeAsset : @storage
-                SWAP;       # @storage : @parameter%removeAsset
-                DUP;        # @storage : @storage : @parameter%removeAsset
-                GET 5;      # big_map string (pair timestamp nat) : @storage : @parameter%removeAsset
-                NONE (pair timestamp nat); # option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : @parameter%removeAsset
-                DIG 3;      # @parameter%removeAsset : option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage
-                UPDATE;     # big_map string (pair timestamp nat) : @storage
-                UPDATE 5;   # @storage
+                  }; # @parameter%removeAsset : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                SWAP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAsset
+                # del self.data.overrides[params] # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAsset
+                DUP;        # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAsset
+                GET 5;      # big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAsset
+                NONE (pair timestamp nat); # option (pair timestamp nat) : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%removeAsset
+                DIG 3;      # @parameter%removeAsset : option (pair timestamp nat) : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                UPDATE;     # big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                UPDATE 5;   # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
               }
               {
-                DUP 2;      # @storage : @parameter%setPrice : @storage
-                CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%setPrice : @storage
-                CAR;        # address : @parameter%setPrice : @storage
-                SENDER;     # @sender : address : @parameter%setPrice : @storage
-                RENAME;     # address : address : @parameter%setPrice : @storage
-                COMPARE;    # int : @parameter%setPrice : @storage
-                EQ;         # bool : @parameter%setPrice : @storage
+                # == setPrice ==
+                # sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN') # @parameter%setPrice : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DUP 3;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%setPrice : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                SENDER;     # @sender : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%setPrice : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%setPrice : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 3;      # @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 2;      # @sender : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                PAIR;       # pair @sender @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                EXEC;       # pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                UNPAIR;     # bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 3;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%setPrice
+                DIG 2;      # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : bool : @parameter%setPrice
+                DIG 3;      # @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : bool
+                DIG 3;      # bool : @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
                 IF
                   {}
                   {
-                    PUSH string "NOT_ADMIN"; # string : @parameter%setPrice : @storage
+                    PUSH string "NOT_ADMIN"; # string : @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
                     FAILWITH;   # FAILED
-                  }; # @parameter%setPrice : @storage
-                DUP;        # @parameter%setPrice : @parameter%setPrice : @storage
+                  }; # @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                # for item in params: ... # @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DUP;        # @parameter%setPrice : @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
                 ITER
                   {
-                    DIG 2;      # @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    DUP;        # @storage : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    GET 5;      # big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    DUP 3;      # pair (string %asset) (nat %price) : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    CDR;        # nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    NOW;        # @now : nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    RENAME;     # timestamp : nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    PAIR;       # pair timestamp nat : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    SOME;       # option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : pair (string %asset) (nat %price) : @parameter%setPrice
-                    DIG 3;      # pair (string %asset) (nat %price) : option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : @parameter%setPrice
-                    CAR;        # string : option (pair timestamp nat) : big_map string (pair timestamp nat) : @storage : @parameter%setPrice
-                    UPDATE;     # big_map string (pair timestamp nat) : @storage : @parameter%setPrice
-                    UPDATE 5;   # @storage : @parameter%setPrice
-                    SWAP;       # @parameter%setPrice : @storage
-                  }; # @parameter%setPrice : @storage
-                DROP;       # @storage
-              }; # @storage
+                    # self.data.overrides[item.asset] = (sp.now, item.price) # pair (string %asset) (nat %price) : @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    DIG 2;      # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    DUP;        # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    GET 5;      # big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    DUP 3;      # pair (string %asset) (nat %price) : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    CDR;        # nat : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    NOW;        # @now : nat : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    PAIR;       # pair @now nat : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    SOME;       # option (pair @now nat) : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : pair (string %asset) (nat %price) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    DIG 3;      # pair (string %asset) (nat %price) : option (pair @now nat) : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    CAR;        # string : option (pair @now nat) : big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    UPDATE;     # big_map string (pair timestamp nat) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    UPDATE 5;   # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%setPrice : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                    SWAP;       # @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                  }; # @parameter%setPrice : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DROP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                DROP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+              }; # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
           }
           {
             IF_LEFT
               {
-                DUP 2;      # @storage : @parameter%set_oracle : @storage
-                CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%set_oracle : @storage
-                CAR;        # address : @parameter%set_oracle : @storage
-                SENDER;     # @sender : address : @parameter%set_oracle : @storage
-                RENAME;     # address : address : @parameter%set_oracle : @storage
-                COMPARE;    # int : @parameter%set_oracle : @storage
-                EQ;         # bool : @parameter%set_oracle : @storage
+                # == set_oracle ==
+                # sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN') # @parameter%set_oracle : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 2;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_oracle : @storage
+                SENDER;     # @sender : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_oracle : @storage
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%set_oracle : @storage
+                DIG 3;      # @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%set_oracle
+                DIG 2;      # @sender : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_oracle
+                PAIR;       # pair @sender @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_oracle
+                EXEC;       # pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))) : @parameter%set_oracle
+                UNPAIR;     # bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%set_oracle
+                SWAP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : bool : @parameter%set_oracle
+                DUG 2;      # bool : @parameter%set_oracle : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                 IF
                   {}
                   {
-                    PUSH string "NOT_ADMIN"; # string : @parameter%set_oracle : @storage
+                    PUSH string "NOT_ADMIN"; # string : @parameter%set_oracle : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                     FAILWITH;   # FAILED
-                  }; # @parameter%set_oracle : @storage
-                UPDATE 3;   # @storage
+                  }; # @parameter%set_oracle : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                # self.data.oracle = params # @parameter%set_oracle : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                UPDATE 3;   # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
               }
               {
-                DUP 2;      # @storage : @parameter%set_pending_admin : @storage
-                CAR;        # pair (address %admin) (big_map %alias string string) : @parameter%set_pending_admin : @storage
-                CAR;        # address : @parameter%set_pending_admin : @storage
-                SENDER;     # @sender : address : @parameter%set_pending_admin : @storage
-                RENAME;     # address : address : @parameter%set_pending_admin : @storage
-                COMPARE;    # int : @parameter%set_pending_admin : @storage
-                EQ;         # bool : @parameter%set_pending_admin : @storage
+                # == set_pending_admin ==
+                # sp.verify(self.is_admin(sp.sender), 'NOT_ADMIN') # @parameter%set_pending_admin : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))))
+                DIG 2;      # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_pending_admin : @storage
+                SENDER;     # @sender : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_pending_admin : @storage
+                SWAP;       # lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%set_pending_admin : @storage
+                DIG 3;      # @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @sender : @parameter%set_pending_admin
+                DIG 2;      # @sender : @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_pending_admin
+                PAIR;       # pair @sender @storage : lambda (pair address (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) (pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))) : @parameter%set_pending_admin
+                EXEC;       # pair bool (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))) : @parameter%set_pending_admin
+                UNPAIR;     # bool : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : @parameter%set_pending_admin
+                SWAP;       # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))) : bool : @parameter%set_pending_admin
+                DUG 2;      # bool : @parameter%set_pending_admin : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                 IF
                   {}
                   {
-                    PUSH string "NOT_ADMIN"; # string : @parameter%set_pending_admin : @storage
+                    PUSH string "NOT_ADMIN"; # string : @parameter%set_pending_admin : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
                     FAILWITH;   # FAILED
-                  }; # @parameter%set_pending_admin : @storage
-                SOME;       # option address : @storage
-                UPDATE 6;   # @storage
-              }; # @storage
-          }; # @storage
-      }; # pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-    NIL operation; # list operation : pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address)))
-    PAIR;       # pair (list operation) (pair (pair address (big_map string string)) (pair (address %oracle) (pair (big_map %overrides string (pair timestamp nat)) (option %pendingAdmin address))))
+                  }; # @parameter%set_pending_admin : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                # self.data.pendingAdmin = sp.some(params) # @parameter%set_pending_admin : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                SOME;       # option address : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+                UPDATE 6;   # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+              }; # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+          }; # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+      }; # pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+    NIL operation; # list operation : pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address)))
+    PAIR;       # pair (list operation) (pair (pair address (big_map string string)) (pair address (pair (big_map string (pair timestamp nat)) (option address))))
   };
 view
   "getPrice" string (pair timestamp nat)
   {
     UNPAIR;     # @parameter : @storage
+    # if self.data.overrides.contains(params): # @parameter : @storage
     DUP 2;      # @storage : @parameter : @storage
     GET 5;      # big_map string (pair timestamp nat) : @parameter : @storage
     DUP 2;      # @parameter : big_map string (pair timestamp nat) : @parameter : @storage
@@ -210,22 +275,24 @@ view
     IF
       {
         SWAP;       # @storage : @parameter
+        # sp.result((sp.now, sp.snd(self.data.overrides[params]))) # @storage : @parameter
         GET 5;      # big_map string (pair timestamp nat) : @parameter
         SWAP;       # @parameter : big_map string (pair timestamp nat)
         GET;        # option (pair timestamp nat)
         IF_NONE
           {
-            PUSH int 111; # int
+            PUSH int 112; # int
             FAILWITH;   # FAILED
           }
           {}; # @some
         CDR;        # nat
         NOW;        # @now : nat
-        RENAME;     # timestamp : nat
-        PAIR;       # pair timestamp nat
+        PAIR;       # pair @now nat
       }
       {
+        # asset = sp.local("asset", params) # @parameter : @storage
         DUP;        # @parameter : @parameter : @storage
+        # if self.data.alias.contains(params): # @parameter : @parameter : @storage
         DUP 3;      # @storage : @parameter : @parameter : @storage
         CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @parameter : @storage
         CDR;        # big_map string string : @parameter : @parameter : @storage
@@ -234,6 +301,7 @@ view
         IF
           {
             DROP;       # @parameter : @storage
+            # asset.value = self.data.alias[params] # @parameter : @storage
             DUP 2;      # @storage : @parameter : @storage
             CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @storage
             CDR;        # big_map string string : @parameter : @storage
@@ -241,7 +309,7 @@ view
             GET;        # option string : @storage
             IF_NONE
               {
-                PUSH int 115; # int : @storage
+                PUSH int 116; # int : @storage
                 FAILWITH;   # FAILED
               }
               {}; # @some : @storage
@@ -250,6 +318,7 @@ view
             SWAP;       # @parameter : @parameter : @storage
             DROP;       # @parameter : @storage
           }; # string : @storage
+        # sp.result((sp.snd(sp.view("get_price_with_timestamp", sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some(message = 'failed to convert asset name') + 'USDT', self.data.oracle, sp.TPair(sp.TNat, sp.TTimestamp)).open_some(message = 'invalid oracle view call')), sp.fst(sp.view("get_price_with_timestamp", sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some(message = 'failed to convert asset name') + 'USDT', self.data.oracle, sp.TPair(sp.TNat, sp.TTimestamp)).open_some(message = 'invalid oracle view call')))) # string : @storage
         DUP 2;      # @storage : string : @storage
         GET 3;      # address : string : @storage
         PUSH string "USDT"; # string : address : string : @storage
@@ -259,10 +328,9 @@ view
         SIZE;       # nat : nat : string : string : address : string : @storage
         SUB;        # int : string : string : address : string : @storage
         ISNAT;      # option nat : string : string : address : string : @storage
-        RENAME;     # option nat : string : string : address : string : @storage
         IF_NONE
           {
-            PUSH int 116; # int : string : string : address : string : @storage
+            PUSH int 117; # int : string : string : address : string : @storage
             FAILWITH;   # FAILED
           }
           {}; # @some : string : string : address : string : @storage
@@ -292,10 +360,9 @@ view
         SIZE;       # nat : nat : string : string : address : nat
         SUB;        # int : string : string : address : nat
         ISNAT;      # option nat : string : string : address : nat
-        RENAME;     # option nat : string : string : address : nat
         IF_NONE
           {
-            PUSH int 116; # int : string : string : address : nat
+            PUSH int 117; # int : string : string : address : nat
             FAILWITH;   # FAILED
           }
           {}; # @some : string : string : address : nat
@@ -323,29 +390,32 @@ view
   "get_price_with_timestamp" string (pair nat timestamp)
   {
     UNPAIR;     # @parameter : @storage
+    # if self.data.overrides.contains(params): # @parameter : @storage
     DUP 2;      # @storage : @parameter : @storage
     GET 5;      # big_map string (pair timestamp nat) : @parameter : @storage
     DUP 2;      # @parameter : big_map string (pair timestamp nat) : @parameter : @storage
     MEM;        # bool : @parameter : @storage
     IF
       {
+        # sp.result((sp.snd(self.data.overrides[params]), sp.now)) # @parameter : @storage
         NOW;        # @now : @parameter : @storage
-        RENAME;     # timestamp : @parameter : @storage
-        DIG 2;      # @storage : timestamp : @parameter
-        GET 5;      # big_map string (pair timestamp nat) : timestamp : @parameter
-        DIG 2;      # @parameter : big_map string (pair timestamp nat) : timestamp
-        GET;        # option (pair timestamp nat) : timestamp
+        DIG 2;      # @storage : @now : @parameter
+        GET 5;      # big_map string (pair timestamp nat) : @now : @parameter
+        DIG 2;      # @parameter : big_map string (pair timestamp nat) : @now
+        GET;        # option (pair timestamp nat) : @now
         IF_NONE
           {
-            PUSH int 94; # int : timestamp
+            PUSH int 95; # int : @now
             FAILWITH;   # FAILED
           }
-          {}; # @some : timestamp
-        CDR;        # nat : timestamp
-        PAIR;       # pair nat timestamp
+          {}; # @some : @now
+        CDR;        # nat : @now
+        PAIR;       # pair nat @now
       }
       {
+        # asset = sp.local("asset", params) # @parameter : @storage
         DUP;        # @parameter : @parameter : @storage
+        # if self.data.alias.contains(params): # @parameter : @parameter : @storage
         DUP 3;      # @storage : @parameter : @parameter : @storage
         CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @parameter : @storage
         CDR;        # big_map string string : @parameter : @parameter : @storage
@@ -354,6 +424,7 @@ view
         IF
           {
             DROP;       # @parameter : @storage
+            # asset.value = self.data.alias[params] # @parameter : @storage
             DUP 2;      # @storage : @parameter : @storage
             CAR;        # pair (address %admin) (big_map %alias string string) : @parameter : @storage
             CDR;        # big_map string string : @parameter : @storage
@@ -361,7 +432,7 @@ view
             GET;        # option string : @storage
             IF_NONE
               {
-                PUSH int 98; # int : @storage
+                PUSH int 99; # int : @storage
                 FAILWITH;   # FAILED
               }
               {}; # @some : @storage
@@ -371,6 +442,7 @@ view
             DROP;       # @parameter : @storage
           }; # string : @storage
         SWAP;       # @storage : string
+        # sp.result(sp.view("get_price_with_timestamp", sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some(message = 'failed to convert asset name') + 'USDT', self.data.oracle, sp.TPair(sp.TNat, sp.TTimestamp)).open_some(message = 'invalid oracle view call')) # @storage : string
         GET 3;      # address : string
         PUSH string "USDT"; # string : address : string
         DUP 3;      # string : string : address : string
@@ -379,10 +451,9 @@ view
         SIZE;       # nat : nat : string : string : address
         SUB;        # int : string : string : address
         ISNAT;      # option nat : string : string : address
-        RENAME;     # option nat : string : string : address
         IF_NONE
           {
-            PUSH int 99; # int : string : string : address
+            PUSH int 100; # int : string : string : address
             FAILWITH;   # FAILED
           }
           {}; # @some : string : string : address

@@ -210,7 +210,7 @@ class CTokenInterface(sp.Contract):
 
         return: The total supply of the CToken
     """
-    @sp.utils.view(sp.TNat)
+    @sp.utils.view(sp.TPair(sp.TNat, sp.TNat))
     def getTotalSupply(self, params):
         pass
 
@@ -249,7 +249,7 @@ class CTokenInterface(sp.Contract):
 
         return: Calculated exchange rate scaled by 1e18
     """
-    @sp.utils.view(sp.TNat)
+    @sp.utils.view(sp.TPair(sp.TNat, sp.TNat))
     def exchangeRateStored(self, params):
         pass
 
@@ -260,7 +260,7 @@ class CTokenInterface(sp.Contract):
 
         return: The quantity of underlying asset owned by this contract
     """
-    @sp.utils.view(sp.TNat)
+    @sp.utils.view(sp.TPair(sp.TNat, sp.TNat))
     def getCash(self, params):
         pass
 
