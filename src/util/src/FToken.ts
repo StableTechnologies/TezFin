@@ -31,6 +31,7 @@ export namespace FToken {
         accrualBlockNumber: number;
         administrator: string;
         balancesMapId: number;
+        borrowsMapId: number;
         supply: {
             numSuppliers?: number;
             totalSupply: bigInt.BigInteger;
@@ -72,7 +73,11 @@ export namespace FToken {
             case TokenStandard.FA12: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
                 const balancesMapId = JSONPath({
-                    path: '$.args[0].args[0].args[0].args[2].int',
+                    path: '$.args[0].args[1].args[0].args[2].int',
+                    json: storageResult,
+                })[0];
+                const borrowsMapId = JSONPath({
+                    path: '$.args[0].args[0].args[1].args[0].int',
                     json: storageResult,
                 })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[2].prim', json: storageResult })[0];
@@ -93,10 +98,11 @@ export namespace FToken {
                         json: storageResult,
                     })[0],
                     administrator: JSONPath({
-                        path: '$.args[0].args[0].args[0].args[1].string',
+                        path: '$.args[0].args[0].args[0].args[0].args[2].string',
                         json: storageResult,
                     })[0],
                     balancesMapId: balancesMapId,
+                    borrowsMapId: borrowsMapId,
                     supply: {
                         totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
                         supplyRatePerBlock: bigInt(
@@ -104,30 +110,30 @@ export namespace FToken {
                         ),
                     },
                     borrow: {
-                        totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
+                        totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].args[1].int', json: storageResult })[0]),
                         borrowIndex: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[1].int', json: storageResult })[0],
                         ),
                         borrowRateMaxMantissa: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0],
                         ),
                         borrowRatePerBlock: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
                         ),
                     },
                     protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
                     comptrollerAddress: JSONPath({
-                        path: '$.args[0].args[0].args[1].args[2].string',
+                        path: '$.args[0].args[0].args[1].args[1].string',
                         json: storageResult,
                     })[0],
-                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
+                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0]),
                     halfExpScale: bigInt(
-                        JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                        JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0],
                     ),
                     initialExchangeRateMantissa: bigInt(
-                        JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
+                        JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
                     ),
-                    interestRateModel: JSONPath({ path: '$.args[0].args[1].args[1].string', json: storageResult })[0],
+                    interestRateModel: JSONPath({ path: '$.args[0].args[1].args[0].args[1].string', json: storageResult })[0],
                     pendingAdministrator: pendingAdministrator,
                     reserveFactorMantissa: bigInt(
                         JSONPath({ path: '$.args[0].args[2].args[0].int', json: storageResult })[0],
@@ -142,7 +148,11 @@ export namespace FToken {
             case TokenStandard.FA2: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
                 const balancesMapId = JSONPath({
-                    path: '$.args[0].args[0].args[0].args[2].int',
+                    path: '$.args[0].args[1].args[0].args[1].int',
+                    json: storageResult,
+                })[0];
+                const borrowsMapId = JSONPath({
+                    path: '$.args[0].args[0].args[1].args[0].int',
                     json: storageResult,
                 })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[1].prim', json: storageResult })[0];
@@ -163,10 +173,11 @@ export namespace FToken {
                         json: storageResult,
                     })[0],
                     administrator: JSONPath({
-                        path: '$.args[0].args[0].args[0].args[1].string',
+                        path: '$.args[0].args[0].args[0].args[0].args[2].string',
                         json: storageResult,
                     })[0],
                     balancesMapId: balancesMapId,
+                    borrowsMapId: borrowsMapId,
                     supply: {
                         totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
                         supplyRatePerBlock: bigInt(
@@ -174,31 +185,31 @@ export namespace FToken {
                         ),
                     },
                     borrow: {
-                        totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
+                        totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].args[1].int', json: storageResult })[0]),
                         borrowIndex: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[1].int', json: storageResult })[0],
                         ),
                         borrowRateMaxMantissa: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0],
                         ),
                         borrowRatePerBlock: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
                         ),
                     },
                     protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
                     comptrollerAddress: JSONPath({
-                        path: '$.args[0].args[0].args[1].args[2].string',
+                        path: '$.args[0].args[0].args[1].args[1].string',
                         json: storageResult,
                     })[0],
-                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
+                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].args[0].int', json: storageResult })[0]),
                     halfExpScale: bigInt(
-                        JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                        JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
                     ),
                     initialExchangeRateMantissa: bigInt(
-                        JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
+                        JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0],
                     ),
                     interestRateModel: JSONPath({
-                        path: '$.args[0].args[1].args[0].args[2].string',
+                        path: '$.args[0].args[1].args[0].args[0].string',
                         json: storageResult,
                     })[0],
                     pendingAdministrator: pendingAdministrator,
@@ -215,7 +226,11 @@ export namespace FToken {
             case TokenStandard.XTZ: {
                 const storageResult = await TezosNodeReader.getContractStorage(server, fTokenAddress);
                 const balancesMapId = JSONPath({
-                    path: '$.args[0].args[0].args[0].args[2].int',
+                    path: '$.args[0].args[1].args[0].args[1].int',
+                    json: storageResult,
+                })[0];
+                const borrowsMapId = JSONPath({
+                    path: '$.args[0].args[0].args[1].args[1].int',
                     json: storageResult,
                 })[0];
                 const adminJsonPrase = JSONPath({ path: '$.args[0].args[1].args[1].prim', json: storageResult })[0];
@@ -241,6 +256,7 @@ export namespace FToken {
                         json: storageResult,
                     })[0],
                     balancesMapId: balancesMapId,
+                    borrowsMapId: borrowsMapId,
                     supply: {
                         totalSupply: bigInt(JSONPath({ path: '$.args[0].args[5].int', json: storageResult })[0]),
                         supplyRatePerBlock: bigInt(
@@ -250,24 +266,24 @@ export namespace FToken {
                     borrow: {
                         totalBorrows: bigInt(JSONPath({ path: '$.args[0].args[3].int', json: storageResult })[0]),
                         borrowIndex: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0],
                         ),
                         borrowRateMaxMantissa: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[0].args[3].int', json: storageResult })[0],
                         ),
                         borrowRatePerBlock: bigInt(
-                            JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                            JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
                         ),
                     },
                     protocolSeizeShareMantissa: bigInt(protocolSeizeShareMantissa),
-                    comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[2].string', json: storageResult })[0],
-                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
-                    halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0]),
+                    comptrollerAddress: JSONPath({ path: '$.args[0].args[0].args[1].args[2].string', json: storageResult })[0],
+                    expScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0]),
+                    halfExpScale: bigInt(JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0]),
                     initialExchangeRateMantissa: bigInt(
-                        JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                        JSONPath({ path: '$.args[0].args[0].args[4].int', json: storageResult })[0],
                     ),
                     interestRateModel: JSONPath({
-                        path: '$.args[0].args[1].args[0].args[1].string',
+                        path: '$.args[0].args[1].args[0].args[0].string',
                         json: storageResult,
                     })[0],
                     pendingAdministrator: pendingAdministrator,
@@ -748,13 +764,15 @@ export namespace FToken {
         assetType: AssetType,
         currentIndex: bigInt.BigInteger,
         balancesMapId: number,
+        borrowsMapId: number,
         server: string,
     ): Promise<Balance> {
         try {
             const balanceResult = await queryBalance(account, balancesMapId, server);
-            return parseBalanceResult(balanceResult, currentIndex, assetType);
+            const borrowResult = await queryBalance(account, borrowsMapId, server);
+            return parseBalanceResult(balanceResult, borrowResult, currentIndex, assetType);
         } catch (e) {
-            return parseBalanceResult({}, currentIndex, assetType);
+            return parseBalanceResult({}, {},currentIndex, assetType);
         }
     }
 
@@ -802,12 +820,13 @@ export namespace FToken {
      */
     export function parseBalanceResult(
         balanceInfo: any,
+        borrowInfo:any,
         currentIndex: bigInt.BigInteger,
         assetType: AssetType,
     ): Balance {
-        const borrowIndex = JSONPath({ path: '$.args[0].args[0].int', json: balanceInfo })[0] || 0;
-        const borrowPrincipal = JSONPath({ path: '$.args[0].args[1].int', json: balanceInfo })[0] || 0;
-        const supplyPrincipal = JSONPath({ path: '$.args[2].int', json: balanceInfo })[0] || 0;
+        const borrowIndex = JSONPath({ path: '$.args[0].int', json: borrowInfo })[0] || 0;
+        const borrowPrincipal = JSONPath({ path: '$.args[1].int', json: borrowInfo })[0] || 0;
+        const supplyPrincipal = JSONPath({ path: '$.args[1].int', json: balanceInfo })[0] || 0;
 
         // TODO: parse approvals
         // return 0 balance if uninitialized in contract

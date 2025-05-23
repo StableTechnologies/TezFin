@@ -274,6 +274,7 @@ export namespace TezosLendingPlatform {
                     asset as AssetType,
                     markets[asset].storage.borrow.borrowIndex,
                     markets[asset].storage.balancesMapId,
+                    markets[asset].storage.borrowsMapId,
                     server,
                 );
                 console.log('cc2', asset, balances[asset]);
