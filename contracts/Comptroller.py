@@ -41,7 +41,7 @@ DEFAULT_COLLATERAL_FACTOR = int(5e17)  # 50 %
 
 
 class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
-    def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, **extra_storage):
+    def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, maxAssetsPerUser_=15, **extra_storage):
         Exponential.Exponential.__init__(
             self,
             administrator=administrator_,
@@ -66,6 +66,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             closeFactorMantissa=closeFactorMantissa_,
             liquidationIncentiveMantissa=liquidationIncentiveMantissa_,
             maxPriceTimeDifference = sp.int(86400),
+            maxAssetsPerUser=maxAssetsPerUser_,
             **extra_storage
         )
 
@@ -79,7 +80,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(cTokens, sp.TList(sp.TAddress))
+        currentAssetCount = sp.local("currentAssetCount", self.getUserUniqueAssetsCount(sp.sender))
         sp.for token in cTokens:
+            sp.if self.isNewAssetForUser(sp.sender, token):
+                sp.verify(currentAssetCount.value < self.data.maxAssetsPerUser, EC.CMPT_TOO_MANY_ASSETS)
+                currentAssetCount.value += 1
             self.addToCollaterals(token, sp.sender)
         self.invalidateLiquidity(sp.sender)
 
@@ -211,6 +216,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(
             ~ self.data.markets[params.cToken].borrowPaused, EC.CMPT_BORROW_PAUSED)
         self.verifyMarketListed(params.cToken)
+        sp.if self.isNewAssetForUser(params.borrower, params.cToken):
+            uniqueAssetsCount = self.getUserUniqueAssetsCount(params.borrower)
+            sp.verify(uniqueAssetsCount < self.data.maxAssetsPerUser,
+                       EC.CMPT_TOO_MANY_ASSETS)
         sp.if ~ self.data.loans.contains(params.borrower):
             # only cTokens may call borrowAllowed if borrower not in market
             sp.verify(sp.sender == params.cToken,
@@ -533,6 +542,25 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         calc.sumBorrowPlusEffects += self.mulScalarTruncate(
             self.data.markets[asset].price, params.value.borrowBalance)
         return calc
+    
+    """
+        Gets the number of unique assets for a given user
+
+        returns: TNat - The number of unique assets held by the user
+    """
+    @sp.onchain_view()
+    def getUserAssetsCount(self, user):
+        sp.set_type(user, sp.TAddress)
+        sp.result(self.getUserUniqueAssetsCount(user))
+
+    """
+        Returns the current limit for the maximum number of unique assets a user can hold
+
+        returns: TNat - Current limit value for maxAssetsPerUser
+    """
+    @sp.onchain_view()
+    def getMaxAssetsPerUser(self):
+        sp.result(self.data.maxAssetsPerUser)
 
     """
         Sets a new pending governance for the market
@@ -651,6 +679,21 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.closeFactorMantissa = closeFactorMantissa
 
     """
+        Sets the maximum number of unique assets a user can hold
+
+        dev: Governance function to set maxAssetsPerUser
+
+        newLimit: TNat - The new limit for the maximum number of unique assets a user can hold
+    """
+    @sp.entry_point(lazify=True)
+    def setMaxAssetsPerUser(self, newLimit):
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
+            0), "TEZ_TRANSFERED")
+        sp.set_type(newLimit, sp.TNat)
+        self.verifyAdministrator()
+        self.data.maxAssetsPerUser = newLimit
+
+    """
         Sets the collateralFactor for a market
 
         dev: Governance function to set per-market collateralFactor
@@ -763,3 +806,29 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def invalidateLiquidity(self, account):
         sp.if self.data.account_liquidity.contains(account):
             self.data.account_liquidity[account].valid = False
+
+    def getUserUniqueAssetsCount(self, user):
+        unique_assets = sp.local("unique_assets", sp.set(t=sp.TAddress))
+        
+        sp.if self.data.collaterals.contains(user):
+            sp.for asset in self.data.collaterals[user].elements():
+                unique_assets.value.add(asset)
+        
+        sp.if self.data.loans.contains(user):
+            sp.for asset in self.data.loans[user].elements():
+                unique_assets.value.add(asset)
+        
+        return sp.len(unique_assets.value)
+    
+    def isNewAssetForUser(self, user, cToken):
+        is_new = sp.local("is_new", True)
+        
+        sp.if self.data.collaterals.contains(user):
+            sp.if self.data.collaterals[user].contains(cToken):
+                is_new.value = False
+        
+        sp.if self.data.loans.contains(user) & is_new.value:
+            sp.if self.data.loans[user].contains(cToken):
+                is_new.value = False
+        
+        return is_new.value
