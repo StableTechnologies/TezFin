@@ -90,6 +90,12 @@ class Contract(sp.Contract):
     sp.transfer(params.blockNumber, sp.tez(0), sp.contract(sp.TNat, params.comptroller, entrypoint='setLiquidityPeriodRelevance').open_some())
 
   @sp.entrypoint
+  def setMaxAssetsPerUser(self, params):
+    sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN')
+    sp.set_type(params, sp.TRecord(comptroller = sp.TAddress, maxAssets = sp.TNat).layout(("comptroller", "maxAssets")))
+    sp.transfer(params.maxAssets, sp.tez(0), sp.contract(sp.TNat, params.comptroller, entrypoint='setMaxAssetsPerUser').open_some())
+
+  @sp.entrypoint
   def setMintPaused(self, params):
     sp.verify(sp.sender == self.data.administrator, 'GOV_NOT_ADMIN')
     sp.set_type(params, sp.TRecord(comptroller = sp.TAddress, tokenState = sp.TRecord(cToken = sp.TAddress, state = sp.TBool).layout(("cToken", "state"))).layout(("comptroller", "tokenState")))

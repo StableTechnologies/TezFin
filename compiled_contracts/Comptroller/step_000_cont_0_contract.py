@@ -2,7 +2,7 @@ import smartpy as sp
 
 class Contract(sp.Contract):
   def __init__(self):
-    self.init_type(sp.TRecord(account_liquidity = sp.TBigMap(sp.TAddress, sp.TRecord(liquidity = sp.TInt, updateLevel = sp.TNat, valid = sp.TBool).layout(("liquidity", ("updateLevel", "valid")))), activeOperations = sp.TSet(sp.TNat), administrator = sp.TAddress, closeFactorMantissa = sp.TNat, collaterals = sp.TBigMap(sp.TAddress, sp.TSet(sp.TAddress)), expScale = sp.TNat, halfExpScale = sp.TNat, liquidationIncentiveMantissa = sp.TNat, loans = sp.TBigMap(sp.TAddress, sp.TSet(sp.TAddress)), marketNameToAddress = sp.TMap(sp.TString, sp.TAddress), markets = sp.TBigMap(sp.TAddress, sp.TRecord(borrowPaused = sp.TBool, collateralFactor = sp.TRecord(mantissa = sp.TNat).layout("mantissa"), isListed = sp.TBool, mintPaused = sp.TBool, name = sp.TString, price = sp.TRecord(mantissa = sp.TNat).layout("mantissa"), priceExp = sp.TNat, priceTimestamp = sp.TTimestamp, updateLevel = sp.TNat).layout(((("borrowPaused", "collateralFactor"), ("isListed", "mintPaused")), (("name", "price"), ("priceExp", ("priceTimestamp", "updateLevel")))))), maxPriceTimeDifference = sp.TInt, oracleAddress = sp.TAddress, pendingAdministrator = sp.TOption(sp.TAddress), transferPaused = sp.TBool).layout(((("account_liquidity", ("activeOperations", "administrator")), (("closeFactorMantissa", "collaterals"), ("expScale", "halfExpScale"))), ((("liquidationIncentiveMantissa", "loans"), ("marketNameToAddress", "markets")), (("maxPriceTimeDifference", "oracleAddress"), ("pendingAdministrator", "transferPaused"))))))
+    self.init_type(sp.TRecord(account_liquidity = sp.TBigMap(sp.TAddress, sp.TRecord(liquidity = sp.TInt, updateLevel = sp.TNat, valid = sp.TBool).layout(("liquidity", ("updateLevel", "valid")))), activeOperations = sp.TSet(sp.TNat), administrator = sp.TAddress, closeFactorMantissa = sp.TNat, collaterals = sp.TBigMap(sp.TAddress, sp.TSet(sp.TAddress)), expScale = sp.TNat, halfExpScale = sp.TNat, liquidationIncentiveMantissa = sp.TNat, loans = sp.TBigMap(sp.TAddress, sp.TSet(sp.TAddress)), marketNameToAddress = sp.TMap(sp.TString, sp.TAddress), markets = sp.TBigMap(sp.TAddress, sp.TRecord(borrowPaused = sp.TBool, collateralFactor = sp.TRecord(mantissa = sp.TNat).layout("mantissa"), isListed = sp.TBool, mintPaused = sp.TBool, name = sp.TString, price = sp.TRecord(mantissa = sp.TNat).layout("mantissa"), priceExp = sp.TNat, priceTimestamp = sp.TTimestamp, updateLevel = sp.TNat).layout(((("borrowPaused", "collateralFactor"), ("isListed", "mintPaused")), (("name", "price"), ("priceExp", ("priceTimestamp", "updateLevel")))))), maxAssetsPerUser = sp.TNat, maxPriceTimeDifference = sp.TInt, oracleAddress = sp.TAddress, pendingAdministrator = sp.TOption(sp.TAddress), transferPaused = sp.TBool).layout((((("account_liquidity", "activeOperations"), ("administrator", "closeFactorMantissa")), (("collaterals", "expScale"), ("halfExpScale", "liquidationIncentiveMantissa"))), ((("loans", "marketNameToAddress"), ("markets", "maxAssetsPerUser")), (("maxPriceTimeDifference", "oracleAddress"), ("pendingAdministrator", "transferPaused"))))))
     self.init(account_liquidity = {},
               activeOperations = sp.set([]),
               administrator = sp.address('KT1NF6DKX5giazRTzPtEuNX1npkVcaoQkvK2'),
@@ -14,6 +14,7 @@ class Contract(sp.Contract):
               loans = {},
               marketNameToAddress = {},
               markets = {},
+              maxAssetsPerUser = 15,
               maxPriceTimeDifference = 86400,
               oracleAddress = sp.address('KT1LDtNKDnpziwSrmSfx3xCbs7nBMg7VFp4m'),
               pendingAdministrator = sp.none,
@@ -33,6 +34,22 @@ class Contract(sp.Contract):
     sp.set_type(params, sp.TRecord(borrowAmount = sp.TNat, borrower = sp.TAddress, cToken = sp.TAddress).layout(("cToken", ("borrower", "borrowAmount"))))
     sp.verify(~ self.data.markets[params.cToken].borrowPaused, 'CMPT_BORROW_PAUSED')
     sp.verify((self.data.markets.contains(params.cToken)) & self.data.markets[params.cToken].isListed, 'CMPT_MARKET_NOT_LISTED')
+    is_new = sp.local("is_new", True)
+    sp.if self.data.collaterals.contains(params.borrower):
+      sp.if self.data.collaterals[params.borrower].contains(params.cToken):
+        is_new.value = False
+    sp.if (self.data.loans.contains(params.borrower)) & is_new.value:
+      sp.if self.data.loans[params.borrower].contains(params.cToken):
+        is_new.value = False
+    sp.if is_new.value:
+      unique_assets = sp.local("unique_assets", sp.set([]), sp.TSet(sp.TAddress))
+      sp.if self.data.collaterals.contains(params.borrower):
+        sp.for asset in self.data.collaterals[params.borrower].elements():
+          unique_assets.value.add(asset)
+      sp.if self.data.loans.contains(params.borrower):
+        sp.for asset in self.data.loans[params.borrower].elements():
+          unique_assets.value.add(asset)
+      sp.verify(sp.len(unique_assets.value) < self.data.maxAssetsPerUser, 'CMPT_TOO_MANY_ASSETS')
     sp.if ~ (self.data.loans.contains(params.borrower)):
       sp.verify(sp.sender == params.cToken, 'CMPT_INVALID_BORROW_SENDER')
       sp.verify((self.data.markets.contains(sp.sender)) & self.data.markets[sp.sender].isListed, 'CMPT_MARKET_NOT_LISTED')
@@ -44,8 +61,8 @@ class Contract(sp.Contract):
     sp.verify(self.data.account_liquidity[params.borrower].valid, 'CMPT_LIQUIDITY_INVALID')
     sp.set_type(sp.level, sp.TNat)
     sp.set_type(self.data.account_liquidity[params.borrower].updateLevel, sp.TNat)
-    compute_Comptroller_759 = sp.local("compute_Comptroller_759", sp.as_nat(sp.level - self.data.account_liquidity[params.borrower].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
-    sp.verify(compute_Comptroller_759.value == 0, 'CMPT_LIQUIDITY_OLD')
+    compute_Comptroller_802 = sp.local("compute_Comptroller_802", sp.as_nat(sp.level - self.data.account_liquidity[params.borrower].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
+    sp.verify(compute_Comptroller_802.value == 0, 'CMPT_LIQUIDITY_OLD')
     sp.verify(sp.level == self.data.markets[params.cToken].updateLevel, 'CMPT_UPDATE_PRICE')
     sp.verify(self.data.markets[params.cToken].price.mantissa > 0, 'CMPT_INVALID_PRICE')
     sp.set_type(self.data.markets[params.cToken].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -53,8 +70,8 @@ class Contract(sp.Contract):
     sp.set_type(params.borrowAmount, sp.TNat)
     sp.set_type(self.data.markets[params.cToken].price.mantissa * params.borrowAmount, sp.TNat)
     sp.set_type(sp.record(mantissa = self.data.markets[params.cToken].price.mantissa * params.borrowAmount), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-    compute_Comptroller_190 = sp.local("compute_Comptroller_190", self.data.account_liquidity[params.borrower].liquidity - sp.to_int((self.data.markets[params.cToken].price.mantissa * params.borrowAmount) // self.data.expScale))
-    sp.verify(compute_Comptroller_190.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
+    compute_Comptroller_195 = sp.local("compute_Comptroller_195", self.data.account_liquidity[params.borrower].liquidity - sp.to_int((self.data.markets[params.cToken].price.mantissa * params.borrowAmount) // self.data.expScale))
+    sp.verify(compute_Comptroller_195.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
     sp.if self.data.account_liquidity.contains(params.borrower):
       self.data.account_liquidity[params.borrower].valid = False
 
@@ -70,7 +87,25 @@ class Contract(sp.Contract):
   def enterMarkets(self, params):
     sp.verify(sp.amount == sp.mul(sp.set_type_expr(0, sp.TNat), sp.mutez(1)), 'TEZ_TRANSFERED')
     sp.set_type(params, sp.TList(sp.TAddress))
+    unique_assets = sp.local("unique_assets", sp.set([]), sp.TSet(sp.TAddress))
+    sp.if self.data.collaterals.contains(sp.sender):
+      sp.for asset in self.data.collaterals[sp.sender].elements():
+        unique_assets.value.add(asset)
+    sp.if self.data.loans.contains(sp.sender):
+      sp.for asset in self.data.loans[sp.sender].elements():
+        unique_assets.value.add(asset)
+    currentAssetCount = sp.local("currentAssetCount", sp.len(unique_assets.value))
     sp.for token in params:
+      is_new = sp.local("is_new", True)
+      sp.if self.data.collaterals.contains(sp.sender):
+        sp.if self.data.collaterals[sp.sender].contains(token):
+          is_new.value = False
+      sp.if (self.data.loans.contains(sp.sender)) & is_new.value:
+        sp.if self.data.loans[sp.sender].contains(token):
+          is_new.value = False
+      sp.if is_new.value:
+        sp.verify(currentAssetCount.value < self.data.maxAssetsPerUser, 'CMPT_TOO_MANY_ASSETS')
+        currentAssetCount.value += 1
       sp.verify((self.data.markets.contains(token)) & self.data.markets[token].isListed, 'CMPT_MARKET_NOT_LISTED')
       sp.if self.data.collaterals.contains(sp.sender):
         self.data.collaterals[sp.sender].add(token)
@@ -102,27 +137,27 @@ class Contract(sp.Contract):
     temp = sp.local("temp", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
     sp.if self.data.collaterals.contains(params.borrower):
       sp.for asset in self.data.collaterals[params.borrower].elements():
-        sp.verify(sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPHOT')
+        sp.verify(sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPSHOT')
         params = sp.local("params", sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').open_some())
         sp.set_type(params.value.exchangeRateMantissa, sp.TNat)
-        compute_Comptroller_522 = sp.local("compute_Comptroller_522", sp.record(mantissa = params.value.exchangeRateMantissa))
+        compute_Comptroller_531 = sp.local("compute_Comptroller_531", sp.record(mantissa = params.value.exchangeRateMantissa))
         sp.verify(sp.level == self.data.markets[asset].updateLevel, 'CMPT_UPDATE_PRICE')
         sp.verify(self.data.markets[asset].price.mantissa > 0, 'CMPT_INVALID_PRICE')
         sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type(self.data.markets[asset].collateralFactor, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale, sp.TNat)
         sp.set_type(sp.record(mantissa = (self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        sp.set_type(compute_Comptroller_522.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale, sp.TNat)
-        compute_Comptroller_526 = sp.local("compute_Comptroller_526", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale))
+        sp.set_type(compute_Comptroller_531.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+        sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale, sp.TNat)
+        compute_Comptroller_535 = sp.local("compute_Comptroller_535", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale))
         calc = sp.local("calc", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
         sp.if (self.data.collaterals.contains(params.value.account)) & (self.data.collaterals[params.value.account].contains(asset)):
-          sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(params.value.cTokenBalance, sp.TNat)
-          sp.set_type(compute_Comptroller_526.value.mantissa * params.value.cTokenBalance, sp.TNat)
-          sp.set_type(sp.record(mantissa = compute_Comptroller_526.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          calc.value.sumCollateral += (compute_Comptroller_526.value.mantissa * params.value.cTokenBalance) // self.data.expScale
+          sp.set_type(compute_Comptroller_535.value.mantissa * params.value.cTokenBalance, sp.TNat)
+          sp.set_type(sp.record(mantissa = compute_Comptroller_535.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          calc.value.sumCollateral += (compute_Comptroller_535.value.mantissa * params.value.cTokenBalance) // self.data.expScale
         sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type(params.value.borrowBalance, sp.TNat)
@@ -135,27 +170,27 @@ class Contract(sp.Contract):
       sp.for asset in self.data.loans[params.borrower].elements():
         sp.if self.data.collaterals.contains(params.borrower):
           sp.if ~ (self.data.collaterals[params.borrower].contains(asset)):
-            sp.verify(sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPHOT')
+            sp.verify(sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPSHOT')
             params = sp.local("params", sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').open_some())
             sp.set_type(params.value.exchangeRateMantissa, sp.TNat)
-            compute_Comptroller_522 = sp.local("compute_Comptroller_522", sp.record(mantissa = params.value.exchangeRateMantissa))
+            compute_Comptroller_531 = sp.local("compute_Comptroller_531", sp.record(mantissa = params.value.exchangeRateMantissa))
             sp.verify(sp.level == self.data.markets[asset].updateLevel, 'CMPT_UPDATE_PRICE')
             sp.verify(self.data.markets[asset].price.mantissa > 0, 'CMPT_INVALID_PRICE')
             sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(self.data.markets[asset].collateralFactor, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale, sp.TNat)
             sp.set_type(sp.record(mantissa = (self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            sp.set_type(compute_Comptroller_522.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale, sp.TNat)
-            compute_Comptroller_526 = sp.local("compute_Comptroller_526", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale))
+            sp.set_type(compute_Comptroller_531.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale, sp.TNat)
+            compute_Comptroller_535 = sp.local("compute_Comptroller_535", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale))
             calc = sp.local("calc", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
             sp.if (self.data.collaterals.contains(params.value.account)) & (self.data.collaterals[params.value.account].contains(asset)):
-              sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-              sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+              sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+              sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
               sp.set_type(params.value.cTokenBalance, sp.TNat)
-              sp.set_type(compute_Comptroller_526.value.mantissa * params.value.cTokenBalance, sp.TNat)
-              sp.set_type(sp.record(mantissa = compute_Comptroller_526.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-              calc.value.sumCollateral += (compute_Comptroller_526.value.mantissa * params.value.cTokenBalance) // self.data.expScale
+              sp.set_type(compute_Comptroller_535.value.mantissa * params.value.cTokenBalance, sp.TNat)
+              sp.set_type(sp.record(mantissa = compute_Comptroller_535.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+              calc.value.sumCollateral += (compute_Comptroller_535.value.mantissa * params.value.cTokenBalance) // self.data.expScale
             sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(params.value.borrowBalance, sp.TNat)
@@ -165,27 +200,27 @@ class Contract(sp.Contract):
             calculation.value.sumCollateral += calc.value.sumCollateral
             calculation.value.sumBorrowPlusEffects += calc.value.sumBorrowPlusEffects
         sp.else:
-          sp.verify(sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPHOT')
+          sp.verify(sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPSHOT')
           params = sp.local("params", sp.view("getAccountSnapshotView", params.borrower, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').open_some())
           sp.set_type(params.value.exchangeRateMantissa, sp.TNat)
-          compute_Comptroller_522 = sp.local("compute_Comptroller_522", sp.record(mantissa = params.value.exchangeRateMantissa))
+          compute_Comptroller_531 = sp.local("compute_Comptroller_531", sp.record(mantissa = params.value.exchangeRateMantissa))
           sp.verify(sp.level == self.data.markets[asset].updateLevel, 'CMPT_UPDATE_PRICE')
           sp.verify(self.data.markets[asset].price.mantissa > 0, 'CMPT_INVALID_PRICE')
           sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(self.data.markets[asset].collateralFactor, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale, sp.TNat)
           sp.set_type(sp.record(mantissa = (self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          sp.set_type(compute_Comptroller_522.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale, sp.TNat)
-          compute_Comptroller_526 = sp.local("compute_Comptroller_526", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale))
+          sp.set_type(compute_Comptroller_531.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale, sp.TNat)
+          compute_Comptroller_535 = sp.local("compute_Comptroller_535", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale))
           calc = sp.local("calc", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
           sp.if (self.data.collaterals.contains(params.value.account)) & (self.data.collaterals[params.value.account].contains(asset)):
-            sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(params.value.cTokenBalance, sp.TNat)
-            sp.set_type(compute_Comptroller_526.value.mantissa * params.value.cTokenBalance, sp.TNat)
-            sp.set_type(sp.record(mantissa = compute_Comptroller_526.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            calc.value.sumCollateral += (compute_Comptroller_526.value.mantissa * params.value.cTokenBalance) // self.data.expScale
+            sp.set_type(compute_Comptroller_535.value.mantissa * params.value.cTokenBalance, sp.TNat)
+            sp.set_type(sp.record(mantissa = compute_Comptroller_535.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            calc.value.sumCollateral += (compute_Comptroller_535.value.mantissa * params.value.cTokenBalance) // self.data.expScale
           sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(params.value.borrowBalance, sp.TNat)
@@ -195,8 +230,8 @@ class Contract(sp.Contract):
           calculation.value.sumCollateral += calc.value.sumCollateral
           calculation.value.sumBorrowPlusEffects += calc.value.sumBorrowPlusEffects
     calcLiquidity = sp.local("calcLiquidity", calculation.value)
-    compute_Comptroller_380 = sp.local("compute_Comptroller_380", calcLiquidity.value.sumCollateral - calcLiquidity.value.sumBorrowPlusEffects)
-    liquidtiy = sp.local("liquidtiy", compute_Comptroller_380.value)
+    compute_Comptroller_389 = sp.local("compute_Comptroller_389", calcLiquidity.value.sumCollateral - calcLiquidity.value.sumBorrowPlusEffects)
+    liquidtiy = sp.local("liquidtiy", compute_Comptroller_389.value)
     sp.verify(liquidtiy.value < 0, 'CMPT_INSUFFICIENT_SHORTFALL')
     sp.set_type(self.data.closeFactorMantissa, sp.TNat)
     sp.set_type(sp.record(mantissa = self.data.closeFactorMantissa), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -231,8 +266,8 @@ class Contract(sp.Contract):
         sp.verify(self.data.account_liquidity[params.redeemer].valid, 'CMPT_LIQUIDITY_INVALID')
         sp.set_type(sp.level, sp.TNat)
         sp.set_type(self.data.account_liquidity[params.redeemer].updateLevel, sp.TNat)
-        compute_Comptroller_759 = sp.local("compute_Comptroller_759", sp.as_nat(sp.level - self.data.account_liquidity[params.redeemer].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
-        sp.verify(compute_Comptroller_759.value == 0, 'CMPT_LIQUIDITY_OLD')
+        compute_Comptroller_802 = sp.local("compute_Comptroller_802", sp.as_nat(sp.level - self.data.account_liquidity[params.redeemer].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
+        sp.verify(compute_Comptroller_802.value == 0, 'CMPT_LIQUIDITY_OLD')
         sp.verify(sp.level == self.data.markets[params.cToken].updateLevel, 'CMPT_UPDATE_PRICE')
         sp.verify(self.data.markets[params.cToken].price.mantissa > 0, 'CMPT_INVALID_PRICE')
         sp.set_type(self.data.markets[params.cToken].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -240,8 +275,8 @@ class Contract(sp.Contract):
         sp.set_type(params.redeemAmount, sp.TNat)
         sp.set_type(self.data.markets[params.cToken].price.mantissa * params.redeemAmount, sp.TNat)
         sp.set_type(sp.record(mantissa = self.data.markets[params.cToken].price.mantissa * params.redeemAmount), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        compute_Comptroller_190 = sp.local("compute_Comptroller_190", self.data.account_liquidity[params.redeemer].liquidity - sp.to_int((self.data.markets[params.cToken].price.mantissa * params.redeemAmount) // self.data.expScale))
-        sp.verify(compute_Comptroller_190.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
+        compute_Comptroller_195 = sp.local("compute_Comptroller_195", self.data.account_liquidity[params.redeemer].liquidity - sp.to_int((self.data.markets[params.cToken].price.mantissa * params.redeemAmount) // self.data.expScale))
+        sp.verify(compute_Comptroller_195.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
     sp.if self.data.account_liquidity.contains(params.redeemer):
       self.data.account_liquidity[params.redeemer].valid = False
 
@@ -270,27 +305,27 @@ class Contract(sp.Contract):
     temp = sp.local("temp", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
     sp.if self.data.collaterals.contains(params):
       sp.for asset in self.data.collaterals[params].elements():
-        sp.verify(sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPHOT')
+        sp.verify(sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPSHOT')
         params = sp.local("params", sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').open_some())
         sp.set_type(params.value.exchangeRateMantissa, sp.TNat)
-        compute_Comptroller_522 = sp.local("compute_Comptroller_522", sp.record(mantissa = params.value.exchangeRateMantissa))
+        compute_Comptroller_531 = sp.local("compute_Comptroller_531", sp.record(mantissa = params.value.exchangeRateMantissa))
         sp.verify(sp.level == self.data.markets[asset].updateLevel, 'CMPT_UPDATE_PRICE')
         sp.verify(self.data.markets[asset].price.mantissa > 0, 'CMPT_INVALID_PRICE')
         sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type(self.data.markets[asset].collateralFactor, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale, sp.TNat)
         sp.set_type(sp.record(mantissa = (self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        sp.set_type(compute_Comptroller_522.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale, sp.TNat)
-        compute_Comptroller_526 = sp.local("compute_Comptroller_526", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale))
+        sp.set_type(compute_Comptroller_531.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+        sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale, sp.TNat)
+        compute_Comptroller_535 = sp.local("compute_Comptroller_535", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale))
         calc = sp.local("calc", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
         sp.if (self.data.collaterals.contains(params.value.account)) & (self.data.collaterals[params.value.account].contains(asset)):
-          sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(params.value.cTokenBalance, sp.TNat)
-          sp.set_type(compute_Comptroller_526.value.mantissa * params.value.cTokenBalance, sp.TNat)
-          sp.set_type(sp.record(mantissa = compute_Comptroller_526.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          calc.value.sumCollateral += (compute_Comptroller_526.value.mantissa * params.value.cTokenBalance) // self.data.expScale
+          sp.set_type(compute_Comptroller_535.value.mantissa * params.value.cTokenBalance, sp.TNat)
+          sp.set_type(sp.record(mantissa = compute_Comptroller_535.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          calc.value.sumCollateral += (compute_Comptroller_535.value.mantissa * params.value.cTokenBalance) // self.data.expScale
         sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
         sp.set_type(params.value.borrowBalance, sp.TNat)
@@ -303,27 +338,27 @@ class Contract(sp.Contract):
       sp.for asset in self.data.loans[params].elements():
         sp.if self.data.collaterals.contains(params):
           sp.if ~ (self.data.collaterals[params].contains(asset)):
-            sp.verify(sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPHOT')
+            sp.verify(sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPSHOT')
             params = sp.local("params", sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').open_some())
             sp.set_type(params.value.exchangeRateMantissa, sp.TNat)
-            compute_Comptroller_522 = sp.local("compute_Comptroller_522", sp.record(mantissa = params.value.exchangeRateMantissa))
+            compute_Comptroller_531 = sp.local("compute_Comptroller_531", sp.record(mantissa = params.value.exchangeRateMantissa))
             sp.verify(sp.level == self.data.markets[asset].updateLevel, 'CMPT_UPDATE_PRICE')
             sp.verify(self.data.markets[asset].price.mantissa > 0, 'CMPT_INVALID_PRICE')
             sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(self.data.markets[asset].collateralFactor, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale, sp.TNat)
             sp.set_type(sp.record(mantissa = (self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            sp.set_type(compute_Comptroller_522.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale, sp.TNat)
-            compute_Comptroller_526 = sp.local("compute_Comptroller_526", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale))
+            sp.set_type(compute_Comptroller_531.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale, sp.TNat)
+            compute_Comptroller_535 = sp.local("compute_Comptroller_535", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale))
             calc = sp.local("calc", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
             sp.if (self.data.collaterals.contains(params.value.account)) & (self.data.collaterals[params.value.account].contains(asset)):
-              sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-              sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+              sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+              sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
               sp.set_type(params.value.cTokenBalance, sp.TNat)
-              sp.set_type(compute_Comptroller_526.value.mantissa * params.value.cTokenBalance, sp.TNat)
-              sp.set_type(sp.record(mantissa = compute_Comptroller_526.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-              calc.value.sumCollateral += (compute_Comptroller_526.value.mantissa * params.value.cTokenBalance) // self.data.expScale
+              sp.set_type(compute_Comptroller_535.value.mantissa * params.value.cTokenBalance, sp.TNat)
+              sp.set_type(sp.record(mantissa = compute_Comptroller_535.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+              calc.value.sumCollateral += (compute_Comptroller_535.value.mantissa * params.value.cTokenBalance) // self.data.expScale
             sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(params.value.borrowBalance, sp.TNat)
@@ -333,27 +368,27 @@ class Contract(sp.Contract):
             calculation.value.sumCollateral += calc.value.sumCollateral
             calculation.value.sumBorrowPlusEffects += calc.value.sumBorrowPlusEffects
         sp.else:
-          sp.verify(sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPHOT')
+          sp.verify(sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').is_some(), 'CMPT_OUTDATED_ACCOUNT_SNAPSHOT')
           params = sp.local("params", sp.view("getAccountSnapshotView", params, asset, sp.TOption(sp.TRecord(account = sp.TAddress, borrowBalance = sp.TNat, cTokenBalance = sp.TNat, exchangeRateMantissa = sp.TNat).layout((("account", "borrowBalance"), ("cTokenBalance", "exchangeRateMantissa"))))).open_some(message = 'INVALID ACCOUNT SNAPSHOT VIEW').open_some())
           sp.set_type(params.value.exchangeRateMantissa, sp.TNat)
-          compute_Comptroller_522 = sp.local("compute_Comptroller_522", sp.record(mantissa = params.value.exchangeRateMantissa))
+          compute_Comptroller_531 = sp.local("compute_Comptroller_531", sp.record(mantissa = params.value.exchangeRateMantissa))
           sp.verify(sp.level == self.data.markets[asset].updateLevel, 'CMPT_UPDATE_PRICE')
           sp.verify(self.data.markets[asset].price.mantissa > 0, 'CMPT_INVALID_PRICE')
           sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(self.data.markets[asset].collateralFactor, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale, sp.TNat)
           sp.set_type(sp.record(mantissa = (self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          sp.set_type(compute_Comptroller_522.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-          sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale, sp.TNat)
-          compute_Comptroller_526 = sp.local("compute_Comptroller_526", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_522.value.mantissa) // self.data.expScale))
+          sp.set_type(compute_Comptroller_531.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+          sp.set_type((((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale, sp.TNat)
+          compute_Comptroller_535 = sp.local("compute_Comptroller_535", sp.record(mantissa = (((self.data.markets[asset].price.mantissa * self.data.markets[asset].collateralFactor.mantissa) // self.data.expScale) * compute_Comptroller_531.value.mantissa) // self.data.expScale))
           calc = sp.local("calc", sp.record(sumBorrowPlusEffects = 0, sumCollateral = 0))
           sp.if (self.data.collaterals.contains(params.value.account)) & (self.data.collaterals[params.value.account].contains(asset)):
-            sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            sp.set_type(compute_Comptroller_526.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            sp.set_type(compute_Comptroller_535.value, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
             sp.set_type(params.value.cTokenBalance, sp.TNat)
-            sp.set_type(compute_Comptroller_526.value.mantissa * params.value.cTokenBalance, sp.TNat)
-            sp.set_type(sp.record(mantissa = compute_Comptroller_526.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-            calc.value.sumCollateral += (compute_Comptroller_526.value.mantissa * params.value.cTokenBalance) // self.data.expScale
+            sp.set_type(compute_Comptroller_535.value.mantissa * params.value.cTokenBalance, sp.TNat)
+            sp.set_type(sp.record(mantissa = compute_Comptroller_535.value.mantissa * params.value.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
+            calc.value.sumCollateral += (compute_Comptroller_535.value.mantissa * params.value.cTokenBalance) // self.data.expScale
           sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(self.data.markets[asset].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
           sp.set_type(params.value.borrowBalance, sp.TNat)
@@ -381,8 +416,8 @@ class Contract(sp.Contract):
         sp.verify(self.data.account_liquidity[params.account].valid, 'CMPT_LIQUIDITY_INVALID')
         sp.set_type(sp.level, sp.TNat)
         sp.set_type(self.data.account_liquidity[params.account].updateLevel, sp.TNat)
-        compute_Comptroller_759 = sp.local("compute_Comptroller_759", sp.as_nat(sp.level - self.data.account_liquidity[params.account].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
-        sp.verify(compute_Comptroller_759.value == 0, 'CMPT_LIQUIDITY_OLD')
+        compute_Comptroller_802 = sp.local("compute_Comptroller_802", sp.as_nat(sp.level - self.data.account_liquidity[params.account].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
+        sp.verify(compute_Comptroller_802.value == 0, 'CMPT_LIQUIDITY_OLD')
         sp.verify(sp.level == self.data.markets[sp.sender].updateLevel, 'CMPT_UPDATE_PRICE')
         sp.verify(self.data.markets[sp.sender].price.mantissa > 0, 'CMPT_INVALID_PRICE')
         sp.set_type(self.data.markets[sp.sender].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -390,8 +425,8 @@ class Contract(sp.Contract):
         sp.set_type(params.cTokenBalance, sp.TNat)
         sp.set_type(self.data.markets[sp.sender].price.mantissa * params.cTokenBalance, sp.TNat)
         sp.set_type(sp.record(mantissa = self.data.markets[sp.sender].price.mantissa * params.cTokenBalance), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        compute_Comptroller_190 = sp.local("compute_Comptroller_190", self.data.account_liquidity[params.account].liquidity - sp.to_int((self.data.markets[sp.sender].price.mantissa * params.cTokenBalance) // self.data.expScale))
-        sp.verify(compute_Comptroller_190.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
+        compute_Comptroller_195 = sp.local("compute_Comptroller_195", self.data.account_liquidity[params.account].liquidity - sp.to_int((self.data.markets[sp.sender].price.mantissa * params.cTokenBalance) // self.data.expScale))
+        sp.verify(compute_Comptroller_195.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
     sp.if self.data.account_liquidity.contains(params.account):
       self.data.account_liquidity[params.account].valid = False
     sp.if (self.data.collaterals.contains(params.account)) & (self.data.collaterals[params.account].contains(sp.sender)):
@@ -428,6 +463,13 @@ class Contract(sp.Contract):
     sp.set_type(params, sp.TNat)
     sp.verify(sp.sender == self.data.administrator, 'CMPT_NOT_ADMIN')
     self.data.liquidationIncentiveMantissa = params
+
+  @sp.entrypoint
+  def setMaxAssetsPerUser(self, params):
+    sp.verify(sp.amount == sp.mul(sp.set_type_expr(0, sp.TNat), sp.mutez(1)), 'TEZ_TRANSFERED')
+    sp.set_type(params, sp.TNat)
+    sp.verify(sp.sender == self.data.administrator, 'CMPT_NOT_ADMIN')
+    self.data.maxAssetsPerUser = params
 
   @sp.entrypoint
   def setMintPaused(self, params):
@@ -500,8 +542,8 @@ class Contract(sp.Contract):
         sp.verify(self.data.account_liquidity[params.src].valid, 'CMPT_LIQUIDITY_INVALID')
         sp.set_type(sp.level, sp.TNat)
         sp.set_type(self.data.account_liquidity[params.src].updateLevel, sp.TNat)
-        compute_Comptroller_759 = sp.local("compute_Comptroller_759", sp.as_nat(sp.level - self.data.account_liquidity[params.src].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
-        sp.verify(compute_Comptroller_759.value == 0, 'CMPT_LIQUIDITY_OLD')
+        compute_Comptroller_802 = sp.local("compute_Comptroller_802", sp.as_nat(sp.level - self.data.account_liquidity[params.src].updateLevel, message = 'SUBTRACTION_UNDERFLOW'))
+        sp.verify(compute_Comptroller_802.value == 0, 'CMPT_LIQUIDITY_OLD')
         sp.verify(sp.level == self.data.markets[params.cToken].updateLevel, 'CMPT_UPDATE_PRICE')
         sp.verify(self.data.markets[params.cToken].price.mantissa > 0, 'CMPT_INVALID_PRICE')
         sp.set_type(self.data.markets[params.cToken].price, sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
@@ -509,8 +551,8 @@ class Contract(sp.Contract):
         sp.set_type(params.transferTokens, sp.TNat)
         sp.set_type(self.data.markets[params.cToken].price.mantissa * params.transferTokens, sp.TNat)
         sp.set_type(sp.record(mantissa = self.data.markets[params.cToken].price.mantissa * params.transferTokens), sp.TRecord(mantissa = sp.TNat).layout("mantissa"))
-        compute_Comptroller_190 = sp.local("compute_Comptroller_190", self.data.account_liquidity[params.src].liquidity - sp.to_int((self.data.markets[params.cToken].price.mantissa * params.transferTokens) // self.data.expScale))
-        sp.verify(compute_Comptroller_190.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
+        compute_Comptroller_195 = sp.local("compute_Comptroller_195", self.data.account_liquidity[params.src].liquidity - sp.to_int((self.data.markets[params.cToken].price.mantissa * params.transferTokens) // self.data.expScale))
+        sp.verify(compute_Comptroller_195.value >= 0, 'CMPT_REDEEMER_SHORTFALL')
     sp.if self.data.account_liquidity.contains(params.src):
       self.data.account_liquidity[params.src].valid = False
 
