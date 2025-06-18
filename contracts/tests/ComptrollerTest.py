@@ -17,8 +17,9 @@ class ComptrollerTest(CMPT.Comptroller):
                                   administrator_ = administrator_,
                                   oracleAddress_ = oracleAddress_,
                                   closeFactorMantissa_= sp.nat(0),
-                                  liquidationIncentiveMantissa_= sp.nat(0))
-    
+                                  liquidationIncentiveMantissa_= sp.nat(0),
+                                  maxAssetsPerUser_= sp.nat(3))
+
     # test-oriented entry points
     @sp.entry_point
     def addMarket(self, params):
@@ -369,7 +370,86 @@ def test():
     # [CONSISTENCY] return governance back to test account "admin"
     scenario += cmpt.setPendingGovernance(admin.address).run(sender=pendingGovernance, level=bLevel.next())
     scenario += cmpt.acceptGovernance(sp.unit).run(sender=admin, level=bLevel.next())
+
+    scenario.h2("Test Asset Limit Functionality")
+    scenario.h3("Setup additional markets for asset limit testing")
+    cTokenExtra1 = CTMock.CTokenMock(test_account_snapshot_ = sp.record(
+        account = alice.address,
+        cTokenBalance = sp.nat(10), 
+        borrowBalance = sp.nat(0),
+        exchangeRateMantissa = exchRate
+    ))
+    scenario += cTokenExtra1
     
+    cTokenExtra2 = CTMock.CTokenMock(test_account_snapshot_ = sp.record(
+        account = alice.address,
+        cTokenBalance = sp.nat(10), 
+        borrowBalance = sp.nat(0),
+        exchangeRateMantissa = exchRate
+    ))
+    scenario += cTokenExtra2
+
+    extraMarkets = [
+        sp.pair(cTokenExtra1.address,
+                sp.record(isListed = sp.bool(True),
+                          collateralFactor = sp.record(mantissa=sp.nat(int(5e17))), 
+                          mintPaused = sp.bool(False), 
+                          borrowPaused = sp.bool(False), 
+                          name = sp.string("extra1"), 
+                          price = sp.record(mantissa=sp.nat(int(1e18))),
+                          priceExp = sp.nat(int(1e18)),
+                          updateLevel = sp.nat(0),
+                          priceTimestamp= sp.timestamp(0))),
+        sp.pair(cTokenExtra2.address,
+                sp.record(isListed = sp.bool(True),
+                          collateralFactor = sp.record(mantissa=sp.nat(int(5e17))), 
+                          mintPaused = sp.bool(False), 
+                          borrowPaused = sp.bool(False), 
+                          name = sp.string("extra2"), 
+                          price = sp.record(mantissa=sp.nat(int(1e18))),
+                          priceExp = sp.nat(int(1e18)),
+                          updateLevel = sp.nat(0),
+                          priceTimestamp= sp.timestamp(0)))
+    ]
+    
+    for market in extraMarkets:
+        scenario += cmpt.addMarket(market).run(level = bLevel.next())
+
+    scenario.h3("Test max assets per user limit")
+    
+    scenario.h4("Check initial max assets limit")
+    scenario.verify_equal(cmpt.data.maxAssetsPerUser, 3)
+
+    scenario.h4("Admin can change max assets limit")
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set max assets per user", bLevel, admin, alice, cmpt.setMaxAssetsPerUser, sp.nat(2))
+    scenario.verify_equal(cmpt.data.maxAssetsPerUser, 2)
+
+    scenario.h4("Reset limit back to 3 for testing")
+    scenario += cmpt.setMaxAssetsPerUser(sp.nat(3)).run(sender=admin, level=bLevel.next())
+    
+    scenario.h3("Test asset limit enforcement in enterMarkets")
+    # Alice currently has 2 assets
+    scenario.h4("Alice currently has 2 assets")
+    alice_count = sp.view("getUserAssetsCount", cmpt.address, alice.address, t=sp.TNat).open_some()
+    scenario.show(alice_count)
+    scenario.verify_equal(alice_count, 2)
+    
+    scenario.h4("Alice can enter 1 more market (within limit)")
+    scenario += cmpt.enterMarkets([cTokenExtra1.address]).run(
+        sender=alice, level=bLevel.next())
+    
+    scenario.verify(cmpt.data.collaterals[alice.address].contains(cTokenExtra1.address))
+    
+    scenario.h4("Alice now has 3 assets (at limit)")
+    alice_count = sp.view("getUserAssetsCount", cmpt.address, alice.address, t=sp.TNat).open_some()
+    scenario.verify_equal(alice_count, 3)
+    
+    scenario.h4("Alice cannot enter 4th market (exceeds limit)")
+    scenario += cmpt.enterMarkets([cTokenExtra2.address]).run(
+        sender=alice, level=bLevel.next(), valid=False)
+    
+    scenario.h4("Alice cannot borrow from new market (would exceed limit)")
+    scenario += cmpt.borrowAllowed(borrowArgLambda(cTokenExtra2.address)).run(sender = alice, level = bLevel.current(), valid = False)
 
 # Helpers
 

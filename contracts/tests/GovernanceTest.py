@@ -250,3 +250,8 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     arg = sp.record(comptroller = cmpt.address, cToken = ctoken.address)
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "disable market", bLevel, admin, alice, governor.disableMarket, arg)
     scenario.verify(cmpt.data.markets.contains(arg.cToken) & ~ cmpt.data.markets[arg.cToken].isListed)
+
+    scenario.h3("Set max assets per user")
+    arg = sp.record(comptroller = cmpt.address, maxAssets = sp.nat(10))
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set max assets per user", bLevel, admin, alice, governor.setMaxAssetsPerUser, arg)
+    scenario.verify(cmpt.data.maxAssetsPerUser == arg.maxAssets)

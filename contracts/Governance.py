@@ -304,7 +304,22 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
         contract = sp.contract(
             sp.TAddress, params.comptroller, "disableMarket").open_some()
         sp.transfer(params.cToken, sp.mutez(0), contract)
+    
+    """
+        Set the maximum number of unique assets a user can hold
 
+        params: TRecord
+            comptroller: TAddress - The address of Comptroller contract
+            maxAssets: TNat - The maximum number of assets a user can hold
+    """
+    @sp.entry_point
+    def setMaxAssetsPerUser(self, params):
+        self.verifyAdministrator()
+        sp.set_type(params, sp.TRecord(
+            comptroller=sp.TAddress, maxAssets=sp.TNat))
+        contract = sp.contract(sp.TNat, params.comptroller,
+                               "setMaxAssetsPerUser").open_some()
+        sp.transfer(params.maxAssets, sp.mutez(0), contract)
 
     """    
         Pause or activate the mint of given CToken

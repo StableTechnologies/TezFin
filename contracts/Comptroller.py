@@ -41,7 +41,7 @@ DEFAULT_COLLATERAL_FACTOR = int(5e17)  # 50 %
 
 
 class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
-    def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, **extra_storage):
+    def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, maxAssetsPerUser_=15, **extra_storage):
         Exponential.Exponential.__init__(
             self,
             administrator=administrator_,
@@ -66,6 +66,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             closeFactorMantissa=closeFactorMantissa_,
             liquidationIncentiveMantissa=liquidationIncentiveMantissa_,
             maxPriceTimeDifference = sp.int(86400),
+            maxAssetsPerUser=maxAssetsPerUser_,
             **extra_storage
         )
 
@@ -79,7 +80,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(cTokens, sp.TList(sp.TAddress))
+        currentAssetCount = sp.local("currentAssetCount", self.getUserUniqueAssetsCount(sp.sender))
         sp.for token in cTokens:
+            sp.if self.isNewAssetForUser(sp.sender, token):
+                sp.verify(currentAssetCount.value < self.data.maxAssetsPerUser, EC.CMPT_TOO_MANY_ASSETS)
+                currentAssetCount.value += 1
             self.addToCollaterals(token, sp.sender)
         self.invalidateLiquidity(sp.sender)
 
@@ -211,6 +216,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(
             ~ self.data.markets[params.cToken].borrowPaused, EC.CMPT_BORROW_PAUSED)
         self.verifyMarketListed(params.cToken)
+        sp.if self.isNewAssetForUser(params.borrower, params.cToken):
+            uniqueAssetsCount = self.getUserUniqueAssetsCount(params.borrower)
+            sp.verify(uniqueAssetsCount < self.data.maxAssetsPerUser,
+                       EC.CMPT_TOO_MANY_ASSETS)
         sp.if ~ self.data.loans.contains(params.borrower):
             # only cTokens may call borrowAllowed if borrower not in market
             sp.verify(sp.sender == params.cToken,
@@ -291,13 +300,15 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def updateAllAssetPrices(self):
         sp.for asset in self.data.marketNameToAddress.values():
             sp.if self.data.markets[asset].updateLevel < sp.level:
-                pricePair = sp.view("getPrice", self.data.oracleAddress, self.data.markets[asset].name + "-USD", t=sp.TPair(
-                    sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+                pricePair = sp.local("pricePair", 
+                    sp.view("getPrice", self.data.oracleAddress, self.data.markets[asset].name + "-USD", 
+                        t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+                )
                 sp.if self.data.markets[asset].priceTimestamp!= sp.timestamp(0):
-                    sp.verify(sp.now - sp.fst(pricePair) <= self.data.maxPriceTimeDifference, "STALE_ASSET_PRICE")
+                    sp.verify(sp.now - sp.fst(pricePair.value) <= self.data.maxPriceTimeDifference, "STALE_ASSET_PRICE")
                 self.data.markets[asset].price = self.makeExp(
-                    sp.snd(pricePair)*self.data.markets[asset].priceExp)
-                self.data.markets[asset].priceTimestamp = sp.fst(pricePair)
+                    sp.snd(pricePair.value)*self.data.markets[asset].priceExp)
+                self.data.markets[asset].priceTimestamp = sp.fst(pricePair.value)
                 self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):
@@ -386,7 +397,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         updateAccountLiquidityWithView() needs to be called 
         before executing this to get up-to-date results
         
-        return: TNat - the no. of collateral tokens that can be seized on repay of the borrowed amount
+        return: sp.TPair of TNat - the no. of collateral tokens that can be seized on repay of the borrowed amount , TNat - last accrual block number
     """
     @sp.onchain_view()
     def liquidateCalculateSeizeTokens(self, params):
@@ -400,8 +411,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify((priceBorrowedMantissa.value.mantissa != sp.nat(0)) & (
             priceCollateralMantissa.value.mantissa != sp.nat(0)), EC.CMPT_PRICE_ERROR)
 
-        exchangeRateMantissa = sp.view("exchangeRateStoredView", params.cTokenCollateral, sp.unit,
-                                       t=sp.TNat).open_some("INVALID EXCHANGE RATE VIEW")
+        exchangeRateData = sp.view("exchangeRateStoredView", params.cTokenCollateral, sp.unit,
+                                       t=sp.TPair(sp.TNat, sp.TNat)).open_some("INVALID EXCHANGE RATE VIEW")
+
+        exchangeRateMantissa = sp.fst(exchangeRateData)
+        lastAccrual = sp.snd(exchangeRateData)
 
         numerator = sp.local("numerator", self.mul_exp_exp(self.makeExp(
             self.data.liquidationIncentiveMantissa), priceBorrowedMantissa.value))
@@ -411,8 +425,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         ratio = sp.local("ratio", self.div_exp_exp(
             numerator.value, denominator.value))
 
-        sp.result(self.mulScalarTruncate(
-            ratio.value, params.actualRepayAmount))
+        sp.result(sp.pair(self.mulScalarTruncate(
+            ratio.value, params.actualRepayAmount), lastAccrual))
 
     """
         Determines whether a users position can be liquidated
@@ -434,8 +448,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         sp.verify(liquidity.value < 0, EC.CMPT_INSUFFICIENT_SHORTFALL)
 
-        borrowBalance = sp.view("borrowBalanceStoredView", params.cTokenBorrowed, params.borrower,
-                                t=sp.TNat).open_some("INVALID ACCOUNT BORROW BALANCE VIEW")
+        borrowBalance = sp.fst(sp.view("borrowBalanceStoredView", params.cTokenBorrowed, params.borrower,
+                                t=sp.TPair(sp.TNat, sp.TNat)).open_some("INVALID ACCOUNT BORROW BALANCE VIEW"))
 
         maxClose = sp.local("maxClose", self.mulScalarTruncate(self.makeExp(
             self.data.closeFactorMantissa), borrowBalance))
@@ -448,26 +462,31 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     """
         Determines whether a seize is allwed
 
-        return: TBool - return true if a seize is allowed
+        return: TBool - return true if a seize is allowed , false otherwise
     """
     @sp.onchain_view()
     def seizeAllowed(self, params):
         sp.set_type(params, sp.TRecord(cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
         # liquidator is not used, left here for future proofing
 
-        self.verifyMarketListed(params.cTokenBorrowed)
-        self.verifyMarketListed(params.cTokenCollateral)
+        borrowMarketValid = self.data.markets.contains(params.cTokenBorrowed) & \
+                       self.data.markets[params.cTokenBorrowed].isListed
+    
+        collateralMarketValid = self.data.markets.contains(params.cTokenCollateral) & \
+                           self.data.markets[params.cTokenCollateral].isListed
 
-        borrowComptroller = sp.view("comptroller", params.cTokenBorrowed, sp.unit,
-                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-
-        collateralComptroller = sp.view("comptroller", params.cTokenCollateral, sp.unit,
-                                    t=sp.TAddress).open_some("INVALID COMPTROLLER VIEW")
-
-        sp.verify(borrowComptroller == collateralComptroller,
-                  EC.CMPT_COMPTROLLER_MISMATCH)
-
-        sp.result(True)
+        sp.if ~borrowMarketValid | ~collateralMarketValid:
+            sp.result(False)
+        sp.else:
+            borrowComptrollerOpt = sp.view("comptroller", params.cTokenBorrowed, sp.unit, t=sp.TAddress)
+            collateralComptrollerOpt = sp.view("comptroller", params.cTokenCollateral, sp.unit, t=sp.TAddress)
+            
+            sp.if borrowComptrollerOpt.is_none() | collateralComptrollerOpt.is_none():
+                sp.result(False)
+            sp.else:
+                borrowComptroller = borrowComptrollerOpt.open_some()
+                collateralComptroller = collateralComptrollerOpt.open_some()
+                sp.result(borrowComptroller == collateralComptroller)
 
     def calculateCurrentAccountLiquidityWithView(self, account):
         return self.calculateAccountLiquidityWithView(sp.record(account=account))
@@ -505,9 +524,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         return calculation
 
     def calculateAccountAssetLiquidityView(self, asset, account):
-        params = sp.view("getAccountSnapshotView", asset, account,
-                         t=CTI.TAccountSnapshot).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
-        exchangeRate = sp.compute(self.makeExp(params.exchangeRateMantissa))
+        paramsOption = sp.view("getAccountSnapshotView", asset, account,
+                         t=sp.TOption(CTI.TAccountSnapshot)).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
+        sp.verify(paramsOption.is_some(), EC.CMPT_OUTDATED_ACCOUNT_SNAPSHOT)
+        params = sp.local("params", paramsOption.open_some())
+        exchangeRate = sp.compute(self.makeExp(params.value.exchangeRateMantissa))
         self.checkPriceErrors(asset)
         priceIndex = self.mul_exp_exp(
             self.data.markets[asset].price, self.data.markets[asset].collateralFactor)
@@ -515,12 +536,31 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         calc = sp.local('calc', sp.record(sumCollateral=sp.nat(
             0), sumBorrowPlusEffects=sp.nat(0))).value
         # incase of only borrow don't consider supply as collateral
-        sp.if self.data.collaterals.contains(params.account) & self.data.collaterals[params.account].contains(asset):
+        sp.if self.data.collaterals.contains(params.value.account) & self.data.collaterals[params.value.account].contains(asset):
             calc.sumCollateral += self.mulScalarTruncate(
-                tokensToDenom, params.cTokenBalance)
+                tokensToDenom, params.value.cTokenBalance)
         calc.sumBorrowPlusEffects += self.mulScalarTruncate(
-            self.data.markets[asset].price, params.borrowBalance)
+            self.data.markets[asset].price, params.value.borrowBalance)
         return calc
+    
+    """
+        Gets the number of unique assets for a given user
+
+        returns: TNat - The number of unique assets held by the user
+    """
+    @sp.onchain_view()
+    def getUserAssetsCount(self, user):
+        sp.set_type(user, sp.TAddress)
+        sp.result(self.getUserUniqueAssetsCount(user))
+
+    """
+        Returns the current limit for the maximum number of unique assets a user can hold
+
+        returns: TNat - Current limit value for maxAssetsPerUser
+    """
+    @sp.onchain_view()
+    def getMaxAssetsPerUser(self):
+        sp.result(self.data.maxAssetsPerUser)
 
     """
         Sets a new pending governance for the market
@@ -639,6 +679,21 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.closeFactorMantissa = closeFactorMantissa
 
     """
+        Sets the maximum number of unique assets a user can hold
+
+        dev: Governance function to set maxAssetsPerUser
+
+        newLimit: TNat - The new limit for the maximum number of unique assets a user can hold
+    """
+    @sp.entry_point(lazify=True)
+    def setMaxAssetsPerUser(self, newLimit):
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
+            0), "TEZ_TRANSFERED")
+        sp.set_type(newLimit, sp.TNat)
+        self.verifyAdministrator()
+        self.data.maxAssetsPerUser = newLimit
+
+    """
         Sets the collateralFactor for a market
 
         dev: Governance function to set per-market collateralFactor
@@ -751,3 +806,29 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
     def invalidateLiquidity(self, account):
         sp.if self.data.account_liquidity.contains(account):
             self.data.account_liquidity[account].valid = False
+
+    def getUserUniqueAssetsCount(self, user):
+        unique_assets = sp.local("unique_assets", sp.set(t=sp.TAddress))
+        
+        sp.if self.data.collaterals.contains(user):
+            sp.for asset in self.data.collaterals[user].elements():
+                unique_assets.value.add(asset)
+        
+        sp.if self.data.loans.contains(user):
+            sp.for asset in self.data.loans[user].elements():
+                unique_assets.value.add(asset)
+        
+        return sp.len(unique_assets.value)
+    
+    def isNewAssetForUser(self, user, cToken):
+        is_new = sp.local("is_new", True)
+        
+        sp.if self.data.collaterals.contains(user):
+            sp.if self.data.collaterals[user].contains(cToken):
+                is_new.value = False
+        
+        sp.if self.data.loans.contains(user) & is_new.value:
+            sp.if self.data.loans[user].contains(cToken):
+                is_new.value = False
+        
+        return is_new.value

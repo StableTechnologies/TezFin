@@ -2,5 +2,5 @@ import smartpy as sp
 
 tstorage = sp.TRecord(baseRatePerBlock = sp.TNat, multiplierPerBlock = sp.TNat, scale = sp.TNat).layout(("baseRatePerBlock", ("multiplierPerBlock", "scale")))
 tparameter = sp.TVariant(getBorrowRate = sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserves = sp.TNat).layout((("borrows", "cash"), ("cb", "reserves"))), getSupplyRate = sp.TRecord(borrows = sp.TNat, cash = sp.TNat, cb = sp.TContract(sp.TNat), reserveFactorMantissa = sp.TNat, reserves = sp.TNat).layout((("borrows", "cash"), ("cb", ("reserveFactorMantissa", "reserves"))))).layout(("getBorrowRate", "getSupplyRate"))
-tprivates = { }
+tprivates = { "calculateBorrowRate": sp.TLambda(sp.TNat, sp.TNat, with_storage="read-only", tstorage=sp.TRecord(baseRatePerBlock = sp.TNat, multiplierPerBlock = sp.TNat, scale = sp.TNat).layout(("baseRatePerBlock", ("multiplierPerBlock", "scale")))), "utilizationRate": sp.TLambda(sp.TRecord(borrows = sp.TNat, cash = sp.TNat, reserves = sp.TNat).layout(("borrows", ("cash", "reserves"))), sp.TNat, with_storage="read-only", tstorage=sp.TRecord(baseRatePerBlock = sp.TNat, multiplierPerBlock = sp.TNat, scale = sp.TNat).layout(("baseRatePerBlock", ("multiplierPerBlock", "scale")))) }
 tviews = { }

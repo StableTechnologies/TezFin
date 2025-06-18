@@ -1,1 +1,1 @@
-sp.record(baseRatePerBlock = 950642634, multiplierPerBlock = 76000000000, scale = 1000000000000000000)
+sp.record(baseRatePerBlock = 760514107, multiplierPerBlock = 334400000000, scale = 1000000000000000000)

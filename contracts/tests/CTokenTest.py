@@ -37,6 +37,14 @@ class TestCToken(CToken.CToken):
         sp.set_type(params, sp.TNat)
         self.activateOp(params)
 
+    # After chaning the return type of getCash() to sp.TPair(sp.TNat, sp.TNat)
+    # the callbacks in some of the test will not work as it expects sp.TNat
+    # Added this legacy implementation to use for this test
+    @sp.utils.view(sp.TNat)
+    def getCashLegacy(self, params):
+        sp.set_type(params, sp.TUnit)
+        sp.result(self.getCashImpl())
+
 
 @sp.add_test(name = "CToken_Tests")
 def test():
@@ -63,8 +71,10 @@ def test():
     # Contracts
     scenario.h2("Contracts")
     view_result = RV.ViewerNat()
+    view_result_pair = RV.ViewerNatPair()
     cmpt = CMPT.ComptrollerMock()
     scenario += view_result
+    scenario += view_result_pair
     scenario += cmpt
     irm = IRM.InterestRateModelMock(borrowRate_=sp.nat(80000000000), supplyRate_=sp.nat(180000000000))
     scenario += irm
@@ -115,7 +125,7 @@ def test():
     scenario += c1.mint(1000).run(sender=bob, level=bLevel.current())
     scenario.verify(c1.data.ledger[bob.address].balance == sp.nat(1000 * ctoken_decimals))
     scenario.h3("Try mint in callback")
-    scenario += c1.getCash(sp.pair(sp.unit, c1.typed.mint)).run(sender=alice, level=bLevel.next(), valid=False)
+    scenario += c1.getCashLegacy(sp.pair(sp.unit, c1.typed.mint)).run(sender=alice, level=bLevel.next(), valid=False)
 
     scenario.h2("Test Borrow")
     scenario.h3("Borrow allowed")
@@ -136,7 +146,7 @@ def test():
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.borrow(1100 * ctoken_decimals + 1).run(sender=carl, level=bLevel.current(), valid=False)
     scenario.h3("Try borrow in callback")
-    scenario += c1.getCash(sp.pair(sp.unit, c1.typed.borrow)).run(sender=alice, level=bLevel.current(), valid=False)
+    scenario += c1.getCashLegacy(sp.pair(sp.unit, c1.typed.borrow)).run(sender=alice, level=bLevel.current(), valid=False)
     
     scenario.h2("Test Redeem")
     scenario.h3("Redeem allowed")
@@ -159,9 +169,9 @@ def test():
     scenario += c1.redeemUnderlying(10).run(sender=alice, level=bLevel.current())
     scenario.verify(c1.data.ledger[alice.address].balance == sp.nat(30188679)) # due to exchange rate changes: 10 underlying < 10 000 000 CToken
     scenario.h3("Try redeem in callback")
-    scenario += c1.getCash(sp.pair(sp.unit, c1.typed.redeem)).run(sender=alice, level=bLevel.next(), valid=False)
+    scenario += c1.getCashLegacy(sp.pair(sp.unit, c1.typed.redeem)).run(sender=alice, level=bLevel.next(), valid=False)
     scenario.h3("Try redeem underlying in callback")
-    scenario += c1.getCash(sp.pair(sp.unit, c1.typed.redeemUnderlying)).run(sender=alice, level=bLevel.next(), valid=False)
+    scenario += c1.getCashLegacy(sp.pair(sp.unit, c1.typed.redeemUnderlying)).run(sender=alice, level=bLevel.next(), valid=False)
     
     scenario.h2("Test Repay borrow")
     scenario.h3("Repay borrow allowed")
@@ -186,7 +196,7 @@ def test():
     scenario.show(c1.data.borrows[alice.address].principal)
     scenario.verify(c1.data.borrows[alice.address].principal == sp.nat(0))
     scenario.h3("Try repayBorrow in callback")
-    scenario += c1.getCash(sp.pair(sp.unit, c1.typed.redeem)).run(sender=alice, level=bLevel.current(), valid=False)
+    scenario += c1.getCashLegacy(sp.pair(sp.unit, c1.typed.redeem)).run(sender=alice, level=bLevel.current(), valid=False)
     
 
     scenario.h2("Test transfer")
@@ -244,7 +254,7 @@ def test():
     amountArg = sp.nat(10)
     scenario += c1.addReserves(amountArg).run(sender = alice, level = bLevel.next())
     scenario.h4("Try add reserves in callback")
-    scenario += c1.getCash(sp.pair(sp.unit, c1.typed.addReserves)).run(sender=alice, level=bLevel.next(), valid=False)
+    scenario += c1.getCashLegacy(sp.pair(sp.unit, c1.typed.addReserves)).run(sender=alice, level=bLevel.next(), valid=False)
 
     scenario.h3("Reduce reserves")
     amountArg = sp.nat(5)
@@ -262,16 +272,15 @@ def test():
     #Test views
     scenario.h2("Test getBalanceOfUnderlying")
     scenario.h3("View stored balance")
-    scenario += c1.getBalanceOfUnderlying(sp.pair(alice.address, view_result.typed.targetNat)).run(sender = alice, level = bLevel.next())
-    scenario.verify_equal(view_result.data.last, sp.some(30))
+    scenario += c1.getBalanceOfUnderlying(sp.pair(alice.address, view_result_pair.typed.targetNatPair)).run(sender = alice, level = bLevel.next())
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 30)
     scenario.h3("Mint new tokens and check balance")
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.mint(100).run(sender=alice, level=bLevel.current())
-    scenario += c1.getBalanceOfUnderlying(sp.pair(alice.address, view_result.typed.targetNat)).run(sender = alice, level = bLevel.current())
-    scenario.verify_equal(view_result.data.last, sp.some(130))
+    scenario += c1.getBalanceOfUnderlying(sp.pair(alice.address, view_result_pair.typed.targetNatPair)).run(sender = alice, level = bLevel.current())
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 130)
     scenario.h3("Try with nonexistent account")
-    scenario += c1.getBalanceOfUnderlying(sp.pair(collateralToken, view_result.typed.targetNat)).run(sender = alice, level = bLevel.current(), valid=False)
-
+    scenario += c1.getBalanceOfUnderlying(sp.pair(collateralToken, view_result_pair.typed.targetNatPair)).run(sender = alice, level = bLevel.current(), valid=False)
     scenario.h2("Test getAccountSnapshot")
     DataRelevance.updateAccrueInterest(scenario, bLevel, alice, c1)
     scenario += c1.updateAccountSnapshot(alice.address).run(sender = alice, level = bLevel.current())

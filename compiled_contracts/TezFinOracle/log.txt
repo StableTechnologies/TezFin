@@ -1,10 +1,10 @@
 Creating contract KT1TezoooozzSmartPyzzSTATiCzzzwwBFA1
- -> (Pair (Pair "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL" {Elt "OXTZ-USD" "XTZ-USD"; Elt "TZBTC-USD" "BTC-USD"; Elt "WTZ-USD" "XTZ-USD"}) (Pair "KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn" (Pair {Elt "USD-USD" (Pair "2025-04-25T08:36:06Z" 1000000); Elt "USDT-USD" (Pair "2025-04-25T08:36:06Z" 1000000)} None)))
+ -> (Pair (Pair "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL" {Elt "OXTZ-USD" "XTZ-USD"; Elt "TZBTC-USD" "BTC-USD"; Elt "WTZ-USD" "XTZ-USD"}) (Pair "KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn" (Pair {Elt "USD-USD" (Pair "2025-05-23T15:04:18Z" 1000000); Elt "USDT-USD" (Pair "2025-05-23T15:04:18Z" 1000000)} None)))
  => ./compiled_contracts/TezFinOracle/step_000_cont_0_storage.tz 1
  => ./compiled_contracts/TezFinOracle/step_000_cont_0_storage.json 32
  => ./compiled_contracts/TezFinOracle/step_000_cont_0_sizes.csv 2
  => ./compiled_contracts/TezFinOracle/step_000_cont_0_storage.py 1
  => ./compiled_contracts/TezFinOracle/step_000_cont_0_types.py 7
- => ./compiled_contracts/TezFinOracle/step_000_cont_0_contract.tz 406
- => ./compiled_contracts/TezFinOracle/step_000_cont_0_contract.json 430
- => ./compiled_contracts/TezFinOracle/step_000_cont_0_contract.py 54
+ => ./compiled_contracts/TezFinOracle/step_000_cont_0_contract.tz 477
+ => ./compiled_contracts/TezFinOracle/step_000_cont_0_contract.json 515
+ => ./compiled_contracts/TezFinOracle/step_000_cont_0_contract.py 58

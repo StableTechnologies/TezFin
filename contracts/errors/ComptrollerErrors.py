@@ -51,3 +51,5 @@ class ErrorCodes:
     CMPT_TOO_MUCH_REPAY = "CMPT_TOO_MUCH_REPAY"
     # comptroller addresses for collateral token and borrowed token do not match
     CMPT_COMPTROLLER_MISMATCH = "CMPT_COMPTROLLER_MISMATCH"
+    CMPT_OUTDATED_ACCOUNT_SNAPSHOT = "CMPT_OUTDATED_ACCOUNT_SNAPSHOT"
+    CMPT_TOO_MANY_ASSETS = "CMPT_TOO_MANY_ASSETS"
