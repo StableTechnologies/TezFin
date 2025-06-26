@@ -55,7 +55,7 @@ export namespace Comptroller {
     export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string): Promise<Storage> {
         const storageResult = await TezosNodeReader.getContractStorage(server, address);
         // get marketsMapId
-        const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[2].int', json: storageResult })[0];
+        const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[1].int', json: storageResult })[0];
         // get all market values for fTokens from protocolAddresses
         const markets: MarketMap = {};
 
@@ -73,14 +73,14 @@ export namespace Comptroller {
         // parse results
         try {
             return {
-                accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
-                loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].args[1].int', json: storageResult })[0],
-                administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[2].string', json: storageResult })[0],
-                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
-                expScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
-                halfExpScale: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
-                liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+                collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0],
+                expScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                halfExpScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
+                liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
                 marketsMapId: marketsMapId,
                 oracleAddress: JSONPath({ path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
                 pendingAdministrator: JSONPath({ path: '$.args[0].args[3].prim', json: storageResult })[0],
