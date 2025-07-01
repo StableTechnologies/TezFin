@@ -11,12 +11,16 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
             borrow_allowed = sp.bool(True),
             redeem_allowed = sp.bool(True),
             repay_borrow_allowed = sp.bool(True),
+            markets = sp.set(t=sp.TAddress),
+            loans=sp.big_map(l={}, tkey=sp.TAddress,
+                             tvalue=sp.TSet(sp.TAddress)),
             **extra_storage
         )
 
     @sp.entry_point
     def enterMarkets(self, params):
-        sp.set_type(params, sp.TUnit)
+        sp.set_type(params, sp.TAddress)
+        self.data.markets.add(params)
 
     @sp.entry_point
     def exitMarket(self, params):
@@ -44,7 +48,16 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
     def borrowAllowed(self, params):
         sp.set_type(params, CMPTInterface.TBorrowAllowedParams)
         sp.verify(self.data.borrow_allowed)
-        
+        sp.if ~ self.data.loans.contains(params.borrower):
+            # only cTokens may call borrowAllowed if borrower not in market
+            sp.verify(sp.sender == params.cToken,
+                     "Invalid sender for borrowAllowed")
+        sp.if sp.sender == params.cToken:
+            sp.if self.data.loans.contains(params.borrower):
+                self.data.loans[params.borrower].add(params.cToken)
+            sp.else:
+                self.data.loans[params.borrower] = sp.set([params.cToken])
+
     @sp.entry_point
     def setBorrowAllowed(self, params):
         self.data.borrow_allowed = params
