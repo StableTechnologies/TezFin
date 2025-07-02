@@ -99,8 +99,36 @@ def test():
                         "symbol": sp.utils.bytes_of_string("cToken"),
                         "decimals": sp.utils.bytes_of_string("x"),
                     })
+    c2 = TestCToken(comptroller_=cmpt.address,
+                    interestRateModel_=irm.address,
+                    initialExchangeRateMantissa_=sp.nat(exchange_rate),
+                    administrator_=admin.address,
+                    metadata_=sp.big_map({
+                        "": sp.utils.bytes_of_string("tezos-storage:data"),
+                        "data": sp.utils.bytes_of_string(json.dumps({
+                            "name": "...",
+                            "description": "...",
+                            "version": "1.0.0",
+                            "authors": ["ewqenqjw"],
+                            "homepage": "https://some-website.com",
+                            "interfaces": ["TZIP-007"],
+                            "license": {"name": "..."}
+                        }))
+                    }),
+                    token_metadata_={
+                        "name": sp.utils.bytes_of_string("Compound token"),
+                        "symbol": sp.utils.bytes_of_string("cToken"),
+                        "decimals": sp.utils.bytes_of_string("x"),
+                    })
 
     scenario += c1
+    scenario += c2
+
+    scenario.h2("Set initial state")
+    scenario += cmpt.enterMarkets(c1.address).run(sender=alice, level=bLevel.current())
+    scenario += cmpt.enterMarkets(c2.address).run(sender=alice, level=bLevel.current())
+    scenario.verify(cmpt.data.markets.contains(c1.address))
+    scenario.verify(cmpt.data.markets.contains(c2.address))
 
     scenario.h2("Try borrow when there is no cash")
     scenario += c1.borrow(100).run(sender=alice, level=bLevel.current(), valid=False)
@@ -147,6 +175,15 @@ def test():
     scenario += c1.borrow(1100 * ctoken_decimals + 1).run(sender=carl, level=bLevel.current(), valid=False)
     scenario.h3("Try borrow in callback")
     scenario += c1.getCashLegacy(sp.pair(sp.unit, c1.typed.borrow)).run(sender=alice, level=bLevel.current(), valid=False)
+    scenario.h3("Add liquidity to c2 for borrowing tests")
+    DataRelevance.updateAccrueInterest(scenario, bLevel, bob, c2)
+    scenario += c2.mint(1000).run(sender=bob, level=bLevel.current()) 
+    scenario.h3("Verify that loans are added correctly")
+    DataRelevance.updateAllRelevance(scenario, bLevel, carl, c2, cmpt, c2.address, carl.address)
+    scenario += cmpt.setBorrowAllowed(sp.bool(True))
+    scenario += c2.borrow(10).run(sender=alice, level=bLevel.current())
+    scenario.verify(cmpt.data.loans[alice.address].contains(c1.address))
+    scenario.verify(cmpt.data.loans[alice.address].contains(c2.address))
     
     scenario.h2("Test Redeem")
     scenario.h3("Redeem allowed")

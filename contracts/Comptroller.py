@@ -224,7 +224,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             # only cTokens may call borrowAllowed if borrower not in market
             sp.verify(sp.sender == params.cToken,
                       EC.CMPT_INVALID_BORROW_SENDER)
-            self.addToLoans(sp.sender, params.borrower)
+        sp.if sp.sender == params.cToken:
+            self.addToLoans(params.cToken, params.borrower)
         self.checkInsuffLiquidityInternal(
             params.cToken, params.borrower, params.borrowAmount)
         self.invalidateLiquidity(params.borrower)
