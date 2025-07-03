@@ -191,7 +191,7 @@ const SupplyModal = (props) => {
                 inputBtnTextTwo = "Use Max"
                 useMaxAmount= {useMaxAmount}
                 errorText={(currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
+                disabled={(currentTab === 'one') ? true : buttonTwo.disabled}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}
                 tab={tab}
             />

@@ -232,7 +232,7 @@ const BorrowModal = (props) => {
                 inputBtnTextTwo="Use Max"
                 useMaxAmount={useMaxAmount}
                 errorText={currentTab === 'one' ? buttonOne.errorText : buttonTwo.errorText}
-                disabled={currentTab === 'one' ? buttonOne.disabled : buttonTwo.disabled}
+                disabled={currentTab === 'one' ? true : buttonTwo.disabled}
                 pendingLimit={pendingLimit}
                 pendingLimitUsed={pendingLimitUsed}
                 getProps={(tokenAmount, tabValue) => {
