@@ -329,12 +329,6 @@ export const useStyles = makeStyles({
             fontSize: '0.625rem',
             paddingBottom: '0.5rem'
         }
-    },
-    legacyAppNote: {
-        backgroundColor: '#ed6c02',
-        padding: '16px',
-        textAlign: 'center',
-        color: 'white'
     }
 });
 

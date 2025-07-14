@@ -13,7 +13,6 @@ import collateralizedIcon from "../../assets/collateralizedIcon.svg";
 import borrowingIcon from "../../assets/borrowing.svg";
 import borrowLimitIcon from "../../assets/borrowLimitIcon.svg";
 import questionCircle from "../../assets/questionCircle.svg";
-import Box from '@mui/material/Box';
 
 import { supplyCompositionAction } from "../../reduxContent/supplyComposition/actions";
 import { borrowCompositionAction } from "../../reduxContent/borrowComposition/actions";
@@ -44,13 +43,6 @@ const Header = () => {
                 {network !== "mainnet" &&
                     `Note: Tezfin is currently operating on the Tezos test network ${networkType}.`}
             </Typography>
-            <Box className={classes.legacyAppNote}>
-                <Typography>
-                    {
-                        "This is the legacy app for TezFin v2. Please repay all borrowing positions and/or withdraw deposits, and move to the latest TezFin."
-                    }
-                </Typography>
-            </Box>
             <Grid container className={classes.compositionGrid}>
                 <Composition
                     title="Supply Composition"

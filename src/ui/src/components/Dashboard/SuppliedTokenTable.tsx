@@ -88,7 +88,7 @@ const SuppliedTokenTable = (props) => {
                 <>
                     <SupplyModal open={openSupplyModal} close={closeModal} tokenDetails={tokenDetails} tab={openWithdrawTab ? 'two' : undefined}/>
                     <DisableCollateralModal open={disableCollModal} close={closeModal} tokenDetails={tokenDetails} />
-                    {/* <CollateralizeModal open={collModal} close={closeModal} tokenDetails={tokenDetails} /> */}
+                    <CollateralizeModal open={collModal} close={closeModal} tokenDetails={tokenDetails} />
                 </>
             )}
             <Table>
