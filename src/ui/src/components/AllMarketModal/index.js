@@ -192,7 +192,7 @@ const AllMarketModal = (props) => {
                 inputBtnTextTwo = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
                 useMaxAmount= {useMaxAmount}
                 errorText={publicKeyHash && ((currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText)}
-                disabled={true}
+                disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}
                 pendingLimit={(currentTab === 'two') ? pendingLimit : false}
                 pendingLimitUsed={(currentTab === 'two') ? pendingLimitUsed : false}
                 getProps={(tokenAmount, tabValue) => { setTokenValue(tokenAmount); setCurrentTab(tabValue); }}

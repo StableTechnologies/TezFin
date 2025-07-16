@@ -21,30 +21,30 @@ export const decimals = {
 
 export const testnetAddresses: ProtocolAddresses = {
   fTokens: {
-    USDT: "KT1MpaQYLKPc9xoE9pB6GZj4zbtR6Lxo6Awt",
-    USD: "KT1Ni4vvfYcQXxLzFtUYr4G95TUSjMbX5XkM",
-    XTZ: "KT18vuapZfMG1qYiP7qt2tTEDiokKdj77VWn",
-    TZBTC: "KT1Hsbx9gw4N5y9SUHtMnfq22KQMoHBZvPmL",
+    USDT: "KT1P51AJbS1iBvAXstqsPv4UJeQ8fGCZbS7P",
+    USD: "KT1QtSBzy61AmUcsjqQbMSdnr1ifP9RQ2Zug",
+    XTZ: "KT1CC4E5zmbJm94VwLf7ZEoJvC2tEqzE8Pqp",
+    TZBTC: "KT1JrHK7S9zZ5bA1xTBxNnkieM9YL7iq1KdB",
   },
   fTokensReverse: {
-    KT18vuapZfMG1qYiP7qt2tTEDiokKdj77VWn: AssetType.XTZ,
-    KT1Ni4vvfYcQXxLzFtUYr4G95TUSjMbX5XkM: AssetType.USD,
-    KT1MpaQYLKPc9xoE9pB6GZj4zbtR6Lxo6Awt: AssetType.USDT,
-    KT1Hsbx9gw4N5y9SUHtMnfq22KQMoHBZvPmL: AssetType.TZBTC,
+    KT1CC4E5zmbJm94VwLf7ZEoJvC2tEqzE8Pqp: AssetType.XTZ,
+    KT1QtSBzy61AmUcsjqQbMSdnr1ifP9RQ2Zug: AssetType.USD,
+    KT1P51AJbS1iBvAXstqsPv4UJeQ8fGCZbS7P: AssetType.USDT,
+    KT1JrHK7S9zZ5bA1xTBxNnkieM9YL7iq1KdB: AssetType.TZBTC,
   },
   underlying: {
     USD: {
       assetType: AssetType.USD,
-      address: "KT1PmfHvLcvSQAF2Hf7CCRpPHMZ6RciMWkir",
-      balancesMapId: 415883,
+      address: "KT1WatnVAD7GSdZZrQVm1oMgEnqPCnKNuqrn",
+      balancesMapId: 468865,
       tokenStandard: TokenStandard.FA12,
       decimals: 6,
       balancesPath: "$.args[1].int",
     },
     TZBTC: {
       assetType: AssetType.TZBTC,
-      address: "KT1A9tgN8bPGLBRZGE6fqX7j4rvMqyjk8No2",
-      balancesMapId: 420073,
+      address: "KT1DSBWogEEkLyk9UysA9p91v7xPvzV18Vu7",
+      balancesMapId: 468862,
       tokenStandard: TokenStandard.FA12,
       decimals: 8,
       balancesPath: "$.args[1].int",
@@ -53,9 +53,9 @@ export const testnetAddresses: ProtocolAddresses = {
       assetType: AssetType.USDT,
       tokenStandard: TokenStandard.FA2,
       decimals: 6,
-      address: "KT1E9xgz4Qze9Xk6sXebknStrTisjhz3LMgP",
+      address: "KT1Rr8vMLzQ4BQghUjGZerB5WrV1hTtVjtUb",
       tokenId: 0,
-      balancesMapId: 415878,
+      balancesMapId: 468868,
       balancesPath: "$.int",
     },
     XTZ: {
@@ -64,29 +64,29 @@ export const testnetAddresses: ProtocolAddresses = {
       decimals: 6,
     },
   },
-  comptroller: "KT1Rduo6M7kfGknEAk9syFfZjBaPEzWKF3ZU",
+  comptroller: "KT1R2sHBKvaja5ZVZzLv5VcoAUNfSYoYFDrX",
   interestRateModel: {
-    XTZ: "KT1VZF6cD6xDsX2mRjDq78NkdKePvM8VeDaz",
-    USDT: "KT1T1fed3EBdFuFCLozDz9DN46WMUDE9pvec",
-    USD: "KT1PQB3ohew916tDpJHw3uJPED3oH4abMXCM",
-    TZBTC: "KT1PQB3ohew916tDpJHw3uJPED3oH4abMXCM",
+    XTZ: "KT1XNBkP1irKJgC1DGWFqD8Je1tdcoyuDoha",
+    USDT: "KT1XNBkP1irKJgC1DGWFqD8Je1tdcoyuDoha",
+    USD: "KT1XNBkP1irKJgC1DGWFqD8Je1tdcoyuDoha",
+    TZBTC: "KT1XNBkP1irKJgC1DGWFqD8Je1tdcoyuDoha",
   },
-  governance: "KT1FWtzGbfygRbMkZ7XJ72qxMcRuLuNhFF7z",
+  governance: "KT1ELnYzaxQBULdfJXBc7iAVfudd4ktqvdhA",
   oracle: "KT1JruaZp25yuKgn2DGTnCMbRoU3CaZ4M11m",
 };
 
 export const mainnetAddresses: ProtocolAddresses = {
   fTokens: {
-    XTZ: "KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm",
-    USD: "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs",
-    USDT: "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB",
-    TZBTC: "KT19gZac3vqV3ZeMJbhMX7Xy8kcocKK4Tbz1",
+    XTZ: "KT1Gm29ynxQcS3m6Srwd77xxMhposuNvNsRV",
+    USD: "KT1DcgX4Lj1XYyB6yyg76gwpfCBaoUZsg5dE",
+    USDT: "KT1HxMHg859teFpXXCZamuPiEyJa6YfHiagn",
+    TZBTC: "KT1DrELZukfWQNo3J3HTUqMS9vVTjBPLT5nQ",
   },
   fTokensReverse: {
-    KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm: AssetType.XTZ,
-    KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs: AssetType.USD,
-    KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB: AssetType.USDT,
-    KT19gZac3vqV3ZeMJbhMX7Xy8kcocKK4Tbz1: AssetType.TZBTC,
+    KT1Gm29ynxQcS3m6Srwd77xxMhposuNvNsRV: AssetType.XTZ,
+    KT1DcgX4Lj1XYyB6yyg76gwpfCBaoUZsg5dE: AssetType.USD,
+    KT1HxMHg859teFpXXCZamuPiEyJa6YfHiagn: AssetType.USDT,
+    KT1DrELZukfWQNo3J3HTUqMS9vVTjBPLT5nQ: AssetType.TZBTC,
   },
   underlying: {
     TZBTC: {
@@ -120,15 +120,15 @@ export const mainnetAddresses: ProtocolAddresses = {
       decimals: 6,
     },
   },
-  comptroller: "KT1DiWBT6RBC97iWrvLHRzKL7AWQKorBiuRG",
+  comptroller: "KT1P6Lryn3ikbyf5jywWBBRP5fkztE5ZafGe",
   interestRateModel: {
-    XTZ: "KT1R1M23qndUqKuPt3JCAaidShipGbXpKuZ8",
-    USDT: "KT1UsCGbxtAtLaCZcbpyHrX5SUSBRvpkFw4M",
-    USD: "KT1SfYEBtRrPsWoMo5RGS53ux6xCbpyXALL1",
-    TZBTC: "KT1SfYEBtRrPsWoMo5RGS53ux6xCbpyXALL1",
+    XTZ: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
+    USDT: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
+    USD: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
+    TZBTC: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
   },
-  governance: "KT1NF6DKX5giazRTzPtEuNX1npkVcaoQkvK2",
-  oracle: "KT1LDtNKDnpziwSrmSfx3xCbs7nBMg7VFp4m",
+  governance: "KT1QScMEtDpXSuj7z2if1EMSqaXaXPnWCxqv",
+  oracle: "KT1Wey5KJSanEkVvLf3ngQcMiBqF9Sn2FEic",
 };
 
 export const tokenNames: { [assetType: string]: string } = {
