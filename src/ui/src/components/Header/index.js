@@ -14,6 +14,8 @@ import borrowingIcon from "../../assets/borrowing.svg";
 import borrowLimitIcon from "../../assets/borrowLimitIcon.svg";
 import questionCircle from "../../assets/questionCircle.svg";
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+
 
 import { supplyCompositionAction } from "../../reduxContent/supplyComposition/actions";
 import { borrowCompositionAction } from "../../reduxContent/borrowComposition/actions";
@@ -46,9 +48,15 @@ const Header = () => {
             </Typography>
             <Box className={classes.legacyAppNote}>
                 <Typography>
-                    {
-                        "This is the legacy app for TezFin v2. Please repay all borrowing positions and/or withdraw deposits, and move to the latest TezFin."
-                    }
+                    This is the legacy app for TezFin v2. Please repay all borrowing positions and/or withdraw deposits, and move to the {' '}
+                    <Link
+                        href="https://app.tezos.finance"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{ color: 'inherit', textDecoration: 'underline' }}
+                    >
+                        latest TezFin
+                    </Link>.
                 </Typography>
             </Box>
             <Grid container className={classes.compositionGrid}>
