@@ -88,9 +88,6 @@ export const useStyles = makeStyles({
     },
     compositionTwo: {
         paddingLeft: '1.875rem',
-        '@media(max-width: 1024px)': {
-            paddingLeft: '0.9375rem'
-        },
         '@media(max-width: 900px)': {
             paddingLeft: '2rem'
         },
@@ -104,7 +101,16 @@ export const useStyles = makeStyles({
         },
         '@media(max-width: 501px)': {
             paddingLeft: '0rem'
-        }
+        },
+        '@media(max-width: 1024px)': {
+            paddingLeft: '0rem'
+        },
+        '@media(min-width: 1024px)': {
+            paddingLeft: '0.9375rem',
+        },
+        '@media(min-width: 1200px)': {
+            paddingLeft: '0.875rem',
+        },
     },
     compositionTitle: {
         color: '#000',
@@ -235,12 +241,6 @@ export const useStyles = makeStyles({
         },
         '@media(min-width: 900px)': {
             paddingRight: '2rem',
-        },
-        '@media(min-width: 1024px)': {
-            paddingLeft: '0.9375rem',
-        },
-        '@media(min-width: 1200px)': {
-            paddingLeft: '0.875rem',
         },
     },
     addWalletCon: {
