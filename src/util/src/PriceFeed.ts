@@ -8,6 +8,7 @@ import bigInt from 'big-integer';
 const alias = {
     [AssetType.OXTZ]: AssetType.XTZ,
     [AssetType.WTZ]: AssetType.XTZ,
+    [AssetType.STXTZ]: AssetType.XTZ
 }
 
 export namespace PriceFeed {

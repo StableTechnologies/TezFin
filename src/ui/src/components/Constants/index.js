@@ -9,6 +9,8 @@ import tzBTC from '../../assets/tzBTC.svg';
 
 import USDtz from '../../assets/USDtz.svg';
 import XTZ from '../../assets/XTZ.svg';
+
+import stXTZ from '../../assets/stacy_logo.png';
 // import BTCtz from '../../assets/BTCtez.svg';
 // import Ethtz from '../../assets/ETHtz.svg';
 // import wtz from '../../assets/wtz.svg';
@@ -60,6 +62,15 @@ export const tokens = [
         assetType: AssetType.TZBTC,
         visibilityThreshold: 0.0000001,
 	address: addresses.underlying.TZBTC?.address ?? ''
+    },
+    {
+        title: 'stXTZ',
+        name: 'stXTZ',
+        logo: stXTZ,
+        fLogo: stXTZ,
+        banner: 'stXTZ',
+        assetType: AssetType.STXTZ,
+        address: addresses.underlying.STXTZ?.address ?? ''
     }
     // {
     //     title: 'BTCtz', logo: BTCtz, fLogo: fBTCtz, banner: 'BTCtz', assetType: AssetType.BTC
@@ -79,7 +90,8 @@ export const tokenColor = {
   XTZ: 'rgb(51,145,246)',
   USDtz: 'rgb(24,157,163)',
   USDt: 'rgb(65 145 146)',
-  tzBTC: 'rgb(20,89,255)'
+  tzBTC: 'rgb(20,89,255)',
+  stXTZ: '#2B62F8'
   // ETHtz: '#662F9D',
   // BTCtz: '#F2991A',
   // oXTZ: '#B52B31',
