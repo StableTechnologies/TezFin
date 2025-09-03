@@ -11,6 +11,7 @@ import USDtz from '../../assets/USDtz.svg';
 import XTZ from '../../assets/XTZ.svg';
 
 import stXTZ from '../../assets/stacy_logo.png';
+import fstXTZ from '../../assets/fstXTZ.svg';
 // import BTCtz from '../../assets/BTCtez.svg';
 // import Ethtz from '../../assets/ETHtz.svg';
 // import wtz from '../../assets/wtz.svg';
@@ -67,7 +68,7 @@ export const tokens = [
         title: 'stXTZ',
         name: 'stXTZ',
         logo: stXTZ,
-        fLogo: stXTZ,
+        fLogo: fstXTZ,
         banner: 'stXTZ',
         assetType: AssetType.STXTZ,
         address: addresses.underlying.STXTZ?.address ?? ''
