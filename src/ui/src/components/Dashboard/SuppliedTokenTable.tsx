@@ -101,7 +101,7 @@ const SuppliedTokenTable = (props) => {
                             Collateral{' '}
                             <img src={questionCircleIcon} alt={'questionIcon'} className={classes.questionCircleIcon} />
                         </TableCell>
-                        <TableCell align='center'></TableCell>
+                        <TableCell className={classes.stickyCellRight} align='center'></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -212,7 +212,7 @@ const SuppliedTokenTable = (props) => {
                                 <TableCell align="center" className={classes.switchPadding}>
                                     <Switch data={data} />
                                 </TableCell>
-                                <TableCell className={classes.withdrawCell}>
+                                <TableCell className={`${classes.withdrawCell} ${classes.stickyCellRight}`}>
                                     <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickWithdraw(data)}>
                                         W<Typography textTransform={'lowercase'}>ithdraw</Typography>
                                     </Button>

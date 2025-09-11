@@ -63,7 +63,7 @@ const BorrowMarketTokenTable = (props) => {
                         </TableCell>
                         <TableCell align="center"> Available </TableCell>
                         <TableCell align="center"> Borrow APY </TableCell>
-                        <TableCell align="center" className={classes.stickyCellRight}> </TableCell>
+                        <TableCell align="center" className={`${classes.stickyCellRight} ${classes.borrowCellHeader}`}> </TableCell>
                         <TableCell align="center" className={classes.fifthCell}> </TableCell>
                     </TableRow>
                 </TableHead>
