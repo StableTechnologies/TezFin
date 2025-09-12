@@ -263,11 +263,47 @@ export const useStyles = makeStyles({
             paddingRight: '1.5rem !important',
         },
         paddingLeft: '0 !important',
+        '@media(min-width: 423px) and (max-width: 499px)': {
+            position: 'sticky',
+            zIndex: 2,
+            right: 0,
+            opacity: '1 !important',
+            backgroundColor: 'white',
+            boxShadow: 'inset 0 -1px 0 #E0E0E0',
+            borderBottom: '0 !important',
+        },
+        '@media(min-width: 626px) and (max-width: 720px)': {
+            position: 'sticky',
+            zIndex: 2,
+            right: 0,
+            opacity: '1 !important',
+            backgroundColor: 'white',
+            boxShadow: 'inset 0 -1px 0 #E0E0E0',
+            borderBottom: '0 !important',
+        },
+        '@media(min-width: 1423px) and (max-width: 1615px)': {
+            position: 'sticky',
+            zIndex: 2,
+            right: 0,
+            opacity: '1 !important',
+            backgroundColor: 'white',
+            boxShadow: 'inset 0 -1px 0 #E0E0E0',
+            borderBottom: '0 !important',
+        }
     },
     borrowCell: {
         '@media(min-width: 1200px)': {
             paddingRight: '1.5rem !important',
         },
+        '@media(min-width: 423px) and (max-width: 499px)': {
+            right: '21% !important',
+        },
+        '@media(min-width: 626px) and (max-width: 720px)': {
+            right: '19% !important',
+        },
+        '@media(min-width: 1423px) and (max-width: 1615px)': { 
+            right: '17% !important',
+        }
     },
     supplyButton: {
         borderRadius: '8px',
@@ -349,5 +385,16 @@ export const useStyles = makeStyles({
         '@media(min-width: 1200px)': {
             paddingRight: '1.5rem !important',
         },
+    },
+    borrowCellHeader: {
+        '@media(min-width: 423px) and (max-width: 499px)': {
+            right: '21% !important',
+        },
+        '@media(min-width: 626px) and (max-width: 720px)': {
+            right: '19% !important',
+        },
+        '@media(min-width: 1423px) and (max-width: 1615px)': { 
+            right: '17% !important',
+        }
     }
 });

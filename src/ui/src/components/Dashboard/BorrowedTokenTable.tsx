@@ -74,7 +74,7 @@ const BorrowedTokenTable = (props) => {
                         <TableCell> Token </TableCell>
                         <TableCell align="center"> APY </TableCell>
                         <TableCell align="center"> Balance </TableCell>
-                        <TableCell align="center"> </TableCell>
+                        <TableCell align="center" className={classes.stickyCellRight}> </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -179,7 +179,7 @@ const BorrowedTokenTable = (props) => {
                                         )}
                                     </span>
                                 </TableCell>
-                                <TableCell align="center" className={classes.repayCell}>
+                                <TableCell align="center" className={`${classes.repayCell} ${classes.stickyCellRight}`}>
                                     <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickRepay(data)}>
                                         R<Typography textTransform={'lowercase'}>epay</Typography>
                                     </Button>
