@@ -180,8 +180,8 @@ const BorrowedTokenTable = (props) => {
                                     </span>
                                 </TableCell>
                                 <TableCell align="center" className={`${classes.repayCell} ${classes.stickyCellRight}`}>
-                                    <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickRepay(data)}>
-                                        R<Typography textTransform={'lowercase'}>epay</Typography>
+                                    <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickRepay(data)} sx={{ textTransform: 'capitalize' }}>
+                                        Repay
                                     </Button>
                                 </TableCell>
                             </TableRow>

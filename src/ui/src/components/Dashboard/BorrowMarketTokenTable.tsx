@@ -142,8 +142,9 @@ const BorrowMarketTokenTable = (props) => {
                                             size="medium"
                                             className={classes.borrowButton}
                                             onClick={() => handleClickMktModal(data)}
+                                            sx={{ textTransform: 'capitalize' }}
                                         >
-                                            B<Typography textTransform={'lowercase'}>orrow</Typography>
+                                            Borrow
                                         </Button>
                                     </TableCell>
                                     <TableCell className={classes.fifthCell}>
@@ -152,8 +153,9 @@ const BorrowMarketTokenTable = (props) => {
                                             size="medium"
 						                    className={classes.detailsButton}
                                             onClick={() => handleClickDetails(data.assetType)}
+                                            sx={{ textTransform: 'capitalize' }}
                                         >
-                                                D<Typography textTransform={'lowercase'}>etails</Typography>
+                                                Details
                                         </Button>
                                     </TableCell>
                                 </TableRow>
