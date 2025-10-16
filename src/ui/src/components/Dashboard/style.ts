@@ -39,7 +39,7 @@ export const useStyles = makeStyles({
             },
             '& .MuiTableCell-root': {
                 color: '#000',
-                opacity: '0.6',
+                opacity: '1',
                 fontSize: '.875rem',
                 '@media(min-width: 768px)': {
                     minWidth: '5.5625rem',

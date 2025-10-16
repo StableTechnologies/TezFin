@@ -213,8 +213,8 @@ const SuppliedTokenTable = (props) => {
                                     <Switch data={data} />
                                 </TableCell>
                                 <TableCell className={`${classes.withdrawCell} ${classes.stickyCellRight}`}>
-                                    <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickWithdraw(data)}>
-                                        W<Typography textTransform={'lowercase'}>ithdraw</Typography>
+                                    <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickWithdraw(data)} sx={{ textTransform: 'capitalize' }}>
+                                        Withdraw
                                     </Button>
                                 </TableCell>
                             </TableRow>

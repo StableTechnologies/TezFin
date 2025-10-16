@@ -127,8 +127,9 @@ const SupplyMarketTokenTable = (props) => {
                                                 size="medium"
                                                 className={classes.supplyButton}
                                                 onClick={() => handleClickMktModal(data)}
+                                                sx={{ textTransform: 'capitalize' }}
                                             >
-                                                S<Typography textTransform={'lowercase'}>upply</Typography>
+                                                Supply
                                             </Button>
                                         </span>
                                     </TableCell>
