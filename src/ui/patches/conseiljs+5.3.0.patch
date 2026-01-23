@@ -7,7 +7,7 @@ index 7cd4479..24a0fb1 100644
      const P007OperationGasCap = 1040000;
      const OperationGasCap = 1040000;
 -    const BlockGasCap = 1733333;
-+    const BlockGasCap = 1386666;
++    const BlockGasCap = 1040000;
      const P010OperationStorageCap = 60000;
      const P011OperationStorageCap = 32768;
      const OperationStorageCap = 32768;
@@ -20,7 +20,7 @@ index 57f1e37..d026543 100644
      TezosConstants.P007OperationGasCap = 1040000;
      TezosConstants.OperationGasCap = TezosConstants.P007OperationGasCap;
 -    TezosConstants.BlockGasCap = TezosConstants.P019BlockGasCap;
-+    TezosConstants.BlockGasCap = 1386666;
++    TezosConstants.BlockGasCap = 1040000;
      TezosConstants.P010OperationStorageCap = 60000;
      TezosConstants.P011OperationStorageCap = 32768;
      TezosConstants.OperationStorageCap = TezosConstants.P011OperationStorageCap;
