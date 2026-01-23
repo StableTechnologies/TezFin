@@ -12,12 +12,14 @@ module.exports = function override(config) {
         https: require.resolve('https-browserify'),
         os: require.resolve('os-browserify'),
         path: require.resolve('path-browserify'),
-        url: require.resolve('url')
+        url: require.resolve('url'),
+        fs: false,
+        vm: require.resolve('vm-browserify'),
     });
     config.resolve.fallback = fallback;
     config.plugins = (config.plugins || []).concat([
         new webpack.ProvidePlugin({
-            process: 'process/browser',
+            process: 'process/browser.js',
             Buffer: ['buffer', 'Buffer']
         })
     ]);

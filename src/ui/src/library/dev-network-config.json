@@ -1,10 +1,10 @@
 {
   "infra": {
-    "tezosNode": "https://ghostnet.ecadinfra.com",
+    "tezosNode": "https://rpc.shadownet.teztnets.com",
     "conseilServer": {
       "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
       "apiKey": "",
-      "network": "ghostnet"
+      "network": "shadownet"
     }
   },
   "dappName": "Lending Platform"
