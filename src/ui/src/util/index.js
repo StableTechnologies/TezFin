@@ -8,7 +8,7 @@ import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../library/${process.env.REACT_APP_ENV || 'prod'}-network-config.json`);
 
-const client = new DAppClient({ name: config.dappName, preferredNetwork: config.infra.conseilServer.network });
+const client = new DAppClient({ name: config.dappName, network: { type: config.infra.conseilServer.network } });
 
 /**
  * This function is used to truncate a blockchain address for presentation by replacing the middle digits with an ellipsis.
@@ -26,10 +26,7 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
  * @returns clients
  */
 export const getWallet = async () => {
-    const { network } = config.infra.conseilServer;
-    const response = await client.requestPermissions({
-        network: { type: network },
-    });
+    const response = await client.requestPermissions();
     const { address } = response;
     return { address };
 };

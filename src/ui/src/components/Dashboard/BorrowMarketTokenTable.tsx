@@ -40,7 +40,7 @@ const BorrowMarketTokenTable = (props) => {
             process.env.REACT_APP_ENV == 'dev' ? testnetAddresses.fTokens[asset] : mainnetAddresses.fTokens[asset];
         const tzktUrl =
             process.env.REACT_APP_ENV == "dev"
-                ? `https://ghostnet.tzkt.io/${fTokenAddress}/operations`
+                ? `https://shadownet.tzkt.io/${fTokenAddress}/operations`
                 : `https://tzkt.io/${fTokenAddress}/operations`;
         window.open(tzktUrl, '_blank');
     };
