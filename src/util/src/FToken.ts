@@ -408,6 +408,8 @@ export namespace FToken {
             irStorage.scale,
             irStorage.blockMultiplier,
             irStorage.blockRate,
+            irStorage.jumpMultiplier,
+            irStorage.kink,
             storage.reserveFactorMantissa,
         );
     }
@@ -428,6 +430,8 @@ export namespace FToken {
             irStorage.scale,
             irStorage.blockMultiplier,
             irStorage.blockRate,
+            irStorage.jumpMultiplier,
+            irStorage.kink,
         );
     }
 
@@ -476,29 +480,47 @@ export namespace FToken {
     }
 
     /**
-     * @description  Calculates the borrowRatePerBlock matissa as per the contract code using the fomula:
+     * @description Calculates the borrowRatePerBlock mantissa as per the Jump Rate Model contract code.
      *
-     *  borrowRatePerBlock = (utilizationRate * blockMultiplier / scale) + blockBaseRate
+     * Before kink: borrowRatePerBlock = (utilizationRate * multiplierPerBlock / scale) + baseRatePerBlock
+     * After kink:  borrowRatePerBlock = normalRate + ((utilizationRate - kink) * jumpMultiplierPerBlock / scale)
      *
      * @param loans Total amount of borrowed assets of a given collateral token.
      * @param balance Underlying balance of the collateral token.
      * @param reserves Reserves of the collateral token.
-     * @param scale  the exponential scale all the mantissa's are in
-     * @param blockmultiplier rate line slope, order of magnitude of scale.
-     * @param blockbaserate per-block interest rate, order of magnitude of scale.
-     * @returns borrowrateperblock as bigInt.BigInteger
+     * @param scale The exponential scale all the mantissa's are in (1e18).
+     * @param multiplierPerBlock Rate line slope before kink, order of magnitude of scale.
+     * @param baseRatePerBlock Per-block interest rate at 0% utilization, order of magnitude of scale.
+     * @param jumpMultiplierPerBlock Rate line slope after kink, order of magnitude of scale.
+     * @param kink The utilization point at which the jump multiplier is applied, order of magnitude of scale.
+     * @returns borrowRatePerBlock as bigInt.BigInteger
      */
     function _calcBorrowRate(
         loans: bigInt.BigInteger,
         balance: bigInt.BigInteger,
         reserves: bigInt.BigInteger,
         scale: bigInt.BigInteger,
-        blockMultiplier: bigInt.BigInteger,
-        blockBaseRate: bigInt.BigInteger,
+        multiplierPerBlock: bigInt.BigInteger,
+        baseRatePerBlock: bigInt.BigInteger,
+        jumpMultiplierPerBlock: bigInt.BigInteger,
+        kink: bigInt.BigInteger,
     ): bigInt.BigInteger {
         const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
 
-        return utilizationRate.multiply(blockMultiplier).divide(scale).plus(blockBaseRate);
+        // If utilization is below or at kink, use normal rate calculation
+        if (utilizationRate.lesserOrEquals(kink)) {
+            return utilizationRate.multiply(multiplierPerBlock).divide(scale).plus(baseRatePerBlock);
+        }
+
+        // If utilization is above kink, use jump rate calculation
+        // Calculate the rate at the kink point
+        const normalRate = kink.multiply(multiplierPerBlock).divide(scale).plus(baseRatePerBlock);
+
+        // Calculate excess utilization beyond kink
+        const excessUtil = utilizationRate.minus(kink);
+
+        // Apply jump multiplier to excess utilization
+        return excessUtil.multiply(jumpMultiplierPerBlock).divide(scale).plus(normalRate);
     }
 
     /**
@@ -548,6 +570,8 @@ export namespace FToken {
      * @param scale  The exponential scale all the matissa's are in
      * @param blockMultiplier Rate line slope, order of magnitude of scale.
      * @param blockBaseRate Per-block interest rate, order of magnitude of scale.
+     * @param jumpMultiplierPerBlock Rate line slope after kink.
+     * @param kink The utilization point at which the jump multiplier is applied.
      * @param reserveFactor Reserve share order of magnitude of scale.
      * @returns supplyRatePerBlock as bigInt.BigInteger
      */
@@ -558,12 +582,23 @@ export namespace FToken {
         scale: bigInt.BigInteger,
         blockMultiplier: bigInt.BigInteger,
         blockBaseRate: bigInt.BigInteger,
+        jumpMultiplierPerBlock: bigInt.BigInteger,
+        kink: bigInt.BigInteger,
         reserveFactor: bigInt.BigInteger,
     ): bigInt.BigInteger {
         const _scale = bigInt(scale);
 
         const utilizationRate = _calcUtilizationRate(loans, balance, reserves, scale);
-        const borrowRate = _calcBorrowRate(loans, balance, reserves, scale, blockMultiplier, blockBaseRate);
+        const borrowRate = _calcBorrowRate(
+            loans,
+            balance,
+            reserves,
+            scale,
+            blockMultiplier,
+            blockBaseRate,
+            jumpMultiplierPerBlock,
+            kink,
+        );
         const oneMinusReserveFactor = _scale.minus(reserveFactor);
 
         const rateToPool = borrowRate.multiply(oneMinusReserveFactor).divide(scale);
@@ -635,14 +670,14 @@ export namespace FToken {
     /**
      * @description Calculates the APY from the Supply or Borrow rate
      * @param rate Periodic (per-block) supply or borrow interest rate.
-     * @param blocksPerDay 24*60*7.5.
+     * @param blocksPerDay 24*60*10.
      * @param noOfDaysInYear 365.
      * @returns annualrate APY rate Mantissa as BigInteger.
      */
     function _calcAnnualizedRate(
         rate: bigInt.BigInteger,
         expScale: bigInt.BigInteger,
-        blocksPerDay = _blocksPerDay(7.5),
+        blocksPerDay = _blocksPerDay(10),
         noOfDaysInYear = 365,
     ): bigInt.BigInteger {
         // https://docs.compound.finance/v2/#protocol-math

@@ -79,11 +79,11 @@ export const testnetAddresses: ProtocolAddresses = {
   },
   comptroller: "KT1WDtRBjC5whoGQw9CTf4nu5tNAVYvATp7D",
   interestRateModel: {
-    XTZ: "KT1K9aH2jWKvNUDRs5GziCtLpb7eZrJeqZVy",
-    USDT: "KT1K9aH2jWKvNUDRs5GziCtLpb7eZrJeqZVy",
-    USD: "KT1K9aH2jWKvNUDRs5GziCtLpb7eZrJeqZVy",
-    TZBTC: "KT1K9aH2jWKvNUDRs5GziCtLpb7eZrJeqZVy",
-    STXTZ: "KT1K9aH2jWKvNUDRs5GziCtLpb7eZrJeqZVy"
+    XTZ: "KT1L1HHyRxVhKffYJpxwCUyt22AJmE5mRGod",
+    USDT: "KT1C8Tip25C3texA2rPMD68uL7MsDPEvnRb8",
+    USD: "KT1C8Tip25C3texA2rPMD68uL7MsDPEvnRb8",
+    TZBTC: "KT19wZuczhw5FSAgeTkd7b98xhyCemqH8rS5",
+    STXTZ: "KT1S249b8gyQx2X44oQHQtmkvDWCptciEBEF"
   },
   governance: "KT1Dv2zRviAzW4NeGdfbVWmt5jZ8vvJpRFsq",
   oracle: "KT1NwzLYM8G8rzAuUutYzZgx1TgUXCFJhxyw",
@@ -147,11 +147,11 @@ export const mainnetAddresses: ProtocolAddresses = {
   },
   comptroller: "KT1P6Lryn3ikbyf5jywWBBRP5fkztE5ZafGe",
   interestRateModel: {
-    XTZ: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
-    USDT: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
-    USD: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
-    TZBTC: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy",
-    STXTZ: "KT1MouCFViyqWQ3QX5Zk69JGnXBXjQso68sy"
+    XTZ: "KT1EoQZAnsKNSkCKSRQtPBspC5ZBZJ9YoeME",
+    USDT: "KT1PMLT8RaBHsKyhxGb9thRSW91Rg5G9vKQF",
+    USD: "KT1PMLT8RaBHsKyhxGb9thRSW91Rg5G9vKQF",
+    TZBTC: "KT1LkLYxgXqFSWTWWc2Q8HmxnrRTkv4qsXkE",
+    STXTZ: "KT1AdEfMPVAJqW1uttckSSTDkTiQRK9esY3w"
   },
   governance: "KT1QScMEtDpXSuj7z2if1EMSqaXaXPnWCxqv",
   oracle: "KT1JiMMNrs6rptrQEZGCyxcZQSSZ8aqLqbYa",
