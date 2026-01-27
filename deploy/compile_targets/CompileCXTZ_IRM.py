@@ -3,6 +3,5 @@ import smartpy as sp
 IRM = sp.io.import_script_from_url("file:contracts/InterestRateModel.py")
 CFG = sp.io.import_script_from_url("file:deploy/compile_targets/Config.py")
 
-sp.add_compilation_target("CXTZ_IRM", IRM.InterestRateModel(multiplierPerBlock_ = CFG.CXTZ_IRM.multiplierPerBlock,
-    baseRatePerBlock_ = CFG.CXTZ_IRM.baseRatePerBlock, scale_ = CFG.CXTZ_IRM.scale))
-
+sp.add_compilation_target("CXTZ_IRM", IRM.InterestRateModel(multiplierPerBlock_=CFG.CXTZ_IRM.multiplierPerBlock,
+                                                            baseRatePerBlock_=CFG.CXTZ_IRM.baseRatePerBlock, jumpMultiplierPerBlock_=CFG.CXTZ_IRM.jumpMultiplierPerBlock, kink_=CFG.CXTZ_IRM.kink, scale_=CFG.CXTZ_IRM.scale))

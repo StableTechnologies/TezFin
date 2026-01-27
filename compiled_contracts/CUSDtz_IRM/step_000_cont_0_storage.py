@@ -1,0 +1,1 @@
+sp.record(baseRatePerBlock = 0, jumpMultiplierPerBlock = 697500000000, kink = 880000000000000000, multiplierPerBlock = 12970000000, scale = 1000000000000000000)

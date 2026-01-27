@@ -19,9 +19,12 @@ compileConfig = JsonDeserializer.Deserialize(PATH_COMPILE_CONFIG)
 deployResult = JsonDeserializer.Deserialize(
     os.getenv('E2E', PATH_DEPLOY_RESULT))
 
-CFA12_IRM = compileConfig.CFA12_IRM
+CUSDt_IRM = compileConfig.CUSDt_IRM
+CUSDtz_IRM = compileConfig.CUSDtz_IRM
+CtzBTC_IRM = compileConfig.CtzBTC_IRM
+CstXTZ_IRM = compileConfig.CstXTZ_IRM
 CXTZ_IRM = compileConfig.CXTZ_IRM
-CFA2_IRM = compileConfig.CFA2_IRM
+
 Governance = compileConfig.Governance
 Comptroller = compileConfig.Comptroller
 CFA2 = compileConfig.CFA2

@@ -2,13 +2,6 @@ import smartpy as sp
 
 IRM = sp.io.import_script_from_url("file:contracts/InterestRateModel.py")
 CFG = sp.io.import_script_from_url("file:deploy/compile_targets/Config.py")
-CMPT = sp.io.import_script_from_url("file:contracts/Comptroller.py")
-UTILS = sp.io.import_script_from_url("file:deploy/compile_targets/Utils.py")
 
-UTILS.checkDependencies(CFG.Comptroller)
-
-sp.add_compilation_target("Comptroller", CMPT.Comptroller(administrator_ = sp.address(CFG.deployResult.Governance),
-    oracleAddress_ = sp.address(CFG.deployResult.TezFinOracle),
-    closeFactorMantissa_ = sp.nat(CFG.Comptroller.closeFactorMantissa),
-    liquidationIncentiveMantissa_ = sp.nat(CFG.Comptroller.liquidationIncentiveMantissa)
-    ))
+sp.add_compilation_target("CUSDtz_IRM", IRM.InterestRateModel(multiplierPerBlock_=CFG.CUSDtz_IRM.multiplierPerBlock,
+                                                              baseRatePerBlock_=CFG.CUSDtz_IRM.baseRatePerBlock, jumpMultiplierPerBlock_=CFG.CUSDtz_IRM.jumpMultiplierPerBlock, kink_=CFG.CUSDtz_IRM.kink, scale_=CFG.CUSDtz_IRM.scale))
