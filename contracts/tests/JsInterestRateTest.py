@@ -24,8 +24,11 @@ def test():
     baseRatePerBlock = 950642634 
     multiplierPerBlock = 46581489086 
     reserveFactorMantissa = 1000000000000000
+    kink = 800000000000000000 # 0.8e18
+    jumpMultiplierPerBlock = 875200000000
 
-    c2 = IRM.InterestRateModel(scale_=expScale, multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
+    c2 = IRM.InterestRateModel(scale_=expScale, multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock, 
+                               kink_=kink, jumpMultiplierPerBlock_=jumpMultiplierPerBlock)
     scenario += c2
 
     view_result = RV.ViewerNat()

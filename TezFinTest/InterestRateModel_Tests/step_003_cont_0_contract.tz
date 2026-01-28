@@ -1,0 +1,303 @@
+parameter (or (pair %getBorrowRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (nat %reserves))) (pair %getSupplyRate (pair (nat %borrows) (nat %cash)) (pair (contract %cb nat) (pair (nat %reserveFactorMantissa) (nat %reserves)))));
+storage   (pair (pair (nat %baseRatePerBlock) (nat %jumpMultiplierPerBlock)) (pair (nat %kink) (pair (nat %multiplierPerBlock) (nat %scale))));
+code
+  {
+    # Private variable: calculateBorrowRate # pair @parameter @storage
+    LAMBDA
+      (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+      (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+      {
+        UNPAIR;     # nat : pair (pair nat nat) (pair nat (pair nat nat))
+        # if _x0 <= self.data.kink: # nat : pair (pair nat nat) (pair nat (pair nat nat))
+        DUP 2;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : pair (pair nat nat) (pair nat (pair nat nat))
+        GET 3;      # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+        DUP 2;      # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+        COMPARE;    # int : nat : pair (pair nat nat) (pair nat (pair nat nat))
+        LE;         # bool : nat : pair (pair nat nat) (pair nat (pair nat nat))
+        IF
+          {
+            # compute_InterestRateModel_79 = sp.local("compute_InterestRateModel_79", ((_x0 * self.data.multiplierPerBlock) // self.data.scale) + self.data.baseRatePerBlock) # nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 2;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            CAR;        # pair nat nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            CAR;        # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 3;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 6;      # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 4;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 5;      # nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DIG 3;      # nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            MUL;        # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            EDIV;       # option (pair nat nat) : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            IF_NONE
+              {
+                PUSH int 79; # int : nat : pair (pair nat nat) (pair nat (pair nat nat))
+                FAILWITH;   # FAILED
+              }
+              {
+                CAR;        # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+              }; # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            ADD;        # nat : pair (pair nat nat) (pair nat (pair nat nat))
+            # sp.result(compute_InterestRateModel_79.value) # nat : pair (pair nat nat) (pair nat (pair nat nat))
+          }
+          {
+            # compute_InterestRateModel_82 = sp.local("compute_InterestRateModel_82", ((self.data.kink * self.data.multiplierPerBlock) // self.data.scale) + self.data.baseRatePerBlock) # nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 2;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            CAR;        # pair nat nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            CAR;        # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 3;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 6;      # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 4;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 5;      # nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 5;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 3;      # nat : nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            MUL;        # nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            EDIV;       # option (pair nat nat) : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            IF_NONE
+              {
+                PUSH int 83; # int : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+                FAILWITH;   # FAILED
+              }
+              {
+                CAR;        # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+              }; # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            ADD;        # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            # compute_InterestRateModel_88 = sp.local("compute_InterestRateModel_88", ((sp.as_nat(_x0 - self.data.kink) * self.data.jumpMultiplierPerBlock) // self.data.scale) + compute_InterestRateModel_82.value) # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 3;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 6;      # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 4;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            CAR;        # pair nat nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            CDR;        # nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 5;      # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 3;      # nat : nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DIG 4;      # nat : nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            SUB;        # int : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            ISNAT;      # option nat : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            IF_NONE
+              {
+                PUSH int 86; # int : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            MUL;        # nat : nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            EDIV;       # option (pair nat nat) : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            IF_NONE
+              {
+                PUSH int 89; # int : nat : pair (pair nat nat) (pair nat (pair nat nat))
+                FAILWITH;   # FAILED
+              }
+              {
+                CAR;        # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+              }; # nat : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            ADD;        # nat : pair (pair nat nat) (pair nat (pair nat nat))
+            # sp.result(compute_InterestRateModel_88.value) # nat : pair (pair nat nat) (pair nat (pair nat nat))
+          }; # nat : pair (pair nat nat) (pair nat (pair nat nat))
+        PAIR;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat)))
+      }; # lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair @parameter @storage
+    SWAP;       # pair @parameter @storage : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+    # Private variable: utilizationRate # pair @parameter @storage : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+    LAMBDA
+      (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat))))
+      (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+      {
+        UNPAIR;     # pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        # ur = sp.local("ur", 0) # pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        PUSH nat 0; # nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        # if _x2.borrows > 0: # nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        PUSH nat 0; # nat : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        DUP 3;      # pair nat (pair nat nat) : nat : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        CAR;        # nat : nat : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        COMPARE;    # int : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        GT;         # bool : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+        IF
+          {
+            DROP;       # pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            # compute_InterestRateModel_71 = sp.local("compute_InterestRateModel_71", sp.as_nat((_x2.cash + _x2.borrows) - _x2.reserves)) # pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP;        # pair nat (pair nat nat) : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 4;      # nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 2;      # pair nat (pair nat nat) : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            CAR;        # nat : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 3;      # pair nat (pair nat nat) : nat : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 3;      # nat : nat : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            ADD;        # nat : nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            SUB;        # int : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            ISNAT;      # option nat : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            IF_NONE
+              {
+                PUSH int 71; # int : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            # sp.verify(compute_InterestRateModel_71.value > 0, 'IRM_INSUFFICIENT_CASH') # @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            PUSH nat 0; # nat : @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 2;      # @some : nat : @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            COMPARE;    # int : @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            GT;         # bool : @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            IF
+              {}
+              {
+                PUSH string "IRM_INSUFFICIENT_CASH"; # string : @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+                FAILWITH;   # FAILED
+              }; # @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            # ur.value = (_x2.borrows * self.data.scale) // compute_InterestRateModel_71.value # @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            DUP 3;      # pair (pair nat nat) (pair nat (pair nat nat)) : @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            GET 6;      # nat : @some : pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            DIG 2;      # pair nat (pair nat nat) : nat : @some : pair (pair nat nat) (pair nat (pair nat nat))
+            CAR;        # nat : nat : @some : pair (pair nat nat) (pair nat (pair nat nat))
+            MUL;        # nat : @some : pair (pair nat nat) (pair nat (pair nat nat))
+            EDIV;       # option (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat))
+            IF_NONE
+              {
+                PUSH int 73; # int : pair (pair nat nat) (pair nat (pair nat nat))
+                FAILWITH;   # FAILED
+              }
+              {
+                CAR;        # nat : pair (pair nat nat) (pair nat (pair nat nat))
+              }; # nat : pair (pair nat nat) (pair nat (pair nat nat))
+          }
+          {
+            SWAP;       # pair nat (pair nat nat) : nat : pair (pair nat nat) (pair nat (pair nat nat))
+            DROP;       # nat : pair (pair nat nat) (pair nat (pair nat nat))
+          }; # nat : pair (pair nat nat) (pair nat (pair nat nat))
+        # sp.result(ur.value) # nat : pair (pair nat nat) (pair nat (pair nat nat))
+        PAIR;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat)))
+      }; # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair @parameter @storage : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+    SWAP;       # pair @parameter @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+    UNPAIR;     # @parameter : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+    IF_LEFT
+      {
+        # == getBorrowRate ==
+        # sp.transfer(self.calculateBorrowRate(self.utilizationRate(sp.record(borrows = params.borrows, cash = params.cash, reserves = params.reserves))), sp.tez(0), params.cb) # @parameter%getBorrowRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        NIL operation; # list operation : @parameter%getBorrowRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 2;      # @parameter%getBorrowRate : list operation : @parameter%getBorrowRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        GET 3;      # contract nat : list operation : @parameter%getBorrowRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        PUSH mutez 0; # mutez : contract nat : list operation : @parameter%getBorrowRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 6;      # lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @parameter%getBorrowRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 6;      # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @parameter%getBorrowRate : @storage
+        DIG 5;      # @parameter%getBorrowRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        DUP;        # @parameter%getBorrowRate : @parameter%getBorrowRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        GET 4;      # nat : @parameter%getBorrowRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        SWAP;       # @parameter%getBorrowRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        DUP;        # @parameter%getBorrowRate : @parameter%getBorrowRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        CAR;        # pair (nat %borrows) (nat %cash) : @parameter%getBorrowRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        CDR;        # nat : @parameter%getBorrowRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        SWAP;       # @parameter%getBorrowRate : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        CAR;        # pair (nat %borrows) (nat %cash) : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        CAR;        # nat : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        PAIR 3;     # pair nat (pair nat nat) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        SWAP;       # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair nat (pair nat nat) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : @storage
+        DIG 6;      # @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair nat (pair nat nat) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        DIG 2;      # pair nat (pair nat nat) : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        PAIR;       # pair (pair nat (pair nat nat)) @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        EXEC;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        UNPAIR;     # nat : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        SWAP;       # pair (pair nat nat) (pair nat (pair nat nat)) : nat : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        DUG 5;      # nat : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        SWAP;       # lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        DIG 5;      # pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : mutez : contract nat : list operation
+        DIG 2;      # nat : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        PAIR;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : mutez : contract nat : list operation
+        EXEC;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat))) : mutez : contract nat : list operation
+        UNPAIR;     # nat : pair (pair nat nat) (pair nat (pair nat nat)) : mutez : contract nat : list operation
+        SWAP;       # pair (pair nat nat) (pair nat (pair nat nat)) : nat : mutez : contract nat : list operation
+        DUG 4;      # nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        TRANSFER_TOKENS; # operation : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        CONS;       # list operation : pair (pair nat nat) (pair nat (pair nat nat))
+      }
+      {
+        # == getSupplyRate ==
+        # sp.transfer((self.utilizationRate(sp.record(borrows = params.borrows, cash = params.cash, reserves = params.reserves)) * ((self.calculateBorrowRate(self.utilizationRate(sp.record(borrows = params.borrows, cash = params.cash, reserves = params.reserves))) * sp.as_nat(self.data.scale - params.reserveFactorMantissa)) // self.data.scale)) // self.data.scale, sp.tez(0), params.cb) # @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        NIL operation; # list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 2;      # @parameter%getSupplyRate : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        GET 3;      # contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        PUSH mutez 0; # mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 5;      # @storage : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        GET 6;      # nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 6;      # @storage : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        GET 6;      # nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 6;      # @parameter%getSupplyRate : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        GET 5;      # nat : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 8;      # @storage : nat : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        GET 6;      # nat : nat : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        SUB;        # int : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        ISNAT;      # option nat : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        IF_NONE
+          {
+            PUSH int 57; # int : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+            FAILWITH;   # FAILED
+          }
+          {}; # @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 9;      # lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 10;     # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 9;      # @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        GET 6;      # nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 10;     # @parameter%getSupplyRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        CAR;        # pair (nat %borrows) (nat %cash) : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        CDR;        # nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DUP 11;     # @parameter%getSupplyRate : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        CAR;        # pair (nat %borrows) (nat %cash) : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        CAR;        # nat : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        PAIR 3;     # pair nat (pair nat nat) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        SWAP;       # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair nat (pair nat nat) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 10;     # @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair nat (pair nat nat) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 2;      # pair nat (pair nat nat) : @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        PAIR;       # pair (pair nat (pair nat nat)) @storage : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        EXEC;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        UNPAIR;     # nat : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 10;     # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate
+        DIG 2;      # pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate
+        DUG 10;     # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat))
+        DUG 10;     # nat : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        SWAP;       # lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 9;      # pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 2;      # nat : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        PAIR;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat))) : lambda (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        EXEC;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat))) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        UNPAIR;     # nat : pair (pair nat nat) (pair nat (pair nat nat)) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 9;      # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : pair (pair nat nat) (pair nat (pair nat nat)) : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate
+        DIG 2;      # pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate
+        DUG 9;      # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat))
+        DUG 9;      # nat : @some : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        MUL;        # nat : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        EDIV;       # option (pair nat nat) : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        IF_NONE
+          {
+            PUSH int 62; # int : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+            FAILWITH;   # FAILED
+          }
+          {
+            CAR;        # nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+          }; # nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat))))
+        DIG 7;      # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : @parameter%getSupplyRate : pair (pair nat nat) (pair nat (pair nat nat))
+        DIG 6;      # @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        DUP;        # @parameter%getSupplyRate : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        GET 6;      # nat : @parameter%getSupplyRate : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        SWAP;       # @parameter%getSupplyRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        DUP;        # @parameter%getSupplyRate : @parameter%getSupplyRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        CAR;        # pair (nat %borrows) (nat %cash) : @parameter%getSupplyRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        CDR;        # nat : @parameter%getSupplyRate : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        SWAP;       # @parameter%getSupplyRate : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        CAR;        # pair (nat %borrows) (nat %cash) : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        CAR;        # nat : nat : nat : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        PAIR 3;     # pair nat (pair nat nat) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        SWAP;       # lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair nat (pair nat nat) : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        DIG 7;      # pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : pair nat (pair nat nat) : nat : nat : mutez : contract nat : list operation
+        DIG 2;      # pair nat (pair nat nat) : pair (pair nat nat) (pair nat (pair nat nat)) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation
+        PAIR;       # pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat))) : lambda (pair (pair nat (pair nat nat)) (pair (pair nat nat) (pair nat (pair nat nat)))) (pair nat (pair (pair nat nat) (pair nat (pair nat nat)))) : nat : nat : mutez : contract nat : list operation
+        EXEC;       # pair nat (pair (pair nat nat) (pair nat (pair nat nat))) : nat : nat : mutez : contract nat : list operation
+        UNPAIR;     # nat : pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : mutez : contract nat : list operation
+        SWAP;       # pair (pair nat nat) (pair nat (pair nat nat)) : nat : nat : nat : mutez : contract nat : list operation
+        DUG 6;      # nat : nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        MUL;        # nat : nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        EDIV;       # option (pair nat nat) : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        IF_NONE
+          {
+            PUSH int 63; # int : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+            FAILWITH;   # FAILED
+          }
+          {
+            CAR;        # nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+          }; # nat : mutez : contract nat : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        TRANSFER_TOKENS; # operation : list operation : pair (pair nat nat) (pair nat (pair nat nat))
+        CONS;       # list operation : pair (pair nat nat) (pair nat (pair nat nat))
+      }; # list operation : pair (pair nat nat) (pair nat (pair nat nat))
+    PAIR;       # pair (list operation) (pair (pair nat nat) (pair nat (pair nat nat)))
+  };
