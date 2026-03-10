@@ -1,0 +1,1 @@
+sp.record(borrows = 0, cash = 0, cb = sp.contract(sp.TNat, sp.address('KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat')).open_some(), reserveFactorMantissa = 0, reserves = 0)

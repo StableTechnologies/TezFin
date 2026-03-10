@@ -1,1 +1,1 @@
-sp.record(baseRatePerBlock = 760514107, multiplierPerBlock = 334400000000, scale = 1000000000000000000)
+sp.record(baseRatePerBlock = 0, jumpMultiplierPerBlock = 875200000000, kink = 700000000000000000, multiplierPerBlock = 32610000000, scale = 1000000000000000000)

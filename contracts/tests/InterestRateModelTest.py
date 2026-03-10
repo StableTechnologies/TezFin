@@ -15,8 +15,11 @@ def test():
 
     multiplierPerBlock = 180000000000 # 0.00000018
     baseRatePerBlock = 840000000000 # 0.00000084
+    kink = 800000000000000000 # 0.8e18
+    jumpMultiplierPerBlock = 875200000000
 
-    c1 = IRM.InterestRateModel(scale_=expScale, multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock)
+    c1 = IRM.InterestRateModel(scale_=expScale, multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock, 
+                               kink_=kink, jumpMultiplierPerBlock_=jumpMultiplierPerBlock)
     scenario += c1
 
     view_result = RV.ViewerNat()
@@ -40,7 +43,13 @@ def test():
                                            borrows=sp.nat(123), 
                                            reserves=sp.nat(0), 
                                            cb=view_result.typed.targetNat))
-    scenario.verify_equal(view_result.data.last, sp.some(multiplierPerBlock + baseRatePerBlock))
+    excessUtil = sp.as_nat(expScale - kink)
+    expected = (
+        kink * multiplierPerBlock // expScale
+        + baseRatePerBlock
+        + excessUtil * jumpMultiplierPerBlock // expScale
+    )
+    scenario.verify_equal(view_result.data.last, sp.some(expected))
     scenario.h3("Fail if reserves > (cash + borrows)")
     scenario += c1.getBorrowRate(sp.record(cash=sp.nat(10), 
                                            borrows=sp.nat(10), 
@@ -146,3 +155,67 @@ def test():
                                            reserveFactorMantissa=sp.nat(int(2e17)), 
                                            cb=view_result.typed.targetNat))
     scenario.verify_equal(view_result.data.last, sp.some(272250000000))
+    scenario.h3("Borrow rate exactly at kink (no jump)")
+    scenario += c1.getBorrowRate(
+        sp.record(
+            cash=sp.nat(20),
+            borrows=sp.nat(80),
+            reserves=sp.nat(0),
+            cb=view_result.typed.targetNat
+        )
+    )
+    expected = (
+        kink * multiplierPerBlock // expScale
+        + baseRatePerBlock
+    )
+    scenario.verify_equal(
+        view_result.data.last,
+        sp.some(expected)
+    )
+    scenario.h3("Borrow rate just above kink (jump activates)")
+    scenario += c1.getBorrowRate(
+        sp.record(
+            cash=sp.nat(19),
+            borrows=sp.nat(81),
+            reserves=sp.nat(0),
+            cb=view_result.typed.targetNat
+        )
+    )
+    normalRate = (
+        kink * multiplierPerBlock // expScale
+        + baseRatePerBlock
+    )
+    excessUtil = sp.as_nat(
+        (sp.nat(81) * expScale // sp.nat(100)) - kink
+    )
+    expected = (
+        normalRate
+        + excessUtil * jumpMultiplierPerBlock // expScale
+    )
+    scenario.verify_equal(
+        view_result.data.last,
+        sp.some(expected)
+    )
+    scenario.h3("Jump slope is steeper than normal slope")
+    # u = 79%
+    scenario += c1.getBorrowRate(
+        sp.record(cash=sp.nat(21), borrows=sp.nat(79), reserves=sp.nat(0),
+                cb=view_result.typed.targetNat)
+    )
+    rate_79 = scenario.compute(view_result.data.last.open_some())
+    # u = 80% (kink)
+    scenario += c1.getBorrowRate(
+        sp.record(cash=sp.nat(20), borrows=sp.nat(80), reserves=sp.nat(0),
+                cb=view_result.typed.targetNat)
+    )
+    rate_80 = scenario.compute(view_result.data.last.open_some())
+    # u = 81% (jump)
+    scenario += c1.getBorrowRate(
+        sp.record(cash=sp.nat(19), borrows=sp.nat(81), reserves=sp.nat(0),
+                cb=view_result.typed.targetNat)
+    )
+    rate_81 = scenario.compute(view_result.data.last.open_some())
+    scenario.verify(
+        (rate_80 - rate_79) <
+        (rate_81 - rate_80)
+    )

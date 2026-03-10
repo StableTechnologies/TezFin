@@ -9,13 +9,23 @@ IRMInterface = sp.io.import_script_from_url(
 
 
 class InterestRateModel(IRMInterface.InterestRateModelInterface):
-    def __init__(self, multiplierPerBlock_, baseRatePerBlock_, scale_, **extra_storage):
+    def __init__(self,
+                baseRatePerBlock_,
+                multiplierPerBlock_,
+                jumpMultiplierPerBlock_,
+                kink_,
+                scale_,
+                **extra_storage):
         self.init(
             scale=scale_,  # must match order of reserveFactorMantissa
             # The multiplier of utilization rate that gives the slope of the interest rate
             multiplierPerBlock=multiplierPerBlock_,
             # The base interest rate which is the y-intercept when utilization rate is 0
             baseRatePerBlock=baseRatePerBlock_,
+            # The multiplier per block after hitting the kink point
+            jumpMultiplierPerBlock=jumpMultiplierPerBlock_,
+            # The utilization point at which the jump multiplier is applied
+            kink=kink_,
             **extra_storage
         )
 
@@ -65,4 +75,17 @@ class InterestRateModel(IRMInterface.InterestRateModelInterface):
 
     @sp.private_lambda(with_storage="read-only")
     def calculateBorrowRate(self, utRate):
-        sp.result(sp.compute(utRate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock))
+        sp.if utRate <= self.data.kink:
+            sp.result(sp.compute(utRate * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock))
+        sp.else:
+            # Calculate the rate at the kink point
+            normalRate = sp.compute(
+                self.data.kink * self.data.multiplierPerBlock // self.data.scale + self.data.baseRatePerBlock
+            )
+            # Calculate excess utilization beyond kink
+            excessUtil = sp.as_nat(utRate - self.data.kink)
+            # Apply jump multiplier to excess utilization
+            rate = sp.compute(
+                excessUtil * self.data.jumpMultiplierPerBlock // self.data.scale + normalRate
+            )
+            sp.result(rate)

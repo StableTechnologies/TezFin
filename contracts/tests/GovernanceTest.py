@@ -40,7 +40,9 @@ def test():
     
     multiplierPerBlock = 180000000000 # 0.00000018
     baseRatePerBlock = 840000000000 # 0.00000084
-    irm = IRM.InterestRateModel(multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock, scale_=1000000000000000000)
+    kink = 800000000000000000 # 0.8e18
+    jumpMultiplierPerBlock = 875200000000
+    irm = IRM.InterestRateModel(multiplierPerBlock_=multiplierPerBlock, baseRatePerBlock_=baseRatePerBlock, jumpMultiplierPerBlock_=jumpMultiplierPerBlock, kink_=kink, scale_=1000000000000000000)
     scenario += irm 
 
     fa12Target = FA12Mock.FA12Mock()

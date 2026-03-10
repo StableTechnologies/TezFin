@@ -1,0 +1,7 @@
+{
+  "prim": "Pair",
+  "args": [
+    { "prim": "Pair", "args": [ { "int": "0" }, { "int": "0" } ] },
+    { "prim": "Pair", "args": [ { "string": "KT1Tezooo1zzSmartPyzzSTATiCzzzyfC8eF%targetNat" }, { "prim": "Pair", "args": [ { "int": "0" }, { "int": "0" } ] } ] }
+  ]
+}

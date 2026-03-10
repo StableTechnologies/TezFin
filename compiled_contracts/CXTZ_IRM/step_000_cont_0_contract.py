@@ -2,9 +2,11 @@ import smartpy as sp
 
 class Contract(sp.Contract):
   def __init__(self):
-    self.init_type(sp.TRecord(baseRatePerBlock = sp.TNat, multiplierPerBlock = sp.TNat, scale = sp.TNat).layout(("baseRatePerBlock", ("multiplierPerBlock", "scale"))))
-    self.init(baseRatePerBlock = 760514107,
-              multiplierPerBlock = 334400000000,
+    self.init_type(sp.TRecord(baseRatePerBlock = sp.TNat, jumpMultiplierPerBlock = sp.TNat, kink = sp.TNat, multiplierPerBlock = sp.TNat, scale = sp.TNat).layout((("baseRatePerBlock", "jumpMultiplierPerBlock"), ("kink", ("multiplierPerBlock", "scale")))))
+    self.init(baseRatePerBlock = 0,
+              jumpMultiplierPerBlock = 875200000000,
+              kink = 700000000000000000,
+              multiplierPerBlock = 32610000000,
               scale = 1000000000000000000)
 
   @sp.entrypoint
@@ -19,17 +21,22 @@ class Contract(sp.Contract):
 
   @sp.private_lambda()
   def calculateBorrowRate(_x0):
-    compute_InterestRateModel_68 = sp.local("compute_InterestRateModel_68", ((_x0 * self.data.multiplierPerBlock) // self.data.scale) + self.data.baseRatePerBlock)
-    sp.result(compute_InterestRateModel_68.value)
+    sp.if _x0 <= self.data.kink:
+      compute_InterestRateModel_79 = sp.local("compute_InterestRateModel_79", ((_x0 * self.data.multiplierPerBlock) // self.data.scale) + self.data.baseRatePerBlock)
+      sp.result(compute_InterestRateModel_79.value)
+    sp.else:
+      compute_InterestRateModel_82 = sp.local("compute_InterestRateModel_82", ((self.data.kink * self.data.multiplierPerBlock) // self.data.scale) + self.data.baseRatePerBlock)
+      compute_InterestRateModel_88 = sp.local("compute_InterestRateModel_88", ((sp.as_nat(_x0 - self.data.kink) * self.data.jumpMultiplierPerBlock) // self.data.scale) + compute_InterestRateModel_82.value)
+      sp.result(compute_InterestRateModel_88.value)
 
   @sp.private_lambda()
   def utilizationRate(_x2):
     sp.set_type(_x2, sp.TRecord(borrows = sp.TNat, cash = sp.TNat, reserves = sp.TNat).layout(("borrows", ("cash", "reserves"))))
     ur = sp.local("ur", 0)
     sp.if _x2.borrows > 0:
-      compute_InterestRateModel_61 = sp.local("compute_InterestRateModel_61", sp.as_nat((_x2.cash + _x2.borrows) - _x2.reserves))
-      sp.verify(compute_InterestRateModel_61.value > 0, 'IRM_INSUFFICIENT_CASH')
-      ur.value = (_x2.borrows * self.data.scale) // compute_InterestRateModel_61.value
+      compute_InterestRateModel_71 = sp.local("compute_InterestRateModel_71", sp.as_nat((_x2.cash + _x2.borrows) - _x2.reserves))
+      sp.verify(compute_InterestRateModel_71.value > 0, 'IRM_INSUFFICIENT_CASH')
+      ur.value = (_x2.borrows * self.data.scale) // compute_InterestRateModel_71.value
     sp.result(ur.value)
 
 sp.add_compilation_target("test", Contract())
