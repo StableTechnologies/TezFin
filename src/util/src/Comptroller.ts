@@ -2,10 +2,9 @@ import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, 
 
 import { AssetType } from './enum'
 import { JSONPath } from 'jsonpath-plus';
-import { ProtocolAddresses } from './types';
+import { Network, ProtocolAddresses } from './types';
 import bigInt from 'big-integer';
 import log from 'loglevel';
-
 export namespace Comptroller {
     /*
      * @description
@@ -53,43 +52,86 @@ export namespace Comptroller {
      * @param address
      */
     export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string): Promise<Storage> {
-        const storageResult = await TezosNodeReader.getContractStorage(server, address);
-        // get marketsMapId
-        const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[1].int', json: storageResult })[0];
-        // get all market values for fTokens from protocolAddresses
-        const markets: MarketMap = {};
+        if (protocolAddresses.network && protocolAddresses.network === Network.TezLink_Shadownet) {
+            const storageResult = await TezosNodeReader.getContractStorage(server, address);
+            
+            const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[0].args[1].args[0].int', json: storageResult })[0];
+            
+            const markets: MarketMap = {};
 
-        await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
+            await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
+                try {
+                    const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
+                    const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
+                    const asset = protocolAddresses.fTokensReverse[addr];
+                    markets[asset] = parseMarketResult(marketsResult, true);
+                } catch (e) {
+                    log.error(`Failed to get Comptroller.Markets big_map content for ${addr} from ${marketsMapId} with ${e}`);
+                }
+            }));
+
             try {
-                const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
-                const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
-                const asset = protocolAddresses.fTokensReverse[addr];
-                markets[asset] = parseMarketResult(marketsResult);
+                const adminBytes = JSONPath({ path: '$.args[0].args[0].args[0].args[1].args[0].bytes', json: storageResult })[0];
+                const oracleBytes = JSONPath({ path: '$.args[0].args[1].args[1].args[0].args[1].bytes', json: storageResult })[0];
+                
+                return {
+                    accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+                    collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                    loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                    administrator: TezosMessageUtils.readAddress(adminBytes),
+                    closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                    expScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                    halfExpScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].args[1].args[0].int', json: storageResult })[0],
+                    liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[0].args[1].args[1].args[1].args[1].int', json: storageResult })[0],
+                    marketsMapId: marketsMapId,
+                    oracleAddress: TezosMessageUtils.readAddress(oracleBytes),
+                    pendingAdministrator: JSONPath({ path: '$.args[0].args[1].args[1].args[1].args[0].prim', json: storageResult })[0],
+                    transferPaused: JSONPath({ path: '$.args[0].args[1].args[1].args[1].args[1].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
+                    markets: markets
+                };
             } catch (e) {
-                log.error(`Failed to get Comptroller.Markets big_map content for ${addr} from ${marketsMapId} with ${e}`);
+                log.error(`Unable to parse storage JSON for Comptroller at ${address}`);
+                throw e;
             }
-        }));
+        } else {
+            const storageResult = await TezosNodeReader.getContractStorage(server, address);
+            // get marketsMapId
+            const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[1].int', json: storageResult })[0];
+            // get all market values for fTokens from protocolAddresses
+            const markets: MarketMap = {};
 
-        // parse results
-        try {
-            return {
-                accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
-                loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
-                administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
-                closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0],
-                expScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
-                halfExpScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
-                liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
-                marketsMapId: marketsMapId,
-                oracleAddress: JSONPath({ path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
-                pendingAdministrator: JSONPath({ path: '$.args[0].args[3].prim', json: storageResult })[0],
-                transferPaused: JSONPath({ path: '$.args[0].args[4].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
-                markets: markets
-            };
-        } catch (e) {
-            log.error(`Unable to parse storage JSON for Comptroller at ${address}`);
-            throw e;
+            await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
+                try {
+                    const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
+                    const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
+                    const asset = protocolAddresses.fTokensReverse[addr];
+                    markets[asset] = parseMarketResult(marketsResult);
+                } catch (e) {
+                    log.error(`Failed to get Comptroller.Markets big_map content for ${addr} from ${marketsMapId} with ${e}`);
+                }
+            }));
+
+            // parse results
+            try {
+                return {
+                    accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
+                    collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
+                    loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
+                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
+                    closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0],
+                    expScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
+                    halfExpScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
+                    liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
+                    marketsMapId: marketsMapId,
+                    oracleAddress: JSONPath({ path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
+                    pendingAdministrator: JSONPath({ path: '$.args[0].args[3].prim', json: storageResult })[0],
+                    transferPaused: JSONPath({ path: '$.args[0].args[4].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
+                    markets: markets
+                };
+            } catch (e) {
+                log.error(`Unable to parse storage JSON for Comptroller at ${address}`);
+                throw e;
+            }
         }
     }
 
@@ -115,7 +157,20 @@ export namespace Comptroller {
      *
      * @param
      */
-    function parseMarketResult(result): Market {
+    function parseMarketResult(result, tezlink = false): Market {
+        if (tezlink) {
+            const assetType: AssetType = JSONPath({ path: '$.args[1].args[0].args[0].string', json: result })[0] as AssetType;
+            return {
+                assetType: assetType,
+                borrowPaused: JSONPath({ path: '$.args[0].args[0].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
+                collateralFactor: JSONPath({ path: '$.args[0].args[0].args[1].int', json: result })[0],
+                isListed: JSONPath({ path: '$.args[0].args[1].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
+                mintPaused: JSONPath({ path: '$.args[0].args[1].args[1].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
+                price: bigInt(JSONPath({ path: '$.args[1].args[0].args[1].int', json: result })[0]),
+                updateLevel: JSONPath({ path: '$.args[1].args[1].args[1].args[1].int', json: result })[0],
+            } as Market;
+        }
+
         const assetType: AssetType = JSONPath({ path: '$.args[1].args[0].string', json: result })[0] as AssetType;
         return {
             assetType: assetType,
@@ -143,7 +198,12 @@ export namespace Comptroller {
 
         try {
             const collateralsResult = await TezosNodeReader.getValueForBigMapKey(server, comptroller.collateralsMapId, packedAccountKey);
-            const fTokenAddresses: AssetType[] = collateralsResult.map((json) => json['string']);
+            let fTokenAddresses: AssetType[];
+            if(server.includes('shadownet.tezlink')) {
+                fTokenAddresses = collateralsResult.map((json) => json['bytes']).map((bytes) => TezosMessageUtils.readAddress(bytes));
+            } else {
+                fTokenAddresses = collateralsResult.map((json) => json['string']);
+            }
             return fTokenAddresses.map((fTokenAddress) => protocolAddresses.fTokensReverse[fTokenAddress]);
         } catch (err) {
             log.error(`${address} has no collateralized assets`);

@@ -6,7 +6,7 @@ import bigInt from 'big-integer';
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 // eslint-disable-next-line import/no-dynamic-require
-const config = require(`../library/${process.env.REACT_APP_ENV || 'prod'}-network-config.json`);
+const config = require(`../library/${process.env.REACT_APP_ENV || 'mainnet'}-network-config.json`);
 
 const client = new DAppClient({ name: config.dappName, network: { type: config.infra.conseilServer.network } });
 
@@ -79,12 +79,13 @@ export const evaluateTransaction = async (operations) => {
         const counter = await TezosNodeReader.getCounterForAccount(config.infra.tezosNode, address);
         
         console.log("operation", operations);
+        const optimizeGas = config.infra.conseilServer.network !== 'tezlink-shadownet';
         const opGroup = await TezosNodeWriter.prepareOperationGroup(
             config.infra.tezosNode,
             keyStore,
             counter,
             operations,
-            true,
+            optimizeGas
         );
         
         return { opGroup };
@@ -227,4 +228,17 @@ export const nFormatter = (num, formatDecimals = 4) => {
             .toString()
             .match(/^-?\d+(?:\.\d{0,2})?/) + suffix[i].symbol
     );
+};
+
+export const getExplorerLink = () => {
+    switch (config.infra.conseilServer.network) {
+    case 'mainnet':
+        return 'https://tzkt.io';
+    case 'shadownet':
+        return 'https://shadownet.tzkt.io';
+    case 'tezlink-shadownet':
+        return 'https://shadownet.tezlink.tzkt.io';
+    default:
+        return 'https://tzkt.io';
+    }
 };

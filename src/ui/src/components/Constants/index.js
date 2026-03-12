@@ -1,4 +1,6 @@
-import { AssetType, testnetAddresses, mainnetAddresses } from 'tezoslendingplatformjs';
+import {
+    AssetType, testnetAddresses, mainnetAddresses, tezlinkShadownetAddresses
+} from 'tezoslendingplatformjs';
 import fUSDtz from '../../assets/fusdtz.svg';
 import fXTZ from '../../assets/fXTZ.svg';
 import fUSDT from '../../assets/fusdt.svg';
@@ -24,7 +26,20 @@ import fstXTZ from '../../assets/fstXTZ.svg';
 // import fOXTZ from '../../assets/foxtz.svg';
 // import fWTZ from '../../assets/fwtz.svg';
 
-const addresses = process.env.REACT_APP_ENV=="dev"? testnetAddresses : mainnetAddresses;
+export const getAddresses = () => {
+    switch (process.env.REACT_APP_ENV) {
+    case 'shadownet':
+        return testnetAddresses;
+    case 'tezlink-shadownet':
+        return tezlinkShadownetAddresses;
+    case 'mainnet':
+        return mainnetAddresses;
+    default:
+        return mainnetAddresses;
+    }
+};
+
+const addresses = getAddresses();
 
 export const tokens = [
     {
@@ -34,7 +49,7 @@ export const tokens = [
         fLogo: fXTZ,
         banner: 'Tez',
         assetType: AssetType.XTZ,
-	address: ''
+        address: ''
     },
     {
         title: 'USDtz',
@@ -43,7 +58,7 @@ export const tokens = [
         fLogo: fUSDtz,
         banner: 'USDtz',
         assetType: AssetType.USD,
-	address: addresses.underlying.USD?.address ?? ''
+        address: addresses.underlying.USD?.address ?? ''
     },
     {
         title: 'USDt',
@@ -52,9 +67,9 @@ export const tokens = [
         fLogo: fUSDT,
         banner: 'USDt',
         assetType: AssetType.USDT,
-	address: addresses.underlying.USDT?.address ?? ''
+        address: addresses.underlying.USDT?.address ?? ''
     },
-    {
+    process.env.REACT_APP_ENV !== 'tezlink-shadownet' && {
         title: 'tzBTC',
         name: 'tzBTC',
         logo: tzBTC,
@@ -62,7 +77,7 @@ export const tokens = [
         banner: 'tzBTC',
         assetType: AssetType.TZBTC,
         visibilityThreshold: 0.0000001,
-	address: addresses.underlying.TZBTC?.address ?? ''
+        address: addresses.underlying.TZBTC?.address ?? ''
     },
     {
         title: 'stXTZ',
@@ -86,16 +101,16 @@ export const tokens = [
     // {
     //     title: 'WTZ', logo: wtz, fLogo: fWTZ, banner: 'WTZ', assetType: AssetType.WTZ // TODO:  update fToken for  WTZ
     // }
-];
+].filter(Boolean);
 export const tokenColor = {
-  XTZ: 'rgb(51,145,246)',
-  USDtz: 'rgb(24,157,163)',
-  USDt: 'rgb(65 145 146)',
-  tzBTC: 'rgb(20,89,255)',
-  stXTZ: '#2B62F8'
-  // ETHtz: '#662F9D',
-  // BTCtz: '#F2991A',
-  // oXTZ: '#B52B31',
-  // WTZ: '#0C2C93'
-  // CTEZ: '#2B62F8'
+    XTZ: 'rgb(51,145,246)',
+    USDtz: 'rgb(24,157,163)',
+    USDt: 'rgb(65 145 146)',
+    tzBTC: 'rgb(20,89,255)',
+    stXTZ: '#2B62F8'
+    // ETHtz: '#662F9D',
+    // BTCtz: '#F2991A',
+    // oXTZ: '#B52B31',
+    // WTZ: '#0C2C93'
+    // CTEZ: '#2B62F8'
 };

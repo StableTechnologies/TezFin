@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@airgap/beacon-sdk": "^4.6.4",
+    "@airgap/beacon-sdk": "^4.7.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
@@ -58,8 +58,9 @@
     "vm-browserify": "^1.1.2"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true REACT_APP_ENV=dev npm run patch && react-app-rewired start",
-    "mainnet": "DISABLE_ESLINT_PLUGIN=true npm run patch && react-app-rewired start",
+    "start": "DISABLE_ESLINT_PLUGIN=true REACT_APP_ENV=shadownet npm run patch && react-app-rewired start",
+    "mainnet": "DISABLE_ESLINT_PLUGIN=true REACT_APP_ENV=mainnet npm run patch && react-app-rewired start",
+    "tezlink:shadownet": "DISABLE_ESLINT_PLUGIN=true REACT_APP_ENV=tezlink-shadownet npm run patch && react-app-rewired start",
     "patch": "patch-package",
     "build": "npm run patch && tsc && react-app-rewired build",
     "test": "react-app-rewired test",

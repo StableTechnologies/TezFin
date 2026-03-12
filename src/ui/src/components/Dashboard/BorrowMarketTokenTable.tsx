@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { AssetType, decimals, mainnetAddresses, testnetAddresses } from 'tezoslendingplatformjs';
+import { AssetType, decimals } from 'tezoslendingplatformjs';
 import BigNumber from 'bignumber.js';
 
 import Table from '@mui/material/Table';
@@ -16,12 +16,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Button, Typography } from '@mui/material';
 
-import { decimalify, nFormatter, roundValue } from '../../util';
+import { decimalify, getExplorerLink, nFormatter, roundValue } from '../../util';
 
 import AllMarketModal from '../AllMarketModal';
 import TableSkeleton from '../Skeleton';
 
 import { useStyles } from './style';
+import { getAddresses } from '../Constants';
 
 const BorrowMarketTokenTable = (props) => {
     const classes = useStyles();
@@ -36,12 +37,8 @@ const BorrowMarketTokenTable = (props) => {
     };
 
     const handleClickDetails = (asset: AssetType) => {
-        const fTokenAddress = 
-            process.env.REACT_APP_ENV == 'dev' ? testnetAddresses.fTokens[asset] : mainnetAddresses.fTokens[asset];
-        const tzktUrl =
-            process.env.REACT_APP_ENV == "dev"
-                ? `https://shadownet.tzkt.io/${fTokenAddress}/operations`
-                : `https://tzkt.io/${fTokenAddress}/operations`;
+        const fTokenAddress = getAddresses().fTokens[asset];
+        const tzktUrl = `${getExplorerLink()}/${fTokenAddress}/operations`;
         window.open(tzktUrl, '_blank');
     };
 

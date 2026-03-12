@@ -1,0 +1,12 @@
+
+{
+  "infra": {
+    "tezosNode": "https://rpc.shadownet.tezlink.nomadic-labs.com",
+    "conseilServer": {
+      "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
+      "apiKey": "",
+      "network": "tezlink-shadownet"
+    }
+  },
+  "dappName": "TezFin"
+}

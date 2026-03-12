@@ -1,15 +1,14 @@
 import {
-	Comptroller,
-	testnetAddresses,
-	mainnetAddresses,
+	Comptroller
 } from "tezoslendingplatformjs";
 import { GET_COMPTROLLER, GET_PROTOCOL_ADDRESSES, GET_TEZOS_NODE } from './types';
+import { getAddresses } from '../../components/Constants';
 
 const config = require(`../../library/${
-	process.env.REACT_APP_ENV || "prod"
+	process.env.REACT_APP_ENV || "mainnet"
 }-network-config.json`);
 
-const addresses = process.env.REACT_APP_ENV=="dev"? testnetAddresses : mainnetAddresses
+const addresses = getAddresses();
 
 export const granadanetAction = () => async (dispatch) => {
     dispatch({ type: GET_PROTOCOL_ADDRESSES, payload: addresses });
