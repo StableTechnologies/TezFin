@@ -25,18 +25,34 @@ export namespace PriceFeed {
      * @param oracleMap map id for harbinger oracle
      * @param server rpc node url
      */
-    export async function GetPrice(asset: AssetType, oracle: string, level:number, server: string): Promise<bigInt.BigInteger> {
+    export async function GetPrice(
+        asset: AssetType,
+        oracle: string,
+        level: number,
+        server: string,
+    ): Promise<bigInt.BigInteger> {
         if (Object.prototype.hasOwnProperty.call(alias, asset)) {
-            asset = alias[asset]
+            asset = alias[asset];
         }
+        // TezLink RPC does not support running views yet, so we have to directly read the price from storage.
+        if (server.includes('shadownet.tezlink')) {
+            const storageResult = await TezosNodeReader.getContractStorage(server, oracle);
+            const overrideMapId = JSONPath({ path: '$.args[1].args[1].args[0].int', json: storageResult })[0];
+            const encodedKey = TezosMessageUtils.encodeBigMapKey(
+                Buffer.from(TezosMessageUtils.writePackedData(`${asset}-USD`, 'string'), 'hex')
+            );
+            const priceResult = await TezosNodeReader.getValueForBigMapKey(server, overrideMapId, encodedKey);
+            return bigInt(priceResult.args[1].int);
+        }
+
         const assetPrice = await TezosNodeWriter.runView(
-        server,
-        "main",
-        oracle,
-        "getPrice",
-        { "string": `${asset}-USD` },
-        `${level}`
-    );
+            server,
+            'main',
+            oracle,
+            'getPrice',
+            { string: `${asset}-USD` },
+            `${level}`,
+        );
         return bigInt(assetPrice.data.args[1].int);
     }
 

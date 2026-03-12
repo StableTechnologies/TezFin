@@ -6,6 +6,7 @@ import {
     Market,
     MarketData,
     MarketMap,
+    Network,
     ProtocolAddresses,
     SupplyComposition,
     SupplyMarket,
@@ -78,6 +79,7 @@ export namespace TezosLendingPlatform {
         rateModel: InterestRateModel.Storage,
         price: bigInt.BigInteger,
         level: number,
+        network: Network,
     ): Market {
         const asset: UnderlyingAssetMetadata = {
             name: tokenNames[underlying.assetType],
@@ -89,18 +91,18 @@ export namespace TezosLendingPlatform {
             // numParticipants: fToken.supply.numSuppliers?,
             numParticipants: 0,
             totalAmount: fToken.supply.totalSupply,
-            rate: FToken.getSupplyRateApy(fToken, rateModel),
+            rate: FToken.getSupplyRateApy(fToken, rateModel, network),
             // TODO: :  create a  dynamic supply rate apy function
             rateFn: (additionalAmount: bigInt.BigInteger) => {
-                return FToken.getSupplyRateApy(fToken, rateModel);
+                return FToken.getSupplyRateApy(fToken, rateModel, network);
             },
         };
         const borrow: MarketData = {
             // numParticipants: fToken.borrow.numBorrowers,
             numParticipants: 0,
             totalAmount: fToken.borrow.totalBorrows,
-            rate: FToken.getBorrowRateApy(fToken, rateModel),
-            rateFn: FToken.getDynamicBorrowRateApyFn(fToken, rateModel),
+            rate: FToken.getBorrowRateApy(fToken, rateModel, network),
+            rateFn: FToken.getDynamicBorrowRateApyFn(fToken, rateModel, network),
         };
 	const available =  FToken.applyExchangeRate(
                         supply.totalAmount.minus(borrow.totalAmount).minus(fToken.totalReserves),
@@ -177,6 +179,7 @@ export namespace TezosLendingPlatform {
                         rateModel,
                         oraclePrice,
                         head.header.level,
+                        protocolAddresses.network,
                     );
                 } catch (e) {
                     log.error(
@@ -424,7 +427,7 @@ export namespace TezosLendingPlatform {
                  return bigInt(0);
                }
                return bigInt(regex[1]);
-            }
+            }            
             const balance = JSONPath({ path: underlying.balancesPath!, json: mapResult })[0];
         
             return bigInt(balance);
@@ -728,7 +731,7 @@ export namespace TezosLendingPlatform {
         protocolAddresses: ProtocolAddresses,
         counter: number,
         pkh: string,
-        gas: number = 200_000,
+        gas: number = 40_000,
         freight: number = 20_000,
     ): Transaction[] | undefined {
         const underlying: UnderlyingAsset =
@@ -775,13 +778,13 @@ export namespace TezosLendingPlatform {
                       [
                           MultiAssetTokenHelper.RemoveOperatorsOperation(underlying.address!, counter, pkh, 0, [
                               updateOperator,
-                          ]),
+                          ], 40_000),
                       ]
                     : // fa2 add operator
                       [
                           MultiAssetTokenHelper.AddOperatorsOperation(underlying.address!, counter, pkh, 0, [
                               updateOperator,
-                          ]),
+                          ], 40_000),
                       ];
             case TokenStandard.XTZ:
                 return undefined;
@@ -809,7 +812,7 @@ export namespace TezosLendingPlatform {
                 protocolAddresses,
                 0,
                 pkh,
-                gas,
+                60_000,
                 freight,
             ),
         );
@@ -893,7 +896,7 @@ export namespace TezosLendingPlatform {
         const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
         const ops: Transaction[] = MintOpGroup(mint, protocolAddresses, keystore.publicKeyHash, gas, freight);
         // prep operation
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
+        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops);
         // send operation
         const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
         return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);

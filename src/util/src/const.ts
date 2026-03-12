@@ -1,6 +1,6 @@
 import { AssetType, TokenStandard } from "./enum";
 
-import { ProtocolAddresses } from "./types";
+import { Network, ProtocolAddresses } from "./types";
 
 export const decimals = {
   XTZ: 6,
@@ -87,6 +87,7 @@ export const testnetAddresses: ProtocolAddresses = {
   },
   governance: "KT1Dv2zRviAzW4NeGdfbVWmt5jZ8vvJpRFsq",
   oracle: "KT1NwzLYM8G8rzAuUutYzZgx1TgUXCFJhxyw",
+  network: Network.Shadownet
 };
 
 export const mainnetAddresses: ProtocolAddresses = {
@@ -155,6 +156,65 @@ export const mainnetAddresses: ProtocolAddresses = {
   },
   governance: "KT1QScMEtDpXSuj7z2if1EMSqaXaXPnWCxqv",
   oracle: "KT1JiMMNrs6rptrQEZGCyxcZQSSZ8aqLqbYa",
+  network: Network.Mainnet
+};
+
+export const tezlinkShadownetAddresses: ProtocolAddresses = {
+  fTokens: {
+    XTZ: "KT1UqLeN9JgTTNRxZcK4TFeixkg9AeWHpeji",
+    USD: "KT1Na1DNaDYgwSAxw13XkiPsKn49tV58aqQS",
+    USDT: "KT1Aq65WT5usR4AUaujeActGgDKypFTBzh3E",
+    STXTZ: "KT1QJsxABrxky8fdCwjagiAzu3rWmXGAwsfp"
+  },
+  fTokensReverse: {
+    KT1UqLeN9JgTTNRxZcK4TFeixkg9AeWHpeji: AssetType.XTZ,
+    KT1Na1DNaDYgwSAxw13XkiPsKn49tV58aqQS: AssetType.USD,
+    KT1Aq65WT5usR4AUaujeActGgDKypFTBzh3E: AssetType.USDT,
+    KT1QJsxABrxky8fdCwjagiAzu3rWmXGAwsfp: AssetType.STXTZ
+  },
+  underlying: {
+    USD: {
+      assetType: AssetType.USD,
+      address: "KT1RfMCz7jonKzH9pkHD3Rko8pf4wnDaiM95",
+      balancesMapId: 300,
+      tokenStandard: TokenStandard.FA12,
+      decimals: 6,
+      balancesPath: "$.args[1].int",
+    },
+    USDT: {
+      assetType: AssetType.USDT,
+      tokenStandard: TokenStandard.FA2,
+      decimals: 6,
+      address: "KT1VR8vMntyrcuqtyhMdiXDTfwVwffcMVdPw",
+      tokenId: 0,
+      balancesMapId: 247,
+      balancesPath: "$.int",
+    },
+    XTZ: {
+      assetType: AssetType.XTZ,
+      tokenStandard: TokenStandard.XTZ,
+      decimals: 6,
+    },
+    STXTZ: {
+      assetType: AssetType.STXTZ,
+      tokenStandard: TokenStandard.FA2,
+      decimals: 6,
+      address: "KT1MMjjXa5d7TwYSYahCXM4xkcsbBfDjsaYq",
+      tokenId: 0,
+      balancesMapId: 252,
+      balancesPath: "$.int",
+    }
+  },
+  comptroller: "KT1XKz7d2Nh4SNz9HD7JXgZ5JVcGbQ4DNwLf",
+  interestRateModel: {
+    XTZ: "KT1Xo1kMu2jt33c9NSB2qnvEXtg65Q4sq27B",
+    USDT: "KT1HkpQzagFYWrheiVeuRSXShHoaiYYFRfsK",
+    USD: "KT1HkpQzagFYWrheiVeuRSXShHoaiYYFRfsK",
+    STXTZ: "KT1F16mVGisKzJ3vKjHPDaeopHm3gFMgPeJA"
+  },
+  governance: "KT1A4CKnV8ANLnCjLHMRyX2asc1VHbFUWmWr",
+  oracle: "KT1FH4S1qQJ1a8R7RykHxC3ZgCbjjRyjfCdj",
+  network: Network.TezLink_Shadownet,
 };
 
 export const tokenNames: { [assetType: string]: string } = {
@@ -169,3 +229,9 @@ export const tokenNames: { [assetType: string]: string } = {
 };
 
 export const expectedBlocksPerYear = 2 * 60 * 24 * 365;
+
+export const blocksPerMinute: Record<Network, number> = {
+  mainnet: 10,
+  shadownet: 10,
+  "tezlink-shadownet": 120,
+};

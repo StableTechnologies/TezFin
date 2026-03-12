@@ -15,6 +15,12 @@ export interface SupplyComposition {
     totalUsdValue: bigInt.BigInteger;
 }
 
+export enum Network {
+    Mainnet = 'mainnet',
+    Shadownet = 'shadownet',
+    TezLink_Shadownet = 'tezlink-shadownet',
+}
+
 /*
  * @description
  *
@@ -104,6 +110,7 @@ export interface ProtocolAddresses {
     interestRateModel: { [underlying: string]: string };
     governance: string;
     oracle: string;
+    network: Network;
 }
 
 /*
