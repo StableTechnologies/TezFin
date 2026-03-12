@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import IconButton from '@mui/material/IconButton';
 
@@ -10,13 +9,11 @@ import confirmGif from '../../assets/confirm.gif';
 import CopyIcon from '../../assets/copyIcon.svg';
 
 import useStyles from './style';
-import { shorten } from '../../util';
+import { shorten, getExplorerLink } from '../../util';
 
 const PendingModal = (props) => {
     const classes = useStyles();
     const { token, tokenText, response } = props;
-
-    const { network } = useSelector((state) => state.nodes.tezosNode.conseilServerInfo);
 
     const [transactionHash, setTransactionHash] = useState('one');
 
@@ -35,9 +32,8 @@ const PendingModal = (props) => {
                 ? <>
                     Operation hash: {' '}
                     <a
-                        href={(network === 'mainnet')
-                            ? `https://tzkt.io/${transactionHash}`
-                            : `https://${network}.tzkt.io/${transactionHash}`
+                        href={
+                            `${getExplorerLink()}/${transactionHash}`
                         }
                         target="_blank"
                         rel="noopener"

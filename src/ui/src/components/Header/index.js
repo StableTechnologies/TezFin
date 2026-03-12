@@ -19,7 +19,7 @@ import { borrowCompositionAction } from "../../reduxContent/borrowComposition/ac
 import { LightTooltip } from "../StackedBars/style.tsx";
 
 // eslint-disable-next-line import/no-dynamic-require
-const config = require(`../../library/${process.env.REACT_APP_ENV || "prod"}-network-config.json`);
+const config = require(`../../library/${process.env.REACT_APP_ENV || 'mainnet'}-network-config.json`);
 
 const Header = () => {
     const classes = useStyles();
