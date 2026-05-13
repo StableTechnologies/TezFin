@@ -1,6 +1,6 @@
 {
   "infra": {
-    "tezosNode": "https://mainnet.ecadinfra.com",
+    "tezosNode": "https://rpc.tzkt.io/mainnet",
     "conseilServer": {
         "url": "https://conseil-prod.cryptonomic-infra.tech:443",
         "apiKey": "",
