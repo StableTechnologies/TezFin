@@ -15,10 +15,10 @@ export const granadanetAction = () => async (dispatch) => {
 };
 
 export const tezosNodeAction = () => async (dispatch) => {
-    dispatch({ type: GET_TEZOS_NODE, payload: { server: config.infra.tezosNode, conseilServerInfo: config.infra.conseilServer } });
+    dispatch({ type: GET_TEZOS_NODE, payload: { server: config.infra.tezosNode } });
 };
 
-export const comptrollerAction = (protocolAddresses, server, conseilServerInfo) => async (dispatch) => {
+export const comptrollerAction = (protocolAddresses, server) => async (dispatch) => {
     if (server) {
         const comptroller = await Comptroller.GetStorage(protocolAddresses.comptroller, protocolAddresses, server);
         dispatch({ type: GET_COMPTROLLER, payload: comptroller });

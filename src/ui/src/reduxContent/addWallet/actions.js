@@ -1,5 +1,4 @@
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
-import { TezosNodeReader } from 'conseiljs';
 
 import { GET_ACCOUNT } from './types';
 
@@ -13,7 +12,6 @@ import { GET_ACCOUNT } from './types';
  */
 export const addWalletAction = (address, server, protocolAddresses, comptroller, markets) => async (dispatch) => {
     const account = await TezosLendingPlatform.GetAccount(address, markets, comptroller, protocolAddresses, server);
-    account.isKeyRevealed = await TezosNodeReader.isManagerKeyRevealedForAccount(server, address);
     dispatch({ type: GET_ACCOUNT, payload: account });
 };
 

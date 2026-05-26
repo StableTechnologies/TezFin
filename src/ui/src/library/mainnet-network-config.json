@@ -1,11 +1,7 @@
 {
   "infra": {
     "tezosNode": "https://rpc.tzkt.io/mainnet",
-    "conseilServer": {
-        "url": "https://conseil-prod.cryptonomic-infra.tech:443",
-        "apiKey": "",
-        "network": "mainnet"
-    }
+    "network": "mainnet"
   },
   "dappName": "TezFin"
 }

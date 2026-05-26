@@ -1,14 +1,14 @@
-import { KeyStoreCurve, KeyStoreType, TezosNodeReader, TezosNodeWriter } from 'conseiljs';
-
+import { TezosToolkit, OpKind } from '@taquito/taquito';
+import { BeaconWallet } from '@taquito/beacon-wallet';
 import { BigNumber } from 'bignumber.js';
-import { DAppClient } from '@airgap/beacon-sdk';
 import bigInt from 'big-integer';
-import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../library/${process.env.REACT_APP_ENV || 'mainnet'}-network-config.json`);
 
-const client = new DAppClient({ name: config.dappName, network: { type: config.infra.conseilServer.network } });
+const Tezos = new TezosToolkit(config.infra.tezosNode);
+const wallet = new BeaconWallet({ name: config.dappName, network: { type: config.infra.network, rpcUrl: config.infra.tezosNode } });
+Tezos.setWalletProvider(wallet);
 
 /**
  * This function is used to truncate a blockchain address for presentation by replacing the middle digits with an ellipsis.
@@ -26,8 +26,8 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
  * @returns clients
  */
 export const getWallet = async () => {
-    const response = await client.requestPermissions();
-    const { address } = response;
+    await wallet.requestPermissions();
+    const address = await wallet.getPKH();
     return { address };
 };
 
@@ -35,7 +35,7 @@ export const getWallet = async () => {
  * This function let's a user disconnects from an account.
  */
 export const deactivateAccount = async () => {
-    await client.clearActiveAccount();
+    await wallet.clearActiveAccount();
     // eslint-disable-next-line no-undef
     localStorage.clear();
 };
@@ -46,68 +46,49 @@ export const deactivateAccount = async () => {
  * @returns address
  */
 export const getActiveAccount = async () => {
-    const activeAccount = await client.getActiveAccount();
+    const activeAccount = await wallet.client.getActiveAccount();
     return activeAccount ? activeAccount.address : undefined;
 };
 
 /**
- * Sends a transaction to the blockchain
+ * Estimates a batch of operations and returns the batch ready to send.
  *
- * @param operations List of operations needed to be sent to the chain.
+ * @param operations List of TransferParams to estimate.
  *
- * @return operation group.
+ * @return batch operation ready to send.
  */
 export const evaluateTransaction = async (operations) => {
     try {
-        const address = operations[0].source;
-        let curve = KeyStoreCurve.ED25519;
-        if (address.startsWith('tz2')) {
-            curve = KeyStoreCurve.SECP256K1;
-        } else if (address.startsWith('tz3')) {
-            curve = KeyStoreCurve.SECP256R1;
-        }
-
-        const activeAccount = await client.getActiveAccount();
-        const keyStore = {
-            publicKey: activeAccount.publicKey,
-            secretKey: '',
-            publicKeyHash: address,
-            curve,
-            storeType: KeyStoreType.Mnemonic,
-        };
-
-        const counter = await TezosNodeReader.getCounterForAccount(config.infra.tezosNode, address);
-        
-        console.log("operation", operations);
-        const optimizeGas = config.infra.conseilServer.network !== 'tezlink-shadownet';
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(
-            config.infra.tezosNode,
-            keyStore,
-            counter,
-            operations,
-            optimizeGas
-        );
-        
-        return { opGroup };
+        // estimate each operation to get gas/storage/fee limits
+        const paramsWithKind = operations.map(op => ({ ...op, kind: OpKind.TRANSACTION }));
+        const estimates = await Tezos.estimate.batch(paramsWithKind);
+        // apply estimates to operations
+        const estimatedOps = operations.map((op, i) => ({
+            ...op,
+            kind: OpKind.TRANSACTION,
+            gasLimit: estimates[i].gasLimit,
+            storageLimit: estimates[i].storageLimit,
+            fee: estimates[i].suggestedFeeMutez,
+        }));
+        const batch = Tezos.wallet.batch(estimatedOps);
+        return { opGroup: batch };
     } catch (error) {
         console.log('evaluateTX', error);
         return { error };
     }
 };
+
 /**
- * Sends a transaction to the blockchain
+ * Sends a prepared batch to the blockchain.
  *
- * @param opGroup operation group needed to be sent to the chain
+ * @param batch Taquito wallet batch operation.
  *
  * @return operation response
  */
-export const confirmTransaction = async (opGroup) => {
+export const confirmTransaction = async (batch) => {
     try {
-        const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
-        const response = await client.requestOperation({
-            operationDetails: opGroup,
-        });
-        return { response: { response, head: head.header.level } };
+        const op = await batch.send();
+        return { response: op };
     } catch (error) {
         console.log(error);
         return { error };
@@ -115,26 +96,15 @@ export const confirmTransaction = async (opGroup) => {
 };
 
 /**
- * Confirms transaction completion on conseiljs
+ * Waits for operation confirmation on-chain.
  *
- * @param result RPC output
+ * @param op Taquito batch wallet operation.
  *
  * @return operation response
  */
-export const verifyTransaction = async ({ response, head }) => {
+export const verifyTransaction = async (op) => {
     try {
-        const groupid = response.transactionHash.replace(/"/g, '').replace(/\n/, ''); // clean up RPC output
-        const confirm = await TezosNodeReader.awaitOperationConfirmation(
-            config.infra.tezosNode,
-            head - 1,
-            groupid,
-            15,
-        ).then((res) => {
-            if (res.contents[0].metadata.operation_result.status === 'applied') {
-                return res;
-            }
-            throw new Error('operation status not applied');
-        });
+        const confirm = await op.confirmation(1);
         return { confirm };
     } catch (error) {
         console.log(error);
@@ -231,7 +201,7 @@ export const nFormatter = (num, formatDecimals = 4) => {
 };
 
 export const getExplorerLink = () => {
-    switch (config.infra.conseilServer.network) {
+    switch (config.infra.network) {
     case 'mainnet':
         return 'https://tzkt.io';
     case 'shadownet':

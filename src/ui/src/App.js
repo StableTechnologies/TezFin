@@ -27,7 +27,7 @@ const App = () => {
     const dispatch = useDispatch();
     const { account } = useSelector((state) => state.addWallet);
     const { address } = useSelector((state) => state.addWallet.account);
-    const { server, conseilServerInfo } = useSelector((state) => state.nodes.tezosNode);
+    const { server } = useSelector((state) => state.nodes.tezosNode);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
     const { markets } = useSelector((state) => state.market);
 
@@ -37,7 +37,7 @@ const App = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        dispatch(comptrollerAction(protocolAddresses, server, conseilServerInfo));
+        dispatch(comptrollerAction(protocolAddresses, server));
     }, [dispatch, server]);
 
     useEffect(() => {
@@ -46,7 +46,7 @@ const App = () => {
             dispatch(marketAction(comptroller, protocolAddresses, server));
         };
         doMarketAction();
-        const intervalId = setInterval(doMarketAction, 1000 * 60 *4); // 4 minutes
+        const intervalId = setInterval(doMarketAction, 1000 * 60 * 4); // 4 minutes
         return () => clearInterval(intervalId);
     }, [dispatch, comptroller, protocolAddresses, server]);
 

@@ -1,11 +1,7 @@
 {
   "infra": {
     "tezosNode": "https://rpc.shadownet.teztnets.com",
-    "conseilServer": {
-      "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
-      "apiKey": "",
-      "network": "shadownet"
-    }
+    "network": "shadownet"
   },
   "dappName": "Lending Platform"
 }
