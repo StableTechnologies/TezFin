@@ -81,7 +81,7 @@ const DashboardModal = (props) => {
     const [limit, setLimit] = useState('');
     const [limitUsed, setLimitUsed] = useState('');
 
-    const { address, underlyingBalances, isKeyRevealed } = useSelector((state) => state.addWallet.account);
+    const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
 
@@ -495,9 +495,7 @@ const DashboardModal = (props) => {
                                             <Typography className={classes.warningText}>{errorText}</Typography>
                                         )}
                                         <Typography className={classes.warningText}>
-                                            {!isKeyRevealed
-                                                ? 'You need to perform a reveal operation with your new wallet (for example send XTZ) in order to interact with TezFin.'
-                                                : new BigNumber(tezBalance).lt(0.25)
+                                            {new BigNumber(tezBalance).lt(0.25)
                                                 && 'Your XTZ balance is low. You may soon not be able to process any new operation if you don\'t add XTZ to your wallet.'}
                                         </Typography>
                                     </>

@@ -151,16 +151,13 @@ export const useRepayErrorText = (tokenValue, limit, tokenDetails) => {
 
     useEffect(() => {
         if (new BigNumber(tokenValue).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals[tokenDetails.title].toString()))).gt(new BigNumber(tokenDetails.walletBalance))) {
-            return () => {
-                setErrorText('Insufficient funds for repayment.');
-                setDisabled(true);
-            };
-        }
-        return () => {
+            setErrorText('Insufficient funds for repayment.');
+            setDisabled(true);
+        } else {
             setText('Repay');
             setErrorText('');
             setDisabled(false);
-        };
+        }
     }, [tokenValue, limit, tokenDetails]);
 
     return { text, errorText, disabled };
