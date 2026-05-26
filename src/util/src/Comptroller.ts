@@ -1,19 +1,14 @@
-import { ConseilOperator, ConseilQuery, ConseilQueryBuilder, ConseilServerInfo, KeyStore, Signer, TezosContractUtils, TezosMessageUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction } from 'conseiljs';
-
-import { AssetType } from './enum'
-import { JSONPath } from 'jsonpath-plus';
-import { Network, ProtocolAddresses } from './types';
+import { TransferParams } from '@taquito/taquito';
+import { getContract } from './toolkit';
+import { AssetType } from './enum';
+import { ProtocolAddresses } from './types';
 import bigInt from 'big-integer';
 import log from 'loglevel';
+
 export namespace Comptroller {
-    /*
-     * @description
-     *
-     * @param
-     */
+
     export interface Market {
         assetType: AssetType;
-        borrowCap: bigInt.BigInteger;
         borrowPaused: boolean;
         collateralFactor: number;
         isListed: boolean;
@@ -24,362 +19,125 @@ export namespace Comptroller {
 
     export type MarketMap = { [assetType: string]: Market };
 
-    /*
-     * @description
-     *
-     * @param
-     */
     export interface Storage {
-        accountLiquidityMapId: number;
-        collateralsMapId: number;
-        loansMapId: number;
         administrator: string;
         closeFactorMantissa: bigInt.BigInteger;
-        expScale: bigInt.BigInteger;
-        halfExpScale: bigInt.BigInteger;
         liquidationIncentiveMantissa: bigInt.BigInteger;
-        marketsMapId: number;
         oracleAddress: string;
         pendingAdministrator: string | undefined;
         transferPaused: boolean;
         markets: MarketMap;
     }
 
-    /*
-     * @description
-     *
-     * @param server The Tezos node to communicate with
-     * @param address
-     */
     export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string): Promise<Storage> {
-        if (protocolAddresses.network && protocolAddresses.network === Network.TezLink_Shadownet) {
-            const storageResult = await TezosNodeReader.getContractStorage(server, address);
-            
-            const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[0].args[1].args[0].int', json: storageResult })[0];
-            
-            const markets: MarketMap = {};
+        const contract = await getContract(server, address);
+        const storage: any = await contract.storage();
 
-            await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
-                try {
-                    const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
-                    const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
-                    const asset = protocolAddresses.fTokensReverse[addr];
-                    markets[asset] = parseMarketResult(marketsResult, true);
-                } catch (e) {
-                    log.error(`Failed to get Comptroller.Markets big_map content for ${addr} from ${marketsMapId} with ${e}`);
-                }
-            }));
-
+        const markets: MarketMap = {};
+        await Promise.all(Object.values(protocolAddresses.fTokens).map(async (fTokenAddr) => {
             try {
-                const adminBytes = JSONPath({ path: '$.args[0].args[0].args[0].args[1].args[0].bytes', json: storageResult })[0];
-                const oracleBytes = JSONPath({ path: '$.args[0].args[1].args[1].args[0].args[1].bytes', json: storageResult })[0];
-                
-                return {
-                    accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                    collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[0].args[0].int', json: storageResult })[0],
-                    loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
-                    administrator: TezosMessageUtils.readAddress(adminBytes),
-                    closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[0].args[1].args[1].int', json: storageResult })[0],
-                    expScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
-                    halfExpScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].args[1].args[0].int', json: storageResult })[0],
-                    liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[0].args[1].args[1].args[1].args[1].int', json: storageResult })[0],
-                    marketsMapId: marketsMapId,
-                    oracleAddress: TezosMessageUtils.readAddress(oracleBytes),
-                    pendingAdministrator: JSONPath({ path: '$.args[0].args[1].args[1].args[1].args[0].prim', json: storageResult })[0],
-                    transferPaused: JSONPath({ path: '$.args[0].args[1].args[1].args[1].args[1].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
-                    markets: markets
-                };
-            } catch (e) {
-                log.error(`Unable to parse storage JSON for Comptroller at ${address}`);
-                throw e;
-            }
-        } else {
-            const storageResult = await TezosNodeReader.getContractStorage(server, address);
-            // get marketsMapId
-            const marketsMapId = JSONPath({ path: '$.args[0].args[1].args[1].int', json: storageResult })[0];
-            // get all market values for fTokens from protocolAddresses
-            const markets: MarketMap = {};
-
-            await Promise.all(Object.values(protocolAddresses.fTokens).map(async (addr) => {
-                try {
-                    const packedKey = TezosMessageUtils.encodeBigMapKey(Buffer.from(TezosMessageUtils.writePackedData(addr, 'address'), 'hex'));
-                    const marketsResult = await TezosNodeReader.getValueForBigMapKey(server, marketsMapId, packedKey)
-                    const asset = protocolAddresses.fTokensReverse[addr];
-                    markets[asset] = parseMarketResult(marketsResult);
-                } catch (e) {
-                    log.error(`Failed to get Comptroller.Markets big_map content for ${addr} from ${marketsMapId} with ${e}`);
+                const marketEntry = await storage.markets.get(fTokenAddr);
+                if (marketEntry) {
+                    const asset = protocolAddresses.fTokensReverse[fTokenAddr];
+                    markets[asset] = {
+                        assetType: marketEntry.name as AssetType,
+                        borrowPaused: marketEntry.borrowPaused,
+                        collateralFactor: Number(marketEntry.collateralFactor.toString()),
+                        isListed: marketEntry.isListed,
+                        mintPaused: marketEntry.mintPaused,
+                        price: bigInt(marketEntry.price.toString()),
+                        updateLevel: Number(marketEntry.updateLevel.toString()),
+                    };
                 }
-            }));
-
-            // parse results
-            try {
-                return {
-                    accountLiquidityMapId: JSONPath({ path: '$.args[0].args[0].args[0].args[0].args[0].int', json: storageResult })[0],
-                    collateralsMapId: JSONPath({ path: '$.args[0].args[0].args[1].args[0].int', json: storageResult })[0],
-                    loansMapId: JSONPath({ path: '$.args[0].args[1].args[0].args[0].int', json: storageResult })[0],
-                    administrator: JSONPath({ path: '$.args[0].args[0].args[0].args[1].string', json: storageResult })[0],
-                    closeFactorMantissa: JSONPath({ path: '$.args[0].args[0].args[0].args[2].int', json: storageResult })[0],
-                    expScale: JSONPath({ path: '$.args[0].args[0].args[1].args[1].int', json: storageResult })[0],
-                    halfExpScale: JSONPath({ path: '$.args[0].args[0].args[2].int', json: storageResult })[0],
-                    liquidationIncentiveMantissa: JSONPath({ path: '$.args[0].args[0].args[3].int', json: storageResult })[0],
-                    marketsMapId: marketsMapId,
-                    oracleAddress: JSONPath({ path: '$.args[0].args[2].args[1].string', json: storageResult })[0],
-                    pendingAdministrator: JSONPath({ path: '$.args[0].args[3].prim', json: storageResult })[0],
-                    transferPaused: JSONPath({ path: '$.args[0].args[4].prim', json: storageResult })[0].toString().toLowerCase().startsWith('t'),
-                    markets: markets
-                };
             } catch (e) {
-                log.error(`Unable to parse storage JSON for Comptroller at ${address}`);
-                throw e;
+                log.error(`Failed to get Comptroller.Markets for ${fTokenAddr}: ${e}`);
             }
-        }
-    }
+        }));
 
-    /*
-     * Craft the query for operations from the ledger big map
-     *
-     * @param address The address for which to query data
-     * @param marketsMapId
-     * @param marketAddresses
-     */
-    function makeMarketsQuery(marketsMapId: number, marketAddress: string): ConseilQuery {
-        let marketsQuery = ConseilQueryBuilder.blankQuery();
-        marketsQuery = ConseilQueryBuilder.addFields(marketsQuery, 'key', 'value');
-        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'big_map_id', ConseilOperator.EQ, [marketsMapId]);
-        // key is in marketAddresses
-        marketsQuery = ConseilQueryBuilder.addPredicate(marketsQuery, 'key', ConseilOperator.EQ, [`0x${TezosMessageUtils.writeAddress(marketAddress)}`]);
-        marketsQuery = ConseilQueryBuilder.setLimit(marketsQuery, 1000);
-        return marketsQuery;
-    }
-
-    /*
-     * @description TODO
-     *
-     * @param
-     */
-    function parseMarketResult(result, tezlink = false): Market {
-        if (tezlink) {
-            const assetType: AssetType = JSONPath({ path: '$.args[1].args[0].args[0].string', json: result })[0] as AssetType;
-            return {
-                assetType: assetType,
-                borrowPaused: JSONPath({ path: '$.args[0].args[0].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-                collateralFactor: JSONPath({ path: '$.args[0].args[0].args[1].int', json: result })[0],
-                isListed: JSONPath({ path: '$.args[0].args[1].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-                mintPaused: JSONPath({ path: '$.args[0].args[1].args[1].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-                price: bigInt(JSONPath({ path: '$.args[1].args[0].args[1].int', json: result })[0]),
-                updateLevel: JSONPath({ path: '$.args[1].args[1].args[1].args[1].int', json: result })[0],
-            } as Market;
-        }
-
-        const assetType: AssetType = JSONPath({ path: '$.args[1].args[0].string', json: result })[0] as AssetType;
         return {
-            assetType: assetType,
-            borrowPaused: JSONPath({ path: '$.args[0].args[0].args[0].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-            collateralFactor: JSONPath({ path: '$.args[0].args[0].args[1].int', json: result })[0],
-            isListed: JSONPath({ path: '$.args[0].args[1].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-            mintPaused: JSONPath({ path: '$.args[0].args[2].prim', json: result })[0].toString().toLowerCase().startsWith('t'),
-            price: bigInt(JSONPath({ path: '$.args[1].args[1].int', json: result })[0]),
-            updateLevel: JSONPath({ path: '$.args[4].int', json: result })[0],
-        } as Market;
+            administrator: storage.administrator,
+            closeFactorMantissa: bigInt(storage.closeFactorMantissa.toString()),
+            liquidationIncentiveMantissa: bigInt(storage.liquidationIncentiveMantissa.toString()),
+            oracleAddress: storage.oracleAddress,
+            pendingAdministrator: storage.pendingAdministrator || undefined,
+            transferPaused: storage.transferPaused,
+            markets,
+        };
     }
 
     /**
-     * @description Return the list of collateralized markets for address
-     *
-     * @param address Account address
-     * @param comptroller
-     * @param protocolAddresses
-     * @param server Tezos node
+     * Return the list of collateralized markets for address
      */
-    export async function GetCollaterals(address: string, comptroller: Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<AssetType[]> {
-        const packedAccountKey = TezosMessageUtils.encodeBigMapKey(
-            Buffer.from(TezosMessageUtils.writePackedData(`0x${TezosMessageUtils.writeAddress(address)}`, '', TezosParameterFormat.Michelson), 'hex')
-        );
-
+    export async function GetCollaterals(address: string, _comptroller: Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<AssetType[]> {
         try {
-            const collateralsResult = await TezosNodeReader.getValueForBigMapKey(server, comptroller.collateralsMapId, packedAccountKey);
-            let fTokenAddresses: AssetType[];
-            if(server.includes('shadownet.tezlink')) {
-                fTokenAddresses = collateralsResult.map((json) => json['bytes']).map((bytes) => TezosMessageUtils.readAddress(bytes));
-            } else {
-                fTokenAddresses = collateralsResult.map((json) => json['string']);
-            }
-            return fTokenAddresses.map((fTokenAddress) => protocolAddresses.fTokensReverse[fTokenAddress]);
+            const contract = await getContract(server, protocolAddresses.comptroller);
+            const storage: any = await contract.storage();
+            const collateralsSet = await storage.collaterals.get(address);
+            if (!collateralsSet) return [];
+            // collateralsSet is a set of addresses (TSet<TAddress>)
+            const addresses: string[] = Array.isArray(collateralsSet) ? collateralsSet : [...collateralsSet];
+            return addresses.map((addr) => protocolAddresses.fTokensReverse[addr]).filter(Boolean);
         } catch (err) {
             log.error(`${address} has no collateralized assets`);
             return [];
         }
     }
 
-    /*
-     * Description
-     *
-     * @param address Address of the FToken to update
-     */
-    export interface UpdateAssetPricePair {
-        address: string;
-    }
+    // --- Operation builders (return TransferParams[]) ---
 
-
-    /*
-     * Description
-     *
-     * @param address Address of the account to update
-     */
-    export interface UpdateAccountLiquidityPair {
-        address: string;
-    }
-
-    /*
-     * Description
-     *
-     * @param
-     */
-    export function UpdateAccountLiquidityMicheline(updateAccountLiquidity: UpdateAssetPricePair): string {
-        return `{ "bytes": "${TezosMessageUtils.writeAddress(updateAccountLiquidity.address)}" }`;
-    }
-
-    /*
-     * Description
-     *
-     * @param
-     */
-    export function UpdateAccountLiquidityMichelson(updateAccountLiquidity: UpdateAccountLiquidityPair): string {
-        return `0x${TezosMessageUtils.writeAddress(updateAccountLiquidity.address)}`;
-    }
-
-    /*
-     * Returns the operation for invoking the UpdateAssetPrice entry point of the comptroller contract
-     *
-     * @param
-     */
-    export function UpdateAccountLiquidityOperation(updateAccountLiquidity: UpdateAccountLiquidityPair, counter: number, comptrollerAddress: string, pkh: string, gas: number = 200_000, freight: number = 20_000): Transaction {
-        const entrypoint = 'updateAccountLiquidityWithView';
-        const parameters = UpdateAccountLiquidityMicheline(updateAccountLiquidity);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
-    }
-
-
-    /*
-     * Add the required operations for entrypoints that invoke transferOut. This requires updating the comptroller contract's accounting.
-     *
-     * @param params The parameters for invoking the FToken entrypoint
-     * @param counter Current account counter
-     * @param keystore
-     * @param fee
-     * @param gas
-     * @param freight
-     */
-    export function DataRelevanceOpGroup(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, counter: number, pkh: string, targetAddress:string= "", gas: number = 200_000, freight: number = 20_000): Transaction[] {
-        let ops: Transaction[] = [];
-        // updateAccountLiquidityWithView
-        let updateAccountLiquidity: Comptroller.UpdateAccountLiquidityPair = { address: pkh };
-        if(targetAddress!=="")
-        updateAccountLiquidity.address = targetAddress;
-        const updateAccountLiquidityOp = Comptroller.UpdateAccountLiquidityOperation(updateAccountLiquidity, counter, protocolAddresses.comptroller, pkh, gas, freight);
-        ops.push(updateAccountLiquidityOp);
-        return ops;
-    }
-    /*
-     * Add the required operations for entrypoints that invoke transferOut. This requires updating the comptroller contract's accounting.
-     *
-     * @param params The parameters for invoking the FToken entrypoint
-     * @param counter Current account counter
-     * @param keystore
-     * @param fee
-     * @param gas
-     * @param freight
-     */
-    export async function DataRelevance(collaterals: AssetType[], protocolAddresses: ProtocolAddresses, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
-        // get account counter
-        const counter = await TezosNodeReader.getCounterForAccount(server, keystore.publicKeyHash);
-        let ops: Transaction[] = DataRelevanceOpGroup(collaterals, protocolAddresses, counter, keystore.publicKeyHash);
-        const opGroup = await TezosNodeWriter.prepareOperationGroup(server, keystore, counter, ops, true);
-        // send operation
-        const operationResult = await TezosNodeWriter.sendOperation(server, opGroup, signer);
-        return TezosContractUtils.clearRPCOperationGroupHash(operationResult.operationGroupID);
-    }
-
-    /*
-     * Description
-     *
-     * @param fTokens List of fToken contract addresses to use as collateral.
-     */
     export interface EnterMarketsPair {
         fTokens: string[];
     }
 
-    /*
-     * Description
-     *
-     * @param
-     */
-    export function EnterMarketsPairMicheline(enterMarkets: EnterMarketsPair): string {
-        return `[ ${enterMarkets.fTokens.map(market => `{ "bytes": "${TezosMessageUtils.writeAddress(market)}" }`).join(',')} ]`;
-    }
-
-    /*
-     * @description
-     *
-     * @param
-     */
-    export function EnterMarketsOperation(enterMarkets: EnterMarketsPair, comptrollerAddress: string, counter: number, pkh: string, gas: number = 200_000, freight: number = 20_000): Transaction {
-        const entrypoint = 'enterMarkets';
-        const parameters = EnterMarketsPairMicheline(enterMarkets);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
-    }
-
-    /*
-     * Description
-     *
-     * @param
-     */
-    export async function EnterMarkets(enterMarkets: EnterMarketsPair, comptrollerAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
-        const entryPoint = 'enterMarkets';
-        const parameters = EnterMarketsPairMicheline(enterMarkets);
-        const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entryPoint, parameters, TezosParameterFormat.Micheline);
-        return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
-    }
-
-    /*
-     * Description
-     *
-     * @param
-     */
     export interface ExitMarketPair {
         address: string;
     }
 
-    /*
-     * Description
-     *
-     * @param
-     */
-    export function ExitMarketPairMicheline(exitMarket: ExitMarketPair): string {
-        return `{ "bytes": "${TezosMessageUtils.writeAddress(exitMarket.address)}" }`;
+    export interface UpdateAccountLiquidityPair {
+        address: string;
     }
 
-    /*
-     * @description
-     *
-     * @param
-     */
-    export function ExitMarketOperation(exitMarket: ExitMarketPair, comptrollerAddress: string, counter: number, pkh: string, gas: number = 200_000, freight: number = 20_000): Transaction {
-        const entrypoint = 'exitMarket';
-        const parameters = ExitMarketPairMicheline(exitMarket);
-        return TezosNodeWriter.constructContractInvocationOperation(pkh, counter, comptrollerAddress, 0, 0, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
+    export function DataRelevanceOpGroup(
+        _collaterals: AssetType[],
+        protocolAddresses: ProtocolAddresses,
+        pkh: string,
+        targetAddress: string = "",
+    ): TransferParams[] {
+        const address = targetAddress || pkh;
+        return [{
+            to: protocolAddresses.comptroller,
+            amount: 0,
+            mutez: true,
+            parameter: { entrypoint: 'updateAccountLiquidityWithView', value: { string: address } },
+        }];
     }
 
-    /*
-     * Description
-     *
-     * @param
-     */
-    export async function ExitMarket(exitMarket: ExitMarketPair, comptrollerAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
-        const entryPoint = 'exitMarket';
-        const parameters = ExitMarketPairMicheline(exitMarket);
-        const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, comptrollerAddress, 0, fee, freight, gas, entryPoint, parameters, TezosParameterFormat.Micheline);
-        return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
+    export function EnterMarketsOperation(
+        enterMarkets: EnterMarketsPair,
+        comptrollerAddress: string,
+        pkh: string,
+    ): TransferParams {
+        return {
+            to: comptrollerAddress,
+            amount: 0,
+            mutez: true,
+            parameter: {
+                entrypoint: 'enterMarkets',
+                value: enterMarkets.fTokens.map((addr) => ({ string: addr })),
+            },
+        };
+    }
+
+    export function ExitMarketOperation(
+        exitMarket: ExitMarketPair,
+        comptrollerAddress: string,
+        pkh: string,
+    ): TransferParams {
+        return {
+            to: comptrollerAddress,
+            amount: 0,
+            mutez: true,
+            parameter: { entrypoint: 'exitMarket', value: { string: exitMarket.address } },
+        };
     }
 }
-

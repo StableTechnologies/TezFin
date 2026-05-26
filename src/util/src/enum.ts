@@ -19,5 +19,6 @@ export enum AssetType {
 export enum TokenStandard {
     XTZ = 0,
     FA12,
-    FA2
+    FA2,
+    FA12_PACKED,
 }
