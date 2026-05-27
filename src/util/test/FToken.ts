@@ -2,6 +2,7 @@ import { BigNumber } from "bignumber.js";
 import bigInt from "big-integer";
 import { FToken } from "../src/FToken";
 import { InterestRateModel } from "../src/contracts/InterestRateModel";
+import { Network } from "../src/types";
 import { describe, it } from "mocha";
 import { expect } from "chai";
 
@@ -20,14 +21,14 @@ function getBorrowRateApy(args: InterestRateModelArgs): bigInt.BigInteger {
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
 
-    return FToken.getBorrowRateApy(ftokenStorage, interestRateModelStorage);
+    return FToken.getBorrowRateApy(ftokenStorage, interestRateModelStorage, Network.Shadownet);
 }
 function getSupplyRateApy(args: InterestRateModelArgs): bigInt.BigInteger {
     const _storage = getStorageInterestRateModelTest(args);
     const ftokenStorage: FToken.Storage = _storage[0];
     const interestRateModelStorage: InterestRateModel.Storage = _storage[1];
 
-    return FToken.getSupplyRateApy(ftokenStorage, interestRateModelStorage);
+    return FToken.getSupplyRateApy(ftokenStorage, interestRateModelStorage, Network.Shadownet);
 }
 
 
@@ -40,7 +41,6 @@ describe('APY test ', () => {
                 currentCash: '1000000000000000000000',
                 totalBorrows: '1000000000000000000',
                 totalReserves: '0',
-                annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
                     blockRate: '760514107',
@@ -49,8 +49,8 @@ describe('APY test ', () => {
                 }
             },
             expected: {
-                borrowAPY: '432413120942524500',
-                supplyAPY: '430622245234700'
+                borrowAPY: '576964802915498300',
+                supplyAPY: '574163404595900'
             }
       },
       {
@@ -60,7 +60,6 @@ describe('APY test ', () => {
                 currentCash: '1000000000000000000000',
                 totalBorrows: '10000000000000000000',
                 totalReserves: '0',
-                annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
                     blockRate: '760514107',
@@ -69,8 +68,8 @@ describe('APY test ', () => {
                 }
             },
             expected: {
-                borrowAPY: '1617860541284317900',
-                supplyAPY: '15875939381960400'
+                borrowAPY: '2162927201434940100',
+                supplyAPY: '21168477722586900'
             }
         },
       {
@@ -80,7 +79,6 @@ describe('APY test ', () => {
                 currentCash: '1000000000000000000000',
                 totalBorrows: '100000000000000000000',
                 totalReserves: '0',
-                annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
                     blockRate: '760514107',
@@ -89,8 +87,8 @@ describe('APY test ', () => {
                 }
             },
             expected: {
-                borrowAPY: '13067418898709541300',
-                supplyAPY: '1121791201406030100'
+                borrowAPY: '17791146837968538800',
+                supplyAPY: '1498503451979147800'
             }
         },
       {
@@ -100,7 +98,6 @@ describe('APY test ', () => {
                 currentCash: '1000000000000000000000',
                 totalBorrows: '1000000000000000000000',
                 totalReserves: '0',
-                annualPeriod: '1051920',
                 expScale: '1000000000000000000',
                 interestRateModel: {
                     blockRate: '760514107',
@@ -109,8 +106,8 @@ describe('APY test ', () => {
                 }
             },
             expected: {
-                borrowAPY: '93769777717586933200',
-                supplyAPY: '39176034983584048400'
+                borrowAPY: '141508527240383986100',
+                supplyAPY: '55378312434946460300'
             }
         }
 
@@ -174,28 +171,35 @@ describe('APY test ', () => {
             },
         };
 
-        const borrowAPY8s = getBorrowRateApy(params8s);
+        const scale = bigInt(params8s.interestRateModel.scale);
+        // Compute both APYs manually to keep the test independent of network block time
+        const BLOCKS_PER_DAY_8s = Math.round(24 * 60 * 7.5);  // 8s block time → 7.5 blocks/min
+        const BLOCKS_PER_DAY_10s = 6 * 60 * 24;               // 10s block time → 6 blocks/min
 
-        // We have to manually calculate APY for 10s block time
-        // because right now it calculates value for 8s block time
-        const scale = bigInt(params10s.interestRateModel.scale);
-        const BLOCKS_PER_DAY = 6 * 60 * 24; // old value with block time = 10s
-        const borrowRate10s = getBorrowRate(params10s);
-
-        // Calculate APY
-        const borrowAPY10s = bigInt(
-            new BigNumber(borrowRate10s)
-                .multipliedBy(BLOCKS_PER_DAY)
-                .div(scale)
+        const borrowAPY8s = bigInt(
+            new BigNumber(getBorrowRate(params8s).toString())
+                .multipliedBy(BLOCKS_PER_DAY_8s)
+                .div(scale.toString())
                 .plus(1)
                 .pow(365)
                 .minus(1)
-                .multipliedBy(scale)
+                .multipliedBy(scale.toString())
                 .toFixed(0)
         ).multiply(100);
 
-        const apy8sInPercents = new BigNumber(borrowAPY8s.toString()).div(scale).toFixed(8);
-        const apy10sInPercents = new BigNumber(borrowAPY10s.toString()).div(scale).toFixed(8);
+        const borrowAPY10s = bigInt(
+            new BigNumber(getBorrowRate(params10s).toString())
+                .multipliedBy(BLOCKS_PER_DAY_10s)
+                .div(scale.toString())
+                .plus(1)
+                .pow(365)
+                .minus(1)
+                .multipliedBy(scale.toString())
+                .toFixed(0)
+        ).multiply(100);
+
+        const apy8sInPercents = new BigNumber(borrowAPY8s.toString()).div(scale.toString()).toFixed(8);
+        const apy10sInPercents = new BigNumber(borrowAPY10s.toString()).div(scale.toString()).toFixed(8);
 
         // percentage equality of APY up to 8 decimal places (0.00000001%)
         expect(apy8sInPercents).to.equal(apy10sInPercents);
@@ -227,28 +231,35 @@ describe('APY test ', () => {
             },
         };
 
-        const supplyAPY8s = getSupplyRateApy(params8s);
+        const scale = bigInt(params8s.interestRateModel.scale);
+        // Compute both APYs manually to keep the test independent of network block time
+        const BLOCKS_PER_DAY_8s = Math.round(24 * 60 * 7.5);  // 8s block time → 7.5 blocks/min
+        const BLOCKS_PER_DAY_10s = 6 * 60 * 24;               // 10s block time → 6 blocks/min
 
-        // We have to manually calculate APY for 10s block time
-        // because right now it calculates value for 8s block time
-        const scale = bigInt(params10s.interestRateModel.scale);
-        const BLOCKS_PER_DAY = 6 * 60 * 24; // old value with block time = 10s
-        const supplyRate10s = getSupplyRate(params10s);
-
-        // Calculate APY
-        const supplyAPY10s = bigInt(
-            new BigNumber(supplyRate10s)
-                .multipliedBy(BLOCKS_PER_DAY)
-                .div(scale)
+        const supplyAPY8s = bigInt(
+            new BigNumber(getSupplyRate(params8s).toString())
+                .multipliedBy(BLOCKS_PER_DAY_8s)
+                .div(scale.toString())
                 .plus(1)
                 .pow(365)
                 .minus(1)
-                .multipliedBy(scale)
+                .multipliedBy(scale.toString())
                 .toFixed(0)
         ).multiply(100);
 
-        const apy8sInPercents = new BigNumber(supplyAPY8s.toString()).div(scale).toFixed(8);
-        const apy10sInPercents = new BigNumber(supplyAPY10s.toString()).div(scale).toFixed(8);
+        const supplyAPY10s = bigInt(
+            new BigNumber(getSupplyRate(params10s).toString())
+                .multipliedBy(BLOCKS_PER_DAY_10s)
+                .div(scale.toString())
+                .plus(1)
+                .pow(365)
+                .minus(1)
+                .multipliedBy(scale.toString())
+                .toFixed(0)
+        ).multiply(100);
+
+        const apy8sInPercents = new BigNumber(supplyAPY8s.toString()).div(scale.toString()).toFixed(8);
+        const apy10sInPercents = new BigNumber(supplyAPY10s.toString()).div(scale.toString()).toFixed(8);
 
         // percentage equality of APY up to 8 decimal places (0.00000001%)
         expect(apy8sInPercents).to.equal(apy10sInPercents);
@@ -266,7 +277,7 @@ interface InterestRateModelTest {
 
 interface InterestRateModelArgs {
   reserveFactorMantissa: number | string;
-  annualPeriod: number | string;
+  annualPeriod?: number | string;
   currentCash: number | string;
   totalBorrows: number | string;
   totalReserves: number | string;
@@ -275,6 +286,8 @@ interface InterestRateModelArgs {
     blockRate: number | string;
     blockMultiplier: number | string;
     scale: number | string;
+    jumpMultiplier?: number | string;
+    kink?: number | string;
   };
 }
 
@@ -284,7 +297,6 @@ function getStorageInterestRateModelTest(
     const fTokenStorage: FToken.Storage = {
         accrualBlockNumber: 0,
         administrator: '',
-        balancesMapId: 0,
         supply: {
             totalSupply: bigInt(0),
             supplyRatePerBlock: bigInt(0)
@@ -299,6 +311,7 @@ function getStorageInterestRateModelTest(
         expScale: bigInt(args.expScale),
         halfExpScale: bigInt(0),
         initialExchangeRateMantissa: bigInt(0),
+        protocolSeizeShareMantissa: bigInt(0),
         interestRateModel: '',
         pendingAdministrator: '',
         reserveFactorMantissa: bigInt(args.reserveFactorMantissa),
@@ -310,6 +323,8 @@ function getStorageInterestRateModelTest(
     const interestRateModelStorage: InterestRateModel.Storage = {
         blockRate: bigInt(args.interestRateModel.blockRate),
         blockMultiplier: bigInt(args.interestRateModel.blockMultiplier),
+        jumpMultiplier: bigInt(args.interestRateModel.jumpMultiplier ?? '0'),
+        kink: bigInt(args.interestRateModel.kink ?? args.expScale),
         scale: bigInt(args.interestRateModel.scale)
     };
 
