@@ -75,7 +75,6 @@ const BorrowModal = (props) => {
         setEvaluationError(error);
     };
 
-    console.log('acc', account.underlyingBalances[tokenDetails.assetType].value.toString());
     const repayBorrowToken = async () => {
         // eslint-disable-next-line no-shadow
         const { opGroup, error } = await repayBorrowTokenAction(

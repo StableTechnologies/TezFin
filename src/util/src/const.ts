@@ -43,7 +43,6 @@ export const testnetAddresses: ProtocolAddresses = {
       balancesMapId: 1356,
       tokenStandard: TokenStandard.FA12,
       decimals: 6,
-      balancesPath: "$.args[0].int",
     },
     TZBTC: {
       assetType: AssetType.TZBTC,
@@ -51,7 +50,6 @@ export const testnetAddresses: ProtocolAddresses = {
       balancesMapId: 0,
       tokenStandard: TokenStandard.FA12,
       decimals: 8,
-      balancesPath: "$.args[1].int",
     },
     USDT: {
       assetType: AssetType.USDT,
@@ -60,7 +58,6 @@ export const testnetAddresses: ProtocolAddresses = {
       address: "KT1UhW3RdZ6qDMhkCbztVxFFY4eZ8uzfT5aN",
       tokenId: 0,
       balancesMapId: 1460,
-      balancesPath: "$.int",
     },
     XTZ: {
       assetType: AssetType.XTZ,
@@ -74,7 +71,6 @@ export const testnetAddresses: ProtocolAddresses = {
       tokenId: 0,
       address: "KT1WGp1JQvT3roE9YDhHw1Aq1NpY68Fvps1f",
       balancesMapId: 1488,
-      balancesPath: "$.int",
     }
   },
   comptroller: "KT1WDtRBjC5whoGQw9CTf4nu5tNAVYvATp7D",
@@ -110,9 +106,8 @@ export const mainnetAddresses: ProtocolAddresses = {
       assetType: AssetType.TZBTC,
       address: "KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn",
       balancesMapId: 31,
-      tokenStandard: TokenStandard.FA12,
+      tokenStandard: TokenStandard.FA12_PACKED,
       decimals: 8,
-      balancesPath: "$.args[1].int",
     },
     USD: {
       assetType: AssetType.USD,
@@ -120,7 +115,6 @@ export const mainnetAddresses: ProtocolAddresses = {
       balancesMapId: 36,
       tokenStandard: TokenStandard.FA12,
       decimals: 6,
-      balancesPath: "$.args[0].int",
     },
     USDT: {
       assetType: AssetType.USDT,
@@ -129,7 +123,6 @@ export const mainnetAddresses: ProtocolAddresses = {
       address: "KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o",
       tokenId: 0,
       balancesMapId: 198031,
-      balancesPath: "$.int",
     },
     XTZ: {
       assetType: AssetType.XTZ,
@@ -143,7 +136,6 @@ export const mainnetAddresses: ProtocolAddresses = {
       address: "KT1KXKhkxDezoa8G3WvPtsrgNTs5ZQwhpYZN",
       tokenId: 0,
       balancesMapId: 729395,
-      balancesPath: "$.int",
     }
   },
   comptroller: "KT1P6Lryn3ikbyf5jywWBBRP5fkztE5ZafGe",
@@ -179,7 +171,6 @@ export const tezlinkShadownetAddresses: ProtocolAddresses = {
       balancesMapId: 300,
       tokenStandard: TokenStandard.FA12,
       decimals: 6,
-      balancesPath: "$.args[1].int",
     },
     USDT: {
       assetType: AssetType.USDT,
@@ -188,7 +179,6 @@ export const tezlinkShadownetAddresses: ProtocolAddresses = {
       address: "KT1VR8vMntyrcuqtyhMdiXDTfwVwffcMVdPw",
       tokenId: 0,
       balancesMapId: 247,
-      balancesPath: "$.int",
     },
     XTZ: {
       assetType: AssetType.XTZ,
@@ -202,7 +192,6 @@ export const tezlinkShadownetAddresses: ProtocolAddresses = {
       address: "KT1MMjjXa5d7TwYSYahCXM4xkcsbBfDjsaYq",
       tokenId: 0,
       balancesMapId: 252,
-      balancesPath: "$.int",
     }
   },
   comptroller: "KT1XKz7d2Nh4SNz9HD7JXgZ5JVcGbQ4DNwLf",

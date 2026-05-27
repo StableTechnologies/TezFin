@@ -24,7 +24,7 @@ const config = require(`../../library/${process.env.REACT_APP_ENV || 'mainnet'}-
 const Header = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { network } = config.infra.conseilServer;
+    const { network } = config.infra;
     const networkType = network.charAt(0).toUpperCase() + network.slice(1);
 
     const { supplyComposition } = useSelector((state) => state.supplyComposition);

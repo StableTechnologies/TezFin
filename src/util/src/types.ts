@@ -88,11 +88,6 @@ export interface BorrowMarketModal {
     underlyingDecimals: number;
 }
 
-export interface OracleMap {
-    id: number;
-    path: string;
-}
-
 /*
  * @description Addresses of the protocol contracts
  *
@@ -126,7 +121,6 @@ export interface UnderlyingAsset {
     decimals: number;
     address?: string;
     balancesMapId?: number;
-    balancesPath?: string;
     tokenId?: number;
 }
 

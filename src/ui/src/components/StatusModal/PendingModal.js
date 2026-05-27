@@ -19,7 +19,7 @@ const PendingModal = (props) => {
 
     useEffect(() => {
         // eslint-disable-next-line no-unused-expressions
-        response && setTransactionHash(response.response.transactionHash);
+        response && setTransactionHash(response.opHash);
     }, [response]);
 
     return (
