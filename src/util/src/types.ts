@@ -18,7 +18,7 @@ export interface SupplyComposition {
 export enum Network {
     Mainnet = 'mainnet',
     Shadownet = 'shadownet',
-    TezLink_Shadownet = 'tezlink-shadownet',
+    Previewnet = 'tezosx-previewnet',
 }
 
 /*

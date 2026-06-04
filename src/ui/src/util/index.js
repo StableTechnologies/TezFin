@@ -7,7 +7,11 @@ import bigInt from 'big-integer';
 const config = require(`../library/${process.env.REACT_APP_ENV || 'mainnet'}-network-config.json`);
 
 const Tezos = new TezosToolkit(config.infra.tezosNode);
-const wallet = new BeaconWallet({ name: config.dappName, network: { type: config.infra.network, rpcUrl: config.infra.tezosNode } });
+// Temple Wallet doesn't support tezosx-previewnet natively — use 'custom' network type
+const beaconNetwork = config.infra.network === 'tezosx-previewnet'
+    ? { type: 'custom', rpcUrl: config.infra.tezosNode, name: 'TezosX Previewnet' }
+    : { type: config.infra.network, rpcUrl: config.infra.tezosNode };
+const wallet = new BeaconWallet({ name: config.dappName, network: beaconNetwork });
 Tezos.setWalletProvider(wallet);
 
 /**
@@ -59,6 +63,13 @@ export const getActiveAccount = async () => {
  */
 export const evaluateTransaction = async (operations) => {
     try {
+        // On previewnet estimation is unreliable — let the wallet estimate
+        if (config.infra.network === 'tezosx-previewnet') {
+            const batch = Tezos.wallet.batch(
+                operations.map(op => ({ ...op, kind: OpKind.TRANSACTION }))
+            );
+            return { opGroup: batch };
+        }
         // estimate each operation to get gas/storage/fee limits
         const paramsWithKind = operations.map(op => ({ ...op, kind: OpKind.TRANSACTION }));
         const estimates = await Tezos.estimate.batch(paramsWithKind);
@@ -206,8 +217,8 @@ export const getExplorerLink = () => {
         return 'https://tzkt.io';
     case 'shadownet':
         return 'https://shadownet.tzkt.io';
-    case 'tezlink-shadownet':
-        return 'https://shadownet.tezlink.tzkt.io';
+    case 'tezosx-previewnet':
+        return 'https://previewnet.tezosx.tzkt.io';
     default:
         return 'https://tzkt.io';
     }

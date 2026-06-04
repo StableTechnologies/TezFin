@@ -1,7 +1,0 @@
-{
-  "infra": {
-    "tezosNode": "https://rpc.shadownet.tezlink.nomadic-labs.com",
-    "network": "tezlink-shadownet"
-  },
-  "dappName": "TezFin"
-}
