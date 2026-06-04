@@ -26,8 +26,8 @@ export namespace PriceFeed {
 
         const contract = await getContract(server, oracle);
 
-        // TezLink fallback: read directly from storage big_map
-        if (server.includes('shadownet.tezlink')) {
+        // Previewnet fallback: on-chain views fail (tezlink_error), read directly from storage big_map
+        if (server.includes('previewnet')) {
             const storage: any = await contract.storage();
             const entry = await storage.overrides.get(`${asset}-USD`);
             // entry is pair(timestamp, nat) — second element is the price

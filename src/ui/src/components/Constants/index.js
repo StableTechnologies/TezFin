@@ -1,5 +1,5 @@
 import {
-    AssetType, testnetAddresses, mainnetAddresses, tezlinkShadownetAddresses
+    AssetType, testnetAddresses, mainnetAddresses, previewnetAddresses
 } from 'tezoslendingplatformjs';
 import fUSDtz from '../../assets/fusdtz.svg';
 import fXTZ from '../../assets/fXTZ.svg';
@@ -30,8 +30,8 @@ export const getAddresses = () => {
     switch (process.env.REACT_APP_ENV) {
     case 'shadownet':
         return testnetAddresses;
-    case 'tezlink-shadownet':
-        return tezlinkShadownetAddresses;
+    case 'tezosx-previewnet':
+        return previewnetAddresses;
     case 'mainnet':
         return mainnetAddresses;
     default:
@@ -69,7 +69,7 @@ export const tokens = [
         assetType: AssetType.USDT,
         address: addresses.underlying.USDT?.address ?? ''
     },
-    process.env.REACT_APP_ENV !== 'tezlink-shadownet' && {
+    process.env.REACT_APP_ENV !== 'tezosx-previewnet' && {
         title: 'tzBTC',
         name: 'tzBTC',
         logo: tzBTC,

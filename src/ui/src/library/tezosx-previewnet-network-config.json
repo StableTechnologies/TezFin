@@ -1,0 +1,7 @@
+{
+  "infra": {
+    "tezosNode": "https://michelson.previewnet.tezosx.nomadic-labs.com",
+    "network": "tezosx-previewnet"
+  },
+  "dappName": "TezFin"
+}

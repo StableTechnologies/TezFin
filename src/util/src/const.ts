@@ -151,24 +151,23 @@ export const mainnetAddresses: ProtocolAddresses = {
   network: Network.Mainnet
 };
 
-export const tezlinkShadownetAddresses: ProtocolAddresses = {
+export const previewnetAddresses: ProtocolAddresses = {
   fTokens: {
-    XTZ: "KT1UqLeN9JgTTNRxZcK4TFeixkg9AeWHpeji",
-    USD: "KT1Na1DNaDYgwSAxw13XkiPsKn49tV58aqQS",
-    USDT: "KT1Aq65WT5usR4AUaujeActGgDKypFTBzh3E",
-    STXTZ: "KT1QJsxABrxky8fdCwjagiAzu3rWmXGAwsfp"
+    XTZ:   "KT1Be9KLArJuSwWGiqxHP7YtpsHUtXzKMzXK",
+    USDT:  "KT1AR3ME1Ag4Hkod6e9bVP5fmRXecu88h7QJ",
+    USD:   "KT1QQBo5mTdCSnk66kNS53hGzQxknRxz9VWT",
+    STXTZ: "KT1MpVTLYnN9W5pbTFu2nUv6JoNfKA4VfUnm",
   },
   fTokensReverse: {
-    KT1UqLeN9JgTTNRxZcK4TFeixkg9AeWHpeji: AssetType.XTZ,
-    KT1Na1DNaDYgwSAxw13XkiPsKn49tV58aqQS: AssetType.USD,
-    KT1Aq65WT5usR4AUaujeActGgDKypFTBzh3E: AssetType.USDT,
-    KT1QJsxABrxky8fdCwjagiAzu3rWmXGAwsfp: AssetType.STXTZ
+    KT1Be9KLArJuSwWGiqxHP7YtpsHUtXzKMzXK: AssetType.XTZ,
+    KT1AR3ME1Ag4Hkod6e9bVP5fmRXecu88h7QJ: AssetType.USDT,
+    KT1QQBo5mTdCSnk66kNS53hGzQxknRxz9VWT: AssetType.USD,
+    KT1MpVTLYnN9W5pbTFu2nUv6JoNfKA4VfUnm: AssetType.STXTZ,
   },
   underlying: {
     USD: {
       assetType: AssetType.USD,
-      address: "KT1RfMCz7jonKzH9pkHD3Rko8pf4wnDaiM95",
-      balancesMapId: 300,
+      address: "KT1Ho6NbeyyGExTcq74VAEh4vwis51AXrE16",
       tokenStandard: TokenStandard.FA12,
       decimals: 6,
     },
@@ -176,9 +175,8 @@ export const tezlinkShadownetAddresses: ProtocolAddresses = {
       assetType: AssetType.USDT,
       tokenStandard: TokenStandard.FA2,
       decimals: 6,
-      address: "KT1VR8vMntyrcuqtyhMdiXDTfwVwffcMVdPw",
+      address: "KT1QC9jwGx6oUDFiTVDY97rbsHc3UDuBPJBH",
       tokenId: 0,
-      balancesMapId: 247,
     },
     XTZ: {
       assetType: AssetType.XTZ,
@@ -189,21 +187,20 @@ export const tezlinkShadownetAddresses: ProtocolAddresses = {
       assetType: AssetType.STXTZ,
       tokenStandard: TokenStandard.FA2,
       decimals: 6,
-      address: "KT1MMjjXa5d7TwYSYahCXM4xkcsbBfDjsaYq",
+      address: "KT1ENE6cK3PAJDWs5VF8KCzRTihPnywu4waE",
       tokenId: 0,
-      balancesMapId: 252,
-    }
+    },
   },
-  comptroller: "KT1XKz7d2Nh4SNz9HD7JXgZ5JVcGbQ4DNwLf",
+  comptroller: "KT1DxrZ8vLgqTFqiNWD5GLTeMiYrtBWF2vgt",
   interestRateModel: {
-    XTZ: "KT1Xo1kMu2jt33c9NSB2qnvEXtg65Q4sq27B",
-    USDT: "KT1HkpQzagFYWrheiVeuRSXShHoaiYYFRfsK",
-    USD: "KT1HkpQzagFYWrheiVeuRSXShHoaiYYFRfsK",
-    STXTZ: "KT1F16mVGisKzJ3vKjHPDaeopHm3gFMgPeJA"
+    XTZ:   "KT1X2U77419s1ReGnD9jxNTKwJbu4f73AhS2",
+    USDT:  "KT19rD2vyYv8Szak1qtSUxMgJ5B3kbdMWJgV",
+    USD:   "KT1VwACD1FADmTeWqVUCY4R2XNGmEJx5cGzm",
+    STXTZ: "KT1T5ht1i3QHBkVuprk9VRL7tusqpB3HvTGA",
   },
-  governance: "KT1A4CKnV8ANLnCjLHMRyX2asc1VHbFUWmWr",
-  oracle: "KT1FH4S1qQJ1a8R7RykHxC3ZgCbjjRyjfCdj",
-  network: Network.TezLink_Shadownet,
+  governance: "KT1GNcDLmXBV15dUbydBUptsoARvTGNFa9sq",
+  oracle: "KT1Ks7c9RGiA8MVUniXDzfrSy2KpobNC8UgC",
+  network: Network.Previewnet,
 };
 
 export const tokenNames: { [assetType: string]: string } = {
@@ -222,5 +219,5 @@ export const expectedBlocksPerYear = 2 * 60 * 24 * 365;
 export const blocksPerMinute: Record<Network, number> = {
   mainnet: 10,
   shadownet: 10,
-  "tezlink-shadownet": 120,
+  "tezosx-previewnet": 120,
 };
