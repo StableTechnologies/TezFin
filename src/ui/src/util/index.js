@@ -1,5 +1,6 @@
 import { TezosToolkit, OpKind } from '@taquito/taquito';
 import { BeaconWallet } from '@taquito/beacon-wallet';
+import { NetworkType } from '@taquito/beacon-wallet/types';
 import { BigNumber } from 'bignumber.js';
 import bigInt from 'big-integer';
 
@@ -7,10 +8,12 @@ import bigInt from 'big-integer';
 const config = require(`../library/${process.env.REACT_APP_ENV || 'mainnet'}-network-config.json`);
 
 const Tezos = new TezosToolkit(config.infra.tezosNode);
-// Temple Wallet doesn't support tezosx-previewnet natively — use 'custom' network type
+// Temple Wallet doesn't support tezosx-previewnet natively — use 'custom' network type.
+// For mainnet/shadownet omit rpcUrl: some mobile wallets (e.g. Kukai iOS) treat a custom
+// rpcUrl as a different network and reject the permission request.
 const beaconNetwork = config.infra.network === 'tezosx-previewnet'
-    ? { type: 'custom', rpcUrl: config.infra.tezosNode, name: 'TezosX Previewnet' }
-    : { type: config.infra.network, rpcUrl: config.infra.tezosNode };
+    ? { type: NetworkType.CUSTOM, rpcUrl: config.infra.tezosNode, name: 'TezosX Previewnet' }
+    : { type: config.infra.network };
 const wallet = new BeaconWallet({ name: config.dappName, network: beaconNetwork });
 Tezos.setWalletProvider(wallet);
 
