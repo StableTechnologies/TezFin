@@ -11,8 +11,8 @@
     "@mui/material": "^5.0.1",
     "@mui/styles": "^5.0.1",
     "@mui/system": "^5.8.2",
-    "@taquito/beacon-wallet": "^24.3.0",
-    "@taquito/taquito": "^24.3.0",
+    "@taquito/beacon-wallet": "25.0.0",
+    "@taquito/taquito": "25.0.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
@@ -31,16 +31,6 @@
     "redux-thunk": "^2.3.0",
     "tezoslendingplatformjs": "../util/",
     "web-vitals": "^1.1.2"
-  },
-  "overrides": {
-    "@ecadlabs/beacon-core": "4.8.4-ecad",
-    "@ecadlabs/beacon-dapp": "4.8.4-ecad",
-    "@ecadlabs/beacon-transport-matrix": "4.8.4-ecad",
-    "@ecadlabs/beacon-transport-postmessage": "4.8.4-ecad",
-    "@ecadlabs/beacon-transport-walletconnect": "4.8.4-ecad",
-    "@ecadlabs/beacon-types": "4.8.4-ecad",
-    "@ecadlabs/beacon-ui": "4.8.4-ecad",
-    "@ecadlabs/beacon-utils": "4.8.4-ecad"
   },
   "devDependencies": {
     "@types/node": "^16.11.10",
