@@ -19,6 +19,8 @@ For the detailed description please refer to the [wiki pages](https://github.com
 
 SmartPy CLI is required to interact with contracts. For installation please refer to https://smartpy.io/cli/
 
+Install legacy version: `bash <(curl -s https://legacy.smartpy.io/cli/install.sh) --yes`
+
 Code is organized in the following structure
 
  - [contracts](contracts) - contains SmartPy code of smart contracts

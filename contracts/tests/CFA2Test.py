@@ -102,7 +102,7 @@ def test():
     scenario.h2("Check getCash")
     scenario.h3("Before accrueInterest")
     scenario += c1.getCash(sp.pair(sp.unit, view_result_pair.typed.targetNatPair)).run(sender=alice, level=bLevel.next())
-    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 100)
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 200)
 
     scenario.h3("After accrueInterest")
     scenario += c1.accrueInterest().run(sender=alice, level=bLevel.next())
@@ -125,6 +125,22 @@ def test():
     scenario += c1.borrow(sp.nat(10)).run(sender=alice, level=bLevel.current())
     scenario.verify(fa2.data.ledger[fa2.ledger_key.make(c1.address, tokenId)].balance == 190)
     scenario.verify(fa2.data.ledger[fa2.ledger_key.make(alice.address, tokenId)].balance == 10)
+    scenario.verify(c1.data.currentCash == 190)
+
+    scenario.h2("Regression: repeated redeems update cash before repricing")
+    # A token-backed market must not retain the old cash value after sending
+    # underlying. Otherwise each equal burn in a group receives more than the
+    # preceding one as totalSupply falls.
+    DataRelevance.updateAllRelevance(scenario, bLevel, alice, c1, cmpt, c1.address, alice.address)
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario.verify(c1.data.currentCash == 180)
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario.verify(c1.data.currentCash == 140)
+    scenario.verify(fa2.data.ledger[fa2.ledger_key.make(c1.address, tokenId)].balance == 140)
+    scenario.verify(fa2.data.ledger[fa2.ledger_key.make(alice.address, tokenId)].balance == 60)
 
     scenario.h2("Check verifySweepFA12")
     scenario.h3("With underlying token and correct id")

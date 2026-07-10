@@ -133,8 +133,11 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(accountSnapshot.borrowBalance ==
                   sp.nat(0), EC.CMPT_BORROW_IN_MARKET)
         cTokenAddress = sp.sender
+        redeemUnderlyingAmount = self.mulScalarTruncate(
+            self.makeExp(accountSnapshot.exchangeRateMantissa),
+            accountSnapshot.cTokenBalance)
         self.redeemAllowedInternal(
-            cTokenAddress, accountSnapshot.account, accountSnapshot.cTokenBalance)
+            cTokenAddress, accountSnapshot.account, redeemUnderlyingAmount)
         sp.if (self.data.collaterals.contains(accountSnapshot.account)) & (self.data.collaterals[accountSnapshot.account].contains(cTokenAddress)):
             # if sender has collateralized this market, remove from collaterals
             self.data.collaterals[accountSnapshot.account].remove(
@@ -169,7 +172,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         params: TRecord
             cToken: TAddress - The market to verify the redeem against
             redeemer: TAddress - The account which would redeem the tokens
-            redeemAmount: TNat - The number of cTokens to exchange for the underlying asset in the market
+            redeemAmount: TNat - The amount of underlying the cToken will pay
     """
     @sp.entry_point(lazify=True)
     def redeemAllowed(self, params):
@@ -179,14 +182,14 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.redeemAllowedInternal(
             params.cToken, params.redeemer, params.redeemAmount)
 
-    def redeemAllowedInternal(self, cToken, redeemer, redeemAmount):
+    def redeemAllowedInternal(self, cToken, redeemer, redeemUnderlyingAmount):
         self.verifyMarketListed(cToken)
         # If the redeemer is not 'in' the market, then we can bypass the liquidity check
         sp.if self.data.collaterals.contains(redeemer) & self.data.collaterals[redeemer].contains(cToken):
             # skip liquidity check if no loans for user
             sp.if (self.data.loans.contains(redeemer)) & (sp.len(self.data.loans[redeemer]) != 0):
                 self.checkInsuffLiquidityInternal(
-                    cToken, redeemer, redeemAmount)
+                    cToken, redeemer, redeemUnderlyingAmount)
         self.invalidateLiquidity(redeemer)
 
     def checkInsuffLiquidityInternal(self, cToken, account, amount):
@@ -286,8 +289,16 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             0), "TEZ_TRANSFERED")
         sp.set_type(params, CMPTInterface.TTransferAllowedParams)
         sp.verify(~ self.data.transferPaused, EC.CMPT_TRANSFER_PAUSED)
+        snapshot = sp.view(
+            "getAccountSnapshotView", params.cToken, params.src,
+            t=sp.TOption(CTI.TAccountSnapshot)
+        ).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
+        sp.verify(snapshot.is_some(), EC.CMPT_OUTDATED_ACCOUNT_SNAPSHOT)
+        transferUnderlyingAmount = self.mulScalarTruncate(
+            self.makeExp(snapshot.open_some().exchangeRateMantissa),
+            params.transferTokens)
         self.redeemAllowedInternal(
-            params.cToken, params.src, params.transferTokens)
+            params.cToken, params.src, transferUnderlyingAmount)
 
     """
         Updates all asset prices using harbinger view

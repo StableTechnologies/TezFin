@@ -78,7 +78,7 @@ class ComptrollerInterface(sp.Contract):
         params: TRecord
             cToken: TAddress - The market to verify the redeem against
             redeemer: TAddress - The account which would redeem the tokens
-            redeemAmount: TNat - The number of cTokens to exchange for the underlying asset in the market
+            redeemAmount: TNat - The amount of underlying the cToken will pay
     """
     @sp.entry_point
     def redeemAllowed(self, params):

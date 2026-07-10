@@ -45,8 +45,13 @@ class CFA12(CToken.CToken):
     def doTransferIn(self, from_, amount):
         self.transferFA12(from_, sp.self_address, amount,
                           self.data.fa1_2_TokenAddress)
+        # Keep the accounting cache in lockstep with the scheduled token
+        # transfer. Subsequent operations in the same operation group use this
+        # value to price shares and check liquidity.
+        self.data.currentCash += amount
 
     def doTransferOut(self, to_, amount, isContract=False):
+        self.data.currentCash = self.sub_nat_nat(self.data.currentCash, amount)
         self.transferFA12(sp.self_address, to_, amount,
                           self.data.fa1_2_TokenAddress)
 

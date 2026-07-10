@@ -85,7 +85,7 @@ def test():
     scenario.h2("Check getCash")
     scenario.h3("Before accrueInterest")
     scenario += c1.getCash(sp.pair(sp.unit, view_result_pair.typed.targetNatPair)).run(sender=alice, level=bLevel.next())
-    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 100)
+    scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), 110)
 
     scenario.h3("After accrueInterest")
     scenario += c1.accrueInterest().run(sender=alice, level=bLevel.next())
@@ -107,6 +107,22 @@ def test():
     scenario += c1.borrow(sp.nat(10)).run(sender=alice, level=bLevel.current())
     scenario.verify(fa12.data.balances[c1.address].balance == 100)
     scenario.verify(fa12.data.balances[alice.address].balance == 10)
+    scenario.verify(c1.data.currentCash == 100)
+
+    scenario.h2("Regression: repeated redeems update cash before repricing")
+    # The June 18 exploit repeatedly burned the same number of fTokens while
+    # currentCash stayed fixed. That made the exchange rate rise after each
+    # burn. Each redemption below must instead decrease both cash and supply.
+    DataRelevance.updateAllRelevance(scenario, bLevel, alice, c1, cmpt, c1.address, alice.address)
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario.verify(c1.data.currentCash == 90)
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario += c1.redeem(10).run(sender=alice, level=bLevel.current())
+    scenario.verify(c1.data.currentCash == 50)
+    scenario.verify(fa12.data.balances[c1.address].balance == 50)
+    scenario.verify(fa12.data.balances[alice.address].balance == 60)
 
     scenario.h2("Check verifySweepFA12")
     scenario.h3("With underlying token")
