@@ -162,10 +162,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             params.redeemAmount, params.isUnderlying)
         redeemTokens = self.getRedeemTokens(
             params.redeemAmount, params.isUnderlying)
-        # The comptroller's liquidity calculation is denominated in the
-        # underlying asset. Both redeem entrypoints therefore pass the actual
-        # underlying payout, never the caller's fToken input.
-        self.verifyRedeemAllowed(params.redeemer, redeemAmount)
+        # Pass the actual fToken burn and the pre-redemption exchange rate.
+        # The comptroller uses them to calculate the exact change in rounded
+        # collateral value, which can differ from the rounded cash payout.
+        self.verifyRedeemAllowed(
+            params.redeemer, redeemTokens, self.exchangeRateStoredImpl())
         # make sure neither token value nor underlying value
         # is zero before proceeding with redeem
         sp.if ((redeemAmount > 0) & (redeemTokens > 0)) :
@@ -177,11 +178,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 self.data.ledger[params.redeemer].balance - redeemTokens, "Insufficient balance")
             self.doTransferOut(params.redeemer, redeemAmount)
 
-    def verifyRedeemAllowed(self, redeemer_, redeemUnderlyingAmount_):
+    def verifyRedeemAllowed(self, redeemer_, redeemTokens_, exchangeRateMantissa_):
         c = sp.contract(CMPI.TRedeemAllowedParams, self.data.comptroller,
                         entry_point="redeemAllowed").open_some()
         transferData = sp.record(
-            cToken=sp.self_address, redeemer=redeemer_, redeemAmount=redeemUnderlyingAmount_)
+            cToken=sp.self_address, redeemer=redeemer_, redeemTokens=redeemTokens_,
+            exchangeRateMantissa=exchangeRateMantissa_)
         sp.transfer(transferData, sp.mutez(0), c)
 
     def doTransferOut(self, to_, amount, isContract=False):  # override

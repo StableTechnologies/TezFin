@@ -43,6 +43,9 @@ class CFA12(CToken.CToken):
         self.data.currentCash = value
 
     def doTransferIn(self, from_, amount):
+        # Listed FA1.2 underlyings must credit exactly ``amount`` on every
+        # successful transfer. Fee-on-transfer and transfer-time-rebasing
+        # tokens are unsupported because currentCash is updated by amount.
         self.transferFA12(from_, sp.self_address, amount,
                           self.data.fa1_2_TokenAddress)
         # Keep the accounting cache in lockstep with the scheduled token

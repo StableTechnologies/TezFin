@@ -182,6 +182,7 @@ export interface Market {
     currentPrice: bigInt.BigInteger;
     reserveFactor: number;
     collateralFactor: number;
+    redeemPaused: boolean;
     exchangeRate: BigNumber;
     storage: FToken.Storage;
     rateModel: InterestRateModel.Storage;

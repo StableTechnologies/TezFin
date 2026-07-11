@@ -35,7 +35,11 @@ export async function mintFakeTokens(keystore: KeyStore, signer: Signer, protoco
 export async function setOracle(keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses, oracleAddress: string, timeDiff: number){
     log.info(`setting oracle ${oracleAddress}, timeDiff ${timeDiff}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
-    const supportMarketOpId = await Governance.SetOracle({comptrollerAddress: protocolAddresses.comptroller, oracleAddress: oracleAddress,timeDiff:timeDiff}, protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
+    const supportMarketOpId = await sendGovernanceOperation(
+        Governance.SetOracleOperation({ comptrollerAddress: protocolAddresses.comptroller, oracleAddress, timeDiff }, protocolAddresses.governance),
+        keystore,
+        signer,
+    );
     const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, supportMarketOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
@@ -62,31 +66,37 @@ export function tokenMint(asset: string, keystore: KeyStore, signer: Signer, pro
 }
 
 async function supportMarket(asset: AssetType, priceExp: number, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
-    // supportMarket
     if(!Object.prototype.hasOwnProperty.call(protocolAddresses.fTokens, asset)){
         return
     }
+    if (!config.exactTransferUnderlyings.includes(asset)) {
+        throw new Error(`${asset} is not approved for exact-transfer cash accounting`);
+    }
     log.info(`supportMarket ${asset}`);
     const supportMarket: Governance.SupportMarketPair = {
-        comptroller: protocolAddresses.comptroller,
-        fToken: {
-            address: protocolAddresses.fTokens[asset],
-            name: asset
-        }
+        comptrollerAddress: protocolAddresses.comptroller,
+        fTokenAddress: protocolAddresses.fTokens[asset],
+        name: asset,
+        priceExp: Math.pow(10, priceExp),
     };
     log.info(`${JSON.stringify(supportMarket)}`);
     const head = await TezosNodeReader.getBlockHead(config.tezosNode)
-    const supportMarketOpId = await Governance.SupportMarket(supportMarket, Math.pow(10, priceExp), protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
+    const supportMarketOpId = await sendGovernanceOperation(
+        Governance.SupportMarketOperation(supportMarket, protocolAddresses.governance),
+        keystore,
+        signer,
+    );
     const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, supportMarketOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
 }
 
 async function unpauseMarkets(asset: AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {
-    // setMintPaused
+    // New markets begin with mint, borrow, and redemption paused.  Explicitly
+    // enable all three only after the market listing operation has completed.
     if(!Object.prototype.hasOwnProperty.call(protocolAddresses.fTokens, asset)){
         return
     }
     log.info(`setMintPaused: ${asset}`);
-    const setMintPaused: Governance.SetMintPausedPair = {
+    const setMintPaused: Governance.TokenPausePair = {
         comptrollerAddress: protocolAddresses.comptroller,
         tokenState: {
             state: false,
@@ -95,10 +105,14 @@ async function unpauseMarkets(asset: AssetType, keystore: KeyStore, signer: Sign
     };
     log.info(`${JSON.stringify(setMintPaused)}`);
     let head = await TezosNodeReader.getBlockHead(config.tezosNode)
-    const setMintPausedOpId = await Governance.SetMintPaused(setMintPaused, protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
+    const setMintPausedOpId = await sendGovernanceOperation(
+        Governance.SetMintPausedOperation(setMintPaused, protocolAddresses.governance),
+        keystore,
+        signer,
+    );
     const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, setMintPausedOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
     log.info(`setBorrowPaused: ${asset}`);
-    const setBorrowPaused: Governance.SetBorrowPausedPair = {
+    const setBorrowPaused: Governance.TokenPausePair = {
         comptrollerAddress: protocolAddresses.comptroller,
         tokenState: {
             state: false,
@@ -106,8 +120,44 @@ async function unpauseMarkets(asset: AssetType, keystore: KeyStore, signer: Sign
         }
     };
     head = await TezosNodeReader.getBlockHead(config.tezosNode)
-    const setBorrowPausedOpId = await Governance.SetBorrowPaused(setBorrowPaused, protocolAddresses.governance, config.tezosNode, signer, keystore, config.tx.fee);
+    const setBorrowPausedOpId = await sendGovernanceOperation(
+        Governance.SetBorrowPausedOperation(setBorrowPaused, protocolAddresses.governance),
+        keystore,
+        signer,
+    );
     await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, setBorrowPausedOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+    log.info(`setRedeemPaused: ${asset}`);
+    const setRedeemPaused: Governance.TokenPausePair = {
+        comptrollerAddress: protocolAddresses.comptroller,
+        tokenState: {
+            state: false,
+            fTokenAddress: protocolAddresses.fTokens[asset]
+        }
+    };
+    head = await TezosNodeReader.getBlockHead(config.tezosNode)
+    const setRedeemPausedOpId = await sendGovernanceOperation(
+        Governance.SetRedeemPausedOperation(setRedeemPaused, protocolAddresses.governance),
+        keystore,
+        signer,
+    );
+    await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, setRedeemPausedOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+}
+
+async function sendGovernanceOperation(operation: any, keystore: KeyStore, signer: Signer): Promise<string> {
+    const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(
+        config.tezosNode,
+        signer,
+        keystore,
+        operation.to,
+        0,
+        config.tx.fee,
+        config.tx.freight,
+        config.tx.gas,
+        operation.parameter.entrypoint,
+        JSON.stringify(operation.parameter.value),
+        TezosParameterFormat.Micheline,
+    );
+    return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
 }
 
 async function SetPrice(asset: AssetType, price: number, priceOracleAddress: string, server: string, signer: Signer, keystore: KeyStore, fee: number, gas: number = 200_000, freight: number = 20_000): Promise<string> {
@@ -116,4 +166,3 @@ async function SetPrice(asset: AssetType, price: number, priceOracleAddress: str
     const nodeResult = await TezosNodeWriter.sendContractInvocationOperation(server, signer, keystore, priceOracleAddress, 0, fee, freight, gas, entrypoint, parameters, TezosParameterFormat.Micheline);
     return TezosContractUtils.clearRPCOperationGroupHash(nodeResult.operationGroupID);
 }
-

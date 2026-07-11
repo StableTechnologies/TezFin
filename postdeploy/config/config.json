@@ -126,6 +126,12 @@
             "priceExp": 10
         }
     ],
+    "exactTransferUnderlyings": [
+        "USD",
+        "XTZ",
+        "USDT",
+        "TZBTC"
+    ],
     "disableMarket": [],
     "unpauseMarkets": [
         "USD",

@@ -119,7 +119,10 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
     ).toNumber();
 
     useEffect(() => {
-        if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
+        if (tokenDetails.redeemPaused) {
+            setDisabled(true);
+            setErrorText('Withdrawals are temporarily paused for this market.');
+        } else if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
             setDisabled(true);
             setErrorText('You cannot withdraw an amount greater than the amount you supply.');
         } else if ((borrowing > pendingSupplyingUsdLimit) || (tokenDetails.collateral && borrowing > pendingCollateralizedUsdLimit)) {
@@ -133,7 +136,7 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
             setErrorText('');
             setDisabled(false);
         };
-    }, [tokenValue, limit]);
+    }, [tokenValue, limit, tokenDetails.redeemPaused]);
 
     return { text, errorText, disabled };
 };

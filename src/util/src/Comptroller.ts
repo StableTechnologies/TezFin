@@ -13,6 +13,7 @@ export namespace Comptroller {
         collateralFactor: number;
         isListed: boolean;
         mintPaused: boolean;
+        redeemPaused: boolean;
         price: bigInt.BigInteger;
         updateLevel: number;
     }
@@ -45,6 +46,7 @@ export namespace Comptroller {
                         collateralFactor: Number(marketEntry.collateralFactor.toString()),
                         isListed: marketEntry.isListed,
                         mintPaused: marketEntry.mintPaused,
+                        redeemPaused: marketEntry.redeemPaused,
                         price: bigInt(marketEntry.price.toString()),
                         updateLevel: Number(marketEntry.updateLevel.toString()),
                     };

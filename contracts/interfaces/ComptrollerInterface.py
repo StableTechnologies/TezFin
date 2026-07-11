@@ -8,8 +8,9 @@ TMintAllowedParams = sp.TRecord(cToken=sp.TAddress, minter=sp.TAddress, mintAmou
     ("cToken", ("minter", "mintAmount")))
 TBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, borrower=sp.TAddress, borrowAmount=sp.TNat).layout(
     ("cToken", ("borrower", "borrowAmount")))
-TRedeemAllowedParams = sp.TRecord(cToken=sp.TAddress, redeemer=sp.TAddress, redeemAmount=sp.TNat).layout(
-    ("cToken", ("redeemer", "redeemAmount")))
+TRedeemAllowedParams = sp.TRecord(cToken=sp.TAddress, redeemer=sp.TAddress,
+                                   redeemTokens=sp.TNat, exchangeRateMantissa=sp.TNat).layout(
+    (("cToken", "redeemer"), ("redeemTokens", "exchangeRateMantissa")))
 TRepayBorrowAllowedParams = sp.TRecord(cToken=sp.TAddress, payer=sp.TAddress, borrower=sp.TAddress, repayAmount=sp.TNat).layout(
     ("cToken", ("payer", ("borrower", "repayAmount"))))
 TTransferAllowedParams = sp.TRecord(cToken=sp.TAddress, src=sp.TAddress, dst=sp.TAddress,
@@ -78,7 +79,8 @@ class ComptrollerInterface(sp.Contract):
         params: TRecord
             cToken: TAddress - The market to verify the redeem against
             redeemer: TAddress - The account which would redeem the tokens
-            redeemAmount: TNat - The amount of underlying the cToken will pay
+            redeemTokens: TNat - The number of cTokens removed from the redeemer
+            exchangeRateMantissa: TNat - The pre-redemption exchange rate, scaled by 1e18
     """
     @sp.entry_point
     def redeemAllowed(self, params):
