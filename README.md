@@ -19,6 +19,8 @@ For the detailed description please refer to the [wiki pages](https://github.com
 
 SmartPy CLI is required to interact with contracts. For installation please refer to https://smartpy.io/cli/
 
+Install legacy version: `bash <(curl -s https://legacy.smartpy.io/cli/install.sh) --yes`
+
 Code is organized in the following structure
 
  - [contracts](contracts) - contains SmartPy code of smart contracts
@@ -81,6 +83,8 @@ cd TezFin
 
 ## Compile & Deploy Contracts
 
+Before listing an underlying, complete the [market listing checklist](docs/MarketListingChecklist.md). In particular, this cash-accounting design supports only exact-transfer underlyings.
+
 To compile and deploy all contracts at once:
 1. Configure parameters for contracts compilation in [Config.json](deploy/compile_targets/Config.json). Reffer to [Compilation arguments](https://github.com/RSerhii/TezFin/wiki/Compilation-arguments)
 2. Configure deployment parameters in [config.json](deploy/deploy_script/config.json)
@@ -118,5 +122,4 @@ npm install
 cd src/ui
 npm start
 ```
-
 

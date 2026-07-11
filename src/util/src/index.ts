@@ -4,6 +4,7 @@ export * from './types';
 
 export * from './FToken';
 export * from './Comptroller';
+export * from './Governance';
 export * from './PriceFeed';
 export * from './TezosLendingPlatform';
 

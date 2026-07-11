@@ -66,6 +66,22 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
     def repayBorrowAllowed(self, params):
         sp.set_type(params, CMPTInterface.TRepayBorrowAllowedParams)
         sp.verify(self.data.repay_borrow_allowed)
+
+    @sp.entry_point
+    def liquidateBorrowAllowed(self, params):
+        sp.set_type(params, CMPTInterface.TLiquidateBorrowAllowed)
+
+    @sp.onchain_view()
+    def liquidateCalculateSeizeTokens(self, params):
+        sp.set_type(params, CMPTInterface.TLiquidateCalculateSeizeTokens)
+        # The exact collateral valuation is not relevant to cash movement in
+        # these tests; one cToken is enough to complete the liquidation path.
+        sp.result(sp.pair(sp.nat(1), sp.nat(0)))
+
+    @sp.onchain_view()
+    def seizeAllowed(self, params):
+        sp.set_type(params, sp.TRecord(cTokenCollateral=sp.TAddress, cTokenBorrowed=sp.TAddress))
+        sp.result(sp.bool(True))
         
     @sp.entry_point
     def setRepayBorrowAllowed(self, params):
@@ -139,6 +155,10 @@ class ComptrollerMock(CMPTInterface.ComptrollerInterface):
         
     @sp.entry_point
     def setBorrowPaused(self, params):
+        sp.set_type(params, sp.TUnit)
+
+    @sp.entry_point
+    def setRedeemPaused(self, params):
         sp.set_type(params, sp.TUnit)
         
     @sp.entry_point

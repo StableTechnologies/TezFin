@@ -7,6 +7,8 @@ class ErrorCodes:
     CMPT_MINT_PAUSED = "CMPT_MINT_PAUSED"
     # Borrow is paused
     CMPT_BORROW_PAUSED = "CMPT_BORROW_PAUSED"
+    # Redemption is paused
+    CMPT_REDEEM_PAUSED = "CMPT_REDEEM_PAUSED"
     # Transfer is paused
     CMPT_TRANSFER_PAUSED = "CMPT_TRANSFER_PAUSED"
     # Seize is paused
@@ -53,3 +55,5 @@ class ErrorCodes:
     CMPT_COMPTROLLER_MISMATCH = "CMPT_COMPTROLLER_MISMATCH"
     CMPT_OUTDATED_ACCOUNT_SNAPSHOT = "CMPT_OUTDATED_ACCOUNT_SNAPSHOT"
     CMPT_TOO_MANY_ASSETS = "CMPT_TOO_MANY_ASSETS"
+    # Collateral factors are expressed as a fraction scaled by 1e18.
+    CMPT_INVALID_COLLATERAL_FACTOR = "CMPT_INVALID_COLLATERAL_FACTOR"

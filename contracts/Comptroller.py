@@ -24,6 +24,7 @@ TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
                      # Must be between 0 and 1, and stored as a mantissa.
                      mintPaused=sp.TBool,
                      borrowPaused=sp.TBool,
+                     redeemPaused=sp.TBool,
                      name=sp.TString,  # Asset name for price oracle
                      price=Exponential.TExp,  # The price of the asset
                      priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
@@ -133,8 +134,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(accountSnapshot.borrowBalance ==
                   sp.nat(0), EC.CMPT_BORROW_IN_MARKET)
         cTokenAddress = sp.sender
-        self.redeemAllowedInternal(
-            cTokenAddress, accountSnapshot.account, accountSnapshot.cTokenBalance)
+        self.checkRedeemAllowedInternal(
+            cTokenAddress, accountSnapshot.account,
+            accountSnapshot.exchangeRateMantissa,
+            accountSnapshot.cTokenBalance, sp.nat(0))
         sp.if (self.data.collaterals.contains(accountSnapshot.account)) & (self.data.collaterals[accountSnapshot.account].contains(cTokenAddress)):
             # if sender has collateralized this market, remove from collaterals
             self.data.collaterals[accountSnapshot.account].remove(
@@ -169,31 +172,68 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         params: TRecord
             cToken: TAddress - The market to verify the redeem against
             redeemer: TAddress - The account which would redeem the tokens
-            redeemAmount: TNat - The number of cTokens to exchange for the underlying asset in the market
+            redeemTokens: TNat - The number of cTokens removed from the redeemer
+            exchangeRateMantissa: TNat - The pre-redemption exchange rate, scaled by 1e18
     """
     @sp.entry_point(lazify=True)
     def redeemAllowed(self, params):
         sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(params, CMPTInterface.TRedeemAllowedParams)
-        self.redeemAllowedInternal(
-            params.cToken, params.redeemer, params.redeemAmount)
+        self.verifyMarketListed(params.cToken)
+        sp.verify(
+            ~ self.data.markets[params.cToken].redeemPaused,
+            EC.CMPT_REDEEM_PAUSED)
+        # The cToken has already stored the burn before this internal operation
+        # executes, so its snapshot is the post-redemption balance.
+        snapshot = sp.view(
+            "getAccountSnapshotView", params.cToken, params.redeemer,
+            t=sp.TOption(CTI.TAccountSnapshot)
+        ).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
+        sp.verify(snapshot.is_some(), EC.CMPT_OUTDATED_ACCOUNT_SNAPSHOT)
+        balanceAfter = snapshot.open_some().cTokenBalance
+        self.checkRedeemAllowedInternal(
+            params.cToken, params.redeemer, params.exchangeRateMantissa,
+            balanceAfter + params.redeemTokens, balanceAfter)
 
-    def redeemAllowedInternal(self, cToken, redeemer, redeemAmount):
+    def checkRedeemAllowedInternal(self, cToken, redeemer, exchangeRateMantissa, balanceBefore, balanceAfter):
         self.verifyMarketListed(cToken)
         # If the redeemer is not 'in' the market, then we can bypass the liquidity check
         sp.if self.data.collaterals.contains(redeemer) & self.data.collaterals[redeemer].contains(cToken):
             # skip liquidity check if no loans for user
             sp.if (self.data.loans.contains(redeemer)) & (sp.len(self.data.loans[redeemer]) != 0):
-                self.checkInsuffLiquidityInternal(
-                    cToken, redeemer, redeemAmount)
+                self.checkCollateralReductionInternal(
+                    cToken, redeemer, exchangeRateMantissa,
+                    balanceBefore, balanceAfter)
         self.invalidateLiquidity(redeemer)
 
     def checkInsuffLiquidityInternal(self, cToken, account, amount):
         self.verifyLiquidityCorrect(account)
         self.checkPriceErrors(cToken)
+
         newLiquidity = sp.compute(self.data.account_liquidity[account].liquidity - sp.to_int(
             self.mulScalarTruncate(self.data.markets[cToken].price, amount)))
+        sp.verify(newLiquidity >= 0, EC.CMPT_REDEEMER_SHORTFALL)
+
+    def getCTokenCollateralValue(self, cToken, exchangeRateMantissa, cTokenBalance):
+        collateralPrice = self.mul_exp_exp(
+            self.data.markets[cToken].price,
+            self.data.markets[cToken].collateralFactor)
+        tokensToDenom = self.mul_exp_exp(
+            collateralPrice, self.makeExp(exchangeRateMantissa))
+        return self.mulScalarTruncate(tokensToDenom, cTokenBalance)
+
+    def checkCollateralReductionInternal(self, cToken, account, exchangeRateMantissa, balanceBefore, balanceAfter):
+        self.verifyLiquidityCorrect(account)
+        self.checkPriceErrors(cToken)
+        collateralBefore = self.getCTokenCollateralValue(
+            cToken, exchangeRateMantissa, balanceBefore)
+        collateralAfter = self.getCTokenCollateralValue(
+            cToken, exchangeRateMantissa, balanceAfter)
+        collateralReduction = self.sub_nat_nat(
+            collateralBefore, collateralAfter)
+        newLiquidity = sp.compute(self.data.account_liquidity[account].liquidity - sp.to_int(
+            collateralReduction))
         sp.verify(newLiquidity >= 0, EC.CMPT_REDEEMER_SHORTFALL)
 
     """
@@ -286,8 +326,32 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             0), "TEZ_TRANSFERED")
         sp.set_type(params, CMPTInterface.TTransferAllowedParams)
         sp.verify(~ self.data.transferPaused, EC.CMPT_TRANSFER_PAUSED)
-        self.redeemAllowedInternal(
-            params.cToken, params.src, params.transferTokens)
+        self.verifyMarketListed(params.cToken)
+
+        # A transfer only changes account solvency when the source uses this
+        # market as collateral and has debt.  In that case the exchange rate
+        # must be current before cTokens are converted to their underlying
+        # value for the liquidity check.  Requiring a snapshot for every
+        # transfer would unnecessarily make debt-free and non-collateral
+        # holders depend on a same-level accrual.
+        sp.if self.data.collaterals.contains(params.src) & self.data.collaterals[params.src].contains(params.cToken):
+            sp.if self.data.loans.contains(params.src) & (sp.len(self.data.loans[params.src]) != 0):
+                snapshot = sp.view(
+                    "getAccountSnapshotView", params.cToken, params.src,
+                    t=sp.TOption(CTI.TAccountSnapshot)
+                ).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
+                sp.verify(snapshot.is_some(), EC.CMPT_OUTDATED_ACCOUNT_SNAPSHOT)
+                # The snapshot sees the post-transfer balance. Reconstruct the
+                # old balance and compare the exact rounded collateral values.
+                balanceAfter = snapshot.open_some().cTokenBalance
+                self.checkCollateralReductionInternal(
+                    params.cToken, params.src,
+                    snapshot.open_some().exchangeRateMantissa,
+                    balanceAfter + params.transferTokens, balanceAfter)
+
+        # An allowed transfer makes any stored account-liquidity result stale,
+        # including for debt-free accounts that bypass the solvency check.
+        self.invalidateLiquidity(params.src)
 
     """
         Updates all asset prices using harbinger view
@@ -529,17 +593,14 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                          t=sp.TOption(CTI.TAccountSnapshot)).open_some("INVALID ACCOUNT SNAPSHOT VIEW")
         sp.verify(paramsOption.is_some(), EC.CMPT_OUTDATED_ACCOUNT_SNAPSHOT)
         params = sp.local("params", paramsOption.open_some())
-        exchangeRate = sp.compute(self.makeExp(params.value.exchangeRateMantissa))
         self.checkPriceErrors(asset)
-        priceIndex = self.mul_exp_exp(
-            self.data.markets[asset].price, self.data.markets[asset].collateralFactor)
-        tokensToDenom = sp.compute(self.mul_exp_exp(priceIndex, exchangeRate))
         calc = sp.local('calc', sp.record(sumCollateral=sp.nat(
             0), sumBorrowPlusEffects=sp.nat(0))).value
         # incase of only borrow don't consider supply as collateral
         sp.if self.data.collaterals.contains(params.value.account) & self.data.collaterals[params.value.account].contains(asset):
-            calc.sumCollateral += self.mulScalarTruncate(
-                tokensToDenom, params.value.cTokenBalance)
+            calc.sumCollateral += self.getCTokenCollateralValue(
+                asset, params.value.exchangeRateMantissa,
+                params.value.cTokenBalance)
         calc.sumBorrowPlusEffects += self.mulScalarTruncate(
             self.data.markets[asset].price, params.value.borrowBalance)
         return calc
@@ -632,6 +693,18 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.markets[params.cToken].borrowPaused = params.state
 
     """
+        Pause or activate redemptions of a given CToken.
+    """
+    @sp.entry_point(lazify=True)
+    def setRedeemPaused(self, params):
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
+            0), "TEZ_TRANSFERED")
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, state=sp.TBool))
+        self.verifyMarketListed(params.cToken)
+        self.verifyAdministrator()
+        self.data.markets[params.cToken].redeemPaused = params.state
+
+    """
         Pause or activate the transfer of CTokens
 
         dev: Governance function to pause or activate the transfer of CTokens
@@ -711,6 +784,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             cToken=sp.TAddress, newCollateralFactor=sp.TNat))
         self.verifyAdministrator()
         self.verifyMarketListed(params.cToken)
+        sp.verify(params.newCollateralFactor <= self.data.expScale,
+                  EC.CMPT_INVALID_COLLATERAL_FACTOR)
         self.data.markets[params.cToken].collateralFactor.mantissa = params.newCollateralFactor
 
     """
@@ -752,6 +827,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                                                      mintPaused=sp.bool(True),
                                                      borrowPaused=sp.bool(
                                                          True),
+                                                     redeemPaused=sp.bool(True),
                                                      name=params.name,
                                                      price=self.makeExp(
                                                          sp.nat(0)),

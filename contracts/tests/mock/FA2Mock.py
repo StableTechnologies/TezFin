@@ -364,6 +364,7 @@ class FA2_core(sp.Contract):
             operators = self.operator_set.make(),
             all_tokens = self.token_id_set.empty(),
             metadata = metadata,
+            failTransfers = sp.bool(False),
             **extra_storage
         )
 
@@ -371,6 +372,7 @@ class FA2_core(sp.Contract):
     def transfer(self, params):
         sp.verify( ~self.is_paused(), message = self.error_message.paused() )
         sp.set_type(params, self.batch_transfer.get_type())
+        sp.verify(~self.data.failTransfers, message = "FA2_TRANSFER_FAILED")
         sp.for transfer in params:
            current_from = transfer.from_
            sp.for tx in transfer.txs:
@@ -480,6 +482,13 @@ class FA2_core(sp.Contract):
                                                  upd.token_id)
         else:
             sp.failwith(self.error_message.operators_unsupported())
+
+    # Test-only switch used to verify rollback of the caller's pending state
+    # when this underlying token rejects a transfer.
+    @sp.entry_point
+    def setTransferFailure(self, value):
+        sp.set_type(value, sp.TBool)
+        self.data.failTransfers = value
 
     # this is not part of the standard but can be supported through inheritance.
     def is_paused(self):

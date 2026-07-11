@@ -243,6 +243,10 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set borrow paused", bLevel, admin, alice, governor.setBorrowPaused, arg)
     scenario.verify(cmpt.data.markets[arg.tokenState.cToken].borrowPaused == arg.tokenState.state)
 
+    scenario.h3("Set redeem paused")
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set redeem paused", bLevel, admin, alice, governor.setRedeemPaused, arg)
+    scenario.verify(cmpt.data.markets[arg.tokenState.cToken].redeemPaused == arg.tokenState.state)
+
     scenario.h3("Set transfer paused")
     arg = sp.record(comptroller = cmpt.address, state = sp.bool(False))
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set transfer paused", bLevel, admin, alice, governor.setTransferPaused, arg)

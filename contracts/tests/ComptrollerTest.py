@@ -31,6 +31,21 @@ class ComptrollerTest(CMPT.Comptroller):
     def addToLoansExternal(self, params):
         sp.set_type(params, sp.TPair(sp.TAddress, sp.TSet(sp.TAddress)))
         self.data.loans[sp.fst(params)] = sp.snd(params)
+
+    @sp.entry_point
+    def setLiquidityForTest(self, params):
+        sp.set_type(params, sp.TRecord(account=sp.TAddress, liquidity=sp.TInt))
+        self.data.account_liquidity[params.account] = sp.record(
+            liquidity=params.liquidity,
+            updateLevel=sp.level,
+            valid=sp.bool(True))
+
+    @sp.entry_point
+    def setMarketRiskForTest(self, params):
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, collateralFactor=sp.TNat, price=sp.TNat))
+        self.data.markets[params.cToken].collateralFactor.mantissa = params.collateralFactor
+        self.data.markets[params.cToken].price.mantissa = params.price
+        self.data.markets[params.cToken].updateLevel = sp.level
     
     @sp.onchain_view()
     def calculateAccountLiquidityExposed(self, params):
@@ -96,6 +111,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
                           mintPaused = sp.bool(True), 
                           borrowPaused = sp.bool(True), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("m1"), 
                           price = sp.record(mantissa=sp.nat(0)),
                           priceExp = 1000000000000000000,
@@ -107,6 +123,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
                           mintPaused = sp.bool(True), 
                           borrowPaused = sp.bool(True), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("m4"), 
                           price = sp.record(mantissa=sp.nat(0)),
                           priceExp = 1000000000000000000,
@@ -142,6 +159,15 @@ def test():
     scenario.verify(cmpt.data.markets[listedMarket].borrowPaused == sp.bool(False))
     testPauseFunctionsOnMarkets(scenario, "Set borrow paused", bLevel, admin, cmpt.setBorrowPaused, notListedMarket, listedMarket)
 
+    scenario.h3("Set redeem paused")
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set redeem paused True", bLevel, admin, alice, cmpt.setRedeemPaused,
+        sp.record(cToken = listedMarket, state = sp.bool(True)))
+    scenario.verify(cmpt.data.markets[listedMarket].redeemPaused == sp.bool(True))
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set redeem paused False", bLevel, admin, alice, cmpt.setRedeemPaused,
+        sp.record(cToken = listedMarket, state = sp.bool(False)))
+    scenario.verify(cmpt.data.markets[listedMarket].redeemPaused == sp.bool(False))
+    testPauseFunctionsOnMarkets(scenario, "Set redeem paused", bLevel, admin, cmpt.setRedeemPaused, notListedMarket, listedMarket)
+
     scenario.h3("Set transfer paused")
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set transfer paused True", bLevel, admin, alice, cmpt.setTransferPaused, sp.bool(True))
     scenario.verify(cmpt.data.transferPaused == sp.bool(True))
@@ -164,9 +190,17 @@ def test():
 
     scenario.h3("Redeem allowed")
     cmpt.addToLoansExternal(sp.pair(alice.address, sp.set([cTokenMock.address])))
-    redeemArgLambda = lambda market : sp.record(cToken=market, redeemer=alice.address, redeemAmount=sp.nat(10*1000000000000000000))
+    redeemArgLambda = lambda market : sp.record(
+        cToken=market,
+        redeemer=alice.address,
+        redeemTokens=sp.nat(10*1000000000000000000),
+        exchangeRateMantissa=exchRate)
     scenario.h4("on the listed market, without updated price")
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
+    scenario.h4("when redemption is paused")
+    scenario += cmpt.setRedeemPaused(sp.record(cToken = listedMarket, state = sp.bool(True))).run(sender = admin, level = bLevel.current())
+    scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
+    scenario += cmpt.setRedeemPaused(sp.record(cToken = listedMarket, state = sp.bool(False))).run(sender = admin, level = bLevel.current())
     scenario.h4("on the listed market, with updated price, without updated liquidity")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
@@ -195,6 +229,11 @@ def test():
     scenario.h4("on the listed market, with updated price and updated liquidity")
     scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = True)
+    scenario.h4("borrowing uses the full debt value when the market collateral factor is zero")
+    scenario += cmpt.setCollateralFactor(sp.record(cToken = listedMarket, newCollateralFactor = sp.nat(0))).run(sender = admin, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.borrowAllowed(sp.record(cToken = listedMarket, borrower = alice.address, borrowAmount = sp.nat(100*1000000000000000000 + 1))).run(
+        sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("on the not listed market")
     scenario += cmpt.borrowAllowed(borrowArgLambda(notListedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("with insufficient liquidity")
@@ -239,8 +278,26 @@ def test():
     scenario.h4("on the not listed market")
     scenario += cmpt.repayBorrowAllowed(repayBorrowArgLambda(notListedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
 
+    scenario.h3("Incident mode keeps repayment available")
+    scenario += cmpt.setMintPaused(sp.record(cToken = listedMarket, state = sp.bool(True))).run(sender = admin, level = bLevel.next())
+    scenario += cmpt.setBorrowPaused(sp.record(cToken = listedMarket, state = sp.bool(True))).run(sender = admin, level = bLevel.current())
+    scenario += cmpt.setRedeemPaused(sp.record(cToken = listedMarket, state = sp.bool(True))).run(sender = admin, level = bLevel.current())
+    scenario += cmpt.setTransferPaused(sp.bool(True)).run(sender = admin, level = bLevel.current())
+    scenario += cmpt.mintAllowed(minterArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
+    scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
+    scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
+    scenario += cmpt.transferAllowed(sp.record(cToken = listedMarket, src = alice.address, dst = admin.address, transferTokens = sp.nat(100))).run(sender = alice, level = bLevel.current(), valid = False)
+    scenario += cmpt.repayBorrowAllowed(repayBorrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
+    scenario += cmpt.setMintPaused(sp.record(cToken = listedMarket, state = sp.bool(False))).run(sender = admin, level = bLevel.next())
+    scenario += cmpt.setBorrowPaused(sp.record(cToken = listedMarket, state = sp.bool(False))).run(sender = admin, level = bLevel.current())
+    scenario += cmpt.setRedeemPaused(sp.record(cToken = listedMarket, state = sp.bool(False))).run(sender = admin, level = bLevel.current())
+    scenario += cmpt.setTransferPaused(sp.bool(False)).run(sender = admin, level = bLevel.current())
+
     scenario.h3("Transfer allowed")
     transferArgLambda = lambda market : sp.record(cToken=market, src=alice.address, dst=admin.address, transferTokens=sp.nat(100))
+    # The boundary tests below use a 100% factor so one cToken transferred at
+    # a 1.0 exchange rate reduces liquidity by one underlying unit.
+    scenario += cmpt.setCollateralFactor(sp.record(cToken = listedMarket, newCollateralFactor = sp.nat(int(1e18)))).run(sender = admin, level = bLevel.next())
     scenario.h4("redeem is allowed, without updated price")
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("redeem is allowed, with updated price, without updated liquidity")
@@ -258,6 +315,27 @@ def test():
     scenario.h4("transfer is not paused")
     scenario += cmpt.setTransferPaused(sp.bool(False)).run(sender = admin, level = bLevel.current())
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
+    scenario.h4("debt-free holders transfer without a fresh snapshot")
+    scenario += cTokenMock1.setSnapshotAvailable(sp.bool(False)).run(level = bLevel.next())
+    scenario += cmpt.transferAllowed(sp.record(cToken = listedMarket, src = bob.address, dst = admin.address, transferTokens = sp.nat(100))).run(
+        sender = bob, level = bLevel.current())
+    scenario.h4("borrowers can transfer a market that is not collateral without a fresh snapshot")
+    scenario += cmpt.addToLoansExternal(sp.pair(notMember.address, sp.set([listedMarket]))).run(level = bLevel.next())
+    scenario += cmpt.transferAllowed(sp.record(cToken = listedMarket, src = notMember.address, dst = admin.address, transferTokens = sp.nat(100))).run(
+        sender = notMember, level = bLevel.current())
+    scenario.h4("collateralized borrowers require a fresh snapshot")
+    scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
+    scenario.h4("collateralized borrowers transfer with a current snapshot and sufficient liquidity")
+    scenario += cTokenMock1.setSnapshotAvailable(sp.bool(True)).run(level = bLevel.next())
+    scenario += cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(100), borrowBalance = sp.nat(0), exchangeRateMantissa = exchRate)).run(level = bLevel.current())
+    updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
+    scenario.h4("collateralized borrowers cannot transfer into a one-unit shortfall")
+    scenario += cTokenMock.setAccountSnapshot(sp.record(account = alice.address, cTokenBalance = sp.nat(99), borrowBalance = sp.nat(0), exchangeRateMantissa = exchRate)).run(level = bLevel.next())
+    updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("invalid after price was not updated for 5 blocks")
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.add(5), valid = False)
 
@@ -335,6 +413,9 @@ def test():
     notListedMarket = sp.test_account("[setCollateralFactor] not listed market").address
     collateralFactor = sp.record(cToken = notListedMarket, newCollateralFactor = sp.nat(2))
     scenario += cmpt.setCollateralFactor(collateralFactor).run(sender = admin, level = bLevel.next(), valid = False)
+    scenario.h4("A collateral factor cannot exceed one")
+    collateralFactor = sp.record(cToken = listedMarket, newCollateralFactor = sp.nat(int(1e18) + 1))
+    scenario += cmpt.setCollateralFactor(collateralFactor).run(sender = admin, level = bLevel.next(), valid = False)
 
     scenario.h3("Support market")
     newMarket = sp.test_account("[supportMarket] new market").address
@@ -395,6 +476,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(5e17))), 
                           mintPaused = sp.bool(False), 
                           borrowPaused = sp.bool(False), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("extra1"), 
                           price = sp.record(mantissa=sp.nat(int(1e18))),
                           priceExp = sp.nat(int(1e18)),
@@ -405,6 +487,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(5e17))), 
                           mintPaused = sp.bool(False), 
                           borrowPaused = sp.bool(False), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("extra2"), 
                           price = sp.record(mantissa=sp.nat(int(1e18))),
                           priceExp = sp.nat(int(1e18)),
@@ -466,3 +549,151 @@ def testPauseFunctionsOnMarkets(scenario, actionText, bLevel, sender, callableOb
 def updateAssetsPrices(scenario, cmpt, bLevel, markets):
     bLevel.next()
     cmpt.updateAllAssetPricesWithView().run(level = bLevel.current())
+
+
+@sp.add_test(name = "Comptroller_Collateral_Boundaries")
+def collateral_boundary_matrix():
+    """Exercise each action at the liquidity boundary independently.
+
+    The expected reduction is calculated here as
+    underlyingAmount * oraclePrice * collateralFactor, with the two 1e18
+    fixed-point scale factors applied independently from Comptroller helpers.
+    """
+    bLevel = BlockLevel.BlockLevel()
+    scenario = sp.test_scenario()
+    scenario.add_flag("protocol", "lima")
+    admin = sp.test_account("boundary admin")
+    account = sp.test_account("boundary account")
+    oracle = OracleMock.OracleMock()
+    scenario += oracle
+    cmpt = ComptrollerTest(administrator_=admin.address, oracleAddress_=oracle.address)
+    scenario += cmpt
+    exchange_scale = int(1e18)
+    price = exchange_scale
+    transfer_tokens = 10
+    cToken = CTMock.CTokenMock(test_account_snapshot_=sp.record(
+        account=account.address,
+        cTokenBalance=sp.nat(transfer_tokens),
+        borrowBalance=sp.nat(0),
+        exchangeRateMantissa=sp.nat(exchange_scale)))
+    scenario += cToken
+    scenario += cmpt.addMarket(sp.pair(cToken.address, sp.record(
+        isListed=sp.bool(True),
+        collateralFactor=sp.record(mantissa=sp.nat(0)),
+        mintPaused=sp.bool(False),
+        borrowPaused=sp.bool(False),
+        redeemPaused=sp.bool(False),
+        name=sp.string("boundary"),
+        price=sp.record(mantissa=sp.nat(price)),
+        priceExp=sp.nat(exchange_scale),
+        updateLevel=sp.nat(0),
+        priceTimestamp=sp.timestamp(0)))).run(level=bLevel.next())
+    scenario += cmpt.setTransferPaused(sp.bool(False)).run(sender=admin, level=bLevel.next())
+    scenario += cmpt.enterMarkets([cToken.address]).run(sender=account, level=bLevel.next())
+    scenario += cmpt.addToLoansExternal(sp.pair(account.address, sp.set([cToken.address]))).run(level=bLevel.next())
+
+    factors = [0, int(5e17), int(9e17)]
+    exchange_rates = [int(5e17), exchange_scale, int(2e18)]
+    offsets = [(-1, False), (0, True), (1, True)]
+
+    scenario.h2("Redeem boundary matrix: 0%, 50%, and 90% collateral factors")
+    for factor in factors:
+        reduction = transfer_tokens * price * factor // exchange_scale // exchange_scale
+        for offset, valid in offsets:
+            scenario += cmpt.setMarketRiskForTest(sp.record(cToken=cToken.address, collateralFactor=sp.nat(factor), price=sp.nat(price))).run(level=bLevel.next())
+            scenario += cmpt.setLiquidityForTest(sp.record(account=account.address, liquidity=sp.int(reduction + offset))).run(level=bLevel.current())
+            scenario += cmpt.redeemAllowed(sp.record(
+                cToken=cToken.address,
+                redeemer=account.address,
+                redeemTokens=sp.nat(transfer_tokens),
+                exchangeRateMantissa=sp.nat(exchange_scale))).run(
+                sender=account, level=bLevel.current(), valid=valid)
+
+    scenario.h2("Transfer boundary matrix: exchange rates below, at, and above one")
+    for factor in factors:
+        for exchange_rate in exchange_rates:
+            token_value = price * factor // exchange_scale * exchange_rate // exchange_scale
+            collateral_before = token_value * (2 * transfer_tokens) // exchange_scale
+            collateral_after = token_value * transfer_tokens // exchange_scale
+            reduction = collateral_before - collateral_after
+            scenario += cToken.setAccountSnapshot(sp.record(
+                account=account.address,
+                cTokenBalance=sp.nat(transfer_tokens),
+                borrowBalance=sp.nat(0),
+                exchangeRateMantissa=sp.nat(exchange_rate))).run(level=bLevel.next())
+            for offset, valid in offsets:
+                scenario += cmpt.setMarketRiskForTest(sp.record(cToken=cToken.address, collateralFactor=sp.nat(factor), price=sp.nat(price))).run(level=bLevel.next())
+                scenario += cmpt.setLiquidityForTest(sp.record(account=account.address, liquidity=sp.int(reduction + offset))).run(level=bLevel.current())
+                scenario += cmpt.transferAllowed(sp.record(cToken=cToken.address, src=account.address, dst=admin.address, transferTokens=sp.nat(transfer_tokens))).run(
+                    sender=account, level=bLevel.current(), valid=valid)
+
+    scenario.h2("Exit-market boundary matrix: exchange rates below, at, and above one")
+    for factor in factors:
+        for exchange_rate in exchange_rates:
+            token_value = price * factor // exchange_scale * exchange_rate // exchange_scale
+            reduction = token_value * transfer_tokens // exchange_scale
+            for offset, valid in offsets:
+                # A prior successful exit removes membership; put it back for
+                # the next matrix cell before setting the current liquidity.
+                scenario += cmpt.enterMarkets([cToken.address]).run(sender=account, level=bLevel.next())
+                scenario += cToken.setAccountSnapshot(sp.record(
+                    account=account.address,
+                    cTokenBalance=sp.nat(transfer_tokens),
+                    borrowBalance=sp.nat(0),
+                    exchangeRateMantissa=sp.nat(exchange_rate))).run(level=bLevel.current())
+                scenario += cmpt.setMarketRiskForTest(sp.record(cToken=cToken.address, collateralFactor=sp.nat(factor), price=sp.nat(price))).run(level=bLevel.current())
+                scenario += cmpt.setLiquidityForTest(sp.record(account=account.address, liquidity=sp.int(reduction + offset))).run(level=bLevel.current())
+                scenario += cmpt.exitMarket(cToken.address).run(sender=account, level=bLevel.current(), valid=valid)
+
+    scenario.h2("Fractional exchange rates use the exact rounded collateral delta")
+    fractional_rate = int(15e17)  # 1.5 underlying per cToken
+    scenario += cmpt.enterMarkets([cToken.address]).run(
+        sender=account, level=bLevel.next())
+    scenario += cmpt.setMarketRiskForTest(sp.record(
+        cToken=cToken.address,
+        collateralFactor=sp.nat(exchange_scale),
+        price=sp.nat(exchange_scale))).run(level=bLevel.current())
+
+    # Before the action, two cTokens are worth three collateral units. With
+    # debt of two, liquidity is one. Removing one cToken leaves collateral of
+    # one, so every removal path must reject the resulting one-unit shortfall.
+    scenario += cToken.setAccountSnapshot(sp.record(
+        account=account.address,
+        cTokenBalance=sp.nat(1),  # post-action balance seen by redeem/transfer
+        borrowBalance=sp.nat(0),
+        exchangeRateMantissa=sp.nat(fractional_rate))).run(level=bLevel.current())
+    scenario += cmpt.setLiquidityForTest(sp.record(
+        account=account.address, liquidity=sp.int(1))).run(level=bLevel.current())
+    scenario += cmpt.redeemAllowed(sp.record(
+        cToken=cToken.address,
+        redeemer=account.address,
+        redeemTokens=sp.nat(1),
+        exchangeRateMantissa=sp.nat(fractional_rate))).run(
+        sender=cToken.address, level=bLevel.current(), valid=False)
+
+    scenario += cmpt.setLiquidityForTest(sp.record(
+        account=account.address, liquidity=sp.int(1))).run(level=bLevel.next())
+    scenario += cmpt.setMarketRiskForTest(sp.record(
+        cToken=cToken.address,
+        collateralFactor=sp.nat(exchange_scale),
+        price=sp.nat(exchange_scale))).run(level=bLevel.current())
+    scenario += cmpt.transferAllowed(sp.record(
+        cToken=cToken.address,
+        src=account.address,
+        dst=admin.address,
+        transferTokens=sp.nat(1))).run(
+        sender=cToken.address, level=bLevel.current(), valid=False)
+
+    scenario += cToken.setAccountSnapshot(sp.record(
+        account=account.address,
+        cTokenBalance=sp.nat(2),  # pre-action balance supplied to exitMarket
+        borrowBalance=sp.nat(0),
+        exchangeRateMantissa=sp.nat(fractional_rate))).run(level=bLevel.next())
+    scenario += cmpt.setLiquidityForTest(sp.record(
+        account=account.address, liquidity=sp.int(1))).run(level=bLevel.current())
+    scenario += cmpt.setMarketRiskForTest(sp.record(
+        cToken=cToken.address,
+        collateralFactor=sp.nat(exchange_scale),
+        price=sp.nat(exchange_scale))).run(level=bLevel.current())
+    scenario += cmpt.exitMarket(cToken.address).run(
+        sender=account, level=bLevel.current(), valid=False)

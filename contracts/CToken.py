@@ -92,9 +92,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
 
     def mintInternal(self, params):
         self.verifyAccruedInterestRelevance()
-        self.doTransferIn(params.minter, params.mintAmount)
+        # Price the deposit against cash before the underlying is transferred.
+        # Token-backed markets update their cached cash in doTransferIn; pricing
+        # after that update would dilute existing suppliers.
         mintTokens = self.getMintTokens(params.mintAmount)
         sp.verify(mintTokens > 0, EC.CT_MINT_AMOUNT_IS_INVALID)
+        self.doTransferIn(params.minter, params.mintAmount)
         self.data.totalSupply += mintTokens
         self.data.ledger[params.minter].balance += mintTokens
 
@@ -130,7 +133,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def redeem(self, params):
         sp.set_type(params, sp.TNat)
         self.verifyNotInternal()
-        self.verifyRedeemAllowed(sp.sender, params)
         self.redeemInternal(sp.record(redeemer=sp.sender,
                             redeemAmount=params, isUnderlying=False))
 
@@ -152,7 +154,6 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
     def redeemUnderlying(self, params):
         sp.set_type(params, sp.TNat)
         self.verifyNotInternal()
-        self.verifyRedeemAllowed(sp.sender, params)
         self.redeemInternal(sp.record(redeemer=sp.sender,
                             redeemAmount=params, isUnderlying=True))
 
@@ -161,6 +162,11 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
             params.redeemAmount, params.isUnderlying)
         redeemTokens = self.getRedeemTokens(
             params.redeemAmount, params.isUnderlying)
+        # Pass the actual fToken burn and the pre-redemption exchange rate.
+        # The comptroller uses them to calculate the exact change in rounded
+        # collateral value, which can differ from the rounded cash payout.
+        self.verifyRedeemAllowed(
+            params.redeemer, redeemTokens, self.exchangeRateStoredImpl())
         # make sure neither token value nor underlying value
         # is zero before proceeding with redeem
         sp.if ((redeemAmount > 0) & (redeemTokens > 0)) :
@@ -172,11 +178,12 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
                 self.data.ledger[params.redeemer].balance - redeemTokens, "Insufficient balance")
             self.doTransferOut(params.redeemer, redeemAmount)
 
-    def verifyRedeemAllowed(self, redeemer_, redeemAmount_):
+    def verifyRedeemAllowed(self, redeemer_, redeemTokens_, exchangeRateMantissa_):
         c = sp.contract(CMPI.TRedeemAllowedParams, self.data.comptroller,
                         entry_point="redeemAllowed").open_some()
         transferData = sp.record(
-            cToken=sp.self_address, redeemer=redeemer_, redeemAmount=redeemAmount_)
+            cToken=sp.self_address, redeemer=redeemer_, redeemTokens=redeemTokens_,
+            exchangeRateMantissa=exchangeRateMantissa_)
         sp.transfer(transferData, sp.mutez(0), c)
 
     def doTransferOut(self, to_, amount, isContract=False):  # override

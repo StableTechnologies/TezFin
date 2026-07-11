@@ -213,7 +213,14 @@ const SuppliedTokenTable = (props) => {
                                     <Switch data={data} />
                                 </TableCell>
                                 <TableCell className={`${classes.withdrawCell} ${classes.stickyCellRight}`}>
-                                    <Button variant='contained' className={classes.detailsButton} onClick={() => handleClickWithdraw(data)} sx={{ textTransform: 'capitalize' }}>
+                                    <Button
+                                        variant='contained'
+                                        className={classes.detailsButton}
+                                        onClick={() => handleClickWithdraw(data)}
+                                        disabled={data.redeemPaused}
+                                        title={data.redeemPaused ? 'Withdrawals are temporarily paused for this market.' : undefined}
+                                        sx={{ textTransform: 'capitalize' }}
+                                    >
                                         Withdraw
                                     </Button>
                                 </TableCell>

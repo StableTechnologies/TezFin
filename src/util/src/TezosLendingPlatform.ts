@@ -72,6 +72,7 @@ export namespace TezosLendingPlatform {
             reserves: fToken.totalReserves,
             reserveFactor: fToken.reserveFactorMantissa.toJSNumber(),
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
+            redeemPaused: comptroller.markets[underlying.assetType].redeemPaused,
             exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
             rateModel: rateModel,

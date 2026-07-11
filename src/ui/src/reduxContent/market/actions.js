@@ -48,6 +48,7 @@ export const allMarketAction = (account, markets) => (dispatch) => {
             token.collateralFactor = new BigNumber(markets[token.assetType].collateralFactor.toString())
                 .div(new BigNumber(10).pow(new BigNumber(18)))
                 .toFixed();
+            token.redeemPaused = markets[token.assetType].redeemPaused;
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 token.walletBalance = walletBalance[token.assetType].toString();
             }
@@ -76,6 +77,7 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            redeemPaused,
             supply,
         }) => ({
             assetType,
@@ -88,6 +90,7 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            redeemPaused,
             ...supply,
         }),
     );

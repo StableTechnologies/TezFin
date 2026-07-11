@@ -2,12 +2,16 @@ import smartpy as sp
 
 class FA12Mock(sp.Contract):
     def __init__(self):
-        self.init(balances=sp.big_map(tvalue=sp.TRecord(approvals=sp.TMap(sp.TAddress, sp.TNat), balance=sp.TNat)))
+        self.init(
+            balances=sp.big_map(tvalue=sp.TRecord(approvals=sp.TMap(sp.TAddress, sp.TNat), balance=sp.TNat)),
+            failTransfers=sp.bool(False)
+        )
 
     @sp.entry_point
     def transfer(self, params):
         sp.set_type(params, sp.TRecord(from_=sp.TAddress, to_=sp.TAddress,
                                        value=sp.TNat).layout(("from_ as from", ("to_ as to", "value"))))
+        sp.verify(~self.data.failTransfers, "FA12_TRANSFER_FAILED")
         sp.verify((params.from_ == sp.sender) |
                       (self.data.balances[params.from_].approvals[sp.sender] >= params.value))
         self.addAddressIfNecessary(params.to_)
@@ -24,6 +28,13 @@ class FA12Mock(sp.Contract):
         sp.set_type(params, sp.TRecord(spender=sp.TAddress,
                                        value=sp.TNat).layout(("spender", "value")))
         self.data.balances[sp.sender].approvals[params.spender] = params.value
+
+    # Test-only switch used to verify that CToken state changes roll back when
+    # an underlying transfer fails after the CToken has updated its cache.
+    @sp.entry_point
+    def setTransferFailure(self, value):
+        sp.set_type(value, sp.TBool)
+        self.data.failTransfers = value
 
     def addAddressIfNecessary(self, address):
         sp.if ~ self.data.balances.contains(address):
