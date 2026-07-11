@@ -199,6 +199,13 @@ class GovernanceInterface(sp.Contract):
     def setBorrowPaused(self, params):
         pass
 
+    """
+        Pause or activate redemption of a given CToken.
+    """
+    @sp.entry_point
+    def setRedeemPaused(self, params):
+        pass
+
     """    
         Pause or activate the transfer of CTokens
 

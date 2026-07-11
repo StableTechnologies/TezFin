@@ -279,6 +279,17 @@ class ComptrollerInterface(sp.Contract):
     def setBorrowPaused(self, params):
         pass
 
+    """
+        Pause or activate redemption of a given CToken.
+
+        params: TRecord
+            cToken: The address of the market to change the redemption pause state
+            state: True pauses redemption; False activates it
+    """
+    @sp.entry_point
+    def setRedeemPaused(self, params):
+        pass
+
     """    
         Pause or activate the transfer of CTokens
 

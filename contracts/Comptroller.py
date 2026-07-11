@@ -24,6 +24,7 @@ TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
                      # Must be between 0 and 1, and stored as a mantissa.
                      mintPaused=sp.TBool,
                      borrowPaused=sp.TBool,
+                     redeemPaused=sp.TBool,
                      name=sp.TString,  # Asset name for price oracle
                      price=Exponential.TExp,  # The price of the asset
                      priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
@@ -179,6 +180,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(params, CMPTInterface.TRedeemAllowedParams)
+        self.verifyMarketListed(params.cToken)
+        sp.verify(
+            ~ self.data.markets[params.cToken].redeemPaused,
+            EC.CMPT_REDEEM_PAUSED)
         self.redeemAllowedInternal(
             params.cToken, params.redeemer, params.redeemAmount)
 
@@ -188,15 +193,27 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.if self.data.collaterals.contains(redeemer) & self.data.collaterals[redeemer].contains(cToken):
             # skip liquidity check if no loans for user
             sp.if (self.data.loans.contains(redeemer)) & (sp.len(self.data.loans[redeemer]) != 0):
-                self.checkInsuffLiquidityInternal(
+                self.checkRedeemInsuffLiquidityInternal(
                     cToken, redeemer, redeemUnderlyingAmount)
         self.invalidateLiquidity(redeemer)
 
     def checkInsuffLiquidityInternal(self, cToken, account, amount):
         self.verifyLiquidityCorrect(account)
         self.checkPriceErrors(cToken)
+
         newLiquidity = sp.compute(self.data.account_liquidity[account].liquidity - sp.to_int(
             self.mulScalarTruncate(self.data.markets[cToken].price, amount)))
+        sp.verify(newLiquidity >= 0, EC.CMPT_REDEEMER_SHORTFALL)
+
+    def checkRedeemInsuffLiquidityInternal(self, cToken, account, amount):
+        self.verifyLiquidityCorrect(account)
+        self.checkPriceErrors(cToken)
+
+        collateralPrice = self.mul_exp_exp(
+            self.data.markets[cToken].price,
+            self.data.markets[cToken].collateralFactor)
+        newLiquidity = sp.compute(self.data.account_liquidity[account].liquidity - sp.to_int(
+            self.mulScalarTruncate(collateralPrice, amount)))
         sp.verify(newLiquidity >= 0, EC.CMPT_REDEEMER_SHORTFALL)
 
     """
@@ -643,6 +660,18 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.data.markets[params.cToken].borrowPaused = params.state
 
     """
+        Pause or activate redemptions of a given CToken.
+    """
+    @sp.entry_point(lazify=True)
+    def setRedeemPaused(self, params):
+        sp.verify(sp.amount == sp.utils.nat_to_mutez(
+            0), "TEZ_TRANSFERED")
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, state=sp.TBool))
+        self.verifyMarketListed(params.cToken)
+        self.verifyAdministrator()
+        self.data.markets[params.cToken].redeemPaused = params.state
+
+    """
         Pause or activate the transfer of CTokens
 
         dev: Governance function to pause or activate the transfer of CTokens
@@ -722,6 +751,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             cToken=sp.TAddress, newCollateralFactor=sp.TNat))
         self.verifyAdministrator()
         self.verifyMarketListed(params.cToken)
+        sp.verify(params.newCollateralFactor <= self.data.expScale,
+                  EC.CMPT_INVALID_COLLATERAL_FACTOR)
         self.data.markets[params.cToken].collateralFactor.mantissa = params.newCollateralFactor
 
     """
@@ -763,6 +794,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                                                      mintPaused=sp.bool(True),
                                                      borrowPaused=sp.bool(
                                                          True),
+                                                     redeemPaused=sp.bool(True),
                                                      name=params.name,
                                                      price=self.makeExp(
                                                          sp.nat(0)),

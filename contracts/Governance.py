@@ -358,6 +358,19 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
             cToken=sp.TAddress, state=sp.TBool), params.comptroller, "setBorrowPaused").open_some()
         sp.transfer(params.tokenState, sp.mutez(0), contract)
 
+    """
+        Pause or activate redemption of a given CToken.
+    """
+    @sp.entry_point
+    def setRedeemPaused(self, params):
+        self.verifyAdministrator()
+        sp.set_type(params, sp.TRecord(comptroller=sp.TAddress,
+                    tokenState=sp.TRecord(cToken=sp.TAddress, state=sp.TBool)))
+        contract = sp.contract(sp.TRecord(
+            cToken=sp.TAddress, state=sp.TBool), params.comptroller,
+            "setRedeemPaused").open_some()
+        sp.transfer(params.tokenState, sp.mutez(0), contract)
+
     """    
         Pause or activate the transfer of CTokens
 

@@ -96,6 +96,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
                           mintPaused = sp.bool(True), 
                           borrowPaused = sp.bool(True), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("m1"), 
                           price = sp.record(mantissa=sp.nat(0)),
                           priceExp = 1000000000000000000,
@@ -107,6 +108,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(1e18))), 
                           mintPaused = sp.bool(True), 
                           borrowPaused = sp.bool(True), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("m4"), 
                           price = sp.record(mantissa=sp.nat(0)),
                           priceExp = 1000000000000000000,
@@ -142,6 +144,15 @@ def test():
     scenario.verify(cmpt.data.markets[listedMarket].borrowPaused == sp.bool(False))
     testPauseFunctionsOnMarkets(scenario, "Set borrow paused", bLevel, admin, cmpt.setBorrowPaused, notListedMarket, listedMarket)
 
+    scenario.h3("Set redeem paused")
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set redeem paused True", bLevel, admin, alice, cmpt.setRedeemPaused,
+        sp.record(cToken = listedMarket, state = sp.bool(True)))
+    scenario.verify(cmpt.data.markets[listedMarket].redeemPaused == sp.bool(True))
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set redeem paused False", bLevel, admin, alice, cmpt.setRedeemPaused,
+        sp.record(cToken = listedMarket, state = sp.bool(False)))
+    scenario.verify(cmpt.data.markets[listedMarket].redeemPaused == sp.bool(False))
+    testPauseFunctionsOnMarkets(scenario, "Set redeem paused", bLevel, admin, cmpt.setRedeemPaused, notListedMarket, listedMarket)
+
     scenario.h3("Set transfer paused")
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set transfer paused True", bLevel, admin, alice, cmpt.setTransferPaused, sp.bool(True))
     scenario.verify(cmpt.data.transferPaused == sp.bool(True))
@@ -167,6 +178,10 @@ def test():
     redeemArgLambda = lambda market : sp.record(cToken=market, redeemer=alice.address, redeemAmount=sp.nat(10*1000000000000000000))
     scenario.h4("on the listed market, without updated price")
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
+    scenario.h4("when redemption is paused")
+    scenario += cmpt.setRedeemPaused(sp.record(cToken = listedMarket, state = sp.bool(True))).run(sender = admin, level = bLevel.current())
+    scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
+    scenario += cmpt.setRedeemPaused(sp.record(cToken = listedMarket, state = sp.bool(False))).run(sender = admin, level = bLevel.current())
     scenario.h4("on the listed market, with updated price, without updated liquidity")
     updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
     scenario += cmpt.redeemAllowed(redeemArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
@@ -195,6 +210,11 @@ def test():
     scenario.h4("on the listed market, with updated price and updated liquidity")
     scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = True)
+    scenario.h4("borrowing uses the full debt value when the market collateral factor is zero")
+    scenario += cmpt.setCollateralFactor(sp.record(cToken = listedMarket, newCollateralFactor = sp.nat(0))).run(sender = admin, level = bLevel.next())
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(sender = alice, level = bLevel.next())
+    scenario += cmpt.borrowAllowed(sp.record(cToken = listedMarket, borrower = alice.address, borrowAmount = sp.nat(100*1000000000000000000 + 1))).run(
+        sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("on the not listed market")
     scenario += cmpt.borrowAllowed(borrowArgLambda(notListedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
     scenario.h4("with insufficient liquidity")
@@ -258,6 +278,9 @@ def test():
     scenario.h4("transfer is not paused")
     scenario += cmpt.setTransferPaused(sp.bool(False)).run(sender = admin, level = bLevel.current())
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current())
+    scenario.h4("collateralized borrowers still require a fresh snapshot")
+    scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.current(), valid = False)
+    cTokenMock1.setSnapshotAvailable(sp.bool(True)).run(level = bLevel.current())
     scenario.h4("invalid after price was not updated for 5 blocks")
     scenario += cmpt.transferAllowed(transferArgLambda(listedMarket)).run(sender = alice, level = bLevel.add(5), valid = False)
 
@@ -335,6 +358,9 @@ def test():
     notListedMarket = sp.test_account("[setCollateralFactor] not listed market").address
     collateralFactor = sp.record(cToken = notListedMarket, newCollateralFactor = sp.nat(2))
     scenario += cmpt.setCollateralFactor(collateralFactor).run(sender = admin, level = bLevel.next(), valid = False)
+    scenario.h4("A collateral factor cannot exceed one")
+    collateralFactor = sp.record(cToken = listedMarket, newCollateralFactor = sp.nat(int(1e18) + 1))
+    scenario += cmpt.setCollateralFactor(collateralFactor).run(sender = admin, level = bLevel.next(), valid = False)
 
     scenario.h3("Support market")
     newMarket = sp.test_account("[supportMarket] new market").address
@@ -395,6 +421,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(5e17))), 
                           mintPaused = sp.bool(False), 
                           borrowPaused = sp.bool(False), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("extra1"), 
                           price = sp.record(mantissa=sp.nat(int(1e18))),
                           priceExp = sp.nat(int(1e18)),
@@ -405,6 +432,7 @@ def test():
                           collateralFactor = sp.record(mantissa=sp.nat(int(5e17))), 
                           mintPaused = sp.bool(False), 
                           borrowPaused = sp.bool(False), 
+                          redeemPaused = sp.bool(False),
                           name = sp.string("extra2"), 
                           price = sp.record(mantissa=sp.nat(int(1e18))),
                           priceExp = sp.nat(int(1e18)),
