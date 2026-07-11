@@ -9,6 +9,7 @@ import {
   FToken,
   Governance,
   mainnetAddresses,
+  Network,
   PriceFeed,
   ProtocolAddresses,
   testnetAddresses,
@@ -43,7 +44,6 @@ export async function initConseil() {
   logger.setLevel(config.loglevel as LogLevelDesc, false);
   registerLogger(logger);
   registerFetch(fetch);
-  TezosLendingPlatform.initConseil(config.loglevel as LogLevelDesc);
 }
 
 export async function initKeystore(keystoreConfig: any = undefined): Promise<{
@@ -189,7 +189,6 @@ export async function parseProtocolAddress(path: string) {
         decimals: 18,
         address: protocolAddressesJSON.ETHtz,
         balancesMapId: 34651,
-        balancesPath: "$.args[1].int",
       },
       USD: {
         assetType: AssetType.USD,
@@ -197,7 +196,6 @@ export async function parseProtocolAddress(path: string) {
         balancesMapId: 34654,
         tokenStandard: TokenStandard.FA12,
         decimals: 6,
-        balancesPath: "$.args[1].int",
       },
       BTC: {
         assetType: AssetType.BTC,
@@ -206,7 +204,6 @@ export async function parseProtocolAddress(path: string) {
         address: protocolAddressesJSON.BTCtz,
         tokenId: 0,
         balancesMapId: 34646,
-        balancesPath: "$.int",
       },
       XTZ: {
         assetType: AssetType.XTZ,
@@ -223,12 +220,8 @@ export async function parseProtocolAddress(path: string) {
     },
     governance: protocolAddressesJSON.Governance,
     oracle: protocolAddressesJSON.TezFinOracle,
+    network: Network.Shadownet,
   };
-  protoAddress.underlying =
-    await TezosLendingPlatform.PopulateTokenBalanceMapIDs(
-      protoAddress.underlying,
-      config.tezosNode
-    );
   return {
     protoAddress,
     oracle: protocolAddressesJSON.TezFinOracle,

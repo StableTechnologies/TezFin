@@ -20,3 +20,20 @@ jobs:
       - name: "Run tests"
         run: |
           bash contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh
+
+  build_and_test_typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: "Build and test utility package"
+        working-directory: src/util
+        run: |
+          npm ci
+          npm run build
+          npm test
+      - name: "Build post-deployment package"
+        working-directory: postdeploy
+        run: |
+          npm ci
+          npm run build

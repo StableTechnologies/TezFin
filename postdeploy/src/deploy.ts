@@ -1,6 +1,6 @@
 import * as config from '../config/config.json';
 
-import { AssetType, Governance, ProtocolAddresses, TokenStandard } from 'tezoslendingplatformjs';
+import { AssetType, Governance, ProtocolAddresses, TokenStandard, UnderlyingAsset } from 'tezoslendingplatformjs';
 import { KeyStore, MultiAssetTokenHelper, Signer, TezosConseilClient, TezosConstants, TezosContractUtils, TezosNodeReader, TezosNodeWriter, TezosParameterFormat, Transaction, Tzip7ReferenceTokenHelper } from 'conseiljs';
 import BigNumber from "bignumber.js"
 import log from 'loglevel';
@@ -69,9 +69,7 @@ async function supportMarket(asset: AssetType, priceExp: number, keystore: KeySt
     if(!Object.prototype.hasOwnProperty.call(protocolAddresses.fTokens, asset)){
         return
     }
-    if (!config.exactTransferUnderlyings.includes(asset)) {
-        throw new Error(`${asset} is not approved for exact-transfer cash accounting`);
-    }
+    assertExactTransferUnderlying(asset, protocolAddresses.underlying[asset]);
     log.info(`supportMarket ${asset}`);
     const supportMarket: Governance.SupportMarketPair = {
         comptrollerAddress: protocolAddresses.comptroller,
@@ -87,6 +85,51 @@ async function supportMarket(asset: AssetType, priceExp: number, keystore: KeySt
         signer,
     );
     const conseilResult = await TezosNodeReader.awaitOperationConfirmation(config.tezosNode, head.header.level - 1, supportMarketOpId, 6).then(res => { if (res['contents'][0]['metadata']['operation_result']['status'] === "applied") return res; else throw new Error("operation status not applied"); }).catch((error) => { console.log(error) });
+}
+
+type ApprovedTokenStandard = 'FA12' | 'FA12_PACKED' | 'FA2' | 'XTZ';
+
+interface ExactTransferApproval {
+    address?: string;
+    tokenStandard: ApprovedTokenStandard;
+    tokenId?: number;
+    native?: boolean;
+}
+
+/** Fail closed unless the exact configured underlying was reviewed for exact transfers. */
+export function assertExactTransferUnderlying(asset: AssetType, underlying: UnderlyingAsset | undefined): void {
+    const approvals = config.exactTransferUnderlyings as Record<string, ExactTransferApproval>;
+    const approval = approvals[asset];
+    if (!approval) {
+        throw new Error(`${asset} is not approved for exact-transfer cash accounting`);
+    }
+    if (!underlying || underlying.assetType !== asset) {
+        throw new Error(`${asset} exact-transfer approval does not match the configured underlying asset`);
+    }
+
+    const actualStandard = TokenStandard[underlying.tokenStandard] as ApprovedTokenStandard;
+    if (approval.tokenStandard !== actualStandard) {
+        throw new Error(`${asset} exact-transfer approval token standard mismatch: expected ${approval.tokenStandard}, got ${actualStandard}`);
+    }
+
+    if (approval.tokenStandard === 'XTZ') {
+        if (approval.native !== true || approval.address !== undefined || underlying.address !== undefined) {
+            throw new Error(`${asset} exact-transfer approval must explicitly designate native XTZ`);
+        }
+        return;
+    }
+
+    if (approval.native === true || !approval.address || approval.address !== underlying.address) {
+        throw new Error(`${asset} exact-transfer approval address mismatch`);
+    }
+
+    if (approval.tokenStandard === 'FA2') {
+        if (approval.tokenId === undefined || approval.tokenId !== underlying.tokenId) {
+            throw new Error(`${asset} exact-transfer approval token ID mismatch`);
+        }
+    } else if (approval.tokenId !== undefined || underlying.tokenId !== undefined) {
+        throw new Error(`${asset} exact-transfer approval unexpectedly specifies a token ID`);
+    }
 }
 
 async function unpauseMarkets(asset: AssetType, keystore: KeyStore, signer: Signer, protocolAddresses: ProtocolAddresses) {

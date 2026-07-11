@@ -24,12 +24,14 @@ deployment review:
   exactly the requested amount;
 - confirmation that no transfer fee, transfer-time rebase, callback balance
   mutation, or upgrade path can change that behaviour; and
-- inclusion of the asset in `postdeploy/config/config.json`'s
-  `exactTransferUnderlyings` allowlist.
+- inclusion of the exact address, token standard, and FA2 token ID (when
+  applicable) in `postdeploy/config/config.json`'s
+  `exactTransferUnderlyings` approvals. Native XTZ must be designated
+  explicitly.
 
-The post-deployment script refuses to list an asset missing from that
-allowlist. The allowlist is a deployment safeguard, not a substitute for the
-contract review above.
+The post-deployment script refuses to list an asset when any approved field
+differs from the configured underlying. The approval is a deployment
+safeguard, not a substitute for the contract review above.
 
 ## Current post-deployment underlyings
 

@@ -126,12 +126,25 @@
             "priceExp": 10
         }
     ],
-    "exactTransferUnderlyings": [
-        "USD",
-        "XTZ",
-        "USDT",
-        "TZBTC"
-    ],
+    "exactTransferUnderlyings": {
+        "USD": {
+            "address": "KT1RBgHqPFPQX2TWzRAkQDqW5Fvnu3hC2FJb",
+            "tokenStandard": "FA12"
+        },
+        "XTZ": {
+            "tokenStandard": "XTZ",
+            "native": true
+        },
+        "USDT": {
+            "address": "KT1UhW3RdZ6qDMhkCbztVxFFY4eZ8uzfT5aN",
+            "tokenStandard": "FA2",
+            "tokenId": 0
+        },
+        "TZBTC": {
+            "address": "KT1VqarPDicMFn1ejmQqqshUkUXTCTXwmkCN",
+            "tokenStandard": "FA12"
+        }
+    },
     "disableMarket": [],
     "unpauseMarkets": [
         "USD",
