@@ -1,14 +1,10 @@
-#!/bin/bash
-set -e # Any subsequent(*) commands which fail will cause the shell script to exit immediately
+#!/usr/bin/env bash
+set -euo pipefail
 # 1 - path to SmartPy.sh
 # example:  ./deploy/shell_scripts/deploy_cfa2.sh ~/smartpy-cli/SmartPy.sh
-
-
-($1 compile ./deploy/compile_targets/CompileCFA2_IRM.py ./TezFinBuild/compiled_contracts --purge --protocol granada)\
-&& echo "CompileCFA2_IRM.py was successfully compiled" || echo
+smartpy="${1:?Usage: $0 /path/to/SmartPy.sh}"
+node ./deploy/deploy_script/prepare.js
+"$smartpy" compile ./deploy/compile_targets/CompileCFA2_IRM.py ./TezFinBuild/compiled_contracts --purge --protocol kathmandu
 node ./deploy/deploy_script/deploy.js
-
-
-($1 compile ./deploy/compile_targets/CompileCFA2.py ./TezFinBuild/compiled_contracts --purge --protocol granada --erase-comments --erase-var-annots --initial-cast)\
-&& echo "CompileCFA2.py was successfully compiled" || echo
+"$smartpy" compile ./deploy/compile_targets/CompileCFA2.py ./TezFinBuild/compiled_contracts --purge --protocol kathmandu --erase-comments --erase-var-annots --initial-cast
 node ./deploy/deploy_script/deploy.js

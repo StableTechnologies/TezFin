@@ -87,11 +87,18 @@ Before listing an underlying, complete the [market listing checklist](docs/Marke
 
 To compile and deploy all contracts at once:
 1. Configure parameters for contracts compilation in [Config.json](deploy/compile_targets/Config.json). Reffer to [Compilation arguments](https://github.com/RSerhii/TezFin/wiki/Compilation-arguments)
-2. Configure deployment parameters in [config.json](deploy/deploy_script/config.json)
+2. The deployer is configured for Tezos X Previewnet in [config.json](deploy/deploy_script/config.json). Keep only the public deployment address there; provide the matching private key from your shell (never commit it):
+```sh
+export TEZOS_PRIVATE_KEY='edsk...'
+```
+   Alternatively, set `TEZOS_MNEMONIC` for a standard Tezos wallet seed phrase (and `TEZOS_MNEMONIC_PASSWORD` only if your wallet used one). The default derivation path is `44'/1729'/0'/0'`; override it with `TEZOS_DERIVATION_PATH` if needed. Legacy fundraiser accounts additionally require `TEZOS_FUNDS_EMAIL` and `TEZOS_FUNDS_PASSWORD`. The signer must match `originator.pkh` and have Previewnet XTZ.
+   Previewnet fee estimates can change between simulation and injection; the deployer applies a 20% fee margin. Override it only when needed with `TEZOS_FEE_SAFETY_MULTIPLIER`.
 3. Install deployment dependencies
 ```sh
 cd deploy/deploy_script
 npm install
+npm run check
+npm run prepare:deploy
 ```
 4. Run deployment script
 ```sh
@@ -122,4 +129,3 @@ npm install
 cd src/ui
 npm start
 ```
-
