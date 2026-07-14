@@ -60,11 +60,17 @@ function verifyAgainstAllowlist(key, address) {
     }
 }
 
+// Pure check (no network access) split out from mainnetPreflight so the "missing
+// required canonical key" rejection path can be unit-tested directly.
+function findMissingCanonicalKeys(deployResult) {
+    return REQUIRED_CANONICAL_KEYS.filter((key) => !deployResult[key]);
+}
+
 async function mainnetPreflight(deployResultPath) {
     const { tezos, chainId } = await createTezosClient();
     const deployResult = readDeployResult(deployResultPath);
 
-    const missing = REQUIRED_CANONICAL_KEYS.filter((key) => !deployResult[key]);
+    const missing = findMissingCanonicalKeys(deployResult);
     if (missing.length > 0) {
         throw new Error(
             `Mainnet manifest ${deployResultPath} is missing required canonical addresses: ` +
@@ -115,7 +121,17 @@ async function mainnetPreflight(deployResultPath) {
     console.log('[INFO] MAINNET_DEPLOY_CONFIRM=yes acknowledged; proceeding.');
 }
 
-mainnetPreflight(resolveDeployResultPath()).catch((error) => {
-    console.error(`[ERROR] Mainnet preflight failed: ${error.message}`);
-    process.exitCode = 1;
-});
+if (require.main === module) {
+    mainnetPreflight(resolveDeployResultPath()).catch((error) => {
+        console.error(`[ERROR] Mainnet preflight failed: ${error.message}`);
+        process.exitCode = 1;
+    });
+}
+
+module.exports = {
+    mainnetPreflight,
+    findMissingCanonicalKeys,
+    verifyAgainstAllowlist,
+    REQUIRED_CANONICAL_KEYS,
+    VETTED_MAINNET_ADDRESSES,
+};

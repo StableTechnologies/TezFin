@@ -184,9 +184,7 @@ async function createTezosClient() {
     tezos.setProvider({ signer });
 
     const chainId = await tezos.rpc.getChainId();
-    if (config.chainId && config.chainId !== chainId) {
-        throw new Error(`Configured chain ID ${config.chainId} does not match RPC chain ID ${chainId}`);
-    }
+    checkChainIdMatch(config.chainId, chainId, 'config.json chainId');
     const publicKeyHash = await signer.publicKeyHash();
     if (config.originator?.pkh && config.originator.pkh !== publicKeyHash) {
         throw new Error(`Configured originator ${config.originator.pkh} does not match signing key ${publicKeyHash}`);
@@ -204,12 +202,15 @@ async function checkConnection() {
 async function syncDeploymentOriginator(deployResultPath) {
     const { publicKeyHash, chainId } = await createTezosClient();
     const deployResult = readDeployResult(deployResultPath);
-    if (deployResult.chainId && deployResult.chainId !== chainId) {
-        throw new Error(
-            `Deploy manifest ${deployResultPath} was created for chain ${deployResult.chainId}, ` +
-            `but the connected RPC reports chain ${chainId}. Refusing to reuse this manifest; start a ` +
-            `fresh manifest (e.g. delete or rename the file) before preparing a deployment for this network.`,
-        );
+    if (deployResult.chainId) {
+        try {
+            checkChainIdMatch(deployResult.chainId, chainId, `Deploy manifest ${deployResultPath}`);
+        } catch (error) {
+            throw new Error(
+                `${error.message} Refusing to reuse this manifest; start a fresh manifest (e.g. delete ` +
+                `or rename the file) before preparing a deployment for this network.`,
+            );
+        }
     }
     deployResult.OriginatorAddress = publicKeyHash;
     deployResult.chainId = chainId;
@@ -324,6 +325,19 @@ function diffSets(expected, actual) {
     return { missing, unexpected };
 }
 
+// Pure guard used by createTezosClient/syncDeploymentOriginator/runDeployment to
+// reject a manifest or config that was produced for a different chain than the one
+// currently connected. Extracted as a standalone function (no network access) so it
+// can be unit-tested directly instead of only indirectly via a live RPC connection.
+function checkChainIdMatch(expectedChainId, actualChainId, context) {
+    if (expectedChainId && expectedChainId !== actualChainId) {
+        throw new Error(
+            `${context} was created for/configured with chain ${expectedChainId}, but the connected ` +
+            `RPC reports chain ${actualChainId}. Refusing to proceed.`,
+        );
+    }
+}
+
 // Verify that a manifest entry still points at a live, matching contract before we
 // trust it enough to skip re-deploying. This prevents silently reusing a stale or
 // unrelated address just because a key happens to exist in the manifest (e.g. a
@@ -377,12 +391,12 @@ async function runDeployment(compiledContractsPath, deployResultPath) {
     // Bind the manifest to the chain it was created for. A manifest produced against one
     // network (e.g. a stale Previewnet run) must never be silently reused to skip
     // origination against a different chain (e.g. mainnet).
-    if (jsonDeployResult.chainId && jsonDeployResult.chainId !== chainId) {
-        throw new Error(
-            `Deploy manifest ${deployResultPath} was created for chain ${jsonDeployResult.chainId}, ` +
-            `but the connected RPC reports chain ${chainId}. Refusing to reuse this manifest; start a ` +
-            `fresh manifest for this network instead.`,
-        );
+    if (jsonDeployResult.chainId) {
+        try {
+            checkChainIdMatch(jsonDeployResult.chainId, chainId, `Deploy manifest ${deployResultPath}`);
+        } catch (error) {
+            throw new Error(`${error.message} Refusing to reuse this manifest; start a fresh manifest for this network instead.`);
+        }
     }
     jsonDeployResult.chainId = chainId;
     jsonDeployResult.network = config.tezosNode;
@@ -461,4 +475,20 @@ async function verifyOracleAddress(deployResultPath) {
     console.log(`[INFO] Verified PriceOracle ${address} exists on chain ${chainId}`);
 }
 
-module.exports = { checkConnection, runE2E, run, syncDeploymentOriginator, verifyOracleAddress, config, createTezosClient, resolveDeployResultPath }
+module.exports = {
+    checkConnection,
+    runE2E,
+    run,
+    syncDeploymentOriginator,
+    verifyOracleAddress,
+    config,
+    createTezosClient,
+    resolveDeployResultPath,
+    // Exported for unit testing (pure/offline functions, no network access):
+    checkChainIdMatch,
+    canonicalizeMicheline,
+    micheline_equal,
+    extractAddresses,
+    diffSets,
+    verifyExistingContract,
+}

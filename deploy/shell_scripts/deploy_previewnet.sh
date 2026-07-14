@@ -17,6 +17,10 @@ node ./deploy/deploy_script/assert_network.js previewnet
 # config key (e.g. tzBTC -> CtzBTC_IRM), not another market's by mistake.
 python3 ./deploy/compile_targets/tests/test_irm_wiring.py
 
+# Sanity check: shell-script compile-target references exist, CtzBTC_IRM reads its own
+# config block, and Config.py/util.js agree on the default manifest path per profile.
+python3 ./deploy/compile_targets/tests/test_deploy_pipeline_wiring.py
+
 node ./deploy/deploy_script/prepare.js
 
 compile_and_deploy() {
