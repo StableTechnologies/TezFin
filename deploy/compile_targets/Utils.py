@@ -10,7 +10,7 @@ def checkDependencies(obj):
             notSpecifiedAttributes.append(attribute)
 
     if len(notSpecifiedAttributes) > 0:
-        manifest = os.getenv('DEPLOY_MANIFEST', CFG.PATH_DEPLOY_RESULT)
+        manifest = os.getenv('DEPLOY_MANIFEST', os.getenv('E2E', CFG._defaultDeployResultPath))
         message = f'Please specify {notSpecifiedAttributes} in the deploy manifest ({manifest}).'
         if 'PriceOracle' in notSpecifiedAttributes:
             message += (

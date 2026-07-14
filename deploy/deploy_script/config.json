@@ -1,4 +1,5 @@
 {
+  "networkProfile": "previewnet",
   "tezosNode": "https://michelson.previewnet.tezosx.nomadic-labs.com",
   "chainId": "NetXY2oPPzkxUW1",
   "feeSafetyMultiplier": 1.2,
