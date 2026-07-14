@@ -20,6 +20,9 @@ jobs:
       - name: "Run tests"
         run: |
           bash contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh
+      - name: "Check per-market IRM wiring"
+        run: |
+          python3 deploy/compile_targets/tests/test_irm_wiring.py
 
   build_and_test_typescript:
     runs-on: ubuntu-latest
