@@ -107,6 +107,30 @@ npm run prepare:deploy
 
 > To deploy a specific contract run the corresponding script in [shell_scripts](deploy/shell_scripts)
 
+## Post-Deployment Admin Handoff (Mainnet)
+
+After origination, every contract (`Governance`, `TezFinOracle`) is initially administered by the
+deployer account (`OriginatorAddress`). Before any market is unpaused or opened to real users, the
+protocol admin rights **must** be handed off to the production multisig. This is currently a manual
+process:
+
+1. Keep all markets paused until the handoff below is fully verified.
+2. On `Governance`, call `setPendingGovernance(<multisig address>)` from the deployer account.
+3. From the multisig, call `acceptGovernance()` on `Governance` to finalize the transfer.
+4. On `TezFinOracle`, call `set_pending_admin(<multisig address>)` from the deployer account, then
+   have the multisig call `accept_admin()` to finalize the transfer.
+5. Verify on-chain (e.g. via a block explorer or a Taquito script) that the `administrator` field of
+   `Governance`, `TezFinOracle`, `Comptroller`, and every ꜰToken market now points to the intended
+   production address, and that the deployer account no longer has admin rights anywhere.
+6. Only unpause markets after every check in step 5 passes.
+
+Note: `Comptroller` and every ꜰToken market are administered *through* `Governance`
+(`Governance.setContractGovernance` / `acceptContractGovernance` act as a proxy for their
+`setPendingGovernance` / `acceptGovernance` entry points). Once `Governance` itself is controlled by
+the production multisig (steps 2-3), the multisig automatically controls Comptroller and every
+ꜰToken through it — there is no separate handoff needed for those contracts, only the on-chain
+verification in step 5.
+
 
 ## Build and Run UI
 
