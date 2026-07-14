@@ -16,8 +16,11 @@ class JsonDeserializer:
             return json.loads(file.read(), object_hook=lambda d: SimpleNamespace(**d))
 
 compileConfig = JsonDeserializer.Deserialize(PATH_COMPILE_CONFIG)
+# Use a network-specific manifest when set, so Previewnet/mainnet deploy results are
+# never read from (or written to) the same tracked file. Falls back to the legacy
+# E2E override, then to the tracked Previewnet-only default.
 deployResult = JsonDeserializer.Deserialize(
-    os.getenv('E2E', PATH_DEPLOY_RESULT))
+    os.getenv('DEPLOY_MANIFEST', os.getenv('E2E', PATH_DEPLOY_RESULT)))
 
 CUSDt_IRM = compileConfig.CUSDt_IRM
 CUSDtz_IRM = compileConfig.CUSDtz_IRM

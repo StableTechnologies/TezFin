@@ -189,9 +189,18 @@ async function checkConnection() {
 }
 
 async function syncDeploymentOriginator(deployResultPath) {
-    const { publicKeyHash } = await createTezosClient();
+    const { publicKeyHash, chainId } = await createTezosClient();
     const deployResult = readDeployResult(deployResultPath);
+    if (deployResult.chainId && deployResult.chainId !== chainId) {
+        throw new Error(
+            `Deploy manifest ${deployResultPath} was created for chain ${deployResult.chainId}, ` +
+            `but the connected RPC reports chain ${chainId}. Refusing to reuse this manifest; start a ` +
+            `fresh manifest (e.g. delete or rename the file) before preparing a deployment for this network.`,
+        );
+    }
     deployResult.OriginatorAddress = publicKeyHash;
+    deployResult.chainId = chainId;
+    deployResult.network = config.tezosNode;
     writeDeployResult(deployResultPath, JSON.stringify(deployResult, null, '  '));
     console.log(`[INFO] Set OriginatorAddress to ${publicKeyHash} in ${deployResultPath}`);
 }
@@ -230,6 +239,118 @@ function writeDeployResult(jsonPath, data) {
     fs.writeFileSync(jsonPath, data + os.EOL)
 }
 
+async function fetchOnChainScript(tezos, address) {
+    return tezos.rpc.getScript(address);
+}
+
+async function fetchOnChainStorage(tezos, address) {
+    return tezos.rpc.getStorage(address);
+}
+
+// Micheline JSON from the RPC and from SmartPy's compiled output can differ in key
+// order (and, occasionally, annotation order) without being semantically different.
+// Canonicalize both sides the same way before comparing so that a legitimate resume
+// isn't falsely rejected due to formatting differences alone.
+function canonicalizeMicheline(node) {
+    if (Array.isArray(node)) {
+        return node.map(canonicalizeMicheline);
+    }
+    if (node && typeof node === 'object') {
+        const sortedKeys = Object.keys(node).sort();
+        const result = {};
+        for (const key of sortedKeys) {
+            const value = node[key];
+            result[key] = key === 'annots' && Array.isArray(value)
+                ? [...value].sort()
+                : canonicalizeMicheline(value);
+        }
+        return result;
+    }
+    return node;
+}
+
+function micheline_equal(a, b) {
+    return JSON.stringify(canonicalizeMicheline(a)) === JSON.stringify(canonicalizeMicheline(b));
+}
+
+const TEZOS_ADDRESS_PATTERN = /^(tz1|tz2|tz3|KT1)[1-9A-HJ-NP-Za-km-z]{33}$/;
+
+// Best-effort "critical storage" check: SmartPy always embeds administrator, oracle,
+// underlying-token, and IRM addresses as plain address strings inside storage. Two
+// contracts can share identical code but be wired to different administrators/markets
+// (e.g. copy-pasted CFA12 templates); comparing the *set* of addresses embedded in
+// storage catches that case without needing a hand-written schema per contract type.
+// It will NOT catch differences in purely numeric parameters (e.g. a different IRM
+// kink/multiplier) with otherwise-identical wiring; a full per-contract schema check
+// would be needed to close that gap.
+function extractAddresses(node, out = new Set()) {
+    if (Array.isArray(node)) {
+        for (const item of node) {
+            extractAddresses(item, out);
+        }
+        return out;
+    }
+    if (node && typeof node === 'object') {
+        if (typeof node.string === 'string' && TEZOS_ADDRESS_PATTERN.test(node.string)) {
+            out.add(node.string);
+        }
+        if (typeof node.bytes === 'string') {
+            // addresses are sometimes packed as bytes; skip decoding for now, this is
+            // a best-effort check, not a full schema-aware comparison.
+        }
+        for (const value of Object.values(node)) {
+            extractAddresses(value, out);
+        }
+    }
+    return out;
+}
+
+function diffSets(expected, actual) {
+    const missing = [...expected].filter((item) => !actual.has(item));
+    const unexpected = [...actual].filter((item) => !expected.has(item));
+    return { missing, unexpected };
+}
+
+// Verify that a manifest entry still points at a live, matching contract before we
+// trust it enough to skip re-deploying. This prevents silently reusing a stale or
+// unrelated address just because a key happens to exist in the manifest (e.g. a
+// manifest copied from another network, or an address that was never confirmed).
+async function verifyExistingContract(tezos, address, expectedCode, expectedStorage, directoryName) {
+    let script;
+    try {
+        script = await fetchOnChainScript(tezos, address);
+    } catch (error) {
+        throw new Error(
+            `Manifest entry "${directoryName}" points to ${address}, but no contract could be found ` +
+            `there on the connected chain (${error.message}). Refusing to skip deployment; remove the ` +
+            `stale entry from the manifest or fix the address before re-running.`,
+        );
+    }
+
+    if (!micheline_equal(script.code, expectedCode)) {
+        throw new Error(
+            `Manifest entry "${directoryName}" (${address}) does not match the compiled contract code ` +
+            `on the connected chain. Refusing to skip deployment; the on-chain contract may belong to a ` +
+            `different network/version than the one currently compiled.`,
+        );
+    }
+
+    const onChainStorage = await fetchOnChainStorage(tezos, address);
+    const expectedAddresses = extractAddresses(expectedStorage);
+    const actualAddresses = extractAddresses(onChainStorage);
+    const { missing, unexpected } = diffSets(expectedAddresses, actualAddresses);
+    if (missing.length > 0 || unexpected.length > 0) {
+        throw new Error(
+            `Manifest entry "${directoryName}" (${address}) has matching code but its on-chain storage ` +
+            `references different addresses (admin/oracle/underlying/IRM/etc.) than the compiled initial ` +
+            `storage. Expected-but-missing: [${missing.join(', ')}]; unexpected: [${unexpected.join(', ')}]. ` +
+            `Refusing to skip deployment; this looks like the same contract template wired to a different ` +
+            `configuration. Note: this check only compares embedded addresses, not numeric parameters.`,
+        );
+    }
+    console.log(`[INFO] Verified ${directoryName} at ${address} matches compiled code and critical storage addresses on-chain`);
+}
+
 async function runDeployment(compiledContractsPath, deployResultPath) {
     const { tezos, publicKeyHash, chainId } = await createTezosClient();
     console.log(`[INFO] Deploying from ${publicKeyHash} to ${config.tezosNode} (${chainId})`);
@@ -239,18 +360,45 @@ async function runDeployment(compiledContractsPath, deployResultPath) {
         throw new Error(`No compiled contract directories found in ${compiledContractsPath}`);
     }
     const jsonDeployResult = readDeployResult(deployResultPath);
+
+    // Bind the manifest to the chain it was created for. A manifest produced against one
+    // network (e.g. a stale Previewnet run) must never be silently reused to skip
+    // origination against a different chain (e.g. mainnet).
+    if (jsonDeployResult.chainId && jsonDeployResult.chainId !== chainId) {
+        throw new Error(
+            `Deploy manifest ${deployResultPath} was created for chain ${jsonDeployResult.chainId}, ` +
+            `but the connected RPC reports chain ${chainId}. Refusing to reuse this manifest; start a ` +
+            `fresh manifest for this network instead.`,
+        );
+    }
+    jsonDeployResult.chainId = chainId;
+    jsonDeployResult.network = config.tezosNode;
+    writeDeployResult(deployResultPath, JSON.stringify(jsonDeployResult, null, '  '));
+
+    const knownKeys = new Set([...directories, 'chainId', 'network', 'OriginatorAddress']);
+    const staleKeys = Object.keys(jsonDeployResult).filter((key) => !knownKeys.has(key));
+    if (staleKeys.length > 0) {
+        console.log(
+            `[WARN] Manifest ${deployResultPath} contains keys not produced by this compile batch: ` +
+            `[${staleKeys.join(', ')}]. These are not verified against the current compiled output and ` +
+            `may be stale (e.g. from an older/partial compile run); double-check them manually or start ` +
+            `from an empty manifest.`,
+        );
+    }
+
     for (const directoryName of directories) {
-        if (jsonDeployResult[directoryName]) {
-            console.log(
-                `[INFO] Skipping ${directoryName}; already in deploy.json: ${jsonDeployResult[directoryName]}`,
-            );
-            continue;
-        }
-        console.log(`[INFO] Deploying ${directoryName}`);
         const directoryPath = path.join(compiledContractsPath, directoryName);
         const code = getMichelsonCode(directoryPath);
         const storage = getMichelsonStorage(directoryPath);
 
+        const existingAddress = jsonDeployResult[directoryName];
+        if (existingAddress) {
+            await verifyExistingContract(tezos, existingAddress, code, storage, directoryName);
+            console.log(`[INFO] Skipping ${directoryName}; already deployed and verified at ${existingAddress}`);
+            continue;
+        }
+
+        console.log(`[INFO] Deploying ${directoryName}`);
         const contractAddress = await deployMichelsonContract(tezos, code, storage, directoryName);
 
         jsonDeployResult[directoryName] = contractAddress;
@@ -260,9 +408,12 @@ async function runDeployment(compiledContractsPath, deployResultPath) {
 }
 
 async function run() {
+    const deployResultPath = process.env.DEPLOY_MANIFEST
+        ? path.resolve(process.env.DEPLOY_MANIFEST)
+        : path.join(__dirname, '../../TezFinBuild/deploy_result/deploy.json');
     return runDeployment(
         path.join(__dirname, '../../TezFinBuild/compiled_contracts'),
-        path.join(__dirname, '../../TezFinBuild/deploy_result/deploy.json'),
+        deployResultPath,
     );
 }
 
