@@ -130,6 +130,35 @@ whose `chainId` doesn't match the connected RPC.
 - If you need to restart a deployment from scratch on the same network, delete or rename the
   manifest file first rather than editing it in place.
 
+### PriceOracle Configuration
+
+`TezFinOracle` (and therefore `Comptroller`) requires a `PriceOracle` address in the manifest before
+it can be compiled — `CompileTezFinOracle.py` validates this dependency and fails with a clear error
+if `PriceOracle` is missing, instead of silently compiling with a stale value. `deploy_all_contracts.sh`
+also runs `verify_oracle.js` right before compiling `TezFinOracle`, which checks that the configured
+`PriceOracle` address actually exists on the connected chain (not just that the manifest key is
+present) and fails closed if it does not.
+
+`TezFinOracle` ([`contracts/TezFinOracle.py`](contracts/TezFinOracle.py)) is a thin proxy: it forwards
+price lookups to the address stored as `oracle` (the `PriceOracle` from the manifest) and expects that
+address to behave like [Youves' Harbinger](https://harbinger.live/) oracle (`get`/price-feed
+interface), with a small admin-controlled override map for assets Harbinger doesn't support (e.g. USD,
+USDT). `TezFinOracle`'s own `admin` (settable via `set_pending_admin` / `accept_admin`) controls those
+overrides and can repoint `oracle` to a different feed with `set_oracle`.
+
+- **Previewnet**: `CompileTestData.py` compiles and deploys a mock `PriceOracle`
+  ([`deploy/test_data/PriceOracle.py`](deploy/test_data/PriceOracle.py)) as part of
+  `deploy_all_contracts.sh`. This mock is for Previewnet only, is **not** Harbinger — it's a bare
+  stand-in that mimics the same `get` callback interface. It has **no administrator check**: its
+  `setPrice` entry point can be called by any address to set any price for any asset. Do not treat a
+  Previewnet deployment using this mock as representative of mainnet price-feed security.
+- **Mainnet**: do not compile or originate the mock oracle. Instead, put the exact address of the
+  vetted production Harbinger (or Harbinger-compatible) oracle directly under the `PriceOracle` key in
+  the mainnet manifest (`DEPLOY_MANIFEST`) before running any compile target that depends on it. Never
+  let a mainnet run execute `CompileTestData.py`. Document, alongside the mainnet manifest, which
+  Harbinger instance/administrator is being used and who controls it — this project does not deploy or
+  administer Harbinger itself.
+
 ## Post-Deployment Admin Handoff (Mainnet)
 
 After origination, every contract (`Governance`, `TezFinOracle`) is initially administered by the

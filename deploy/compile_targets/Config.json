@@ -6,14 +6,14 @@
         "jumpMultiplierPerBlock": 875200000000,
         "kink": 700000000000000000
     },
-    "CUSDt_IRM" :{
+    "CUSDt_IRM": {
         "scale": 1000000000000000000,
         "multiplierPerBlock": 12970000000,
         "baseRatePerBlock": 0,
         "jumpMultiplierPerBlock": 697500000000,
         "kink": 880000000000000000
     },
-    "CUSDtz_IRM" :{
+    "CUSDtz_IRM": {
         "scale": 1000000000000000000,
         "multiplierPerBlock": 12970000000,
         "baseRatePerBlock": 0,
@@ -44,7 +44,7 @@
         "liquidationIncentiveMantissa": 1050000000000000000,
         "dependencies": [
             "Governance",
-            "PriceOracle"
+            "TezFinOracle"
         ]
     },
     "CFA2": {
@@ -79,6 +79,12 @@
     "FA2": {
         "dependencies": [
             "OriginatorAddress"
+        ]
+    },
+    "TezFinOracle": {
+        "dependencies": [
+            "OriginatorAddress",
+            "PriceOracle"
         ]
     }
 }
