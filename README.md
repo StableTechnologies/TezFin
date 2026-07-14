@@ -91,6 +91,10 @@ To compile and deploy all contracts at once:
 ```sh
 export TEZOS_PRIVATE_KEY='edsk...'
 ```
+   Before deploying to a different network or with a different deployment account, update
+   `originator.pkh` (and `tezosNode` / `chainId`) in `config.json` to match the target. This is an
+   intentional manual step: the deployer will refuse to run if the signing key does not match the
+   configured `originator.pkh`, so committing the wrong address is a safe failure, not a silent one.
    Alternatively, set `TEZOS_MNEMONIC` for a standard Tezos wallet seed phrase (and `TEZOS_MNEMONIC_PASSWORD` only if your wallet used one). The default derivation path is `44'/1729'/0'/0'`; override it with `TEZOS_DERIVATION_PATH` if needed. Legacy fundraiser accounts additionally require `TEZOS_FUNDS_EMAIL` and `TEZOS_FUNDS_PASSWORD`. The signer must match `originator.pkh` and have Previewnet XTZ.
    Previewnet fee estimates can change between simulation and injection; the deployer applies a 20% fee margin. Override it only when needed with `TEZOS_FEE_SAFETY_MULTIPLIER`.
 3. Install deployment dependencies
