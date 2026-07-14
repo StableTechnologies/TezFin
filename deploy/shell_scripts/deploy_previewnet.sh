@@ -13,6 +13,10 @@ smartpy="${1:?Usage: $0 /path/to/SmartPy.sh}"
 # DEPLOY_MANIFEST) must not resolve to a mainnet chain id.
 node ./deploy/deploy_script/assert_network.js previewnet
 
+# Sanity check: every market compile target must reference its own asset-specific IRM
+# config key (e.g. tzBTC -> CtzBTC_IRM), not another market's by mistake.
+python3 ./deploy/compile_targets/tests/test_irm_wiring.py
+
 node ./deploy/deploy_script/prepare.js
 
 compile_and_deploy() {

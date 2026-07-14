@@ -25,6 +25,11 @@ smartpy="${1:?Usage: $0 /path/to/SmartPy.sh}"
 export DEPLOY_MANIFEST="${DEPLOY_MANIFEST:-TezFinBuild/deploy_result/deploy.mainnet.json}"
 
 node ./deploy/deploy_script/assert_network.js mainnet
+
+# Sanity check: every market compile target must reference its own asset-specific IRM
+# config key (e.g. tzBTC -> CtzBTC_IRM), not another market's by mistake.
+python3 ./deploy/compile_targets/tests/test_irm_wiring.py
+
 node ./deploy/deploy_script/mainnet_preflight.js
 node ./deploy/deploy_script/prepare.js
 
