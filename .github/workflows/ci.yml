@@ -23,6 +23,10 @@ jobs:
       - name: "Check per-market IRM wiring"
         run: |
           python3 deploy/compile_targets/tests/test_irm_wiring.py
+      - name: "Install deploy script dependencies (needed by test_deploy_pipeline_wiring.py, which requires deploy_script/util.js)"
+        working-directory: deploy/deploy_script
+        run: |
+          npm ci
       - name: "Check deploy pipeline wiring (compile targets, IRM config source, manifest path parity)"
         run: |
           python3 deploy/compile_targets/tests/test_deploy_pipeline_wiring.py

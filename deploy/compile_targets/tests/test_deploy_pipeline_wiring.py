@@ -129,33 +129,49 @@ def resolve_python_default_manifest_path(networkProfile):
 
 def resolve_js_default_manifest_path(networkProfile):
     """Runs deploy_script/util.js's actual resolveDeployResultPath() (not a
-    re-implementation of it), with a temporary config.json declaring the given
-    networkProfile swapped in via a *copy* of the deploy_script directory contents
-    (util.js is copied, not symlinked, so Node's `path.join(__dirname, ...)` resolves
-    relative to the temp copy's own config.json, not the real one). node_modules is
-    symlinked (read-only, no config.json inside it) purely to avoid copying it."""
+    re-implementation of it) from its real location, so Node's normal module
+    resolution finds deploy_script/node_modules (e.g. `glob`) without needing to copy
+    or symlink node_modules into a temp directory (which breaks in CI when
+    node_modules hasn't been installed under a symlink target, or when the temp dir
+    lives on a different filesystem than the repo checkout).
+    
+    To inject the networkProfile under test without permanently mutating the real
+    (copilot-ignored) config.json, this backs up the real file's bytes (if it exists),
+    overwrites it with a throwaway config declaring the given networkProfile, runs the
+    check, and restores the original bytes (or removes the file if it didn't exist
+    before) in a finally block - so a crash mid-test can't leave a stray fake
+    config.json behind unnoticed and the developer's real config.json is untouched by
+    the time this function returns either way."""
     realDeployScriptDir = os.path.dirname(UTIL_JS_PATH)
-    with tempfile.TemporaryDirectory() as tmpDir:
-        tmpDeployScriptDir = os.path.join(tmpDir, 'deploy_script')
-        os.makedirs(tmpDeployScriptDir)
-        with open(UTIL_JS_PATH) as src, \
-                open(os.path.join(tmpDeployScriptDir, 'util.js'), 'w') as dst:
-            dst.write(src.read())
-        os.symlink(
-            os.path.join(realDeployScriptDir, 'node_modules'),
-            os.path.join(tmpDeployScriptDir, 'node_modules'),
-        )
-        with open(os.path.join(tmpDeployScriptDir, 'config.json'), 'w') as f:
+    configJsonPath = os.path.join(realDeployScriptDir, 'config.json')
+
+    originalConfigBytes = None
+    configJsonExisted = os.path.exists(configJsonPath)
+    if configJsonExisted:
+        with open(configJsonPath, 'rb') as f:
+            originalConfigBytes = f.read()
+
+    try:
+        with open(configJsonPath, 'w') as f:
             json.dump({'networkProfile': networkProfile, 'tezosNode': 'https://example.invalid'}, f)
 
         script = (
-            f"const {{ resolveDeployResultPath }} = require({json.dumps(os.path.join(tmpDeployScriptDir, 'util.js'))});"
+            f"const {{ resolveDeployResultPath }} = require({json.dumps(UTIL_JS_PATH)});"
             "console.log(resolveDeployResultPath());"
         )
-        result = subprocess.run(['node', '-e', script], cwd=tmpDir, capture_output=True, text=True)
+        result = subprocess.run(['node', '-e', script], cwd=REPO_ROOT, capture_output=True, text=True)
         if result.returncode != 0:
             raise RuntimeError(f'Failed to evaluate util.js default path for networkProfile={networkProfile!r}: {result.stderr}')
         return result.stdout.strip()
+    finally:
+        if configJsonExisted:
+            with open(configJsonPath, 'wb') as f:
+                f.write(originalConfigBytes)
+        else:
+            try:
+                os.remove(configJsonPath)
+            except FileNotFoundError:
+                pass
 
 
 def check_manifest_path_resolution_parity():
