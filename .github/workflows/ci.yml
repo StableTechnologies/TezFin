@@ -23,6 +23,26 @@ jobs:
       - name: "Check per-market IRM wiring"
         run: |
           python3 deploy/compile_targets/tests/test_irm_wiring.py
+      - name: "Check deploy pipeline wiring (compile targets, IRM config source, manifest path parity)"
+        run: |
+          python3 deploy/compile_targets/tests/test_deploy_pipeline_wiring.py
+      - name: "Check contract origination sizes stay within safety threshold"
+        run: |
+          python3 deploy/compile_targets/tests/test_operation_size.py ~/smartpy-cli/SmartPy.sh
+
+  build_and_test_deploy_scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: "Install deploy script dependencies"
+        working-directory: deploy/deploy_script
+        run: |
+          npm ci
+      - name: "Run deploy script guard unit tests (offline, no network access)"
+        working-directory: deploy/deploy_script
+        run: |
+          npm test
 
   build_and_test_typescript:
     runs-on: ubuntu-latest

@@ -72,6 +72,72 @@ cd TezFin
 ./contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh
 ```
 
+## Required Deployment Tests
+
+These checks guard the deployment pipeline itself (not the contracts' business logic)
+and all run offline/in CI without needing a live Tezos node:
+
+- **Per-market IRM wiring** (`deploy/compile_targets/tests/test_irm_wiring.py`) - static
+  check that each ꜰToken market compile target (`CompileCUSDt.py`, `CompileCUSDtz.py`,
+  `CompileCXTZ.py`, `CompileTzBTC.py`) references its own, asset-specific
+  `<Market>_IRM` config key instead of accidentally reusing another market's IRM.
+  ```sh
+  python3 deploy/compile_targets/tests/test_irm_wiring.py
+  ```
+- **Deploy pipeline wiring** (`deploy/compile_targets/tests/test_deploy_pipeline_wiring.py`)
+  - three cheap, static (no SmartPy, no network) checks in one script:
+  - every `Compile*.py` referenced from `deploy_previewnet.sh`/`deploy_mainnet.sh`
+    actually exists on disk (catches a typo'd/renamed/deleted compile target left
+    dangling in a shell script);
+  - `CompileCtzBTC_IRM.py` reads its parameters only from `CFG.CtzBTC_IRM` (its own,
+    asset-specific IRM config block), not another market's by mistake;
+  - `Config.py` (Python) and `util.js`'s `resolveDeployResultPath()` (JS) actually
+    resolve to the same default manifest file for a given `networkProfile`
+    ("previewnet"/"mainnet"/unset) - executed for real (each language's actual source,
+    not a re-implementation) rather than just asserted in a comment.
+  ```sh
+  python3 deploy/compile_targets/tests/test_deploy_pipeline_wiring.py
+  ```
+- **Contract origination size threshold**
+  (`deploy/compile_targets/tests/test_operation_size.py`) - performs a **fresh SmartPy
+  compile** (not a read of whatever is checked into `compiled_contracts/`, which can be
+  stale relative to the current change) of Governance, TezFinOracle, and Comptroller
+  into a temporary directory, using the **same SmartPy CLI flags each target is
+  compiled with in `deploy_previewnet.sh`/`deploy_mainnet.sh`** (e.g.
+  `--erase-comments --erase-var-annots --initial-cast` for Comptroller), against a
+  throwaway manifest of placeholder addresses (`e2e/deploy_result/deploy.json`), then
+  checks each contract's compiled code + initial storage against a safety margin under
+  the ~32KB Tezos manager-operation limit. This is a static regression guard (e.g.
+  against accidentally disabling code
+  sharing/lazification) that runs entirely offline; it does not replace an actual
+  `tezos.estimate.originate` dry run against the target node before a real mainnet
+  deployment (that check already happens live inside `deployMichelsonContract()` in
+  `deploy_script/util.js`). Requires the SmartPy CLI; fails loudly (non-zero exit) if
+  the CLI can't be found or if every compile attempt fails, rather than silently
+  reporting success with nothing checked.
+  ```sh
+  python3 deploy/compile_targets/tests/test_operation_size.py ~/smartpy-cli/SmartPy.sh
+  ```
+- **Deploy script guards** (`deploy/deploy_script/test/deploy_guards.test.js`) - unit
+  tests (Node's built-in test runner, no network access) for the safety checks in
+  `util.js`, `assert_network.js`, and `mainnet_preflight.js`: chain-id mismatch
+  rejection (manifest vs. connected RPC), Micheline code/storage comparison used to
+  decide whether an existing manifest entry can be safely reused, manifest path
+  resolution (`DEPLOY_MANIFEST` env var vs. per-profile default), and mainnet preflight's
+  required-canonical-key / vetted-address-allowlist checks.
+  ```sh
+  cd deploy/deploy_script
+  npm ci
+  npm test
+  ```
+
+All three are wired into CI (`.github/workflows/ci.yml`).
+
+Not currently automated (documented here as a manual pre-mainnet step instead): a live
+dry run of `deploy_mainnet.sh` against a real mainnet-like node, and confirming the
+`MAINNET_CHAIN_IDS` value in `assert_network.js` against the node you actually connect
+to before relying on it to reject a misconfigured network.
+
 ## Run Contract E2E Tests
 
 To run e2e tests use the following command, you will need latest smartpy cli installed.
