@@ -8,6 +8,19 @@ const { TezosToolkit } = require('@taquito/taquito');
 const configPath = path.join(__dirname, 'config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
+// Single source of truth for the manifest path so prepare/deploy/verify-oracle/preflight
+// can never silently disagree about which file they're reading/writing. Resolution order:
+//   1. DEPLOY_MANIFEST env var, if set (explicit override always wins).
+//   2. A profile-specific default derived from config.json's networkProfile, so a
+//      mainnet config.json never defaults to the Previewnet manifest file (or vice versa).
+function resolveDeployResultPath() {
+    if (process.env.DEPLOY_MANIFEST) {
+        return path.resolve(process.env.DEPLOY_MANIFEST);
+    }
+    const fileName = config.networkProfile === 'mainnet' ? 'deploy.mainnet.json' : 'deploy.json';
+    return path.join(__dirname, '../../TezFinBuild/deploy_result', fileName);
+}
+
 function getRequiredEnv(name) {
     const value = process.env[name];
     if (!value) {
@@ -408,12 +421,9 @@ async function runDeployment(compiledContractsPath, deployResultPath) {
 }
 
 async function run() {
-    const deployResultPath = process.env.DEPLOY_MANIFEST
-        ? path.resolve(process.env.DEPLOY_MANIFEST)
-        : path.join(__dirname, '../../TezFinBuild/deploy_result/deploy.json');
     return runDeployment(
         path.join(__dirname, '../../TezFinBuild/compiled_contracts'),
-        deployResultPath,
+        resolveDeployResultPath(),
     );
 }
 
@@ -451,4 +461,4 @@ async function verifyOracleAddress(deployResultPath) {
     console.log(`[INFO] Verified PriceOracle ${address} exists on chain ${chainId}`);
 }
 
-module.exports = { checkConnection, runE2E, run, syncDeploymentOriginator, verifyOracleAddress }
+module.exports = { checkConnection, runE2E, run, syncDeploymentOriginator, verifyOracleAddress, config, createTezosClient, resolveDeployResultPath }

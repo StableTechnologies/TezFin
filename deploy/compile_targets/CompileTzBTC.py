@@ -1,15 +1,20 @@
 import smartpy as sp
 import json
+from types import SimpleNamespace
 
 CFG = sp.io.import_script_from_url("file:deploy/compile_targets/Config.py")
 CFA12 = sp.io.import_script_from_url("file:contracts/CFA12.py")
 UTILS = sp.io.import_script_from_url("file:deploy/compile_targets/Utils.py")
 
-UTILS.checkDependencies(CFG.CFA12)
+# tzBTC uses its own dedicated CtzBTC_IRM (see CompileCtzBTC_IRM.py / Config.json
+# "CtzBTC_IRM"), not the CFA12_IRM used by CUSDtz. Check that dependency explicitly
+# here instead of reusing CFG.CFA12.dependencies, which is shared with
+# CompileCUSDtz.py and still correctly points at CFA12_IRM for that market.
+UTILS.checkDependencies(SimpleNamespace(dependencies=["Governance", "tzBTC", "CtzBTC_IRM"]))
 
 sp.add_compilation_target("CtzBTC", CFA12.CFA12(
     comptroller_ = sp.address(CFG.deployResult.Comptroller),
-    interestRateModel_ = sp.address(CFG.deployResult.CFA12_IRM),
+    interestRateModel_ = sp.address(CFG.deployResult.CtzBTC_IRM),
     initialExchangeRateMantissa_ = sp.nat(CFG.CFA2.initialExchangeRateMantissa),
     administrator_ = sp.address(CFG.deployResult.Governance),
     # specify metadata before deployment

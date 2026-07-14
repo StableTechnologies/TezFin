@@ -104,12 +104,43 @@ npm install
 npm run check
 npm run prepare:deploy
 ```
-4. Run deployment script
-```sh
-./deploy/shell_scripts/deploy_all_contracts.sh ~/smartpy-cli/SmartPy.sh
-```
+4. Run the deployment script for the target network:
+   - Previewnet:
+     ```sh
+     ./deploy/shell_scripts/deploy_previewnet.sh ~/smartpy-cli/SmartPy.sh
+     ```
+   - Mainnet (see [Mainnet Deployment](#mainnet-deployment) below before running this):
+     ```sh
+     MAINNET_DEPLOY_CONFIRM=yes ./deploy/shell_scripts/deploy_mainnet.sh ~/smartpy-cli/SmartPy.sh
+     ```
 
 > To deploy a specific contract run the corresponding script in [shell_scripts](deploy/shell_scripts)
+
+### Mainnet Deployment
+
+`deploy_mainnet.sh` is a separate, stricter profile from `deploy_previewnet.sh`:
+
+- It never runs `CompileTestData.py` — no mock tokens or mock oracle are ever compiled or
+  originated on this path.
+- It refuses to run unless `deploy_script/config.json` declares `networkProfile: "mainnet"` **and**
+  the connected RPC reports a known mainnet chain id (`assert_network.js`). It also exports
+  `DEPLOY_MANIFEST=TezFinBuild/deploy_result/deploy.mainnet.json` at the top of the script (unless
+  already set) so every step — the plan/preflight check, `prepare.js`, `deploy.js`, and the SmartPy
+  compile targets — reads and writes the exact same manifest file.
+- Before touching the manifest at all, it runs `mainnet_preflight.js`, which requires the manifest to
+  already contain vetted, on-chain-verified canonical addresses for `PriceOracle`, `USDt`, and `tzBTC`
+  (checked both against an on-chain existence check and, once configured, against a hardcoded
+  allowlist in `mainnet_preflight.js`), prints the full deployment plan (network, chain id, manifest,
+  canonical inputs, and any addresses already recorded in the manifest), and requires
+  `MAINNET_DEPLOY_CONFIRM=yes` to proceed past that point. Only after this passes does `prepare.js` run
+  and write `OriginatorAddress` to the manifest — declining confirmation leaves the manifest untouched.
+- After origination it reminds you to complete the [Post-Deployment Admin
+  Handoff](#post-deployment-admin-handoff-mainnet) before unpausing any market.
+
+> `USDtz` is intentionally not required by `mainnet_preflight.js`: no compile target in either deploy
+> script currently originates a `CUSDtz` market. If a `CUSDtz` market is added to the mainnet pipeline
+> later, add `USDtz` back to `REQUIRED_CANONICAL_KEYS` (and to the allowlist) in
+> `mainnet_preflight.js`.
 
 ### Deployment Manifest
 
@@ -121,7 +152,12 @@ whose `chainId` doesn't match the connected RPC.
 - The tracked `deploy.json` is intentionally kept **empty** (`{}`). Do not commit a populated
   manifest to this path — a manifest with existing addresses will only be reused after each address
   is verified on-chain (matching code and critical storage addresses), never silently.
-- To keep Previewnet and mainnet deployments in fully separate files, set `DEPLOY_MANIFEST` to an
+- The manifest path resolution is centralized (`resolveDeployResultPath()` in `util.js`, mirrored by
+  `Config.py` for the SmartPy side) so every tool agrees on the same file:
+  1. `DEPLOY_MANIFEST`, if set, always wins.
+  2. Otherwise, the default is derived from `deploy_script/config.json`'s `networkProfile`:
+     `deploy.mainnet.json` when it's `"mainnet"`, `deploy.json` otherwise.
+  To keep Previewnet and mainnet deployments in fully separate files, set `DEPLOY_MANIFEST` to an
   explicit path before running `npm run prepare:deploy` and the deploy shell scripts, e.g.:
   ```sh
   export DEPLOY_MANIFEST=TezFinBuild/deploy_result/deploy.mainnet.json
@@ -134,8 +170,8 @@ whose `chainId` doesn't match the connected RPC.
 
 `TezFinOracle` (and therefore `Comptroller`) requires a `PriceOracle` address in the manifest before
 it can be compiled — `CompileTezFinOracle.py` validates this dependency and fails with a clear error
-if `PriceOracle` is missing, instead of silently compiling with a stale value. `deploy_all_contracts.sh`
-also runs `verify_oracle.js` right before compiling `TezFinOracle`, which checks that the configured
+if `PriceOracle` is missing, instead of silently compiling with a stale value. Both deploy scripts
+also run `verify_oracle.js` right before compiling `TezFinOracle`, which checks that the configured
 `PriceOracle` address actually exists on the connected chain (not just that the manifest key is
 present) and fails closed if it does not.
 
@@ -148,15 +184,16 @@ overrides and can repoint `oracle` to a different feed with `set_oracle`.
 
 - **Previewnet**: `CompileTestData.py` compiles and deploys a mock `PriceOracle`
   ([`deploy/test_data/PriceOracle.py`](deploy/test_data/PriceOracle.py)) as part of
-  `deploy_all_contracts.sh`. This mock is for Previewnet only, is **not** Harbinger — it's a bare
+  `deploy_previewnet.sh`. This mock is for Previewnet only, is **not** Harbinger — it's a bare
   stand-in that mimics the same `get` callback interface. It has **no administrator check**: its
   `setPrice` entry point can be called by any address to set any price for any asset. Do not treat a
   Previewnet deployment using this mock as representative of mainnet price-feed security.
-- **Mainnet**: do not compile or originate the mock oracle. Instead, put the exact address of the
-  vetted production Harbinger (or Harbinger-compatible) oracle directly under the `PriceOracle` key in
-  the mainnet manifest (`DEPLOY_MANIFEST`) before running any compile target that depends on it. Never
-  let a mainnet run execute `CompileTestData.py`. Document, alongside the mainnet manifest, which
-  Harbinger instance/administrator is being used and who controls it — this project does not deploy or
+- **Mainnet**: `deploy_mainnet.sh` never compiles or originates the mock oracle (it does not run
+  `CompileTestData.py` at all). Put the exact address of the vetted production Harbinger (or
+  Harbinger-compatible) oracle directly under the `PriceOracle` key in the mainnet manifest
+  (`DEPLOY_MANIFEST`) before running `deploy_mainnet.sh`; `mainnet_preflight.js` verifies it exists
+  on-chain before anything is compiled. Document, alongside the mainnet manifest, which Harbinger
+  instance/administrator is being used and who controls it — this project does not deploy or
   administer Harbinger itself.
 
 ## Post-Deployment Admin Handoff (Mainnet)
