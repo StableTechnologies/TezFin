@@ -30,6 +30,7 @@ CXTZ_IRM = compileConfig.CXTZ_IRM
 
 Governance = compileConfig.Governance
 Comptroller = compileConfig.Comptroller
+TezFinOracle = compileConfig.TezFinOracle
 CFA2 = compileConfig.CFA2
 CFA12 = compileConfig.CFA12
 CXTZ = compileConfig.CXTZ

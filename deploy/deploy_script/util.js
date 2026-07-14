@@ -423,4 +423,32 @@ const runE2E = async () => {
 		path.join(__dirname, '../../e2e/deploy_result/deploy.json'),
 	);
 };
-module.exports = { checkConnection, runE2E, run, syncDeploymentOriginator }
+
+// Verify that the PriceOracle address recorded in the manifest actually exists on the
+// connected chain before TezFinOracle (and therefore Comptroller) is compiled against
+// it. This closes the gap where a wrong/unrelated address could be silently baked into
+// TezFinOracle's storage just because a key happens to be present in the manifest.
+async function verifyOracleAddress(deployResultPath) {
+    const { tezos, chainId } = await createTezosClient();
+    const deployResult = readDeployResult(deployResultPath);
+    const address = deployResult.PriceOracle;
+    if (!address) {
+        throw new Error(
+            `No "PriceOracle" address found in ${deployResultPath}. For Previewnet, run ` +
+            `CompileTestData.py to deploy the mock oracle first. For mainnet, add the vetted ` +
+            `production oracle address to the manifest before compiling TezFinOracle.`,
+        );
+    }
+    try {
+        await tezos.rpc.getScript(address);
+    } catch (error) {
+        throw new Error(
+            `PriceOracle address ${address} from ${deployResultPath} could not be found on chain ` +
+            `${chainId} (${error.message}). Refusing to compile TezFinOracle against a nonexistent ` +
+            `oracle; fix the manifest before continuing.`,
+        );
+    }
+    console.log(`[INFO] Verified PriceOracle ${address} exists on chain ${chainId}`);
+}
+
+module.exports = { checkConnection, runE2E, run, syncDeploymentOriginator, verifyOracleAddress }

@@ -11,7 +11,13 @@ compile_and_deploy() {
   node ./deploy/deploy_script/deploy.js
 }
 
+# WARNING: CompileTestData.py compiles/deploys a mock PriceOracle plus fake tzBTC,
+# USDtz, and USDt tokens (with an admin-mint entry point). This is Previewnet-only
+# test tooling. Do NOT run this script against mainnet; a mainnet deployment must
+# supply the vetted production oracle and canonical token addresses directly in the
+# manifest instead of originating these mocks. See README.md "Deployment Manifest".
 compile_and_deploy ./deploy/compile_targets/CompileTestData.py
+node ./deploy/deploy_script/verify_oracle.js
 compile_and_deploy ./deploy/compile_targets/CompileTezFinOracle.py
 compile_and_deploy ./deploy/compile_targets/CompileGovernance.py
 compile_and_deploy ./deploy/compile_targets/CompileComptroller.py --erase-comments --erase-var-annots --initial-cast
