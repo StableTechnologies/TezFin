@@ -1,18 +1,2 @@
 {
-  "OriginatorAddress": "tz1RESHvJAfmQCXCAD3ubNmVtac788pnN1oL",
-  "Governance": "KT1NF6DKX5giazRTzPtEuNX1npkVcaoQkvK2",
-  "PriceOracle": "KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn",
-  "USDTPriceOracle": "KT1B74ywpG3nX2F3ZgpYi4MnsyuoYyQtQTAn",
-  "TezFinOracle": "KT1LDtNKDnpziwSrmSfx3xCbs7nBMg7VFp4m",
-  "Comptroller": "KT1DiWBT6RBC97iWrvLHRzKL7AWQKorBiuRG",
-  "CFA12_IRM": "KT1Vzf3fXVBry4TDxWAfYzsn6ZPyMroMKUdW",
-  "CXTZ_IRM": "KT1B7zvU7EXmPBHazHhtajHaw5swFFxWCEfd",
-  "CFA2_IRM": "KT1Q2BBtfT9obGMAZ32L6esSjm8FG9NWiBb9",
-  "USDtz": "KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9",
-  "USDt": "KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o",
-  "tzBTC": "KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn",
-  "CUSDt": "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB",
-  "CUSDtz": "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs",
-  "CXTZ": "KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm",
-  "CtzBTC": "KT19gZac3vqV3ZeMJbhMX7Xy8kcocKK4Tbz1"
 }

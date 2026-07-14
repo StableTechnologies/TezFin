@@ -111,6 +111,25 @@ npm run prepare:deploy
 
 > To deploy a specific contract run the corresponding script in [shell_scripts](deploy/shell_scripts)
 
+### Deployment Manifest
+
+The deploy scripts track originated addresses in a manifest file
+([`TezFinBuild/deploy_result/deploy.json`](TezFinBuild/deploy_result/deploy.json) by default). This
+file also stores the `chainId` it was created against; the deployer refuses to reuse a manifest
+whose `chainId` doesn't match the connected RPC.
+
+- The tracked `deploy.json` is intentionally kept **empty** (`{}`). Do not commit a populated
+  manifest to this path — a manifest with existing addresses will only be reused after each address
+  is verified on-chain (matching code and critical storage addresses), never silently.
+- To keep Previewnet and mainnet deployments in fully separate files, set `DEPLOY_MANIFEST` to an
+  explicit path before running `npm run prepare:deploy` and the deploy shell scripts, e.g.:
+  ```sh
+  export DEPLOY_MANIFEST=TezFinBuild/deploy_result/deploy.mainnet.json
+  ```
+  Never reuse a Previewnet manifest for a mainnet run (or vice versa).
+- If you need to restart a deployment from scratch on the same network, delete or rename the
+  manifest file first rather than editing it in place.
+
 ## Post-Deployment Admin Handoff (Mainnet)
 
 After origination, every contract (`Governance`, `TezFinOracle`) is initially administered by the
