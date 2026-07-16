@@ -40,6 +40,7 @@ CUSDtz_IRM = compileConfig.CUSDtz_IRM
 CtzBTC_IRM = compileConfig.CtzBTC_IRM
 CstXTZ_IRM = compileConfig.CstXTZ_IRM
 CXTZ_IRM = compileConfig.CXTZ_IRM
+CXTZ_AdjustedIRM = compileConfig.CXTZ_AdjustedIRM
 
 Governance = compileConfig.Governance
 Comptroller = compileConfig.Comptroller
