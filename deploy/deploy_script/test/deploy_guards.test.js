@@ -13,9 +13,10 @@ const path = require('node:path');
 const {
     checkChainIdMatch,
     micheline_equal,
-    extractAddresses,
-    diffSets,
+    extractAddressBindings,
+    diffAddressBindings,
     resolveDeployResultPath,
+    verifyExistingContract,
 } = require('../util.js');
 const { checkNetworkExpectation, MAINNET_CHAIN_IDS } = require('../assert_network.js');
 const { findMissingCanonicalKeys, verifyAgainstAllowlist, REQUIRED_CANONICAL_KEYS, VETTED_MAINNET_ADDRESSES } = require('../mainnet_preflight.js');
@@ -81,7 +82,7 @@ test('micheline_equal: detects a real difference in embedded values', () => {
     assert.equal(micheline_equal(a, b), false);
 });
 
-test('extractAddresses: pulls tz1/KT1 strings out of nested Micheline JSON', () => {
+test('extractAddressBindings: records tz1/KT1 strings at their Micheline paths', () => {
     const tz1 = 'tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE';
     const kt1 = 'KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC';
     const storage = {
@@ -91,26 +92,65 @@ test('extractAddresses: pulls tz1/KT1 strings out of nested Micheline JSON', () 
             { prim: 'Pair', args: [{ string: kt1 }, { int: '42' }] },
         ],
     };
-    const addresses = extractAddresses(storage);
-    assert.ok(addresses.has(tz1));
-    assert.ok(addresses.has(kt1));
+    const addresses = extractAddressBindings(storage);
+    assert.equal(addresses.get('$.args[0].string'), tz1);
+    assert.equal(addresses.get('$.args[1].args[0].string'), kt1);
     assert.equal(addresses.size, 2);
 });
 
-test('diffSets: reports both missing and unexpected addresses', () => {
-    const expected = new Set(['tz1Admin', 'KT1Oracle']);
-    const actual = new Set(['tz1Admin', 'KT1DifferentOracle']);
-    const { missing, unexpected } = diffSets(expected, actual);
-    assert.deepEqual(missing, ['KT1Oracle']);
-    assert.deepEqual(unexpected, ['KT1DifferentOracle']);
+test('diffAddressBindings: reports addresses assigned to different roles', () => {
+    const expected = new Map([['$.admin', 'tz1Admin'], ['$.oracle', 'KT1Oracle']]);
+    const actual = new Map([['$.admin', 'KT1Oracle'], ['$.oracle', 'tz1Admin']]);
+    assert.deepEqual(diffAddressBindings(expected, actual), [
+        { path: '$.admin', expected: 'tz1Admin', actual: 'KT1Oracle' },
+        { path: '$.oracle', expected: 'KT1Oracle', actual: 'tz1Admin' },
+    ]);
 });
 
-test('diffSets: reports no differences when address sets match exactly', () => {
-    const expected = new Set(['tz1Admin', 'KT1Oracle']);
-    const actual = new Set(['tz1Admin', 'KT1Oracle']);
-    const { missing, unexpected } = diffSets(expected, actual);
-    assert.deepEqual(missing, []);
-    assert.deepEqual(unexpected, []);
+test('verifyExistingContract: rejects addresses swapped between immutable roles', async () => {
+    const expectedCode = [{ prim: 'parameter', args: [{ prim: 'unit' }] }];
+    const administrator = 'tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE';
+    const comptroller = 'KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC';
+    const expectedStorage = {
+        prim: 'Pair',
+        args: [{ string: administrator }, { string: comptroller }],
+    };
+    const tezos = {
+        rpc: {
+            getScript: async () => ({ code: expectedCode }),
+            getStorage: async () => ({
+                prim: 'Pair',
+                args: [{ string: comptroller }, { string: administrator }],
+            }),
+        },
+    };
+
+    await assert.rejects(
+        verifyExistingContract(tezos, 'KT1ExistingMarketAddress', expectedCode, expectedStorage, 'CUSDt'),
+        /different role-aware address bindings/,
+    );
+});
+
+test('verifyExistingContract: rejects an IRM with mismatched immutable rate parameters', async () => {
+    const expectedCode = [{ prim: 'parameter', args: [{ prim: 'unit' }] }];
+    const expectedStorage = {
+        prim: 'Pair',
+        args: [{ int: '100' }, { prim: 'Pair', args: [{ int: '200' }, { int: '300' }] }],
+    };
+    const tezos = {
+        rpc: {
+            getScript: async () => ({ code: expectedCode }),
+            getStorage: async () => ({
+                prim: 'Pair',
+                args: [{ int: '100' }, { prim: 'Pair', args: [{ int: '201' }, { int: '300' }] }],
+            }),
+        },
+    };
+
+    await assert.rejects(
+        verifyExistingContract(tezos, 'KT1ExistingIrmAddress', expectedCode, expectedStorage, 'CFA2_IRM'),
+        /immutable IRM parameters do not match/,
+    );
 });
 
 test('resolveDeployResultPath: DEPLOY_MANIFEST env var always wins', () => {
@@ -137,8 +177,11 @@ test('mainnetPreflight: findMissingCanonicalKeys reports nothing when all keys p
     assert.deepEqual(findMissingCanonicalKeys(fullManifest), []);
 });
 
-test('mainnetPreflight: verifyAgainstAllowlist warns but does not throw when no allowlist entry is configured', () => {
-    assert.doesNotThrow(() => verifyAgainstAllowlist('PriceOracle', 'KT1SomeAddress'));
+test('mainnetPreflight: verifyAgainstAllowlist rejects a missing required allowlist entry', () => {
+    assert.throws(
+        () => verifyAgainstAllowlist('PriceOracle', 'KT1SomeAddress'),
+        /No vetted mainnet address is configured for required key "PriceOracle"/,
+    );
 });
 
 test('mainnetPreflight: verifyAgainstAllowlist rejects an address that does not match a configured vetted entry', () => {

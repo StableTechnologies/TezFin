@@ -24,7 +24,8 @@ const REQUIRED_CANONICAL_KEYS = ['PriceOracle', 'USDt', 'tzBTC'];
 // filled in with the exact, reviewed mainnet addresses before a real mainnet
 // deployment; a manifest value that doesn't match exactly is rejected rather than
 // silently accepted just because *some* contract exists at that address. Deliberately
-// left null/empty until vetted mainnet addresses are confirmed for this deployment.
+// left null/empty until vetted mainnet addresses are confirmed for this deployment;
+// mainnet preflight fails closed while any required entry is absent.
 const VETTED_MAINNET_ADDRESSES = {
     // PriceOracle: null,
     // USDt: null,
@@ -44,13 +45,11 @@ async function verifyAddressExists(tezos, key, address) {
 function verifyAgainstAllowlist(key, address) {
     const expected = VETTED_MAINNET_ADDRESSES[key];
     if (!expected) {
-        console.log(
-            `[WARN] No vetted address configured for "${key}" in mainnet_preflight.js ` +
-            `(VETTED_MAINNET_ADDRESSES). Falling back to "exists on-chain" only; add the exact vetted ` +
-            `mainnet address here before a real mainnet deployment so a wrong/unrelated KT1 can't be ` +
-            `silently accepted just because a contract happens to exist at that address.`,
+        throw new Error(
+            `No vetted mainnet address is configured for required key "${key}" in ` +
+            `VETTED_MAINNET_ADDRESSES. Refusing to proceed until the exact reviewed production ` +
+            `address is added to mainnet_preflight.js.`,
         );
-        return;
     }
     if (address !== expected) {
         throw new Error(

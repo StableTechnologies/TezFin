@@ -289,40 +289,43 @@ function micheline_equal(a, b) {
 
 const TEZOS_ADDRESS_PATTERN = /^(tz1|tz2|tz3|KT1)[1-9A-HJ-NP-Za-km-z]{33}$/;
 
-// Best-effort "critical storage" check: SmartPy always embeds administrator, oracle,
-// underlying-token, and IRM addresses as plain address strings inside storage. Two
-// contracts can share identical code but be wired to different administrators/markets
-// (e.g. copy-pasted CFA12 templates); comparing the *set* of addresses embedded in
-// storage catches that case without needing a hand-written schema per contract type.
-// It will NOT catch differences in purely numeric parameters (e.g. a different IRM
-// kink/multiplier) with otherwise-identical wiring; a full per-contract schema check
-// would be needed to close that gap.
-function extractAddresses(node, out = new Set()) {
+// Record each embedded address at its exact Micheline path. Paths preserve the role of
+// administrator, oracle, underlying token, comptroller, and IRM addresses, so swapping
+// two addresses cannot pass merely because the unordered set of values is unchanged.
+// Mutable non-address storage is intentionally ignored; immutable IRMs are compared in full.
+function extractAddressBindings(node, path = '$', out = new Map()) {
     if (Array.isArray(node)) {
-        for (const item of node) {
-            extractAddresses(item, out);
+        for (const [index, item] of node.entries()) {
+            extractAddressBindings(item, `${path}[${index}]`, out);
         }
         return out;
     }
     if (node && typeof node === 'object') {
         if (typeof node.string === 'string' && TEZOS_ADDRESS_PATTERN.test(node.string)) {
-            out.add(node.string);
+            out.set(`${path}.string`, node.string);
         }
         if (typeof node.bytes === 'string') {
             // addresses are sometimes packed as bytes; skip decoding for now, this is
             // a best-effort check, not a full schema-aware comparison.
         }
-        for (const value of Object.values(node)) {
-            extractAddresses(value, out);
+        for (const [key, value] of Object.entries(node)) {
+            extractAddressBindings(value, `${path}.${key}`, out);
         }
     }
     return out;
 }
 
-function diffSets(expected, actual) {
-    const missing = [...expected].filter((item) => !actual.has(item));
-    const unexpected = [...actual].filter((item) => !expected.has(item));
-    return { missing, unexpected };
+function diffAddressBindings(expected, actual) {
+    const mismatches = [];
+    const paths = new Set([...expected.keys(), ...actual.keys()]);
+    for (const path of paths) {
+        const expectedAddress = expected.get(path);
+        const actualAddress = actual.get(path);
+        if (expectedAddress !== actualAddress) {
+            mismatches.push({ path, expected: expectedAddress, actual: actualAddress });
+        }
+    }
+    return mismatches;
 }
 
 // Pure guard used by createTezosClient/syncDeploymentOriginator/runDeployment to
@@ -363,16 +366,25 @@ async function verifyExistingContract(tezos, address, expectedCode, expectedStor
     }
 
     const onChainStorage = await fetchOnChainStorage(tezos, address);
-    const expectedAddresses = extractAddresses(expectedStorage);
-    const actualAddresses = extractAddresses(onChainStorage);
-    const { missing, unexpected } = diffSets(expectedAddresses, actualAddresses);
-    if (missing.length > 0 || unexpected.length > 0) {
+    if (directoryName.endsWith('_IRM') && !micheline_equal(onChainStorage, expectedStorage)) {
+        throw new Error(
+            `Manifest entry "${directoryName}" (${address}) has matching code but its immutable IRM ` +
+            `parameters do not match the compiled initial storage. Refusing to skip deployment; ` +
+            `verify the base rate, multiplier, jump multiplier, kink, and scale.`,
+        );
+    }
+    const expectedAddresses = extractAddressBindings(expectedStorage);
+    const actualAddresses = extractAddressBindings(onChainStorage);
+    const addressMismatches = diffAddressBindings(expectedAddresses, actualAddresses);
+    if (addressMismatches.length > 0) {
+        const details = addressMismatches.map(({ path, expected, actual }) =>
+            `${path}: expected ${expected || '(none)'}, actual ${actual || '(none)'}`,
+        );
         throw new Error(
             `Manifest entry "${directoryName}" (${address}) has matching code but its on-chain storage ` +
-            `references different addresses (admin/oracle/underlying/IRM/etc.) than the compiled initial ` +
-            `storage. Expected-but-missing: [${missing.join(', ')}]; unexpected: [${unexpected.join(', ')}]. ` +
-            `Refusing to skip deployment; this looks like the same contract template wired to a different ` +
-            `configuration. Note: this check only compares embedded addresses, not numeric parameters.`,
+            `has different role-aware address bindings (admin/oracle/underlying/IRM/etc.) than the ` +
+            `compiled initial storage. Mismatches: [${details.join('; ')}]. Refusing to skip deployment; ` +
+            `this looks like the same contract template wired to a different configuration.`,
         );
     }
     console.log(`[INFO] Verified ${directoryName} at ${address} matches compiled code and critical storage addresses on-chain`);
@@ -488,7 +500,7 @@ module.exports = {
     checkChainIdMatch,
     canonicalizeMicheline,
     micheline_equal,
-    extractAddresses,
-    diffSets,
+    extractAddressBindings,
+    diffAddressBindings,
     verifyExistingContract,
 }

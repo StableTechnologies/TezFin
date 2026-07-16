@@ -16,16 +16,16 @@ sp.add_compilation_target("CUSDtz", CFA12.CFA12(
     metadata_ = sp.big_map({
         "": sp.utils.bytes_of_string("tezos-storage:data"),
         "data": sp.utils.bytes_of_string(json.dumps({
-            "name": "TezFin Interest-Bearing USD Tez",
+            "name": "TezFin V3.1 Interest-Bearing USD Tez",
             "description": "Interest-bearing token for USD Tez (USDtz) supplied to the TezFin lending protocol.",
-            "version": "3.0",
+            "version": "3.1",
             "authors": ["Tezos Finance Protocol"],
             "homepage": "https://tezos.finance",
             "interfaces": ["TZIP-007", "TZIP-016"],
         }))
     }),
     token_metadata_ = {
-        "name": sp.utils.bytes_of_string("TezFin Interest-Bearing USD Tez"),
+        "name": sp.utils.bytes_of_string("TezFin V3.1 Interest-Bearing USD Tez"),
         "symbol": sp.utils.bytes_of_string("\ua730USDtz"),
         "decimals": sp.utils.bytes_of_string("6"),
     },

@@ -195,8 +195,8 @@ npm run prepare:deploy
   compile targets — reads and writes the exact same manifest file.
 - Before touching the manifest at all, it runs `mainnet_preflight.js`, which requires the manifest to
   already contain vetted, on-chain-verified canonical addresses for `PriceOracle`, `USDt`, and `tzBTC`
-  (checked both against an on-chain existence check and, once configured, against a hardcoded
-  allowlist in `mainnet_preflight.js`), prints the full deployment plan (network, chain id, manifest,
+  (checked both against an on-chain existence check and a required hardcoded allowlist in
+  `mainnet_preflight.js`; a missing allowlist entry fails deployment), prints the full deployment plan (network, chain id, manifest,
   canonical inputs, and any addresses already recorded in the manifest), and requires
   `MAINNET_DEPLOY_CONFIRM=yes` to proceed past that point. Only after this passes does `prepare.js` run
   and write `OriginatorAddress` to the manifest — declining confirmation leaves the manifest untouched.
@@ -217,7 +217,8 @@ whose `chainId` doesn't match the connected RPC.
 
 - The tracked `deploy.json` is intentionally kept **empty** (`{}`). Do not commit a populated
   manifest to this path — a manifest with existing addresses will only be reused after each address
-  is verified on-chain (matching code and critical storage addresses), never silently.
+  is verified on-chain (matching code and critical storage addresses, plus all immutable IRM rate
+  parameters), never silently.
 - The manifest path resolution is centralized (`resolveDeployResultPath()` in `util.js`, mirrored by
   `Config.py` for the SmartPy side) so every tool agrees on the same file:
   1. `DEPLOY_MANIFEST`, if set, always wins.
@@ -274,9 +275,15 @@ process:
 3. From the multisig, call `acceptGovernance()` on `Governance` to finalize the transfer.
 4. On `TezFinOracle`, call `set_pending_admin(<multisig address>)` from the deployer account, then
    have the multisig call `accept_admin()` to finalize the transfer.
-5. Verify on-chain (e.g. via a block explorer or a Taquito script) that the `administrator` field of
-   `Governance`, `TezFinOracle`, `Comptroller`, and every ꜰToken market now points to the intended
-   production address, and that the deployer account no longer has admin rights anywhere.
+5. Verify the exact final on-chain storage (e.g. via a block explorer or a Taquito script):
+   - `Governance.administrator` is the production multisig.
+   - `TezFinOracle.admin` is the production multisig.
+   - `Comptroller.administrator` is the `Governance` contract address.
+   - Every ꜰToken's `administrator` is the `Governance` contract address.
+   - `pendingAdministrator` is `None` on `Governance`, `Comptroller`, and every ꜰToken, and
+     `TezFinOracle.pendingAdmin` is `None`.
+   - The deployment wallet is absent from all administrator and pending-administrator fields and
+     retains no administrative authority.
 6. Only unpause markets after every check in step 5 passes.
 
 Note: `Comptroller` and every ꜰToken market are administered *through* `Governance`

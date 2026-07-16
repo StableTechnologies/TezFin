@@ -21,16 +21,16 @@ sp.add_compilation_target("CtzBTC", CFA12.CFA12(
     metadata_ = sp.big_map({
         "": sp.utils.bytes_of_string("tezos-storage:data"),
         "data": sp.utils.bytes_of_string(json.dumps({
-            "name": "TezFin Interest-Bearing tzBTC",
+            "name": "TezFin V3.1 Interest-Bearing tzBTC",
             "description": "Interest-bearing token for tzBTC (wrapped Bitcoin on Tezos) supplied to the TezFin lending protocol.",
-            "version": "3.0",
+            "version": "3.1",
             "authors": ["Tezos Finance Protocol"],
             "homepage": "https://tezos.finance",
             "interfaces": ["TZIP-007", "TZIP-016"],
         }))
     }),
     token_metadata_ = {
-        "name": sp.utils.bytes_of_string("TezFin Interest-Bearing tzBTC"),
+        "name": sp.utils.bytes_of_string("TezFin V3.1 Interest-Bearing tzBTC"),
         "symbol": sp.utils.bytes_of_string("\ua730tzBTC"),
         "decimals": sp.utils.bytes_of_string("8"),
     },
