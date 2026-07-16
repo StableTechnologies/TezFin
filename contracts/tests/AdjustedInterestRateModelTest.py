@@ -20,9 +20,6 @@ def test():
     jumpMultiplierPerBlock = sp.nat(JUMP_MULTIPLIER_PER_BLOCK)
     cashOffset = sp.nat(CASH_OFFSET)
 
-    admin = sp.test_account("Administrator")
-    alice = sp.test_account("Alice")
-
     scenario = sp.test_scenario()
     scenario.add_flag("protocol", "lima")
 
@@ -41,13 +38,14 @@ def test():
         baseRatePerBlock_=baseRatePerBlock,
         kink_=kink,
         jumpMultiplierPerBlock_=jumpMultiplierPerBlock,
-        cashOffset_=cashOffset,
-        administrator_=admin.address)
+        cashOffset_=cashOffset)
     scenario += standard
     scenario += adjusted
 
     view_result = RV.ViewerNat()
+    view_result_b = RV.ViewerNat()
     scenario += view_result
+    scenario += view_result_b
 
     # Mainnet fXTZ snapshot (post-exploit, mutez).
     mainnet_cash = sp.nat(4281975000)
@@ -95,27 +93,20 @@ def test():
         baseRatePerBlock_=baseRatePerBlock,
         kink_=kink,
         jumpMultiplierPerBlock_=jumpMultiplierPerBlock,
-        cashOffset_=sp.nat(0),
-        administrator_=admin.address)
+        cashOffset_=sp.nat(0))
     scenario += zero_offset
     scenario += zero_offset.getBorrowRate(sp.record(
         cash=sp.nat(3),
         borrows=sp.nat(5),
         reserves=sp.nat(0),
         cb=view_result.typed.targetNat))
+    scenario.verify_equal(view_result.data.last, sp.some(sp.nat(20381250000)))
     scenario += standard.getBorrowRate(sp.record(
         cash=sp.nat(3),
         borrows=sp.nat(5),
         reserves=sp.nat(0),
-        cb=view_result.typed.targetNat))
-    scenario.verify_equal(view_result.data.last, sp.some(sp.nat(20381250000)))
-
-    scenario.h2("setCashOffset")
-    scenario.h3("Administrator can update offset")
-    scenario += adjusted.setCashOffset(sp.nat(10000000000)).run(sender=admin)
-    scenario.verify(adjusted.data.cashOffset == sp.nat(10000000000))
-    scenario.h3("Non-admin cannot update offset")
-    scenario += adjusted.setCashOffset(sp.nat(0)).run(sender=alice, valid=False)
+        cb=view_result_b.typed.targetNat))
+    scenario.verify_equal(view_result_b.data.last, view_result.data.last)
 
     scenario.h2("Zero borrows still yields base rate")
     scenario += adjusted.getBorrowRate(sp.record(

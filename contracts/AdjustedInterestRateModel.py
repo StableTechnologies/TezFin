@@ -11,14 +11,22 @@ IRMInterface = sp.io.import_script_from_url(
 class AdjustedInterestRateModel(IRMInterface.InterestRateModelInterface):
     """Jump-rate IRM with a virtual cash offset for utilization only.
 
-    Used on v3.0 fXTZ to restore pre-exploit interest rates after the June 2026
-    pool drain without changing real cash, borrow, or redeem accounting.
+    Used on v3.0 fXTZ to normalize interest rates after the June 2026 borrow
+    drain without changing real cash, borrow, redeem, or exchange-rate logic.
+
+    Utilization formula:
+      util = borrows / (cash + cashOffset + borrows - reserves)
+
+    cashOffset is an immutable origination parameter, not a liquidity
+    restoration. It intentionally inflates the utilization denominator so a
+    drained pool does not sit in the IRM jump zone. The offset is not added to
+    real cash and does not increase borrow capacity (CXTZ still uses sp.balance
+    for checkCash). Changing it requires deploying and selecting another IRM.
 
     Security boundary:
       - cashOffset affects ONLY getBorrowRate / getSupplyRate utilization input.
       - CXTZ still uses sp.balance for getCashImpl(), checkCash(), exchangeRate,
-        mint, redeem, and borrow transfers. A virtual offset cannot create cash,
-        raise borrow capacity, or skew redeem payouts.
+        mint, redeem, and borrow transfers.
       - Lower rates slow interest accrual on totalBorrows; they do not enable the
         June 18 cached-cash repeated-redeem class of bugs (fXTZ is unaffected).
     """
@@ -29,7 +37,6 @@ class AdjustedInterestRateModel(IRMInterface.InterestRateModelInterface):
                  kink_,
                  scale_,
                  cashOffset_,
-                 administrator_,
                  **extra_storage):
         self.init(
             scale=scale_,
@@ -38,7 +45,6 @@ class AdjustedInterestRateModel(IRMInterface.InterestRateModelInterface):
             jumpMultiplierPerBlock=jumpMultiplierPerBlock_,
             kink=kink_,
             cashOffset=cashOffset_,
-            administrator=administrator_,
             **extra_storage
         )
 
@@ -61,12 +67,6 @@ class AdjustedInterestRateModel(IRMInterface.InterestRateModelInterface):
         rateToPool = borrowRate * oneMinusReserveFactor // self.data.scale
         result = utRate * rateToPool // self.data.scale
         sp.transfer(result, sp.mutez(0), params.cb)
-
-    @sp.entry_point
-    def setCashOffset(self, params):
-        sp.set_type(params, sp.TNat)
-        sp.verify(sp.sender == self.data.administrator, EC.IRM_NOT_ADMIN)
-        self.data.cashOffset = params
 
     @sp.private_lambda(with_storage="read-only")
     def utilizationRate(self, params):

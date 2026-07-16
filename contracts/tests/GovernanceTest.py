@@ -144,7 +144,7 @@ def testCToken(scenario, ctoken, bLevel, alice, admin, governor, cmpt, irm, orac
     arg = sp.record(cToken = ctoken.address, interestRateModel = irm.address)
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set interest rate model", bLevel, admin, alice, governor.setInterestRateModel, arg)
     scenario.verify(ctoken.data.interestRateModel == irm.address)
-    
+
     scenario.h3("Set reserve factor")
     arg = sp.record(cToken = ctoken.address, newReserveFactor = sp.nat(2))
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set reserve factor", bLevel, admin, alice, governor.setReserveFactor, arg)

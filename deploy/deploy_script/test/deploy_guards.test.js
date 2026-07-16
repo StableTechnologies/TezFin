@@ -16,6 +16,7 @@ const {
     extractAddresses,
     diffSets,
     resolveDeployResultPath,
+    verifyExistingContract,
 } = require('../util.js');
 const { checkNetworkExpectation, MAINNET_CHAIN_IDS } = require('../assert_network.js');
 const { findMissingCanonicalKeys, verifyAgainstAllowlist, REQUIRED_CANONICAL_KEYS, VETTED_MAINNET_ADDRESSES } = require('../mainnet_preflight.js');
@@ -79,6 +80,62 @@ test('micheline_equal: detects a real difference in embedded values', () => {
     const a = { prim: 'Pair', args: [{ int: '1' }] };
     const b = { prim: 'Pair', args: [{ int: '2' }] };
     assert.equal(micheline_equal(a, b), false);
+});
+
+test('verifyExistingContract: accepts matching immutable AdjustedIRM storage', async () => {
+    const code = [{ prim: 'parameter', args: [{ prim: 'unit' }] }];
+    const storage = {
+        prim: 'Pair',
+        args: [
+            { int: '20090000000' },
+            { prim: 'Pair', args: [{ int: '700000000000000000' }, { int: '32610000000' }] },
+        ],
+    };
+    const tezos = {
+        rpc: {
+            getScript: async () => ({ code }),
+            getStorage: async () => storage,
+        },
+    };
+
+    await assert.doesNotReject(
+        verifyExistingContract(tezos, 'KT1AdjustedIRM', code, storage, 'CXTZ_AdjustedIRM'),
+    );
+});
+
+test('verifyExistingContract: rejects AdjustedIRM with a stale cashOffset', async () => {
+    const code = [{ prim: 'parameter', args: [{ prim: 'unit' }] }];
+    const expectedStorage = {
+        prim: 'Pair',
+        args: [
+            { int: '20090000000' },
+            { prim: 'Pair', args: [{ int: '700000000000000000' }, { int: '32610000000' }] },
+        ],
+    };
+    const staleStorage = {
+        prim: 'Pair',
+        args: [
+            { int: '40000000000' },
+            { prim: 'Pair', args: [{ int: '700000000000000000' }, { int: '32610000000' }] },
+        ],
+    };
+    const tezos = {
+        rpc: {
+            getScript: async () => ({ code }),
+            getStorage: async () => staleStorage,
+        },
+    };
+
+    await assert.rejects(
+        verifyExistingContract(
+            tezos,
+            'KT1AdjustedIRM',
+            code,
+            expectedStorage,
+            'CXTZ_AdjustedIRM',
+        ),
+        /immutable on-chain storage does not match.*cashOffset/s,
+    );
 });
 
 test('extractAddresses: pulls tz1/KT1 strings out of nested Micheline JSON', () => {

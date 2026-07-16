@@ -9,5 +9,4 @@ sp.add_compilation_target("CXTZ_AdjustedIRM", AdjustedIRM.AdjustedInterestRateMo
     baseRatePerBlock_=CFG.CXTZ_AdjustedIRM.baseRatePerBlock,
     jumpMultiplierPerBlock_=CFG.CXTZ_AdjustedIRM.jumpMultiplierPerBlock,
     kink_=CFG.CXTZ_AdjustedIRM.kink,
-    cashOffset_=CFG.CXTZ_AdjustedIRM.cashOffset,
-    administrator_=sp.address(CFG.deployResult.Governance)))
+    cashOffset_=CFG.CXTZ_AdjustedIRM.cashOffset))

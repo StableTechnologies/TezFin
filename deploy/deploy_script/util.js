@@ -289,6 +289,12 @@ function micheline_equal(a, b) {
 
 const TEZOS_ADDRESS_PATTERN = /^(tz1|tz2|tz3|KT1)[1-9A-HJ-NP-Za-km-z]{33}$/;
 
+// These contracts have immutable storage after origination, so every field must
+// match the freshly compiled initial storage before an address from the manifest
+// may be reused. This prevents a stale AdjustedIRM with a different cashOffset,
+// kink, or rate parameter from silently passing the generic address-only check.
+const IMMUTABLE_FULL_STORAGE_CONTRACTS = new Set(['CXTZ_AdjustedIRM']);
+
 // Best-effort "critical storage" check: SmartPy always embeds administrator, oracle,
 // underlying-token, and IRM addresses as plain address strings inside storage. Two
 // contracts can share identical code but be wired to different administrators/markets
@@ -363,6 +369,17 @@ async function verifyExistingContract(tezos, address, expectedCode, expectedStor
     }
 
     const onChainStorage = await fetchOnChainStorage(tezos, address);
+    if (
+        IMMUTABLE_FULL_STORAGE_CONTRACTS.has(directoryName) &&
+        !micheline_equal(onChainStorage, expectedStorage)
+    ) {
+        throw new Error(
+            `Manifest entry "${directoryName}" (${address}) has matching code but its immutable on-chain ` +
+            `storage does not match the compiled initial storage. Refusing to reuse an IRM with different ` +
+            `cashOffset, kink, scale, or rate parameters; remove the stale manifest entry and re-run deployment.`,
+        );
+    }
+
     const expectedAddresses = extractAddresses(expectedStorage);
     const actualAddresses = extractAddresses(onChainStorage);
     const { missing, unexpected } = diffSets(expectedAddresses, actualAddresses);

@@ -37,8 +37,7 @@ def test():
         baseRatePerBlock_=sp.nat(BASE_RATE_PER_BLOCK),
         kink_=sp.nat(KINK),
         jumpMultiplierPerBlock_=sp.nat(JUMP_MULTIPLIER_PER_BLOCK),
-        cashOffset_=sp.nat(CASH_OFFSET),
-        administrator_=admin.address)
+        cashOffset_=sp.nat(CASH_OFFSET))
     view_result_pair = RV.ViewerNatPair()
 
     scenario += cmpt
@@ -115,5 +114,3 @@ def test():
         sender=alice, level=bLevel.current())
     scenario.verify_equal(sp.fst(view_result_pair.data.last.open_some()), exchange_before)
 
-    scenario.h2("Extreme cashOffset cannot be set by non-admin")
-    scenario += irm.setCashOffset(sp.nat(0)).run(sender=alice, valid=False)
