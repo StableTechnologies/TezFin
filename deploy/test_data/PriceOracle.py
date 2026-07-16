@@ -10,6 +10,22 @@ class PriceOracle(OracleInterface.OracleInterface):
     def setPrice(self, params):
         sp.set_type(params, sp.TRecord(asset = sp.TString, price = sp.TNat))
         self.data.prices[params.asset] = params.price
+
+    @sp.onchain_view()
+    def get_price_with_timestamp(self, requestedAsset):
+        sp.set_type(requestedAsset, sp.TString)
+        price = sp.local('price', sp.nat(0))
+        sp.if self.data.prices.contains(requestedAsset):
+            price.value = self.data.prices[requestedAsset]
+        sp.result((price.value, sp.timestamp(0)))
+
+    @sp.onchain_view()
+    def getPrice(self, requestedAsset):
+        sp.set_type(requestedAsset, sp.TString)
+        price = sp.local('price', sp.nat(0))
+        sp.if self.data.prices.contains(requestedAsset):
+            price.value = self.data.prices[requestedAsset]
+        sp.result((sp.timestamp(0), price.value))
         
     @sp.entry_point
     def get(self, requestPair):

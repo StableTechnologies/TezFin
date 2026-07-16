@@ -1,2 +1,19 @@
 {
+  "OriginatorAddress": "tz1XTWbfhyWK9xmPAa6TyQUSv437JFgZDzgA",
+  "chainId": "NetXY2oPPzkxUW1",
+  "network": "https://michelson.previewnet.tezosx.nomadic-labs.com",
+  "PriceOracle": "KT1SyeZTavgHjmk1zBBJZ1aVx5F5NH27shJG",
+  "USDt": "KT1WWKLMc2aAanNxvYR3GcLpArTnYG6sbzzp",
+  "USDtz": "KT1NyMkX6ddVdZJmQgM826EApDLQanvuJ4LG",
+  "tzBTC": "KT1N8UrMt8bwJTphb5NSpFhB7GDFiYbzJFLz",
+  "TezFinOracle": "KT1V4ArruDLGTjGYC5Xgd9habQ2SpDtrmkDF",
+  "Governance": "KT1Wq7uJeiXXociunW4LqQZzdNvM7QYbtVEN",
+  "Comptroller": "KT1N8XU2pe51z22aMbRQya9YhPmCytyX2Met",
+  "CFA12_IRM": "KT1BntKHTG4So6RCT4CHHSXP1xNGLVj6krXE",
+  "CFA2_IRM": "KT1QT1P8rHnoirQquBV1cmTaWivgGXFxhYax",
+  "CXTZ_IRM": "KT1LEGHhjvLyun3E5zwBNsJRmTtCzCjVpUk6",
+  "CtzBTC_IRM": "KT1XkH9xQQnjGheHJ5eHzzVBTj4A119iR8yC",
+  "CUSDt": "KT1Cugpw5mGTQydYt2dCw2CUxsPsnGSdt7R9",
+  "CXTZ": "KT1DKYqH3v6AnQ9YTnCyJ44CnCvSG2pUogHH",
+  "CtzBTC": "KT1A45Vx1fwxwjBBfxzXBWmTkqEvnB2udq7J"
 }

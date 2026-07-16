@@ -159,7 +159,15 @@ def resolve_js_default_manifest_path(networkProfile):
             f"const {{ resolveDeployResultPath }} = require({json.dumps(UTIL_JS_PATH)});"
             "console.log(resolveDeployResultPath());"
         )
-        result = subprocess.run(['node', '-e', script], cwd=REPO_ROOT, capture_output=True, text=True)
+        env = os.environ.copy()
+        env.pop('DEPLOY_MANIFEST', None)
+        result = subprocess.run(
+            ['node', '-e', script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
         if result.returncode != 0:
             raise RuntimeError(f'Failed to evaluate util.js default path for networkProfile={networkProfile!r}: {result.stderr}')
         return result.stdout.strip()
