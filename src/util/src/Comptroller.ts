@@ -33,20 +33,29 @@ export namespace Comptroller {
     export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string): Promise<Storage> {
         const contract = await getContract(server, address);
         const storage: any = await contract.storage();
+        const dataContract = protocolAddresses.comptrollerDataSource
+            ? await getContract(server, protocolAddresses.comptrollerDataSource)
+            : contract;
+        const dataStorage: any = protocolAddresses.comptrollerDataSource
+            ? await dataContract.storage()
+            : storage;
 
         const markets: MarketMap = {};
         await Promise.all(Object.values(protocolAddresses.fTokens).map(async (fTokenAddr) => {
             try {
-                const marketEntry = await storage.markets.get(fTokenAddr);
-                if (marketEntry) {
+                const marketEntry = await dataStorage.markets.get(fTokenAddr);
+                const guardMarketEntry = protocolAddresses.comptrollerDataSource
+                    ? await storage.markets.get(fTokenAddr)
+                    : marketEntry;
+                if (marketEntry && guardMarketEntry) {
                     const asset = protocolAddresses.fTokensReverse[fTokenAddr];
                     markets[asset] = {
                         assetType: marketEntry.name as AssetType,
                         borrowPaused: marketEntry.borrowPaused,
                         collateralFactor: Number(marketEntry.collateralFactor.toString()),
-                        isListed: marketEntry.isListed,
+                        isListed: guardMarketEntry.isListed,
                         mintPaused: marketEntry.mintPaused,
-                        redeemPaused: marketEntry.redeemPaused,
+                        redeemPaused: guardMarketEntry.redeemPaused ?? marketEntry.redeemPaused ?? false,
                         price: bigInt(marketEntry.price.toString()),
                         updateLevel: Number(marketEntry.updateLevel.toString()),
                     };
@@ -58,11 +67,11 @@ export namespace Comptroller {
 
         return {
             administrator: storage.administrator,
-            closeFactorMantissa: bigInt(storage.closeFactorMantissa.toString()),
-            liquidationIncentiveMantissa: bigInt(storage.liquidationIncentiveMantissa.toString()),
-            oracleAddress: storage.oracleAddress,
+            closeFactorMantissa: bigInt(dataStorage.closeFactorMantissa.toString()),
+            liquidationIncentiveMantissa: bigInt(dataStorage.liquidationIncentiveMantissa.toString()),
+            oracleAddress: dataStorage.oracleAddress,
             pendingAdministrator: storage.pendingAdministrator || undefined,
-            transferPaused: storage.transferPaused,
+            transferPaused: dataStorage.transferPaused,
             markets,
         };
     }
@@ -72,7 +81,10 @@ export namespace Comptroller {
      */
     export async function GetCollaterals(address: string, _comptroller: Storage, protocolAddresses: ProtocolAddresses, server: string): Promise<AssetType[]> {
         try {
-            const contract = await getContract(server, protocolAddresses.comptroller);
+            const contract = await getContract(
+                server,
+                protocolAddresses.comptrollerDataSource || protocolAddresses.comptroller,
+            );
             const storage: any = await contract.storage();
             const collateralsSet = await storage.collaterals.get(address);
             if (!collateralsSet) return [];
@@ -107,7 +119,7 @@ export namespace Comptroller {
     ): TransferParams[] {
         const address = targetAddress || pkh;
         return [{
-            to: protocolAddresses.comptroller,
+            to: protocolAddresses.comptrollerDataSource || protocolAddresses.comptroller,
             amount: 0,
             mutez: true,
             parameter: { entrypoint: 'updateAccountLiquidityWithView', value: { string: address } },

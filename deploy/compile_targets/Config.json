@@ -8,9 +8,9 @@
     },
     "CXTZ_AdjustedIRM": {
         "scale": 1000000000000000000,
-        "multiplierPerBlock": 32610000000,
+        "multiplierPerBlock": 0,
         "baseRatePerBlock": 0,
-        "jumpMultiplierPerBlock": 875200000000,
+        "jumpMultiplierPerBlock": 0,
         "kink": 700000000000000000,
         "cashOffset": 20090000000
     },

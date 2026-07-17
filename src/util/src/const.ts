@@ -138,9 +138,10 @@ export const mainnetAddresses: ProtocolAddresses = {
       balancesMapId: 729395,
     }
   },
-  comptroller: "KT1P6Lryn3ikbyf5jywWBBRP5fkztE5ZafGe",
+  comptroller: "KT1TqVTu1tj5srznevEZtN7141oje5Fdf7gh",
+  comptrollerDataSource: "KT1P6Lryn3ikbyf5jywWBBRP5fkztE5ZafGe",
   interestRateModel: {
-    XTZ: "KT1EoQZAnsKNSkCKSRQtPBspC5ZBZJ9YoeME",
+    XTZ: "KT1NnUwvf3TqF8PaiGNJ6mFvVxb2of3XQyT9",
     USDT: "KT1PMLT8RaBHsKyhxGb9thRSW91Rg5G9vKQF",
     USD: "KT1PMLT8RaBHsKyhxGb9thRSW91Rg5G9vKQF",
     TZBTC: "KT1LkLYxgXqFSWTWWc2Q8HmxnrRTkv4qsXkE",
