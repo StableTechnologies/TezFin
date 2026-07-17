@@ -25,22 +25,30 @@ const bn = (value) => new BigNumber(toBigNumberInput(value));
  * @param tokenValue amount to be supplied.
  * @param limit Max amount a user is able to supply in a transaction.
  */
-export const useSupplyErrorText = (tokenValue, limit) => {
+export const useSupplyErrorText = (tokenValue, limit, tokenDetails) => {
     const [text, setText] = useState('Supply');
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
+        if (!tokenDetails.isListed || tokenDetails.mintPaused) {
+            setErrorText('Supplying is temporarily disabled for this market.');
+            setDisabled(true);
+        }
         if (bn(tokenValue).gt(bn(limit))) {
             setText('Insufficient Funds');
             setErrorText('');
             setDisabled(true);
+        } else {
+            setText('Supply');
+            setErrorText('');
+            setDisabled(false);
         }
         return () => {
             setText('Supply');
             setDisabled(false);
         };
-    }, [tokenValue, limit]);
+    }, [tokenValue, limit, tokenDetails.isListed, tokenDetails.mintPaused]);
 
     return { text, errorText, disabled };
 };
@@ -75,7 +83,11 @@ export const useBorrowErrorText = (tokenValue, borrowLimit, tokenDetails) => {
     const availableBorrowAmount = bn(marketSize).minus(bn(totalBorrowed)).toNumber();
 
     useEffect(() => {
-        if ((Number(tokenValue) > 0) && (Number(tokenValue) > availableBorrowAmount)) {
+        if (!tokenDetails.isListed || tokenDetails.borrowPaused) {
+            setText('Borrow');
+            setErrorText('Borrowing is temporarily disabled for this market.');
+            setDisabled(true);
+        } else if ((Number(tokenValue) > 0) && (Number(tokenValue) > availableBorrowAmount)) {
             setErrorText('You cannot borrow more than the amount available on the market.');
             setDisabled(true);
         } else if (bn(tokenValue).gt(bn(limit))) {
@@ -92,7 +104,7 @@ export const useBorrowErrorText = (tokenValue, borrowLimit, tokenDetails) => {
             setErrorText('');
             setDisabled(false);
         };
-    }, [tokenValue, limit]);
+    }, [tokenValue, limit, availableBorrowAmount, tokenDetails.isListed, tokenDetails.borrowPaused]);
 
     return { text, errorText, disabled };
 };
@@ -131,9 +143,9 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
     ).toNumber();
 
     useEffect(() => {
-        if (tokenDetails.redeemPaused) {
+        if (!tokenDetails.isListed || tokenDetails.redeemPaused) {
             setDisabled(true);
-            setErrorText('Withdrawals are temporarily paused for this market.');
+            setErrorText('Withdrawals are temporarily disabled for this market.');
         } else if (bn(tokenValue).gt(bn(limit))) {
             setDisabled(true);
             setErrorText('You cannot withdraw an amount greater than the amount you supply.');
@@ -148,7 +160,16 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
             setErrorText('');
             setDisabled(false);
         };
-    }, [tokenValue, limit, tokenDetails.redeemPaused]);
+    }, [
+        tokenValue,
+        limit,
+        borrowing,
+        pendingSupplyingUsdLimit,
+        pendingCollateralizedUsdLimit,
+        tokenDetails.collateral,
+        tokenDetails.isListed,
+        tokenDetails.redeemPaused
+    ]);
 
     return { text, errorText, disabled };
 };

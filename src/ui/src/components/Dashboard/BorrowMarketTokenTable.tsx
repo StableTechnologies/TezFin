@@ -139,6 +139,12 @@ const BorrowMarketTokenTable = (props) => {
                                             size="medium"
                                             className={classes.borrowButton}
                                             onClick={() => handleClickMktModal(data)}
+                                            disabled={!data.isListed || data.borrowPaused}
+                                            title={
+                                                !data.isListed || data.borrowPaused
+                                                    ? 'Borrowing is temporarily disabled for this market.'
+                                                    : undefined
+                                            }
                                             sx={{ textTransform: 'capitalize' }}
                                         >
                                             Borrow
