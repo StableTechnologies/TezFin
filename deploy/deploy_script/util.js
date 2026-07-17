@@ -4,6 +4,7 @@ const path = require('path');
 const glob = require('glob');
 const { InMemorySigner } = require('@taquito/signer');
 const { TezosToolkit } = require('@taquito/taquito');
+const { encodeAddress, encodeKeyHash } = require('@taquito/utils');
 
 const configPath = path.join(__dirname, 'config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -287,7 +288,33 @@ function micheline_equal(a, b) {
     return JSON.stringify(canonicalizeMicheline(a)) === JSON.stringify(canonicalizeMicheline(b));
 }
 
-const TEZOS_ADDRESS_PATTERN = /^(tz1|tz2|tz3|KT1)[1-9A-HJ-NP-Za-km-z]{33}$/;
+function michelineScriptEqual(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) {
+        return false;
+    }
+    const sectionKey = (section) =>
+        `${section.prim}:${section.prim === 'view' ? section.args?.[0]?.string || '' : ''}`;
+    const sortSections = (sections) =>
+        [...sections].sort((left, right) => sectionKey(left).localeCompare(sectionKey(right)));
+    return micheline_equal(sortSections(a), sortSections(b));
+}
+
+const TEZOS_ADDRESS_PATTERN = /^(tz1|tz2|tz3|tz4|KT1)[1-9A-HJ-NP-Za-km-z]{33}$/;
+
+function decodeTezosAddressBytes(value) {
+    if (typeof value !== 'string' || !/^[0-9a-fA-F]{44}$/.test(value)) {
+        return undefined;
+    }
+
+    const bytes = value.toLowerCase();
+    if (/^00(00|01|02|03)[0-9a-f]{40}$/.test(bytes)) {
+        return encodeKeyHash(bytes.slice(2));
+    }
+    if (/^01[0-9a-f]{40}00$/.test(bytes)) {
+        return encodeAddress(bytes);
+    }
+    return undefined;
+}
 
 // Record each embedded address at its exact Micheline path. Paths preserve the role of
 // administrator, oracle, underlying token, comptroller, and IRM addresses, so swapping
@@ -302,11 +329,13 @@ function extractAddressBindings(node, path = '$', out = new Map()) {
     }
     if (node && typeof node === 'object') {
         if (typeof node.string === 'string' && TEZOS_ADDRESS_PATTERN.test(node.string)) {
-            out.set(`${path}.string`, node.string);
+            out.set(path, node.string);
         }
         if (typeof node.bytes === 'string') {
-            // addresses are sometimes packed as bytes; skip decoding for now, this is
-            // a best-effort check, not a full schema-aware comparison.
+            const address = decodeTezosAddressBytes(node.bytes);
+            if (address) {
+                out.set(path, address);
+            }
         }
         for (const [key, value] of Object.entries(node)) {
             extractAddressBindings(value, `${path}.${key}`, out);
@@ -357,7 +386,7 @@ async function verifyExistingContract(tezos, address, expectedCode, expectedStor
         );
     }
 
-    if (!micheline_equal(script.code, expectedCode)) {
+    if (!michelineScriptEqual(script.code, expectedCode)) {
         throw new Error(
             `Manifest entry "${directoryName}" (${address}) does not match the compiled contract code ` +
             `on the connected chain. Refusing to skip deployment; the on-chain contract may belong to a ` +
@@ -500,6 +529,8 @@ module.exports = {
     checkChainIdMatch,
     canonicalizeMicheline,
     micheline_equal,
+    michelineScriptEqual,
+    decodeTezosAddressBytes,
     extractAddressBindings,
     diffAddressBindings,
     verifyExistingContract,

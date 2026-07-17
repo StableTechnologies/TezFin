@@ -215,10 +215,12 @@ The deploy scripts track originated addresses in a manifest file
 file also stores the `chainId` it was created against; the deployer refuses to reuse a manifest
 whose `chainId` doesn't match the connected RPC.
 
-- The tracked `deploy.json` is intentionally kept **empty** (`{}`). Do not commit a populated
-  manifest to this path — a manifest with existing addresses will only be reused after each address
-  is verified on-chain (matching code and critical storage addresses, plus all immutable IRM rate
-  parameters), never silently.
+- The tracked `deploy.json` is the populated **Previewnet deployment record** and may be committed so
+  an interrupted Previewnet deployment can resume. Do not edit or replace its addresses manually:
+  existing entries are reused only after each address is verified on-chain (matching code and
+  critical storage addresses, plus all immutable IRM rate parameters), never silently. Mainnet
+  deployment records must use `deploy.mainnet.json` (or another explicit `DEPLOY_MANIFEST` path) and
+  must never be written to `deploy.json`.
 - The manifest path resolution is centralized (`resolveDeployResultPath()` in `util.js`, mirrored by
   `Config.py` for the SmartPy side) so every tool agrees on the same file:
   1. `DEPLOY_MANIFEST`, if set, always wins.
