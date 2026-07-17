@@ -102,6 +102,7 @@ export interface ProtocolAddresses {
     fTokensReverse: { [address: string]: AssetType };
     underlying: { [assetType: string]: UnderlyingAsset };
     comptroller: string;
+    comptrollerDataSource?: string;
     interestRateModel: { [underlying: string]: string };
     governance: string;
     oracle: string;
