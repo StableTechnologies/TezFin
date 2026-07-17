@@ -72,6 +72,9 @@ export namespace TezosLendingPlatform {
             reserves: fToken.totalReserves,
             reserveFactor: fToken.reserveFactorMantissa.toJSNumber(),
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
+            isListed: comptroller.markets[underlying.assetType].isListed,
+            mintPaused: comptroller.markets[underlying.assetType].mintPaused,
+            borrowPaused: comptroller.markets[underlying.assetType].borrowPaused,
             redeemPaused: comptroller.markets[underlying.assetType].redeemPaused,
             exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
@@ -105,7 +108,7 @@ export namespace TezosLendingPlatform {
                     );
                     const rateModel = await InterestRateModel.GetStorage(
                         server,
-                        protocolAddresses.interestRateModel[asset],
+                        fTokenStorage.interestRateModel,
                     );
                     const oraclePrice = await PriceFeed.GetPrice(
                         protocolAddresses.fTokensReverse[fTokenAddress],

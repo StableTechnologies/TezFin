@@ -127,6 +127,12 @@ const SupplyMarketTokenTable = (props) => {
                                                 size="medium"
                                                 className={classes.supplyButton}
                                                 onClick={() => handleClickMktModal(data)}
+                                                disabled={!data.isListed || data.mintPaused}
+                                                title={
+                                                    !data.isListed || data.mintPaused
+                                                        ? 'Supplying is temporarily disabled for this market.'
+                                                        : undefined
+                                                }
                                                 sx={{ textTransform: 'capitalize' }}
                                             >
                                                 Supply

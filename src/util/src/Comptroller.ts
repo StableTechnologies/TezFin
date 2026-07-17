@@ -51,10 +51,10 @@ export namespace Comptroller {
                     const asset = protocolAddresses.fTokensReverse[fTokenAddr];
                     markets[asset] = {
                         assetType: marketEntry.name as AssetType,
-                        borrowPaused: marketEntry.borrowPaused,
+                        borrowPaused: guardMarketEntry.borrowPaused ?? marketEntry.borrowPaused,
                         collateralFactor: Number(marketEntry.collateralFactor.toString()),
                         isListed: guardMarketEntry.isListed,
-                        mintPaused: marketEntry.mintPaused,
+                        mintPaused: guardMarketEntry.mintPaused ?? marketEntry.mintPaused,
                         redeemPaused: guardMarketEntry.redeemPaused ?? marketEntry.redeemPaused ?? false,
                         price: bigInt(marketEntry.price.toString()),
                         updateLevel: Number(marketEntry.updateLevel.toString()),

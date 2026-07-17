@@ -48,6 +48,9 @@ export const allMarketAction = (account, markets) => (dispatch) => {
             token.collateralFactor = new BigNumber(markets[token.assetType].collateralFactor.toString())
                 .div(new BigNumber(10).pow(new BigNumber(18)))
                 .toFixed();
+            token.isListed = markets[token.assetType].isListed;
+            token.mintPaused = markets[token.assetType].mintPaused;
+            token.borrowPaused = markets[token.assetType].borrowPaused;
             token.redeemPaused = markets[token.assetType].redeemPaused;
             if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
                 token.walletBalance = walletBalance[token.assetType].toString();
@@ -77,6 +80,9 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            isListed,
+            mintPaused,
+            borrowPaused,
             redeemPaused,
             supply,
         }) => ({
@@ -90,6 +96,9 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            isListed,
+            mintPaused,
+            borrowPaused,
             redeemPaused,
             ...supply,
         }),
@@ -110,7 +119,22 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 export const borrowedMarketAction = (markets) => (dispatch) => {
     // eslint-disable-next-line object-curly-newline
     const borrowedTokens = markets.map(
-        ({ assetType, banner, title, name, logo, address, usdPrice, walletBalance, collateralFactor, borrow }) => ({
+        ({
+            assetType,
+            banner,
+            title,
+            name,
+            logo,
+            address,
+            usdPrice,
+            walletBalance,
+            collateralFactor,
+            isListed,
+            mintPaused,
+            borrowPaused,
+            redeemPaused,
+            borrow,
+        }) => ({
             assetType,
             banner,
             title,
@@ -120,6 +144,10 @@ export const borrowedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            isListed,
+            mintPaused,
+            borrowPaused,
+            redeemPaused,
             ...borrow,
         }),
     );

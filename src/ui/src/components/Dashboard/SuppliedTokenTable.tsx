@@ -217,8 +217,12 @@ const SuppliedTokenTable = (props) => {
                                         variant='contained'
                                         className={classes.detailsButton}
                                         onClick={() => handleClickWithdraw(data)}
-                                        disabled={data.redeemPaused}
-                                        title={data.redeemPaused ? 'Withdrawals are temporarily paused for this market.' : undefined}
+                                        disabled={!data.isListed || data.redeemPaused}
+                                        title={
+                                            !data.isListed || data.redeemPaused
+                                                ? 'Withdrawals are temporarily disabled for this market.'
+                                                : undefined
+                                        }
                                         sx={{ textTransform: 'capitalize' }}
                                     >
                                         Withdraw

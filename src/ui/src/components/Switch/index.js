@@ -76,8 +76,15 @@ export default function Switch(props) {
     const { data } = props;
 
     return (
-        <div>
-            <BasicSwitch checked={data.collateral} inputProps={{ 'aria-label': 'custom switch' }} />
+        <div
+            title='Collateral controls are temporarily disabled.'
+            onClick={(event) => event.stopPropagation()}
+        >
+            <BasicSwitch
+                checked={data.collateral}
+                disabled
+                inputProps={{ 'aria-label': 'custom switch' }}
+            />
         </div>
     );
 }

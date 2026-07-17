@@ -46,7 +46,7 @@ const SupplyModal = (props) => {
     const [tokenValue, setTokenValue] = useState('');
     const [currentTab, setCurrentTab] = useState('');
 
-    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
+    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount, tokenDetails);
     const buttonTwo = useWithdrawErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
@@ -56,6 +56,9 @@ const SupplyModal = (props) => {
     const handleCloseError = () => setErrorModal(false);
 
     const supplyToken = async () => {
+        if (!tokenDetails.isListed || tokenDetails.mintPaused) {
+            return;
+        }
         // eslint-disable-next-line no-shadow
         const { opGroup, error } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
         setOpGroup(opGroup);
@@ -63,6 +66,9 @@ const SupplyModal = (props) => {
     };
 
     const withdrawToken = async () => {
+        if (!tokenDetails.isListed || tokenDetails.redeemPaused) {
+            return;
+        }
         if (amount === undecimalify(useMaxAmount, decimals[tokenDetails.title])) {
             // eslint-disable-next-line no-shadow
             const { opGroup, error } = await withdrawTokenAction(

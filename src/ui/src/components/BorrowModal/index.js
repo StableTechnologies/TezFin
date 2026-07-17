@@ -61,6 +61,9 @@ const BorrowModal = (props) => {
     const handleCloseError = () => setErrorModal(false);
 
     const borrowToken = async () => {
+        if (!tokenDetails.isListed || tokenDetails.borrowPaused) {
+            return;
+        }
         // eslint-disable-next-line no-shadow
         const { opGroup, error } = await borrowTokenAction(
             tokenDetails,
