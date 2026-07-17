@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "tezosNode": "https://ghostnet.ecadinfra.com",
   "conseilServer": {
     "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
@@ -28,5 +29,13 @@
     "password": "dlfsJnRlHy",
     "amount": "22841330521",
     "activation_code": "77c3e768abfdb7e389f7ccd890c091ba42b84a88"
+=======
+  "networkProfile": "mainnet",
+  "tezosNode": "https://rpc.tzkt.io/mainnet",
+  "chainId": "NetXdQprcVkpaWU",
+  "feeSafetyMultiplier": 1.2,
+  "originator": {
+    "pkh": "tz1XTWbfhyWK9xmPAa6TyQUSv437JFgZDzgA"
+>>>>>>> 550c66f0 (feat: updated UI)
   }
 }

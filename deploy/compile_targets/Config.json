@@ -6,7 +6,15 @@
         "jumpMultiplierPerBlock": 875200000000,
         "kink": 700000000000000000
     },
-    "CUSDt_IRM" :{
+    "CXTZ_AdjustedIRM": {
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 0,
+        "baseRatePerBlock": 0,
+        "jumpMultiplierPerBlock": 0,
+        "kink": 700000000000000000,
+        "cashOffset": 20090000000
+    },
+    "CUSDt_IRM": {
         "scale": 1000000000000000000,
         "multiplierPerBlock": 12970000000,
         "baseRatePerBlock": 0,
