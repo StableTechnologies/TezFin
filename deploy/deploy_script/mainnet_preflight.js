@@ -27,9 +27,11 @@ const REQUIRED_CANONICAL_KEYS = ['PriceOracle', 'USDt', 'tzBTC'];
 // left null/empty until vetted mainnet addresses are confirmed for this deployment;
 // mainnet preflight fails closed while any required entry is absent.
 const VETTED_MAINNET_ADDRESSES = {
-    // PriceOracle: null,
-    // USDt: null,
-    // tzBTC: null,
+    // Blocked after the 2026-07-15 Kolibri incident. KT1B74... proxies the
+    // affected KT1Exb... feed; add an address only after independent review.
+    PriceOracle: null,
+    USDt: 'KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o',
+    tzBTC: 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn',
 };
 
 async function verifyAddressExists(tezos, key, address) {

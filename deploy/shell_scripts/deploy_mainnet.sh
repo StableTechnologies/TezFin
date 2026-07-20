@@ -34,6 +34,7 @@ python3 ./deploy/compile_targets/tests/test_irm_wiring.py
 # config block, and Config.py/util.js agree on the default manifest path per profile.
 python3 ./deploy/compile_targets/tests/test_deploy_pipeline_wiring.py
 
+node ./deploy/deploy_script/verify_mainnet_oracle.js
 node ./deploy/deploy_script/mainnet_preflight.js
 node ./deploy/deploy_script/prepare.js
 

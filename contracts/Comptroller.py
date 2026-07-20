@@ -369,11 +369,12 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                     sp.view("getPrice", self.data.oracleAddress, self.data.markets[asset].name + "-USD", 
                         t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
                 )
-                sp.if self.data.markets[asset].priceTimestamp!= sp.timestamp(0):
-                    sp.verify(sp.now - sp.fst(pricePair.value) <= self.data.maxPriceTimeDifference, "STALE_ASSET_PRICE")
+                priceTimestamp = sp.fst(pricePair.value)
+                sp.verify(priceTimestamp <= sp.now, "FUTURE_ASSET_PRICE")
+                sp.verify(sp.now - priceTimestamp <= self.data.maxPriceTimeDifference, "STALE_ASSET_PRICE")
                 self.data.markets[asset].price = self.makeExp(
                     sp.snd(pricePair.value)*self.data.markets[asset].priceExp)
-                self.data.markets[asset].priceTimestamp = sp.fst(pricePair.value)
+                self.data.markets[asset].priceTimestamp = priceTimestamp
                 self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):

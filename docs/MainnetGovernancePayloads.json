@@ -1,0 +1,139 @@
+{
+  "status": "INITIAL_DRAFT",
+  "requiredInputs": {
+    "productionMultisig": "KT1Mc9rBcVmoLATY1FQDBvzSMHmUh6rgwjDR",
+    "maxPriceTimeDifferenceSeconds": 86400,
+    "collateralFactorMantissa": {
+      "XTZ": "500000000000000000",
+      "USDT": "500000000000000000",
+      "TZBTC": "500000000000000000"
+    },
+    "openAfterHandoff": {
+      "XTZ": "TODO_BOOLEAN",
+      "USDT": "TODO_BOOLEAN",
+      "TZBTC": "TODO_BOOLEAN",
+      "transfers": "TODO_BOOLEAN"
+    }
+  },
+  "addressSources": {
+    "Governance": "TezFinBuild/deploy_result/deploy.mainnet.json#Governance",
+    "Comptroller": "TezFinBuild/deploy_result/deploy.mainnet.json#Comptroller",
+    "TezFinOracle": "TezFinBuild/deploy_result/deploy.mainnet.json#TezFinOracle",
+    "XTZ": "TezFinBuild/deploy_result/deploy.mainnet.json#CXTZ",
+    "USDT": "TezFinBuild/deploy_result/deploy.mainnet.json#CUSDt",
+    "TZBTC": "TezFinBuild/deploy_result/deploy.mainnet.json#CtzBTC"
+  },
+  "phases": [
+    {
+      "name": "deployer_stages_admin_handoff",
+      "operations": [
+        {
+          "destination": "Governance",
+          "entrypoint": "setPendingGovernance",
+          "value": "productionMultisig"
+        },
+        {
+          "destination": "TezFinOracle",
+          "entrypoint": "set_pending_admin",
+          "value": "productionMultisig"
+        }
+      ]
+    },
+    {
+      "name": "multisig_accepts_admin_handoff",
+      "operations": [
+        {
+          "destination": "Governance",
+          "entrypoint": "acceptGovernance",
+          "value": "Unit"
+        },
+        {
+          "destination": "TezFinOracle",
+          "entrypoint": "accept_admin",
+          "value": "Unit"
+        }
+      ]
+    },
+    {
+      "name": "multisig_configures_closed_markets",
+      "operations": [
+        {
+          "destination": "Governance",
+          "entrypoint": "setPriceOracleAndTimeDiff",
+          "value": {
+            "comptroller": "Comptroller",
+            "priceOracle": "TezFinOracle",
+            "timeDiff": "maxPriceTimeDifferenceSeconds"
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "supportMarket",
+          "value": {
+            "comptroller": "Comptroller",
+            "market": { "cToken": "XTZ", "name": "XTZ", "priceExp": 1000000000000 }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "supportMarket",
+          "value": {
+            "comptroller": "Comptroller",
+            "market": { "cToken": "USDT", "name": "USDT", "priceExp": 1000000000000 }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "supportMarket",
+          "value": {
+            "comptroller": "Comptroller",
+            "market": { "cToken": "TZBTC", "name": "TZBTC", "priceExp": 10000000000 }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setCollateralFactor",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "collateralFactor": {
+              "cToken": "$market",
+              "newCollateralFactor": "collateralFactorMantissa.$market"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "multisig_opens_approved_markets",
+      "preconditions": [
+        "Admin handoff storage has been verified on-chain",
+        "The production oracle guard passes for XTZUSDT and BTCUSDT",
+        "Exact-transfer review is complete for the canonical USDt and tzBTC contracts",
+        "Every collateral factor and pause state has formal risk approval"
+      ],
+      "operations": [
+        {
+          "destination": "Governance",
+          "repeatEntrypoints": ["setMintPaused", "setBorrowPaused", "setRedeemPaused"],
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!openAfterHandoff.$market"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setTransferPaused",
+          "value": {
+            "comptroller": "Comptroller",
+            "state": "!openAfterHandoff.transfers"
+          }
+        }
+      ]
+    }
+  ]
+}

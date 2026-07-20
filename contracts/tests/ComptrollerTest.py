@@ -365,6 +365,12 @@ def test():
     oracle.setPrice(1)
     scenario += cmpt.updateAllAssetPricesWithView().run(sender = bob, level = bLevel.current())
     scenario.verify_equal(cmpt.data.markets[listedMarket].price.mantissa, sp.nat(int(2e18)))
+    scenario.h3("Reject a price timestamp from the future")
+    oracle.setTimestamp(sp.timestamp(101))
+    scenario += cmpt.updateAllAssetPricesWithView().run(
+        sender = bob, level = bLevel.next(), now = sp.timestamp(100),
+        valid = False, exception = "FUTURE_ASSET_PRICE")
+    oracle.setTimestamp(sp.timestamp(0))
 
     scenario.h2("Test account liquidity")
     cmpt.enterMarkets(sp.list([cTokenMock.address])).run(sender = bob, level = bLevel.next())

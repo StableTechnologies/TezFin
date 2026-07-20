@@ -22,6 +22,7 @@ const {
 } = require('../util.js');
 const { checkNetworkExpectation, MAINNET_CHAIN_IDS } = require('../assert_network.js');
 const { findMissingCanonicalKeys, verifyAgainstAllowlist, REQUIRED_CANONICAL_KEYS, VETTED_MAINNET_ADDRESSES } = require('../mainnet_preflight.js');
+const { parsePriceResult } = require('../verify_mainnet_oracle.js');
 
 const CUSDT_COMPILED_ADDRESSES = [
     { string: 'KT1Wq7uJeiXXociunW4LqQZzdNvM7QYbtVEN' },
@@ -336,13 +337,20 @@ test('mainnetPreflight: findMissingCanonicalKeys reports nothing when all keys p
 });
 
 test('mainnetPreflight: verifyAgainstAllowlist rejects a missing required allowlist entry', () => {
-    assert.throws(
-        () => verifyAgainstAllowlist('PriceOracle', 'KT1SomeAddress'),
-        /No vetted mainnet address is configured for required key "PriceOracle"/,
-    );
+    const vettedOracle = VETTED_MAINNET_ADDRESSES.PriceOracle;
+    delete VETTED_MAINNET_ADDRESSES.PriceOracle;
+    try {
+        assert.throws(
+            () => verifyAgainstAllowlist('PriceOracle', 'KT1SomeAddress'),
+            /No vetted mainnet address is configured for required key "PriceOracle"/,
+        );
+    } finally {
+        VETTED_MAINNET_ADDRESSES.PriceOracle = vettedOracle;
+    }
 });
 
 test('mainnetPreflight: verifyAgainstAllowlist rejects an address that does not match a configured vetted entry', () => {
+    const vettedOracle = VETTED_MAINNET_ADDRESSES.PriceOracle;
     VETTED_MAINNET_ADDRESSES.PriceOracle = 'KT1VettedOracleAddressXXXXXXXXXXXXX';
     try {
         assert.throws(
@@ -351,6 +359,28 @@ test('mainnetPreflight: verifyAgainstAllowlist rejects an address that does not 
         );
         assert.doesNotThrow(() => verifyAgainstAllowlist('PriceOracle', 'KT1VettedOracleAddressXXXXXXXXXXXXX'));
     } finally {
-        delete VETTED_MAINNET_ADDRESSES.PriceOracle;
+        VETTED_MAINNET_ADDRESSES.PriceOracle = vettedOracle;
     }
+});
+
+test('mainnet oracle guard: accepts a current nonzero price', () => {
+    const response = { data: { args: [{ int: '226300' }, { int: '1784510000' }] } };
+    assert.deepEqual(parsePriceResult('XTZUSDT', response, 1784510030, 86400), {
+        asset: 'XTZUSDT', price: 226300, timestamp: 1784510000, rawTimestamp: 1784510000, ageSeconds: 30,
+    });
+});
+
+test('mainnet oracle guard: accepts millisecond timestamps and rejects stale or zero prices', () => {
+    assert.deepEqual(
+        parsePriceResult('XTZUSDT', { data: { args: [{ int: '226300' }, { int: '1784510000000' }] } }, 1784510030, 86400),
+        { asset: 'XTZUSDT', price: 226300, timestamp: 1784510000, rawTimestamp: 1784510000000, ageSeconds: 30 },
+    );
+    assert.throws(
+        () => parsePriceResult('BTCUSDT', { data: { args: [{ int: '0' }, { int: '1784510000' }] } }, 1784510030, 86400),
+        /invalid or zero price/,
+    );
+    assert.throws(
+        () => parsePriceResult('BTCUSDT', { data: { args: [{ int: '1' }, { int: '1784400000' }] } }, 1784510030, 86400),
+        /price is stale/,
+    );
 });

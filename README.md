@@ -246,10 +246,11 @@ present) and fails closed if it does not.
 
 `TezFinOracle` ([`contracts/TezFinOracle.py`](contracts/TezFinOracle.py)) is a thin proxy: it forwards
 price lookups to the address stored as `oracle` (the `PriceOracle` from the manifest) and expects that
-address to behave like [Youves' Harbinger](https://harbinger.live/) oracle (`get`/price-feed
-interface), with a small admin-controlled override map for assets Harbinger doesn't support (e.g. USD,
-USDT). `TezFinOracle`'s own `admin` (settable via `set_pending_admin` / `accept_admin`) controls those
-overrides and can repoint `oracle` to a different feed with `set_oracle`.
+address to expose the on-chain view `get_price_with_timestamp(string) -> pair(nat, timestamp)` for
+symbols such as `XTZUSDT` and `BTCUSDT`. It also has a small admin-controlled override map for assets
+the upstream feed does not support (e.g. USD and USDT). `TezFinOracle`'s own `admin` (settable via
+`set_pending_admin` / `accept_admin`) controls those overrides and can repoint `oracle` to a different
+feed with `set_oracle`.
 
 - **Previewnet**: `CompileTestData.py` compiles and deploys a mock `PriceOracle`
   ([`deploy/test_data/PriceOracle.py`](deploy/test_data/PriceOracle.py)) as part of
@@ -261,9 +262,10 @@ overrides and can repoint `oracle` to a different feed with `set_oracle`.
   `CompileTestData.py` at all). Put the exact address of the vetted production Harbinger (or
   Harbinger-compatible) oracle directly under the `PriceOracle` key in the mainnet manifest
   (`DEPLOY_MANIFEST`) before running `deploy_mainnet.sh`; `mainnet_preflight.js` verifies it exists
-  on-chain before anything is compiled. Document, alongside the mainnet manifest, which Harbinger
-  instance/administrator is being used and who controls it — this project does not deploy or
-  administer Harbinger itself.
+  on-chain before anything is compiled. `verify_mainnet_oracle.js` also executes the exact XTZ and
+  BTC views before confirmation and rejects zero, stale, or future/millisecond timestamps. Document,
+  alongside the mainnet manifest, which oracle instance/administrator is being used and who controls
+  it — this project does not deploy or administer that upstream feed itself.
 
 ## Post-Deployment Admin Handoff (Mainnet)
 
