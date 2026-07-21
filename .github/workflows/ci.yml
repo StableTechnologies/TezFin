@@ -4,19 +4,31 @@ on:
   pull_request:
     branches: ['*']
 
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20.19.5'
+  PYTHON_VERSION: '3.11.11'
+
 jobs:
   build_and_test_smart_contracts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-      - uses: actions/setup-python@v2
-      - name: "Install SmartPy"
-        run: |
-          bash <(curl -s https://legacy.smartpy.io/cli/install.sh) --yes
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: "Install verified SmartPy 0.16.0"
+        run: tools/install-smartpy.sh
+      - name: "Audit SmartPy runtime dependencies"
+        run: npm audit --omit=dev --prefix tools/smartpy
       - name: "Version Check"
         run: |
-          ~/smartpy-cli/SmartPy.sh --version
+          test "$(~/smartpy-cli/SmartPy.sh --version)" = "SmartPy Version: 0.16.0"
       - name: "Run tests"
         run: |
           bash contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh
@@ -33,12 +45,26 @@ jobs:
       - name: "Check contract origination sizes stay within safety threshold"
         run: |
           python3 deploy/compile_targets/tests/test_operation_size.py ~/smartpy-cli/SmartPy.sh
+      - name: "Verify reproducible contract compilation"
+        env:
+          COMPILED_HASHES_OUTPUT: compiled-contract-hashes.json
+        run: |
+          python3 deploy/compile_targets/tests/test_reproducible_build.py ~/smartpy-cli/SmartPy.sh
+      - name: "Publish compiled contract hashes"
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: compiled-contract-hashes
+          path: compiled-contract-hashes.json
+          if-no-files-found: error
+          retention-days: 30
 
   build_and_test_deploy_scripts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       - name: "Install deploy script dependencies"
         working-directory: deploy/deploy_script
         run: |
@@ -49,10 +75,12 @@ jobs:
           npm test
 
   build_and_test_typescript:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       - name: "Build and test utility package"
         working-directory: src/util
         run: |

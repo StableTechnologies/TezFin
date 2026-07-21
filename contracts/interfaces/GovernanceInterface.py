@@ -113,6 +113,10 @@ class GovernanceInterface(sp.Contract):
     def setPriceOracleAndTimeDiff(self, params):
         pass
 
+    @sp.entry_point
+    def setPriceBounds(self, params):
+        pass
+
     """    
         Sets the closeFactor used when liquidating borrows
 
@@ -204,6 +208,14 @@ class GovernanceInterface(sp.Contract):
     """
     @sp.entry_point
     def setRedeemPaused(self, params):
+        pass
+
+    @sp.entry_point
+    def setLiquidatePaused(self, params):
+        pass
+
+    @sp.entry_point
+    def setMarketCaps(self, params):
         pass
 
     """    

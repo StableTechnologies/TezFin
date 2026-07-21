@@ -2,9 +2,8 @@ const fs = require('fs');
 
 const { config, resolveDeployResultPath } = require('./util.js');
 
-const ASSETS = ['XTZUSDT', 'BTCUSDT'];
-const DEFAULT_MAX_AGE_SECONDS = 86400;
-const MAX_FUTURE_SKEW_SECONDS = 300;
+const ASSETS = ['XTZUSDT', 'USDTUSDT', 'TZBTCUSDT'];
+const DEFAULT_MAX_AGE_SECONDS = 300;
 
 async function rpcJson(rpc, pathname, options = {}) {
     const response = await fetch(`${rpc.replace(/\/$/, '')}${pathname}`, options);
@@ -25,11 +24,12 @@ function parsePriceResult(asset, response, headTimestamp, maxAgeSeconds) {
         throw new Error(`${asset} returned an invalid timestamp: ${args?.[1]?.int}`);
     }
 
-    // The Youves/Acurast feed encodes Unix milliseconds in its timestamp field.
-    // Native Tezos feeds normally encode seconds, so accept either representation.
-    const timestamp = rawTimestamp > 100000000000 ? Math.floor(rawTimestamp / 1000) : rawTimestamp;
+    if (rawTimestamp > 100000000000) {
+        throw new Error(`${asset} timestamp must use Unix seconds, not milliseconds: ${rawTimestamp}`);
+    }
+    const timestamp = rawTimestamp;
     const ageSeconds = headTimestamp - timestamp;
-    if (ageSeconds < -MAX_FUTURE_SKEW_SECONDS) {
+    if (ageSeconds < 0) {
         throw new Error(
             `${asset} timestamp ${rawTimestamp} is ${Math.abs(ageSeconds)} seconds ahead of the mainnet head.`,
         );

@@ -546,6 +546,13 @@ class CToken(CTI.CTokenInterface, Exponential.Exponential, SweepTokens.SweepToke
         sp.set_type(params, sp.TUnit)
         sp.result(self.data.totalSupply)
 
+    @sp.onchain_view()
+    def marketTotals(self, params):
+        sp.set_type(params, sp.TUnit)
+        suppliedUnderlying = self.mulScalarTruncate(
+            self.makeExp(self.exchangeRateStoredImpl()), self.data.totalSupply)
+        sp.result(sp.pair(suppliedUnderlying, self.data.totalBorrows))
+
     """    
         Get the current allowance from `owner` for `spender`
 

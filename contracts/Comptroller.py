@@ -14,9 +14,6 @@ Exponential = sp.io.import_script_from_url(
     "file:contracts/utils/Exponential.py")
 OP = sp.io.import_script_from_url("file:contracts/utils/OperationProtector.py")
 
-SweepTokens = sp.io.import_script_from_url(
-    "file:contracts/utils/SweepTokens.py")
-
 TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
                      # Multiplier representing the most one can borrow against their collateral in this market.
                      collateralFactor=Exponential.TExp,
@@ -25,6 +22,9 @@ TMarket = sp.TRecord(isListed=sp.TBool,  # Whether or not this market is listed
                      mintPaused=sp.TBool,
                      borrowPaused=sp.TBool,
                      redeemPaused=sp.TBool,
+                     liquidatePaused=sp.TBool,
+                     supplyCap=sp.TNat,
+                     borrowCap=sp.TNat,
                      name=sp.TString,  # Asset name for price oracle
                      price=Exponential.TExp,  # The price of the asset
                      priceExp=sp.TNat,  # exponent needed to normalize the token prices to 10^18
@@ -41,7 +41,7 @@ TLiquidity = sp.TRecord(
 DEFAULT_COLLATERAL_FACTOR = int(5e17)  # 50 %
 
 
-class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, SweepTokens.SweepTokens, OP.OperationProtector):
+class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, OP.OperationProtector):
     def __init__(self, administrator_, oracleAddress_, closeFactorMantissa_, liquidationIncentiveMantissa_, maxAssetsPerUser_=15, **extra_storage):
         Exponential.Exponential.__init__(
             self,
@@ -66,7 +66,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             activeOperations=sp.set(t=sp.TNat),
             closeFactorMantissa=closeFactorMantissa_,
             liquidationIncentiveMantissa=liquidationIncentiveMantissa_,
-            maxPriceTimeDifference = sp.int(86400),
             maxAssetsPerUser=maxAssetsPerUser_,
             **extra_storage
         )
@@ -160,6 +159,12 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(
             ~ self.data.markets[params.cToken].mintPaused, EC.CMPT_MINT_PAUSED)
         self.verifyMarketListed(params.cToken)
+        marketTotals = sp.view("marketTotals", params.cToken, sp.unit,
+                               t=sp.TPair(sp.TNat, sp.TNat)).open_some(
+                                   "INVALID MARKET TOTALS VIEW")
+        sp.verify(sp.fst(marketTotals) + params.mintAmount <=
+                  self.data.markets[params.cToken].supplyCap,
+                  EC.CMPT_SUPPLY_CAP_EXCEEDED)
         self.invalidateLiquidity(params.minter)
 
     """
@@ -256,6 +261,12 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         sp.verify(
             ~ self.data.markets[params.cToken].borrowPaused, EC.CMPT_BORROW_PAUSED)
         self.verifyMarketListed(params.cToken)
+        marketTotals = sp.view("marketTotals", params.cToken, sp.unit,
+                               t=sp.TPair(sp.TNat, sp.TNat)).open_some(
+                                   "INVALID MARKET TOTALS VIEW")
+        sp.verify(sp.snd(marketTotals) + params.borrowAmount <=
+                  self.data.markets[params.cToken].borrowCap,
+                  EC.CMPT_BORROW_CAP_EXCEEDED)
         sp.if self.isNewAssetForUser(params.borrower, params.cToken):
             uniqueAssetsCount = self.getUserUniqueAssetsCount(params.borrower)
             sp.verify(uniqueAssetsCount < self.data.maxAssetsPerUser,
@@ -364,16 +375,21 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
     def updateAllAssetPrices(self):
         sp.for asset in self.data.marketNameToAddress.values():
-            sp.if self.data.markets[asset].updateLevel < sp.level:
-                pricePair = sp.local("pricePair", 
-                    sp.view("getPrice", self.data.oracleAddress, self.data.markets[asset].name + "-USD", 
+            sp.if self.data.markets[asset].isListed & (self.data.markets[asset].updateLevel < sp.level):
+                previousRawPrice = self.data.markets[asset].price.mantissa // self.data.markets[asset].priceExp
+                pricePair = sp.local("pricePair",
+                    sp.view("getValidatedPrice", self.data.oracleAddress,
+                        sp.record(comptroller=sp.self_address,
+                                  cToken=asset,
+                                  requestedAsset=self.data.markets[asset].name + "-USD",
+                                  previousPrice=previousRawPrice,
+                                  previousTimestamp=self.data.markets[asset].priceTimestamp),
                         t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
                 )
                 priceTimestamp = sp.fst(pricePair.value)
-                sp.verify(priceTimestamp <= sp.now, "FUTURE_ASSET_PRICE")
-                sp.verify(sp.now - priceTimestamp <= self.data.maxPriceTimeDifference, "STALE_ASSET_PRICE")
+                rawPrice = sp.snd(pricePair.value)
                 self.data.markets[asset].price = self.makeExp(
-                    sp.snd(pricePair.value)*self.data.markets[asset].priceExp)
+                    rawPrice*self.data.markets[asset].priceExp)
                 self.data.markets[asset].priceTimestamp = priceTimestamp
                 self.data.markets[asset].updateLevel = sp.level
 
@@ -418,8 +434,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
     def accrueAllAssetInterests(self):
         sp.for asset in self.data.marketNameToAddress.values():
-            sp.transfer(sp.unit, sp.mutez(0), sp.contract(
-                sp.TUnit, asset, entry_point="accrueInterest").open_some())
+            sp.if self.data.markets[asset].isListed:
+                sp.transfer(sp.unit, sp.mutez(0), sp.contract(
+                    sp.TUnit, asset, entry_point="accrueInterest").open_some())
 
     """
         Determine what the account liquidity would be if the given amounts were redeemed/borrowed,
@@ -508,6 +525,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
 
         self.verifyMarketListed(params.cTokenBorrowed)
         self.verifyMarketListed(params.cTokenCollateral)
+        sp.verify(~self.data.markets[params.cTokenBorrowed].liquidatePaused,
+              EC.CMPT_LIQUIDATE_PAUSED)
+        sp.verify(~self.data.markets[params.cTokenCollateral].liquidatePaused,
+              EC.CMPT_LIQUIDATE_PAUSED)
 
         liquidity = sp.local(
             "liquidtiy", self.getAccountLiquidityInternal(params.borrower))
@@ -705,6 +726,24 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
         self.verifyAdministrator()
         self.data.markets[params.cToken].redeemPaused = params.state
 
+    @sp.entry_point
+    def setLiquidatePaused(self, params):
+        sp.verify(sp.amount == sp.mutez(0), "TEZ_TRANSFERED")
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, state=sp.TBool))
+        self.verifyMarketListed(params.cToken)
+        self.verifyAdministrator()
+        self.data.markets[params.cToken].liquidatePaused = params.state
+
+    @sp.entry_point
+    def setMarketCaps(self, params):
+        sp.verify(sp.amount == sp.mutez(0), "TEZ_TRANSFERED")
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, supplyCap=sp.TNat,
+                                      borrowCap=sp.TNat))
+        self.verifyMarketListed(params.cToken)
+        self.verifyAdministrator()
+        self.data.markets[params.cToken].supplyCap = params.supplyCap
+        self.data.markets[params.cToken].borrowCap = params.borrowCap
+
     """
         Pause or activate the transfer of CTokens
 
@@ -735,8 +774,21 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
             0), "TEZ_TRANSFERED")
         sp.set_type(params, sp.TRecord(priceOracle=sp.TAddress, timeDiff=sp.TInt))
         self.verifyAdministrator()
-        self.data.maxPriceTimeDifference = params.timeDiff
         self.data.oracleAddress = params.priceOracle
+        destination = sp.contract(sp.TInt, params.priceOracle,
+                      "configureMaxPriceAge").open_some()
+        sp.transfer(params.timeDiff, sp.mutez(0), destination)
+
+    @sp.entry_point
+    def setPriceBounds(self, params):
+        sp.verify(sp.amount == sp.mutez(0), "TEZ_TRANSFERED")
+        sp.set_type(params, sp.TRecord(cToken=sp.TAddress, minPrice=sp.TNat,
+                                      maxPrice=sp.TNat, maxChangeBps=sp.TNat))
+        self.verifyAdministrator()
+        destination = sp.contract(OracleInterface.TPriceBounds,
+                                  self.data.oracleAddress,
+                                  "configurePriceBounds").open_some()
+        sp.transfer(params, sp.mutez(0), destination)
 
     """
         Sets the closeFactor used when liquidating borrows
@@ -829,6 +881,9 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, S
                                                      borrowPaused=sp.bool(
                                                          True),
                                                      redeemPaused=sp.bool(True),
+                                                     liquidatePaused=sp.bool(True),
+                                                     supplyCap=sp.nat(0),
+                                                     borrowCap=sp.nat(0),
                                                      name=params.name,
                                                      price=self.makeExp(
                                                          sp.nat(0)),

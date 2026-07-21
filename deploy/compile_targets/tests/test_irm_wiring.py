@@ -59,6 +59,12 @@ def main():
                 f'{sorted(referencedIrmKeys)}; expected exactly {expectedIrmKey}.'
             )
 
+        if fileName == 'CompileTzBTC.py' and 'CFG.CFA12.initialExchangeRateMantissa' not in source:
+            failures.append(
+                'CompileTzBTC.py (CtzBTC market): expected the FA1.2 initial '
+                'exchange rate from CFG.CFA12.'
+            )
+
     if failures:
         print('IRM wiring check FAILED:')
         for failure in failures:

@@ -15,7 +15,7 @@ UTILS.checkDependencies(SimpleNamespace(dependencies=["Governance", "tzBTC", "Ct
 sp.add_compilation_target("CtzBTC", CFA12.CFA12(
     comptroller_ = sp.address(CFG.deployResult.Comptroller),
     interestRateModel_ = sp.address(CFG.deployResult.CtzBTC_IRM),
-    initialExchangeRateMantissa_ = sp.nat(CFG.CFA2.initialExchangeRateMantissa),
+    initialExchangeRateMantissa_ = sp.nat(CFG.CFA12.initialExchangeRateMantissa),
     administrator_ = sp.address(CFG.deployResult.Governance),
     # specify metadata before deployment
     metadata_ = sp.big_map({

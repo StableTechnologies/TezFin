@@ -17,9 +17,24 @@ For the detailed description please refer to the [wiki pages](https://github.com
 
 ## Project Structure
 
-SmartPy CLI is required to interact with contracts. For installation please refer to https://smartpy.io/cli/
+SmartPy Legacy CLI **0.16.0** is the only supported compiler version for this
+codebase. The contracts use the legacy SmartPy syntax and cannot be compiled with
+the current SmartPy language without a reviewed migration.
 
-Install legacy version: `bash <(curl -s https://legacy.smartpy.io/cli/install.sh) --yes`
+Install the pinned compiler and runtime dependencies with:
+
+```sh
+tools/install-smartpy.sh
+```
+
+The installer fails closed unless the downloaded archive matches the repository's
+SHA-256 pin, installs npm dependencies with `npm ci` from
+`tools/smartpy/package-lock.json`, and verifies that the compiler reports exactly
+`SmartPy Version: 0.16.0`. Do not use the upstream `curl | bash` installer for
+release builds.
+
+CI additionally pins Ubuntu 22.04, Node.js 20.19.5, Python 3.11.11, and GitHub
+Actions to immutable commit SHAs.
 
 Code is organized in the following structure
 
@@ -117,6 +132,16 @@ and all run offline/in CI without needing a live Tezos node:
   reporting success with nothing checked.
   ```sh
   python3 deploy/compile_targets/tests/test_operation_size.py ~/smartpy-cli/SmartPy.sh
+  ```
+- **Reproducible contract compilation**
+  (`deploy/compile_targets/tests/test_reproducible_build.py`) - compiles every contract
+  originated by `deploy_mainnet.sh` twice in clean temporary directories with the
+  same production flags, then compares SHA-256 hashes of canonical contract and
+  storage JSON. CI publishes the resulting
+  `compiled-contract-hashes.json` artifact for deployment and multisig review.
+  ```sh
+  COMPILED_HASHES_OUTPUT=compiled-contract-hashes.json \
+    python3 deploy/compile_targets/tests/test_reproducible_build.py ~/smartpy-cli/SmartPy.sh
   ```
 - **Deploy script guards** (`deploy/deploy_script/test/deploy_guards.test.js`) - unit
   tests (Node's built-in test runner, no network access) for the safety checks in

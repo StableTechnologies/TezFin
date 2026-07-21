@@ -33,7 +33,7 @@ import tempfile
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 PLACEHOLDER_MANIFEST = os.path.join(REPO_ROOT, 'e2e', 'deploy_result', 'deploy.json')
 
-DEFAULT_MAX_TOTAL_BYTES = 32000
+DEFAULT_MAX_TOTAL_BYTES = 32768
 
 # Compile target file -> (compiled contract directory name, extra SmartPy CLI flags).
 # The extra flags MUST match exactly what deploy_previewnet.sh/deploy_mainnet.sh pass

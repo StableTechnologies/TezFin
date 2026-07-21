@@ -19,6 +19,7 @@ const {
     diffAddressBindings,
     resolveDeployResultPath,
     verifyExistingContract,
+    enforceDeploymentPreflight,
 } = require('../util.js');
 const { checkNetworkExpectation, MAINNET_CHAIN_IDS } = require('../assert_network.js');
 const { findMissingCanonicalKeys, verifyAgainstAllowlist, REQUIRED_CANONICAL_KEYS, VETTED_MAINNET_ADDRESSES } = require('../mainnet_preflight.js');
@@ -331,6 +332,23 @@ test('mainnetPreflight: findMissingCanonicalKeys flags every missing required ke
     assert.deepEqual(missing, REQUIRED_CANONICAL_KEYS.filter((key) => key !== 'PriceOracle'));
 });
 
+test('raw deployment path: mainnet requires preflight', async () => {
+    let receivedPath;
+    await enforceDeploymentPreflight('/tmp/deploy.mainnet.json', 'mainnet', 'NetXdQprcVkpaWU', async (manifestPath) => {
+        receivedPath = manifestPath;
+    });
+    assert.equal(receivedPath, '/tmp/deploy.mainnet.json');
+});
+
+test('raw deployment path: mainnet preflight failure blocks deployment', async () => {
+    await assert.rejects(
+        enforceDeploymentPreflight('/tmp/deploy.mainnet.json', 'previewnet', 'NetXdQprcVkpaWU', async () => {
+            throw new Error('MAINNET_DEPLOY_CONFIRM is required');
+        }),
+        /MAINNET_DEPLOY_CONFIRM is required/,
+    );
+});
+
 test('mainnetPreflight: findMissingCanonicalKeys reports nothing when all keys present', () => {
     const fullManifest = Object.fromEntries(REQUIRED_CANONICAL_KEYS.map((key) => [key, `KT1${key}`]));
     assert.deepEqual(findMissingCanonicalKeys(fullManifest), []);
@@ -365,22 +383,26 @@ test('mainnetPreflight: verifyAgainstAllowlist rejects an address that does not 
 
 test('mainnet oracle guard: accepts a current nonzero price', () => {
     const response = { data: { args: [{ int: '226300' }, { int: '1784510000' }] } };
-    assert.deepEqual(parsePriceResult('XTZUSDT', response, 1784510030, 86400), {
+    assert.deepEqual(parsePriceResult('XTZUSDT', response, 1784510030, 300), {
         asset: 'XTZUSDT', price: 226300, timestamp: 1784510000, rawTimestamp: 1784510000, ageSeconds: 30,
     });
 });
 
-test('mainnet oracle guard: accepts millisecond timestamps and rejects stale or zero prices', () => {
-    assert.deepEqual(
-        parsePriceResult('XTZUSDT', { data: { args: [{ int: '226300' }, { int: '1784510000000' }] } }, 1784510030, 86400),
-        { asset: 'XTZUSDT', price: 226300, timestamp: 1784510000, rawTimestamp: 1784510000000, ageSeconds: 30 },
+test('mainnet oracle guard: rejects milliseconds, future timestamps, stale prices, and zero prices', () => {
+    assert.throws(
+        () => parsePriceResult('XTZUSDT', { data: { args: [{ int: '226300' }, { int: '1784510000000' }] } }, 1784510030, 300),
+        /Unix seconds, not milliseconds/,
     );
     assert.throws(
-        () => parsePriceResult('BTCUSDT', { data: { args: [{ int: '0' }, { int: '1784510000' }] } }, 1784510030, 86400),
+        () => parsePriceResult('XTZUSDT', { data: { args: [{ int: '226300' }, { int: '1784510031' }] } }, 1784510030, 300),
+        /ahead of the mainnet head/,
+    );
+    assert.throws(
+        () => parsePriceResult('TZBTCUSDT', { data: { args: [{ int: '0' }, { int: '1784510000' }] } }, 1784510030, 300),
         /invalid or zero price/,
     );
     assert.throws(
-        () => parsePriceResult('BTCUSDT', { data: { args: [{ int: '1' }, { int: '1784400000' }] } }, 1784510030, 86400),
+        () => parsePriceResult('TZBTCUSDT', { data: { args: [{ int: '1' }, { int: '1784400000' }] } }, 1784510030, 300),
         /price is stale/,
     );
 });

@@ -370,6 +370,15 @@ function checkChainIdMatch(expectedChainId, actualChainId, context) {
     }
 }
 
+async function enforceDeploymentPreflight(deployResultPath, networkProfile, chainId, preflight) {
+    const isMainnet = networkProfile === 'mainnet' || chainId === 'NetXdQprcVkpaWU';
+    if (!isMainnet) {
+        return;
+    }
+    const runPreflight = preflight || require('./mainnet_preflight.js').mainnetPreflight;
+    await runPreflight(deployResultPath);
+}
+
 // Verify that a manifest entry still points at a live, matching contract before we
 // trust it enough to skip re-deploying. This prevents silently reusing a stale or
 // unrelated address just because a key happens to exist in the manifest (e.g. a
@@ -421,6 +430,9 @@ async function verifyExistingContract(tezos, address, expectedCode, expectedStor
 
 async function runDeployment(compiledContractsPath, deployResultPath) {
     const { tezos, publicKeyHash, chainId } = await createTezosClient();
+    await enforceDeploymentPreflight(
+        deployResultPath, config.networkProfile, chainId,
+    );
     console.log(`[INFO] Deploying from ${publicKeyHash} to ${config.tezosNode} (${chainId})`);
 
     const directories = getDirectories(compiledContractsPath).sort();
@@ -534,4 +546,5 @@ module.exports = {
     extractAddressBindings,
     diffAddressBindings,
     verifyExistingContract,
+    enforceDeploymentPreflight,
 }
