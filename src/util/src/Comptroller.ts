@@ -30,6 +30,39 @@ export namespace Comptroller {
         markets: MarketMap;
     }
 
+    export async function GetMarkets(
+        storage: any,
+        dataStorage: any,
+        protocolAddresses: ProtocolAddresses,
+    ): Promise<MarketMap> {
+        const recoveryMode = Boolean(protocolAddresses.comptrollerDataSource);
+        const markets: MarketMap = {};
+        await Promise.all(Object.values(protocolAddresses.fTokens).map(async (fTokenAddr) => {
+            try {
+                const marketEntry = await dataStorage.markets.get(fTokenAddr);
+                const guardMarketEntry = recoveryMode
+                    ? await storage.markets.get(fTokenAddr)
+                    : marketEntry;
+                if (marketEntry && guardMarketEntry) {
+                    const asset = protocolAddresses.fTokensReverse[fTokenAddr];
+                    markets[asset] = {
+                        assetType: marketEntry.name as AssetType,
+                        borrowPaused: recoveryMode || marketEntry.borrowPaused,
+                        collateralFactor: Number(marketEntry.collateralFactor.toString()),
+                        isListed: guardMarketEntry.isListed,
+                        mintPaused: recoveryMode || marketEntry.mintPaused,
+                        redeemPaused: guardMarketEntry.redeemPaused ?? marketEntry.redeemPaused ?? false,
+                        price: bigInt(marketEntry.price.toString()),
+                        updateLevel: Number(marketEntry.updateLevel.toString()),
+                    };
+                }
+            } catch (e) {
+                log.error(`Failed to get Comptroller.Markets for ${fTokenAddr}: ${e}`);
+            }
+        }));
+        return markets;
+    }
+
     export async function GetStorage(address: string, protocolAddresses: ProtocolAddresses, server: string): Promise<Storage> {
         const contract = await getContract(server, address);
         const storage: any = await contract.storage();
@@ -40,30 +73,7 @@ export namespace Comptroller {
             ? await dataContract.storage()
             : storage;
 
-        const markets: MarketMap = {};
-        await Promise.all(Object.values(protocolAddresses.fTokens).map(async (fTokenAddr) => {
-            try {
-                const marketEntry = await dataStorage.markets.get(fTokenAddr);
-                const guardMarketEntry = protocolAddresses.comptrollerDataSource
-                    ? await storage.markets.get(fTokenAddr)
-                    : marketEntry;
-                if (marketEntry && guardMarketEntry) {
-                    const asset = protocolAddresses.fTokensReverse[fTokenAddr];
-                    markets[asset] = {
-                        assetType: marketEntry.name as AssetType,
-                        borrowPaused: guardMarketEntry.borrowPaused ?? marketEntry.borrowPaused,
-                        collateralFactor: Number(marketEntry.collateralFactor.toString()),
-                        isListed: guardMarketEntry.isListed,
-                        mintPaused: guardMarketEntry.mintPaused ?? marketEntry.mintPaused,
-                        redeemPaused: guardMarketEntry.redeemPaused ?? marketEntry.redeemPaused ?? false,
-                        price: bigInt(marketEntry.price.toString()),
-                        updateLevel: Number(marketEntry.updateLevel.toString()),
-                    };
-                }
-            } catch (e) {
-                log.error(`Failed to get Comptroller.Markets for ${fTokenAddr}: ${e}`);
-            }
-        }));
+        const markets = await GetMarkets(storage, dataStorage, protocolAddresses);
 
         return {
             administrator: storage.administrator,
