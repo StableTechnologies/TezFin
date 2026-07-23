@@ -33,8 +33,13 @@ SHA-256 pin, installs npm dependencies with `npm ci` from
 `SmartPy Version: 0.16.0`. Do not use the upstream `curl | bash` installer for
 release builds.
 
-CI additionally pins Ubuntu 22.04, Node.js 20.19.5, Python 3.11.11, and GitHub
+CI additionally pins Ubuntu 22.04, Node.js 22.16.0, Python 3.11.11, and GitHub
 Actions to immutable commit SHAs.
+
+Node.js 22.16.0 is also the required local and production deployment runtime.
+Use `nvm use` (or a version manager that reads `.node-version`) before running
+`npm ci`; the deployment package rejects other Node.js versions because Taquito
+25 requires Node.js 22 or newer.
 
 Code is organized in the following structure
 

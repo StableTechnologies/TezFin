@@ -2,6 +2,9 @@
   "name": "TezFinDeploy",
   "version": "1.0.0",
   "main": "deploy.js",
+  "engines": {
+    "node": "22.16.0"
+  },
   "dependencies": {
     "@taquito/signer": "^25.0.0",
     "@taquito/taquito": "^25.0.0",
