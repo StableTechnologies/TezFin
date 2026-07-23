@@ -207,10 +207,16 @@ def test():
     scenario += cmpt.setMintPaused(sp.record(cToken = listedMarket, state = sp.bool(False))).run(sender = admin, level = bLevel.next())
     scenario += cmpt.mintAllowed(minterArgLambda(listedMarket)).run(sender = alice, level = bLevel.next())
     scenario.h4("supply cap cannot be exceeded")
+    scenario += cTokenMock1.setMarketTotals(sp.record(supply=sp.nat(100), borrows=sp.nat(0)))
     scenario += cmpt.setMarketCaps(sp.record(cToken=listedMarket, supplyCap=sp.nat(99), borrowCap=sp.nat(10**50))).run(sender=admin, level=bLevel.next())
     scenario += cmpt.mintAllowed(minterArgLambda(listedMarket)).run(
         sender=alice, level=bLevel.next(), valid=False,
         exception=CMPT.EC.CMPT_SUPPLY_CAP_EXCEEDED)
+    scenario.h4("supply cap can be reached exactly")
+    scenario += cmpt.setMarketCaps(sp.record(cToken=listedMarket, supplyCap=sp.nat(100), borrowCap=sp.nat(10**50))).run(sender=admin, level=bLevel.next())
+    scenario += cmpt.mintAllowed(minterArgLambda(listedMarket)).run(
+        sender=alice, level=bLevel.next())
+    scenario += cTokenMock1.setMarketTotals(sp.record(supply=sp.nat(0), borrows=sp.nat(0)))
     scenario += cmpt.setMarketCaps(sp.record(cToken=listedMarket, supplyCap=sp.nat(10**50), borrowCap=sp.nat(10**50))).run(sender=admin, level=bLevel.next())
 
     scenario.h3("Redeem allowed")
@@ -247,11 +253,17 @@ def test():
     scenario.h3("Borrow allowed")
     borrowArgLambda = lambda market : sp.record(cToken=market, borrower=alice.address, borrowAmount=sp.nat(100*1000000000000000000))
     scenario.h4("borrow cap cannot be exceeded")
+    scenario += cTokenMock1.setMarketTotals(sp.record(supply=sp.nat(0), borrows=sp.nat(100)))
     scenario += cmpt.setMarketCaps(sp.record(cToken=listedMarket, supplyCap=sp.nat(10**50), borrowCap=sp.nat(99))).run(sender=admin, level=bLevel.next())
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(
         sender=alice, level=bLevel.next(), valid=False,
         exception=CMPT.EC.CMPT_BORROW_CAP_EXCEEDED)
+    scenario += cTokenMock1.setMarketTotals(sp.record(supply=sp.nat(0), borrows=sp.nat(0)))
     scenario += cmpt.setMarketCaps(sp.record(cToken=listedMarket, supplyCap=sp.nat(10**50), borrowCap=sp.nat(10**50))).run(sender=admin, level=bLevel.next())
+    scenario.h4("borrow completion is internal only")
+    scenario += cmpt.completeBorrowAllowed(borrowArgLambda(listedMarket)).run(
+        sender=alice, level=bLevel.next(), valid=False,
+        exception=CMPT.EC.CMPT_INVALID_BORROW_SENDER)
     scenario.h4("on the listed market, without updated price")
     scenario += cmpt.borrowAllowed(borrowArgLambda(listedMarket)).run(sender = alice, level = bLevel.next(), valid = False)
     scenario.h4("on the listed market, with updated price, without updated liquidity")
@@ -433,17 +445,36 @@ def test():
         minPrice=sp.nat(100000), maxPrice=sp.nat(10000000),
         maxChangeBps=sp.nat(2000))).run(sender=admin, level=bLevel.next())
     oracle.setPrice(1)
-    scenario += cmpt.updateAllAssetPricesWithView().run(
+    scenario += cmpt.updateAssetPriceWithView(listedMarket).run(
         sender=bob, level=bLevel.next(), now=sp.timestamp(100), valid=False,
         exception="ASSET_PRICE_OUT_OF_BOUNDS")
     oracle.setPrice(9000000000000000)
-    scenario += cmpt.updateAllAssetPricesWithView().run(
+    scenario += cmpt.updateAssetPriceWithView(listedMarket).run(
         sender=bob, level=bLevel.next(), now=sp.timestamp(100), valid=False,
         exception="ASSET_PRICE_OUT_OF_BOUNDS")
     scenario += cmpt.setPriceBounds(sp.record(cToken=listedMarket,
         minPrice=sp.nat(1), maxPrice=sp.nat(10**50),
         maxChangeBps=sp.nat(10000))).run(sender=admin, level=bLevel.next())
     oracle.setPrice(1)
+    scenario.h3("Unrelated unhealthy market does not block account price updates")
+    healthyMarketAccount = sp.test_account("healthy market account")
+    scenario += cmpt.addToLoansExternal(sp.pair(
+        healthyMarketAccount.address, sp.set([listedMarket]))).run(
+            level=bLevel.next())
+    scenario += cmpt.setPriceBounds(sp.record(
+        cToken=cTokenMock.address, minPrice=sp.nat(2), maxPrice=sp.nat(3),
+        maxChangeBps=sp.nat(10000))).run(sender=admin, level=bLevel.next())
+    scenario += cmpt.updateAllAssetPricesWithView().run(
+        sender=bob, level=bLevel.next(), now=sp.timestamp(100), valid=False,
+        exception="ASSET_PRICE_OUT_OF_BOUNDS")
+    scenario += cmpt.updateAccountLiquidityWithView(
+        healthyMarketAccount.address).run(
+            sender=bob, level=bLevel.next(), now=sp.timestamp(100))
+    scenario.verify(cmpt.data.account_liquidity[
+        healthyMarketAccount.address].valid)
+    scenario += cmpt.setPriceBounds(sp.record(
+        cToken=cTokenMock.address, minPrice=sp.nat(1), maxPrice=sp.nat(10**50),
+        maxChangeBps=sp.nat(10000))).run(sender=admin, level=bLevel.next())
 
     scenario.h2("Test account liquidity")
     cmpt.enterMarkets(sp.list([cTokenMock.address])).run(sender = bob, level = bLevel.next())
@@ -503,6 +534,13 @@ def test():
         supportMarketParams)
     scenario.verify(cmpt.data.markets.contains(newMarket) & cmpt.data.markets[newMarket].isListed)
     scenario.verify(cmpt.data.marketNameToAddress.contains("market-USD"))
+    scenario.h4("Zero price exponent")
+    zeroPriceExpMarket = sp.test_account("[supportMarket] zero price exponent").address
+    scenario += cmpt.supportMarket(sp.record(
+        cToken=zeroPriceExpMarket, name=sp.string("zero-exp"),
+        priceExp=sp.nat(0))).run(
+            sender=admin, level=bLevel.next(), valid=False,
+            exception="INVALID_PRICE_EXP")
     scenario.h4("Already listed market")
     cmpt.supportMarket(supportMarketParams).run(sender = admin, level = bLevel.next(), valid = False)
 

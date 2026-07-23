@@ -334,18 +334,51 @@ test('mainnetPreflight: findMissingCanonicalKeys flags every missing required ke
 
 test('raw deployment path: mainnet requires preflight', async () => {
     let receivedPath;
+    let oracleManifestPath;
     await enforceDeploymentPreflight('/tmp/deploy.mainnet.json', 'mainnet', 'NetXdQprcVkpaWU', async (manifestPath) => {
         receivedPath = manifestPath;
+    }, async (manifestPath) => {
+        oracleManifestPath = manifestPath;
     });
     assert.equal(receivedPath, '/tmp/deploy.mainnet.json');
+    assert.equal(oracleManifestPath, '/tmp/deploy.mainnet.json');
 });
 
 test('raw deployment path: mainnet preflight failure blocks deployment', async () => {
     await assert.rejects(
         enforceDeploymentPreflight('/tmp/deploy.mainnet.json', 'previewnet', 'NetXdQprcVkpaWU', async () => {
             throw new Error('MAINNET_DEPLOY_CONFIRM is required');
-        }),
+        }, async () => {}),
         /MAINNET_DEPLOY_CONFIRM is required/,
+    );
+});
+
+test('raw deployment path: oracle verification failure blocks deployment', async () => {
+    await assert.rejects(
+        enforceDeploymentPreflight(
+            '/tmp/deploy.mainnet.json',
+            'mainnet',
+            'NetXdQprcVkpaWU',
+            async () => {},
+            async () => {
+                throw new Error('XTZUSDT price is stale');
+            },
+        ),
+        /XTZUSDT price is stale/,
+    );
+});
+
+test('raw deployment path: previewnet does not run mainnet preflights', async () => {
+    await enforceDeploymentPreflight(
+        '/tmp/deploy.previewnet.json',
+        'previewnet',
+        'NetXnHfVqm9iesp',
+        async () => {
+            throw new Error('mainnet preflight should not run');
+        },
+        async () => {
+            throw new Error('mainnet oracle verification should not run');
+        },
     );
 });
 

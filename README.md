@@ -87,6 +87,10 @@ cd TezFin
 ./contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh
 ```
 
+The contract suite includes `CapPostStateTest.py`, which exercises supply and
+borrow caps through real ꜰToken `mint` and `borrow` entrypoints at below-cap,
+exact-cap, and cap-plus-one boundaries, including exchange-rate rounding.
+
 ## Required Deployment Tests
 
 These checks guard the deployment pipeline itself (not the contracts' business logic)
@@ -112,6 +116,15 @@ and all run offline/in CI without needing a live Tezos node:
     not a re-implementation) rather than just asserted in a comment.
   ```sh
   python3 deploy/compile_targets/tests/test_deploy_pipeline_wiring.py
+  ```
+- **Mainnet governance payload**
+  (`deploy/compile_targets/tests/test_mainnet_governance_payload.py`) - validates
+  that the checked-in manifest uses an oracle max age accepted by the contract,
+  configures price bounds and market caps before activation, keeps unapproved
+  markets fail-closed, and controls mint, borrow, redeem, and liquidation
+  independently.
+  ```sh
+  python3 deploy/compile_targets/tests/test_mainnet_governance_payload.py
   ```
 - **Contract origination size threshold**
   (`deploy/compile_targets/tests/test_operation_size.py`) - performs a **fresh SmartPy
@@ -225,6 +238,9 @@ npm run prepare:deploy
   canonical inputs, and any addresses already recorded in the manifest), and requires
   `MAINNET_DEPLOY_CONFIRM=yes` to proceed past that point. Only after this passes does `prepare.js` run
   and write `OriginatorAddress` to the manifest — declining confirmation leaves the manifest untouched.
+- Before every mainnet origination, the programmatic preflight in `util.js` also runs
+  `verify_mainnet_oracle.js`. This applies to both the shell script and raw `node deploy.js` usage and
+  rejects missing views, zero prices, stale or future timestamps, and millisecond timestamps.
 - After origination it reminds you to complete the [Post-Deployment Admin
   Handoff](#post-deployment-admin-handoff-mainnet) before unpausing any market.
 
@@ -287,8 +303,9 @@ feed with `set_oracle`.
   `CompileTestData.py` at all). Put the exact address of the vetted production Harbinger (or
   Harbinger-compatible) oracle directly under the `PriceOracle` key in the mainnet manifest
   (`DEPLOY_MANIFEST`) before running `deploy_mainnet.sh`; `mainnet_preflight.js` verifies it exists
-  on-chain before anything is compiled. `verify_mainnet_oracle.js` also executes the exact XTZ and
-  BTC views before confirmation and rejects zero, stale, or future/millisecond timestamps. Document,
+  on-chain before anything is compiled. The mandatory programmatic deployment preflight executes the
+  exact XTZ, USDT, and tzBTC views before origination and rejects zero, stale, or
+  future/millisecond timestamps. Document,
   alongside the mainnet manifest, which oracle instance/administrator is being used and who controls
   it — this project does not deploy or administer that upstream feed itself.
 

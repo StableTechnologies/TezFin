@@ -370,13 +370,15 @@ function checkChainIdMatch(expectedChainId, actualChainId, context) {
     }
 }
 
-async function enforceDeploymentPreflight(deployResultPath, networkProfile, chainId, preflight) {
+async function enforceDeploymentPreflight(deployResultPath, networkProfile, chainId, preflight, oracleVerification) {
     const isMainnet = networkProfile === 'mainnet' || chainId === 'NetXdQprcVkpaWU';
     if (!isMainnet) {
         return;
     }
     const runPreflight = preflight || require('./mainnet_preflight.js').mainnetPreflight;
     await runPreflight(deployResultPath);
+    const verifyOracle = oracleVerification || require('./verify_mainnet_oracle.js').verifyMainnetOracle;
+    await verifyOracle(deployResultPath);
 }
 
 // Verify that a manifest entry still points at a live, matching contract before we

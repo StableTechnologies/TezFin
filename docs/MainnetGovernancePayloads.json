@@ -1,18 +1,28 @@
 {
   "status": "INITIAL_DRAFT",
-  "requiredInputs": {
+    "requiredInputs": {
     "productionMultisig": "KT1Mc9rBcVmoLATY1FQDBvzSMHmUh6rgwjDR",
-    "maxPriceTimeDifferenceSeconds": 86400,
+    "maxPriceTimeDifferenceSeconds": 3600,
+    "priceBounds": {
+      "XTZ": { "minPrice": "TODO_VALUE", "maxPrice": "TODO_VALUE", "maxChangeBps": "TODO_VALUE" },
+      "USDT": { "minPrice": "TODO_VALUE", "maxPrice": "TODO_VALUE", "maxChangeBps": "TODO_VALUE" },
+      "TZBTC": { "minPrice": "TODO_VALUE", "maxPrice": "TODO_VALUE", "maxChangeBps": "TODO_VALUE" }
+    },
+    "marketCaps": {
+      "XTZ": { "supplyCap": "TODO_VALUE", "borrowCap": "TODO_VALUE" },
+      "USDT": { "supplyCap": "TODO_VALUE", "borrowCap": "TODO_VALUE" },
+      "TZBTC": { "supplyCap": "TODO_VALUE", "borrowCap": "TODO_VALUE" }
+    },
     "collateralFactorMantissa": {
       "XTZ": "500000000000000000",
       "USDT": "500000000000000000",
       "TZBTC": "500000000000000000"
     },
-    "openAfterHandoff": {
-      "XTZ": "TODO_BOOLEAN",
-      "USDT": "TODO_BOOLEAN",
-      "TZBTC": "TODO_BOOLEAN",
-      "transfers": "TODO_BOOLEAN"
+    "activateAfterVerification": {
+      "XTZ": { "mint": false, "borrow": false, "redeem": false, "liquidate": false },
+      "USDT": { "mint": false, "borrow": false, "redeem": false, "liquidate": false },
+      "TZBTC": { "mint": false, "borrow": false, "redeem": false, "liquidate": false },
+      "transfers": false
     }
   },
   "addressSources": {
@@ -92,6 +102,33 @@
         },
         {
           "destination": "Governance",
+          "entrypoint": "setPriceBounds",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "bounds": {
+              "cToken": "$market",
+              "minPrice": "priceBounds.$market.minPrice",
+              "maxPrice": "priceBounds.$market.maxPrice",
+              "maxChangeBps": "priceBounds.$market.maxChangeBps"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setMarketCaps",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "caps": {
+              "cToken": "$market",
+              "supplyCap": "marketCaps.$market.supplyCap",
+              "borrowCap": "marketCaps.$market.borrowCap"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
           "entrypoint": "setCollateralFactor",
           "repeatFor": ["XTZ", "USDT", "TZBTC"],
           "value": {
@@ -105,6 +142,22 @@
       ]
     },
     {
+      "name": "multisig_verifies_closed_market_configuration",
+      "requiredStorageChecks": [
+        "TezFinOracle.maxPriceAge[Comptroller] equals maxPriceTimeDifferenceSeconds",
+        "TezFinOracle.priceBounds[(Comptroller, $market)] equals priceBounds.$market for every market",
+        "Comptroller.markets[$market].supplyCap and borrowCap equal marketCaps.$market for every market",
+        "Comptroller.markets[$market].collateralFactor equals collateralFactorMantissa.$market for every market",
+        "Mint, borrow, redeem, and liquidation remain paused for every market",
+        "Transfers remain paused"
+      ],
+      "blockingConditions": [
+        "No TODO_VALUE values remain",
+        "Every risk parameter has formal approval",
+        "Every required storage check has passed against the target deployment"
+      ]
+    },
+    {
       "name": "multisig_opens_approved_markets",
       "preconditions": [
         "Admin handoff storage has been verified on-chain",
@@ -115,13 +168,49 @@
       "operations": [
         {
           "destination": "Governance",
-          "repeatEntrypoints": ["setMintPaused", "setBorrowPaused", "setRedeemPaused"],
+          "entrypoint": "setMintPaused",
           "repeatFor": ["XTZ", "USDT", "TZBTC"],
           "value": {
             "comptroller": "Comptroller",
             "tokenState": {
               "cToken": "$market",
-              "state": "!openAfterHandoff.$market"
+              "state": "!activateAfterVerification.$market.mint"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setBorrowPaused",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!activateAfterVerification.$market.borrow"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setRedeemPaused",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!activateAfterVerification.$market.redeem"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setLiquidatePaused",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!activateAfterVerification.$market.liquidate"
             }
           }
         },
@@ -130,7 +219,7 @@
           "entrypoint": "setTransferPaused",
           "value": {
             "comptroller": "Comptroller",
-            "state": "!openAfterHandoff.transfers"
+            "state": "!activateAfterVerification.transfers"
           }
         }
       ]

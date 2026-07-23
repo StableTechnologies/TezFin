@@ -42,6 +42,9 @@ jobs:
       - name: "Check deploy pipeline wiring (compile targets, IRM config source, manifest path parity)"
         run: |
           python3 deploy/compile_targets/tests/test_deploy_pipeline_wiring.py
+      - name: "Check mainnet governance payload"
+        run: |
+          python3 deploy/compile_targets/tests/test_mainnet_governance_payload.py
       - name: "Check contract origination sizes stay within safety threshold"
         run: |
           python3 deploy/compile_targets/tests/test_operation_size.py ~/smartpy-cli/SmartPy.sh

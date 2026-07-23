@@ -162,7 +162,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         marketTotals = sp.view("marketTotals", params.cToken, sp.unit,
                                t=sp.TPair(sp.TNat, sp.TNat)).open_some(
                                    "INVALID MARKET TOTALS VIEW")
-        sp.verify(sp.fst(marketTotals) + params.mintAmount <=
+        sp.verify(sp.fst(marketTotals) <=
                   self.data.markets[params.cToken].supplyCap,
                   EC.CMPT_SUPPLY_CAP_EXCEEDED)
         self.invalidateLiquidity(params.minter)
@@ -264,7 +264,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         marketTotals = sp.view("marketTotals", params.cToken, sp.unit,
                                t=sp.TPair(sp.TNat, sp.TNat)).open_some(
                                    "INVALID MARKET TOTALS VIEW")
-        sp.verify(sp.snd(marketTotals) + params.borrowAmount <=
+        sp.verify(sp.snd(marketTotals) <=
                   self.data.markets[params.cToken].borrowCap,
                   EC.CMPT_BORROW_CAP_EXCEEDED)
         sp.if self.isNewAssetForUser(params.borrower, params.cToken):
@@ -277,6 +277,15 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
                       EC.CMPT_INVALID_BORROW_SENDER)
         sp.if sp.sender == params.cToken:
             self.addToLoans(params.cToken, params.borrower)
+        sp.transfer(params.cToken, sp.mutez(0), sp.self_entry_point(
+            "updateAssetPriceWithView"))
+        sp.transfer(params, sp.mutez(0), sp.self_entry_point(
+            "completeBorrowAllowed"))
+
+    @sp.entry_point
+    def completeBorrowAllowed(self, params):
+        sp.set_type(params, CMPTInterface.TBorrowAllowedParams)
+        sp.verify(sp.sender == sp.self_address, EC.CMPT_INVALID_BORROW_SENDER)
         self.checkInsuffLiquidityInternal(
             params.cToken, params.borrower, params.borrowAmount)
         self.invalidateLiquidity(params.borrower)
@@ -375,23 +384,32 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
 
     def updateAllAssetPrices(self):
         sp.for asset in self.data.marketNameToAddress.values():
-            sp.if self.data.markets[asset].isListed & (self.data.markets[asset].updateLevel < sp.level):
-                previousRawPrice = self.data.markets[asset].price.mantissa // self.data.markets[asset].priceExp
-                pricePair = sp.local("pricePair",
-                    sp.view("getValidatedPrice", self.data.oracleAddress,
-                        sp.record(comptroller=sp.self_address,
-                                  cToken=asset,
-                                  requestedAsset=self.data.markets[asset].name + "-USD",
-                                  previousPrice=previousRawPrice,
-                                  previousTimestamp=self.data.markets[asset].priceTimestamp),
-                        t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
-                )
-                priceTimestamp = sp.fst(pricePair.value)
-                rawPrice = sp.snd(pricePair.value)
-                self.data.markets[asset].price = self.makeExp(
-                    rawPrice*self.data.markets[asset].priceExp)
-                self.data.markets[asset].priceTimestamp = priceTimestamp
-                self.data.markets[asset].updateLevel = sp.level
+            sp.if self.data.markets[asset].isListed:
+                sp.transfer(asset, sp.mutez(0), sp.self_entry_point(
+                    "updateAssetPriceWithView"))
+
+    @sp.entry_point
+    def updateAssetPriceWithView(self, asset):
+        sp.verify(sp.amount == sp.mutez(0), "TEZ_TRANSFERED")
+        sp.set_type(asset, sp.TAddress)
+        self.verifyMarketListed(asset)
+        sp.if self.data.markets[asset].updateLevel < sp.level:
+            previousRawPrice = self.data.markets[asset].price.mantissa // self.data.markets[asset].priceExp
+            pricePair = sp.local("pricePair",
+                sp.view("getValidatedPrice", self.data.oracleAddress,
+                    sp.record(comptroller=sp.self_address,
+                              cToken=asset,
+                              requestedAsset=self.data.markets[asset].name + "-USD",
+                              previousPrice=previousRawPrice,
+                              previousTimestamp=self.data.markets[asset].priceTimestamp),
+                    t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+            )
+            priceTimestamp = sp.fst(pricePair.value)
+            rawPrice = sp.snd(pricePair.value)
+            self.data.markets[asset].price = self.makeExp(
+                rawPrice*self.data.markets[asset].priceExp)
+            self.data.markets[asset].priceTimestamp = priceTimestamp
+            self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):
         sp.verify(sp.level == self.data.markets[asset].updateLevel, EC.CMPT_UPDATE_PRICE)
@@ -407,8 +425,19 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         sp.verify(sp.amount == sp.utils.nat_to_mutez(
             0), "TEZ_TRANSFERED")
         sp.set_type(account, sp.TAddress)
-        self.updateAllAssetPrices()
-        self.accrueAllAssetInterests()
+        accountAssets = sp.local("accountAssets", sp.set(t=sp.TAddress))
+        sp.if self.data.collaterals.contains(account):
+            sp.for asset in self.data.collaterals[account].elements():
+                accountAssets.value.add(asset)
+        sp.if self.data.loans.contains(account):
+            sp.for asset in self.data.loans[account].elements():
+                accountAssets.value.add(asset)
+        sp.for asset in accountAssets.value.elements():
+            sp.transfer(asset, sp.mutez(0), sp.self_entry_point(
+                "updateAssetPriceWithView"))
+        sp.for asset in accountAssets.value.elements():
+            sp.transfer(sp.unit, sp.mutez(0), sp.contract(
+                sp.TUnit, asset, entry_point="accrueInterest").open_some())
         self.activateOp(OP.ComptrollerOperations.SET_LIQUIDITY)
         sp.transfer(account, sp.mutez(0), sp.self_entry_point(
             "setAccountLiquidityWithView"))
@@ -432,12 +461,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
             valid=True
         )
 
-    def accrueAllAssetInterests(self):
-        sp.for asset in self.data.marketNameToAddress.values():
-            sp.if self.data.markets[asset].isListed:
-                sp.transfer(sp.unit, sp.mutez(0), sp.contract(
-                    sp.TUnit, asset, entry_point="accrueInterest").open_some())
-
     """
         Determine what the account liquidity would be if the given amounts were redeemed/borrowed,
         updates asset prices and accrues interests if stale
@@ -448,7 +471,6 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
     # def getHypoAccountLiquidity(self, params):
     #     sp.set_type(params, CMPTInterface.TGetAccountLiquidityParams)
     #     self.updateAllAssetPrices()
-    #     self.accrueAllAssetInterests()
     #     sp.transfer((params.data, params.callback), sp.mutez(
     #         0), sp.self_entry_point("returnHypoAccountLiquidity"))
 
@@ -874,6 +896,7 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
                     name=sp.TString, priceExp=sp.TNat))
         self.verifyAdministrator()
         self.verifyMarketNotListed(params.cToken)
+        sp.verify(params.priceExp > 0, "INVALID_PRICE_EXP")
         self.data.markets[params.cToken] = sp.record(isListed=sp.bool(True),
                                                      collateralFactor=self.makeExp(
                                                          sp.nat(DEFAULT_COLLATERAL_FACTOR)),

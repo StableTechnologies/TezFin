@@ -40,8 +40,8 @@ function parsePriceResult(asset, response, headTimestamp, maxAgeSeconds) {
     return { asset, price, timestamp, rawTimestamp, ageSeconds };
 }
 
-async function main() {
-    const manifest = JSON.parse(fs.readFileSync(resolveDeployResultPath(), 'utf8'));
+async function verifyMainnetOracle(deployResultPath = resolveDeployResultPath()) {
+    const manifest = JSON.parse(fs.readFileSync(deployResultPath, 'utf8'));
     const oracle = manifest.PriceOracle;
     if (!oracle) {
         throw new Error('Mainnet manifest is missing PriceOracle.');
@@ -80,10 +80,10 @@ async function main() {
 }
 
 if (require.main === module) {
-    main().catch((error) => {
+    verifyMainnetOracle().catch((error) => {
         console.error(`[ERROR] Mainnet oracle verification failed: ${error.message}`);
         process.exitCode = 1;
     });
 }
 
-module.exports = { parsePriceResult };
+module.exports = { parsePriceResult, verifyMainnetOracle };
