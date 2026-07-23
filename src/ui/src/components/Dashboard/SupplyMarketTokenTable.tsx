@@ -58,7 +58,7 @@ const SupplyMarketTokenTable = (props) => {
                     {tableData?.map((data) => (
                         <React.Fragment key={data.title}>
                             {(address && data.walletBalance) || (!address && data.marketSize) ? (
-                                <TableRow key={data.title} onClick={() => handleClickMktModal(data)}>
+                                <TableRow key={data.title} onClick={() => !data.mintPaused && handleClickMktModal(data)}>
                                     <TableCell className={`${classes.firstCell} ${classes.stickyCellLeft} ${classes.stickyCellHover}`}>
                                         <div className={classes.token}>
                                             <img
@@ -127,6 +127,7 @@ const SupplyMarketTokenTable = (props) => {
                                                 size="medium"
                                                 className={classes.supplyButton}
                                                 onClick={() => handleClickMktModal(data)}
+                                                disabled={data.mintPaused}
                                                 sx={{ textTransform: 'capitalize' }}
                                             >
                                                 Supply

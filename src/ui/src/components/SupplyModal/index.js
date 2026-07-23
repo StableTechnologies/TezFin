@@ -46,7 +46,7 @@ const SupplyModal = (props) => {
     const [tokenValue, setTokenValue] = useState('');
     const [currentTab, setCurrentTab] = useState('');
 
-    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
+    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount, tokenDetails);
     const buttonTwo = useWithdrawErrorText(tokenValue, useMaxAmount, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);

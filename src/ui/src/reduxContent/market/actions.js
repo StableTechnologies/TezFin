@@ -45,6 +45,8 @@ export const allMarketAction = (account, markets) => (dispatch) => {
             token.borrowRate = markets[token.assetType].borrow.rate.toString();
             token.borrowRateFn = markets[token.assetType].borrow.rateFn;
             token.walletBalance = '';
+            token.mintPaused = markets[token.assetType].mintPaused;
+            token.borrowPaused = markets[token.assetType].borrowPaused;
             token.collateralFactor = new BigNumber(markets[token.assetType].collateralFactor.toString())
                 .div(new BigNumber(10).pow(new BigNumber(18)))
                 .toFixed();
@@ -77,6 +79,7 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            mintPaused,
             redeemPaused,
             supply,
         }) => ({
@@ -90,6 +93,7 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            mintPaused,
             redeemPaused,
             ...supply,
         }),
@@ -110,7 +114,7 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
 export const borrowedMarketAction = (markets) => (dispatch) => {
     // eslint-disable-next-line object-curly-newline
     const borrowedTokens = markets.map(
-        ({ assetType, banner, title, name, logo, address, usdPrice, walletBalance, collateralFactor, borrow }) => ({
+        ({ assetType, banner, title, name, logo, address, usdPrice, walletBalance, collateralFactor, borrowPaused, borrow }) => ({
             assetType,
             banner,
             title,
@@ -120,6 +124,7 @@ export const borrowedMarketAction = (markets) => (dispatch) => {
 	    address,
             walletBalance,
             collateralFactor,
+            borrowPaused,
             ...borrow,
         }),
     );

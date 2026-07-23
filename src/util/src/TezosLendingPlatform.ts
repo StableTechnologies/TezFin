@@ -72,6 +72,8 @@ export namespace TezosLendingPlatform {
             reserves: fToken.totalReserves,
             reserveFactor: fToken.reserveFactorMantissa.toJSNumber(),
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
+            mintPaused: comptroller.markets[underlying.assetType].mintPaused,
+            borrowPaused: comptroller.markets[underlying.assetType].borrowPaused,
             redeemPaused: comptroller.markets[underlying.assetType].redeemPaused,
             exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
@@ -488,8 +490,15 @@ export namespace TezosLendingPlatform {
         pkh: string,
     ): TransferParams[] {
         let ops: TransferParams[] = [];
-        // Data relevance (updateAccountLiquidityWithView)
-        ops = ops.concat(Comptroller.DataRelevanceOpGroup([], protocolAddresses, pkh));
+        if (protocolAddresses.comptrollerDataSource) {
+            ops = ops.concat(FToken.AccrueInterestOpGroup(
+                [redeem.underlying],
+                protocolAddresses,
+                pkh,
+            ));
+        } else {
+            ops = ops.concat(Comptroller.DataRelevanceOpGroup([], protocolAddresses, pkh));
+        }
         // Redeem
         ops.push(FToken.RedeemOperation(redeem, protocolAddresses.fTokens[redeem.underlying], pkh));
         return ops;
@@ -517,7 +526,9 @@ export namespace TezosLendingPlatform {
         let ops: TransferParams[] = [];
         // Accrue interest
         ops = ops.concat(FToken.AccrueInterestOpGroup(
-            Object.keys(protocolAddresses.fTokens) as AssetType[],
+            protocolAddresses.comptrollerDataSource
+                ? [repayBorrow.underlying]
+                : Object.keys(protocolAddresses.fTokens) as AssetType[],
             protocolAddresses,
             pkh,
         ));

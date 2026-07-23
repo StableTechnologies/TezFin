@@ -139,6 +139,7 @@ const BorrowMarketTokenTable = (props) => {
                                             size="medium"
                                             className={classes.borrowButton}
                                             onClick={() => handleClickMktModal(data)}
+                                            disabled={data.borrowPaused}
                                             sx={{ textTransform: 'capitalize' }}
                                         >
                                             Borrow
