@@ -39,6 +39,8 @@ export const getAddresses = () => {
     }
 };
 
+export const isRecoveryMode = () => Boolean(getAddresses().comptrollerDataSource);
+
 const addresses = getAddresses();
 
 export const tokens = [

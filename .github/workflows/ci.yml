@@ -94,6 +94,7 @@ jobs:
         working-directory: src/ui
         run: |
           npm ci
+          npm test -- --watchAll=false
           DISABLE_ESLINT_PLUGIN=true npm run build
       - name: "Build post-deployment package"
         working-directory: postdeploy

@@ -24,10 +24,12 @@ import BorrowModal from '../BorrowModal';
 
 import { useStyles } from './style';
 import LightTooltip from '../Tooltip/LightTooltip';
+import { isRecoveryMode } from '../Constants';
 
 const BorrowedTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
+    const recoveryMode = isRecoveryMode();
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
     const { totalCollateral } = useSelector((state: any) => state.supplyComposition.supplyComposition);
@@ -135,8 +137,9 @@ const BorrowedTokenTable = (props) => {
                                                 ).replace(/\.?0+$/, '')} ${data.title}`}
                                             </Typography>
                                             <Typography className={classes.tooltipSecondaryText}>
-                                                                                    $
-                                                {data.balanceUnderlying > 0
+                                                {recoveryMode
+                                                    ? 'Unavailable'
+                                                    : <>{'$'}{data.balanceUnderlying > 0
                                                     ? nFormatter(
                                                         decimalify(
                                                             (data.outstandingLoan * data.usdPrice).toString(),
@@ -144,7 +147,7 @@ const BorrowedTokenTable = (props) => {
                                                             decimals[data.title]
                                                         )
                                                     )
-                                                    : '0.00'}
+                                                    : '0.00'}</>}
                                             </Typography>
                                         </>}
                                         placement="top"
@@ -169,14 +172,13 @@ const BorrowedTokenTable = (props) => {
                                     </LightTooltip>
                                     <br />
                                     <span className={classes.faintFont}>
-                                        $
-                                        {nFormatter(
+                                        {recoveryMode ? 'Unavailable' : <>{'$'}{nFormatter(
                                             decimalify(
                                                 (data.outstandingLoan * data.usdPrice).toString(),
                                                 decimals[data.title],
                                                 decimals[data.title],
                                             ),
-                                        )}
+                                        )}</>}
                                     </span>
                                 </TableCell>
                                 <TableCell align="center" className={`${classes.repayCell} ${classes.stickyCellRight}`}>

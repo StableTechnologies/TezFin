@@ -3,6 +3,7 @@ import React, { forwardRef } from 'react';
 import { styled } from '@mui/system';
 import { useSwitch } from '@mui/core/SwitchUnstyled';
 import MuiSwitch from '@mui/material/Switch';
+import { isRecoveryMode } from '../Constants';
 
 const CustomSwitch = styled(
     forwardRef((props, ref) => (
@@ -74,15 +75,16 @@ const BasicSwitch = forwardRef((props, ref) => {
 // Switch component
 export default function Switch(props) {
     const { data } = props;
+    const recoveryMode = isRecoveryMode();
 
     return (
         <div
-            title='Collateral controls are temporarily disabled.'
-            onClick={(event) => event.stopPropagation()}
+            title={recoveryMode ? 'Collateral controls are temporarily disabled.' : undefined}
+            onClick={recoveryMode ? (event) => event.stopPropagation() : undefined}
         >
             <BasicSwitch
                 checked={data.collateral}
-                disabled
+                disabled={recoveryMode}
                 inputProps={{ 'aria-label': 'custom switch' }}
             />
         </div>

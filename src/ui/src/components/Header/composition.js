@@ -11,6 +11,7 @@ import StackedBars from '../StackedBars/index.tsx';
 
 import { nFormatter } from '../../util';
 import { useStyles } from './style';
+import { isRecoveryMode } from '../Constants';
 
 const Composition = (props) => {
     const classes = useStyles();
@@ -19,12 +20,15 @@ const Composition = (props) => {
     } = props;
 
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
+    const recoveryMode = isRecoveryMode();
 
     return (
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
             <Box className={progressBarClass}>
-                {supplyBar
+                {recoveryMode
+                    ? <Typography>Unavailable</Typography>
+                    : supplyBar
                     ? <StackedBars composition={data} />
                     : <ToolTipProgressBars value={data.borrowUtilization && data.borrowUtilization.toNumber()} backgroundColor={progressBarColor} height='40px'/>
                 }
@@ -38,12 +42,12 @@ const Composition = (props) => {
                         <Grid item>
                             <Typography className={classes.statsTitle}> {dataTitle} </Typography>
                             <Typography className={classes.statsValue}>
-                                ${(
+                                {recoveryMode ? 'Unavailable' : <>{'$'}{(
                                     ((data.supplying > 0) && nFormatter(data.supplying))
                                     || ((data.borrowing > 0) && nFormatter(data.borrowing))
                                 )
                                 || '0.00'
-                                }
+                                }</>}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -54,13 +58,13 @@ const Composition = (props) => {
                         <Grid item>
                             <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                             <Typography className={classes.statsValue}>
-                              ${(
+                                                            {recoveryMode ? 'Unavailable' : <>{'$'}{(
                                     ((data.collateralized > 0) && nFormatter(data.collateralized))
                                     // displaying borrow limit as the total collateral value without deducting value borrowed
                                     || ((totalCollateral > 0) && nFormatter(totalCollateral))
                                 )
                                 || '0.00'
-                                }
+                                                                }</>}
                             </Typography>
                         </Grid>
                     </Grid>
