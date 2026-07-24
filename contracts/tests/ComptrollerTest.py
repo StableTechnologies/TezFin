@@ -445,11 +445,11 @@ def test():
         minPrice=sp.nat(100000), maxPrice=sp.nat(10000000),
         maxChangeBps=sp.nat(2000))).run(sender=admin, level=bLevel.next())
     oracle.setPrice(1)
-    scenario += cmpt.updateAssetPriceWithView(listedMarket).run(
+    scenario += cmpt.updateAssetPricesWithView(sp.set([listedMarket])).run(
         sender=bob, level=bLevel.next(), now=sp.timestamp(100), valid=False,
         exception="ASSET_PRICE_OUT_OF_BOUNDS")
     oracle.setPrice(9000000000000000)
-    scenario += cmpt.updateAssetPriceWithView(listedMarket).run(
+    scenario += cmpt.updateAssetPricesWithView(sp.set([listedMarket])).run(
         sender=bob, level=bLevel.next(), now=sp.timestamp(100), valid=False,
         exception="ASSET_PRICE_OUT_OF_BOUNDS")
     scenario += cmpt.setPriceBounds(sp.record(cToken=listedMarket,

@@ -277,8 +277,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
                       EC.CMPT_INVALID_BORROW_SENDER)
         sp.if sp.sender == params.cToken:
             self.addToLoans(params.cToken, params.borrower)
-        sp.transfer(params.cToken, sp.mutez(0), sp.self_entry_point(
-            "updateAssetPriceWithView"))
+        sp.transfer(sp.set([params.cToken]), sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
         sp.transfer(params, sp.mutez(0), sp.self_entry_point(
             "completeBorrowAllowed"))
 
@@ -383,33 +383,36 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         self.updateAllAssetPrices()
 
     def updateAllAssetPrices(self):
+        assets = sp.local("assets", sp.set(t=sp.TAddress))
         sp.for asset in self.data.marketNameToAddress.values():
             sp.if self.data.markets[asset].isListed:
-                sp.transfer(asset, sp.mutez(0), sp.self_entry_point(
-                    "updateAssetPriceWithView"))
+                assets.value.add(asset)
+        sp.transfer(assets.value, sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
 
     @sp.entry_point
-    def updateAssetPriceWithView(self, asset):
+    def updateAssetPricesWithView(self, assets):
         sp.verify(sp.amount == sp.mutez(0), "TEZ_TRANSFERED")
-        sp.set_type(asset, sp.TAddress)
-        self.verifyMarketListed(asset)
-        sp.if self.data.markets[asset].updateLevel < sp.level:
-            previousRawPrice = self.data.markets[asset].price.mantissa // self.data.markets[asset].priceExp
-            pricePair = sp.local("pricePair",
-                sp.view("getValidatedPrice", self.data.oracleAddress,
-                    sp.record(comptroller=sp.self_address,
-                              cToken=asset,
-                              requestedAsset=self.data.markets[asset].name + "-USD",
-                              previousPrice=previousRawPrice,
-                              previousTimestamp=self.data.markets[asset].priceTimestamp),
-                    t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
-            )
-            priceTimestamp = sp.fst(pricePair.value)
-            rawPrice = sp.snd(pricePair.value)
-            self.data.markets[asset].price = self.makeExp(
-                rawPrice*self.data.markets[asset].priceExp)
-            self.data.markets[asset].priceTimestamp = priceTimestamp
-            self.data.markets[asset].updateLevel = sp.level
+        sp.set_type(assets, sp.TSet(sp.TAddress))
+        sp.for asset in assets.elements():
+            self.verifyMarketListed(asset)
+            sp.if self.data.markets[asset].updateLevel < sp.level:
+                previousRawPrice = self.data.markets[asset].price.mantissa // self.data.markets[asset].priceExp
+                pricePair = sp.local("pricePair",
+                    sp.view("getValidatedPrice", self.data.oracleAddress,
+                        sp.record(comptroller=sp.self_address,
+                                  cToken=asset,
+                                  requestedAsset=self.data.markets[asset].name + "-USD",
+                                  previousPrice=previousRawPrice,
+                                  previousTimestamp=self.data.markets[asset].priceTimestamp),
+                        t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+                )
+                priceTimestamp = sp.fst(pricePair.value)
+                rawPrice = sp.snd(pricePair.value)
+                self.data.markets[asset].price = self.makeExp(
+                    rawPrice*self.data.markets[asset].priceExp)
+                self.data.markets[asset].priceTimestamp = priceTimestamp
+                self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):
         sp.verify(sp.level == self.data.markets[asset].updateLevel, EC.CMPT_UPDATE_PRICE)
@@ -432,9 +435,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         sp.if self.data.loans.contains(account):
             sp.for asset in self.data.loans[account].elements():
                 accountAssets.value.add(asset)
-        sp.for asset in accountAssets.value.elements():
-            sp.transfer(asset, sp.mutez(0), sp.self_entry_point(
-                "updateAssetPriceWithView"))
+        sp.transfer(accountAssets.value, sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
         sp.for asset in accountAssets.value.elements():
             sp.transfer(sp.unit, sp.mutez(0), sp.contract(
                 sp.TUnit, asset, entry_point="accrueInterest").open_some())
