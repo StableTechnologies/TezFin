@@ -29,10 +29,12 @@ import { decimalify, formatTokenData, nFormatter, roundValue, truncateNum } from
 
 import { useStyles } from './style';
 import LightTooltip from '../Tooltip/LightTooltip';
+import { isRecoveryMode } from '../Constants';
 
 const SuppliedTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
+    const recoveryMode = isRecoveryMode();
 
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
@@ -163,8 +165,9 @@ const SuppliedTokenTable = (props) => {
                                                     ).replace(/\.?0+$/, '')} ${data.title}`}
                                                 </Typography>
                                                 <Typography className={classes.tooltipSecondaryText}>
-                                            $
-                                                    {data.balanceUnderlying > 0
+                                                    {recoveryMode
+                                                        ? 'Unavailable'
+                                                        : <>{'$'}{data.balanceUnderlying > 0
                                                         ? nFormatter(
                                                             decimalify(
                                                                 (data.balanceUnderlying * data.usdPrice).toString(),
@@ -172,7 +175,7 @@ const SuppliedTokenTable = (props) => {
                                                                 decimals[data.title]
                                                             )
                                                         )
-                                                        : '0.00'}
+                                                        : '0.00'}</>}
                                                 </Typography>
                                             </>}
                                         placement="top"
@@ -197,8 +200,9 @@ const SuppliedTokenTable = (props) => {
                                     </LightTooltip>
                                     <br />
                                     <span className={classes.faintFont}>
-                                        $
-                                        {data.balanceUnderlying > 0
+                                        {recoveryMode
+                                            ? 'Unavailable'
+                                            : <>{'$'}{data.balanceUnderlying > 0
                                             ? nFormatter(
                                                   decimalify(
                                                       (data.balanceUnderlying * data.usdPrice).toString(),
@@ -206,7 +210,7 @@ const SuppliedTokenTable = (props) => {
                                                       decimals[data.title],
                                                   ),
                                               )
-                                            : '0.00'}
+                                                                                        : '0.00'}</>}
                                     </span>
                                 </TableCell>
                                 <TableCell align="center" className={classes.switchPadding}>

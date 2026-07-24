@@ -25,6 +25,7 @@ import CustomizedProgressBars from '../ProgressBar';
 
 import { useStyles } from './style';
 import LightTooltip from '../Tooltip/LightTooltip';
+import { isRecoveryMode } from '../Constants';
 
 const sanitizeInput = (input) => {
     let val = input.replace(/[^0-9.]/g, '');
@@ -84,6 +85,7 @@ const DashboardModal = (props) => {
     const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const recoveryMode = isRecoveryMode();
 
     const tezBalance = decimalify(underlyingBalances?.XTZ, decimals.XTZ);
     const isDisabled = !(tokenValue > 0 && address) || disabled;
@@ -383,14 +385,13 @@ const DashboardModal = (props) => {
                                 visibility ? '' : classes.visibility
                             }`}
                         >
-                            $
-                            {pendingLimit
+                            {recoveryMode ? 'Unavailable' : <>{'$'}{pendingLimit
                                 ? pendingLimit > 0
                                     ? nFormatter(pendingLimit, 2)
                                     : '0.00'
                                 : limit > 0
                                 ? nFormatter(limit, 2)
-                                : '0.00'}
+                                : '0.00'}</>}
                         </Grid>
                     </Grid>
                 </Box>
@@ -413,7 +414,7 @@ const DashboardModal = (props) => {
                                 visibility ? '' : classes.visibility
                             }`}
                         >
-                            {address && pendingLimitUsed
+                            {recoveryMode ? 'Unavailable' : <>{address && pendingLimitUsed
                                 ? pendingLimitUsed > 0
                                     ? pendingLimitUsed > 100
                                         ? 100
@@ -423,19 +424,20 @@ const DashboardModal = (props) => {
                                 ? limitUsed > 100
                                     ? 100
                                     : roundValue(limitUsed)
-                                : '0'}
-                            %
+                                : '0'}%</>}
                         </Grid>
                     </Grid>
                 </Box>
                 <Box className={`${classes.contentBoxTwo} ${classes.progressBarCon}`}>
                     <Grid container>
                         <Grid item xs={12}>
-                            <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars
-                                    value={address && pendingLimitUsed ? Number(pendingLimitUsed) : Number(limitUsed)}
-                                    height="8px"
-                                />
+                            <Box className={`${classes.progressBar} ${visibility || recoveryMode ? '' : classes.visibility}`}>
+                                {recoveryMode
+                                    ? <Typography>Unavailable</Typography>
+                                    : <CustomizedProgressBars
+                                        value={address && pendingLimitUsed ? Number(pendingLimitUsed) : Number(limitUsed)}
+                                        height="8px"
+                                    />}
                             </Box>
                         </Grid>
                     </Grid>

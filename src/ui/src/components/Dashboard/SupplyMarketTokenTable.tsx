@@ -22,11 +22,13 @@ import AllMarketModal from '../AllMarketModal';
 import TableSkeleton from '../Skeleton';
 
 import { useStyles } from './style';
+import { isRecoveryMode } from '../Constants';
 
 const SupplyMarketTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
     const { address } = useSelector((state: any) => state.addWallet.account);
+    const recoveryMode = isRecoveryMode();
 
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);
@@ -97,8 +99,9 @@ const SupplyMarketTokenTable = (props) => {
                                         </span>{' '}
                                         <br />
                                         <span className={classes.faintFont}>
-                                            $
-                                            {data.walletBalance > 0
+                                            {recoveryMode
+                                                ? 'Unavailable'
+                                                : <>{'$'}{data.walletBalance > 0
                                                 ? nFormatter(
                                                       decimalify(
                                                           (data.walletBalance * data.usdPrice).toString(),
@@ -106,7 +109,7 @@ const SupplyMarketTokenTable = (props) => {
                                                           decimals[data.title],
                                                       ),
                                                   )
-                                                : '0.00'}
+                                                                                                : '0.00'}</>}
                                         </span>
                                     </TableCell>
                                     <TableCell align="center" className={classes.clearFont}>

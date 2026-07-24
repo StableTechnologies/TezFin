@@ -23,11 +23,13 @@ import TableSkeleton from '../Skeleton';
 
 import { useStyles } from './style';
 import { getAddresses } from '../Constants';
+import { isRecoveryMode } from '../Constants';
 
 const BorrowMarketTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
     const { address } = useSelector((state: any) => state.addWallet.account);
+    const recoveryMode = isRecoveryMode();
 
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);
@@ -87,7 +89,9 @@ const BorrowMarketTokenTable = (props) => {
                                         </div>
                                     </TableCell>
                                     <TableCell align="center">
-                                        <span className={classes.clearFont}>
+                                        {recoveryMode ? (
+                                            <span className={classes.faintFont}>Unavailable</span>
+                                        ) : <><span className={classes.clearFont}>
                                             {data.marketSize > 0
                                                 ? decimalify(
                                                       data.available.toString(),
@@ -120,7 +124,7 @@ const BorrowMarketTokenTable = (props) => {
                                                       ),
                                                   )
                                                 : '0.00'}
-                                        </span>
+                                            </span></>}
                                     </TableCell>
                                     <TableCell align="center" className={classes.clearFont}>
                                         <span>

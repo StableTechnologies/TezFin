@@ -1,9 +1,0 @@
-{
-  "networkProfile": "mainnet",
-  "tezosNode": "https://rpc.tzkt.io/mainnet",
-  "chainId": "NetXdQprcVkpaWU",
-  "feeSafetyMultiplier": 1.2,
-  "originator": {
-    "pkh": "tz1XTWbfhyWK9xmPAa6TyQUSv437JFgZDzgA"
-  }
-}
