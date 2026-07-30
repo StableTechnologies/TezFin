@@ -26,7 +26,18 @@ class PriceOracle(OracleInterface.OracleInterface):
         sp.if self.data.prices.contains(requestedAsset):
             price.value = self.data.prices[requestedAsset]
         sp.result((sp.timestamp(0), price.value))
-        
+
+    # OracleInterface declares getValidatedPrice; leaving it as `pass` makes SmartPy emit
+    # invalid Michelson (`prim: "ERROR"` / unknown type variable) that Previewnet rejects
+    # at origination. The mock does not enforce bounds — TezFinOracle does that for real.
+    @sp.onchain_view()
+    def getValidatedPrice(self, params):
+        sp.set_type(params, OracleInterface.TValidatedPriceRequest)
+        price = sp.local('price', sp.nat(0))
+        sp.if self.data.prices.contains(params.requestedAsset):
+            price.value = self.data.prices[params.requestedAsset]
+        sp.result((sp.timestamp(0), price.value))
+
     @sp.entry_point
     def get(self, requestPair):
         sp.set_type(requestPair, OracleInterface.TGetPriceParam)

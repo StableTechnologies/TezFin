@@ -57,10 +57,39 @@ async function initAccount() {
 }
 
 function parseMichelsonFile(filePath, kind) {
+    let value;
     try {
-        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        value = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     } catch (error) {
         throw new Error(`Could not parse ${kind} JSON at ${filePath}: ${error.message}`);
+    }
+    if (kind === 'contract') {
+        assertValidMichelsonCode(value, filePath);
+    }
+    return value;
+}
+
+// SmartPy can still write a *.json artifact after a compile-time type error, with
+// `{ "prim": "ERROR", ... }` nodes in place of real Michelson. The node then rejects
+// origination with an opaque "unexpected string value ERROR" parse failure. Catch that
+// here so the deploy fails before fee estimation / injection.
+function assertValidMichelsonCode(node, filePath) {
+    const stack = [node];
+    while (stack.length) {
+        const current = stack.pop();
+        if (Array.isArray(current)) {
+            for (const child of current) stack.push(child);
+            continue;
+        }
+        if (!current || typeof current !== 'object') continue;
+        if (current.prim === 'ERROR') {
+            throw new Error(
+                `${filePath} contains invalid SmartPy output (prim "ERROR"). Recompile the ` +
+                `source and fix any SmartPy warnings such as "Missing type" / "unknown type ` +
+                `variable" before deploying.`,
+            );
+        }
+        if (current.args) stack.push(current.args);
     }
 }
 

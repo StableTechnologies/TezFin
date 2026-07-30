@@ -134,7 +134,7 @@ def resolve_js_default_manifest_path(networkProfile):
     or symlink node_modules into a temp directory (which breaks in CI when
     node_modules hasn't been installed under a symlink target, or when the temp dir
     lives on a different filesystem than the repo checkout).
-    
+
     To inject the networkProfile under test without permanently mutating the real
     (copilot-ignored) config.json, this backs up the real file's bytes (if it exists),
     overwrites it with a throwaway config declaring the given networkProfile, runs the

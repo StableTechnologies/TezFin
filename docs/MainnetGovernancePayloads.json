@@ -161,7 +161,7 @@
       "name": "multisig_opens_approved_markets",
       "preconditions": [
         "Admin handoff storage has been verified on-chain",
-        "The production oracle guard passes for XTZUSDT and BTCUSDT",
+        "The production oracle guard passes for XTZUSDT, USDTUSDT, and TZBTCUSDT",
         "Exact-transfer review is complete for the canonical USDt and tzBTC contracts",
         "Every collateral factor and pause state has formal risk approval"
       ],

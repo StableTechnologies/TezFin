@@ -1,9 +1,19 @@
-"""Guards against a contract's compiled code+storage growing past safe origination
-size thresholds before it reaches mainnet. This was called out specifically in the
-PR #455 review re: Comptroller's `lazify=True` removal - that change alone is benign
-(SmartPy just emits a differently-shaped, non-lazified Michelson representation), but
-the review recommended verifying the actual origination operation size stays
-comfortably under protocol limits before a real mainnet deployment.
+"""Guards against a contract growing past the origination operation size limit before it
+reaches mainnet. This was called out specifically in the PR #455 review re: Comptroller's
+`lazify=True` removal - that change alone is benign (SmartPy just emits a
+differently-shaped, non-lazified Michelson representation), but the review recommended
+verifying the actual origination operation size stays comfortably under protocol limits
+before a real mainnet deployment.
+
+The number that has to fit under `max_operation_data_length` (32768) is the size of the
+whole signed manager operation, NOT just the contract code and initial storage. SmartPy's
+`*_sizes.csv` only reports the latter, so gating on code+storage under-reports the real
+figure by ~140 bytes of operation framing plus a 64-byte signature. For the Comptroller
+that difference was the whole apparent safety margin, so this check measures the forged
+operation instead, via deploy_script/measure_origination_size.js. That produces the same
+quantity Taquito reports as `estimate.originate().opSize`, but it forges locally, so it
+needs no RPC, no funded account and no secret key and can run on every commit. The
+code+storage figures are still printed for continuity with previous CI output.
 
 Unlike a naive version of this check, this test does NOT read whatever happens to be
 checked in under compiled_contracts/ (which can be stale relative to the current PR's
@@ -15,15 +25,15 @@ purpose). This means a source change that meaningfully grows a contract (e.g.
 disabling code sharing/lazification) is caught in the same PR that introduces it,
 without needing a network connection.
 
-This does NOT call any RPC or attempt a live fee/gas estimate. That happens inside
-`deployMichelsonContract()` in deploy_script/util.js (`tezos.estimate.originate`),
-which does need real network access and is the authoritative check before mainnet.
+Requires deploy/deploy_script/node_modules (`npm ci` in that directory) for the Taquito
+forger; CI installs it before this step.
 
 Run with:
     python3 deploy/compile_targets/tests/test_operation_size.py [/path/to/SmartPy.sh]
 (defaults to ~/smartpy-cli/SmartPy.sh if no argument/env var is given)
 """
 import csv
+import json
 import os
 import shutil
 import subprocess
@@ -32,8 +42,17 @@ import tempfile
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 PLACEHOLDER_MANIFEST = os.path.join(REPO_ROOT, 'e2e', 'deploy_result', 'deploy.json')
+DEPLOY_SCRIPT_DIR = os.path.join(REPO_ROOT, 'deploy', 'deploy_script')
+MEASURE_SCRIPT = os.path.join(DEPLOY_SCRIPT_DIR, 'measure_origination_size.js')
 
 DEFAULT_MAX_TOTAL_BYTES = 32768
+
+# Taquito prepends a reveal to the same operation group when the deployer account has not
+# yet revealed its public key, and that reveal shares the 32768-byte budget. A contract
+# that only fits without the reveal cannot be originated as the deployer's first
+# operation, so a margin thinner than this is reported as a warning. Value from Taquito's
+# own REVEAL_LENGTH (324 hex chars, i.e. 162 bytes).
+REVEAL_BYTES = 162
 
 # Compile target file -> (compiled contract directory name, extra SmartPy CLI flags).
 # The extra flags MUST match exactly what deploy_previewnet.sh/deploy_mainnet.sh pass
@@ -76,6 +95,30 @@ def find_sizes_csv(contractDir):
         if name.endswith('_sizes.csv'):
             return os.path.join(contractDir, name)
     return None
+
+
+def measure_origination_operation(contractDir):
+    """Returns the forged origination operation size for a compiled contract directory,
+    as {'forgedBytes': int, 'signatureBytes': int, 'opSize': int}. Raises RuntimeError if
+    the measurement could not be taken, so a broken forger fails the check instead of
+    silently falling back to the narrower code+storage number."""
+    result = subprocess.run(
+        ['node', MEASURE_SCRIPT, contractDir, '--json', '--max', str(DEFAULT_MAX_TOTAL_BYTES)],
+        cwd=DEPLOY_SCRIPT_DIR,
+        capture_output=True,
+        text=True,
+    )
+    # The script exits non-zero when the contract is over the limit, and that is a
+    # measurement we still want to report, so only treat unparseable output as an error.
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        raise RuntimeError(
+            f'could not measure the origination operation via {MEASURE_SCRIPT} '
+            f'(exit {result.returncode}). Ensure `npm ci` has run in deploy/deploy_script so '
+            f'@taquito/local-forging is available.\nstdout:\n{result.stdout.strip()[-1000:]}\n'
+            f'stderr:\n{result.stderr.strip()[-1000:]}'
+        )
 
 
 def main():
@@ -131,18 +174,38 @@ def main():
                 failures.append(f'{contractName}: {csvPath} is missing "contract" and/or "storage" rows')
                 continue
 
+            try:
+                measured = measure_origination_operation(contractDir)
+            except RuntimeError as error:
+                failures.append(f'{contractName}: {error}')
+                continue
+
             checkedAny = True
-            total = contractBytes + storageBytes
-            status = 'OK' if total <= maxTotalBytes else 'TOO LARGE'
-            print(f'[INFO] {contractName}: code={contractBytes}B, storage={storageBytes}B, total={total}B ({status})')
-            if total > maxTotalBytes:
+            codeAndStorage = contractBytes + storageBytes
+            opSize = measured['opSize']
+            margin = maxTotalBytes - opSize
+            status = 'OK' if opSize <= maxTotalBytes else 'TOO LARGE'
+            print(
+                f'[INFO] {contractName}: code={contractBytes}B, storage={storageBytes}B '
+                f'(code+storage={codeAndStorage}B); forged origination operation='
+                f'{measured["forgedBytes"]}B + signature={measured["signatureBytes"]}B = '
+                f'{opSize}B, margin={margin}B ({status})'
+            )
+            if opSize > maxTotalBytes:
                 failures.append(
-                    f'{contractName}: total origination size {total}B exceeds the safety threshold of '
-                    f'{maxTotalBytes}B (code={contractBytes}B, storage={storageBytes}B). Investigate whether a '
-                    f'recent change (e.g. disabling lazification) meaningfully increased contract size before '
-                    f'deploying to mainnet; consider raising MAX_CONTRACT_OPERATION_BYTES only after confirming '
-                    f'the actual origination still succeeds comfortably within protocol limits (see README '
-                    f'"Mainnet Deployment" and deployMichelsonContract()\'s fee estimate in deploy_script/util.js).'
+                    f'{contractName}: the origination operation is {opSize}B, which exceeds the '
+                    f'{maxTotalBytes}B protocol limit by {-margin}B, so it cannot be injected at all. '
+                    f'Note this is the size of the whole operation, not just code+storage '
+                    f'({codeAndStorage}B). Make the contract smaller; raising '
+                    f'MAX_CONTRACT_OPERATION_BYTES cannot make an over-limit operation injectable.'
+                )
+            elif margin < REVEAL_BYTES:
+                print(
+                    f'[WARN] {contractName}: only {margin}B of margin remains, which is less than the '
+                    f'~{REVEAL_BYTES}B a reveal operation adds. This contract can only be originated '
+                    f'from an account whose public key is already revealed, because Taquito batches the '
+                    f'reveal into the same operation group and the 32768B limit applies to the group. '
+                    f'Reduce the contract size before deploying from a fresh key.'
                 )
 
         if not checkedAny:
@@ -158,7 +221,10 @@ def main():
                 print(f'  - {failure}')
             sys.exit(1)
 
-        print(f'Operation size check passed (threshold: {maxTotalBytes}B per contract).')
+        print(
+            f'Operation size check passed (forged origination operation must stay within '
+            f'{maxTotalBytes}B per contract).'
+        )
     finally:
         shutil.rmtree(tmpDir, ignore_errors=True)
 

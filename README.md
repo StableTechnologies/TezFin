@@ -139,17 +139,35 @@ and all run offline/in CI without needing a live Tezos node:
   compiled with in `deploy_previewnet.sh`/`deploy_mainnet.sh`** (e.g.
   `--erase-comments --erase-var-annots --initial-cast` for Comptroller), against a
   throwaway manifest of placeholder addresses (`e2e/deploy_result/deploy.json`), then
-  checks each contract's compiled code + initial storage against a safety margin under
-  the ~32KB Tezos manager-operation limit. This is a static regression guard (e.g.
-  against accidentally disabling code
-  sharing/lazification) that runs entirely offline; it does not replace an actual
-  `tezos.estimate.originate` dry run against the target node before a real mainnet
-  deployment (that check already happens live inside `deployMichelsonContract()` in
-  `deploy_script/util.js`). Requires the SmartPy CLI; fails loudly (non-zero exit) if
-  the CLI can't be found or if every compile attempt fails, rather than silently
-  reporting success with nothing checked.
+  measures the **complete origination operation** for each and checks it against the
+  32768-byte Tezos manager-operation limit.
+
+  The measured quantity matters here. SmartPy's `*_sizes.csv` reports only the packed
+  Micheline size of the contract code and the initial storage, but the protocol's
+  `max_operation_data_length` applies to the whole signed operation, which also carries
+  the branch, source, fee/counter/gas/storage limits and a 64-byte signature - about 140
+  bytes more. This check therefore forges a real origination operation offline with
+  `@taquito/local-forging` (see `deploy_script/measure_origination_size.js`) and gates on
+  that, which is the same number Taquito reports as `estimate.originate().opSize`.
+  Because the forging is local it needs no RPC, no funded account and no secret key, so
+  the authoritative figure is available on every commit rather than only at deploy time.
+  The code+storage numbers are still printed alongside it for continuity.
+
+  It also warns when the remaining margin is under ~162 bytes, since Taquito batches a
+  reveal into the same operation group when the deployer's public key has not yet been
+  revealed, and that reveal shares the same 32768-byte budget.
+
+  Requires the SmartPy CLI and `npm ci` in `deploy/deploy_script`; fails loudly
+  (non-zero exit) if the CLI can't be found, if the forger is unavailable, or if every
+  compile attempt fails, rather than silently reporting success with nothing checked.
   ```sh
   python3 deploy/compile_targets/tests/test_operation_size.py ~/smartpy-cli/SmartPy.sh
+  ```
+
+  To measure a single already-compiled contract directly:
+  ```sh
+  cd deploy/deploy_script
+  npm run measure:origination-size -- ../../TezFinBuild/compiled_contracts/Comptroller --json
   ```
 - **Reproducible contract compilation**
   (`deploy/compile_targets/tests/test_reproducible_build.py`) - compiles every contract

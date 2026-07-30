@@ -496,6 +496,23 @@ def test():
     result = sp.view("calculateAccountLiquidityExposed", cmpt.address, liquidityParams, t=sp.TRecord(sumBorrowPlusEffects = sp.TNat,sumCollateral = sp.TNat)).open_some()
     scenario.verify_equal((result.sumCollateral-result.sumBorrowPlusEffects), -90)
 
+    scenario.h3("A borrow-only market is counted once, alongside a collateralised market")
+    # Covers the loans loop for an account that has collateral: the market that is also
+    # collateral must not be counted twice, and the borrow-only market must still be
+    # counted. A per-asset flag that failed to reset between iterations would silently
+    # drop the borrow-only market's debt and overstate liquidity.
+    mixedProbe = sp.test_account("Collateral plus borrow-only probe")
+    cmpt.enterMarkets(sp.list([cTokenMock.address])).run(sender = mixedProbe, level = bLevel.next())
+    cmpt.addToLoansExternal(sp.pair(mixedProbe.address, sp.set([cTokenMock.address, listedMarket]))).run(level = bLevel.next())
+    cTokenMock.setAccountSnapshot(sp.record(account = mixedProbe.address, cTokenBalance = sp.nat(10), borrowBalance = sp.nat(100), exchangeRateMantissa = exchRate))
+    cTokenMock1.setAccountSnapshot(sp.record(account = mixedProbe.address, cTokenBalance = sp.nat(0), borrowBalance = sp.nat(50), exchangeRateMantissa = exchRate))
+    updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
+    result = sp.view("calculateAccountLiquidityExposed", cmpt.address, sp.record(account=mixedProbe.address), t=sp.TRecord(sumBorrowPlusEffects = sp.TNat,sumCollateral = sp.TNat)).open_some()
+    # Only the collateralised market contributes collateral, and it is counted once.
+    scenario.verify_equal(result.sumCollateral, 10)
+    # Both debts count: 100 on the collateralised market plus 50 on the borrow-only market.
+    scenario.verify_equal(result.sumBorrowPlusEffects, 150)
+
     scenario.h2("Test admin functionality")
     scenario.h3("Set price oracle")
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, cmpt.setPriceOracleAndTimeDiff,

@@ -6,6 +6,7 @@
     "node": "22.16.0"
   },
   "dependencies": {
+    "@taquito/local-forging": "^25.0.0",
     "@taquito/signer": "^25.0.0",
     "@taquito/taquito": "^25.0.0",
     "@taquito/utils": "^25.0.0",
@@ -18,6 +19,7 @@
     "deploy": "node deploy.js",
     "deploy:e2e": "node deploy_e2e.js",
     "estimate:origination": "node estimate_origination.js",
+    "measure:origination-size": "node measure_origination_size.js",
     "prepare:deploy": "node prepare.js",
     "verify:mainnet-oracle": "node verify_mainnet_oracle.js",
     "test": "node --test test/*.test.js"
