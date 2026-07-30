@@ -1,0 +1,228 @@
+{
+  "status": "INITIAL_DRAFT",
+    "requiredInputs": {
+    "productionMultisig": "KT1Mc9rBcVmoLATY1FQDBvzSMHmUh6rgwjDR",
+    "maxPriceTimeDifferenceSeconds": 3600,
+    "priceBounds": {
+      "XTZ": { "minPrice": "TODO_VALUE", "maxPrice": "TODO_VALUE", "maxChangeBps": "TODO_VALUE" },
+      "USDT": { "minPrice": "TODO_VALUE", "maxPrice": "TODO_VALUE", "maxChangeBps": "TODO_VALUE" },
+      "TZBTC": { "minPrice": "TODO_VALUE", "maxPrice": "TODO_VALUE", "maxChangeBps": "TODO_VALUE" }
+    },
+    "marketCaps": {
+      "XTZ": { "supplyCap": "TODO_VALUE", "borrowCap": "TODO_VALUE" },
+      "USDT": { "supplyCap": "TODO_VALUE", "borrowCap": "TODO_VALUE" },
+      "TZBTC": { "supplyCap": "TODO_VALUE", "borrowCap": "TODO_VALUE" }
+    },
+    "collateralFactorMantissa": {
+      "XTZ": "500000000000000000",
+      "USDT": "500000000000000000",
+      "TZBTC": "500000000000000000"
+    },
+    "activateAfterVerification": {
+      "XTZ": { "mint": false, "borrow": false, "redeem": false, "liquidate": false },
+      "USDT": { "mint": false, "borrow": false, "redeem": false, "liquidate": false },
+      "TZBTC": { "mint": false, "borrow": false, "redeem": false, "liquidate": false },
+      "transfers": false
+    }
+  },
+  "addressSources": {
+    "Governance": "TezFinBuild/deploy_result/deploy.mainnet.json#Governance",
+    "Comptroller": "TezFinBuild/deploy_result/deploy.mainnet.json#Comptroller",
+    "TezFinOracle": "TezFinBuild/deploy_result/deploy.mainnet.json#TezFinOracle",
+    "XTZ": "TezFinBuild/deploy_result/deploy.mainnet.json#CXTZ",
+    "USDT": "TezFinBuild/deploy_result/deploy.mainnet.json#CUSDt",
+    "TZBTC": "TezFinBuild/deploy_result/deploy.mainnet.json#CtzBTC"
+  },
+  "phases": [
+    {
+      "name": "deployer_stages_admin_handoff",
+      "operations": [
+        {
+          "destination": "Governance",
+          "entrypoint": "setPendingGovernance",
+          "value": "productionMultisig"
+        },
+        {
+          "destination": "TezFinOracle",
+          "entrypoint": "set_pending_admin",
+          "value": "productionMultisig"
+        }
+      ]
+    },
+    {
+      "name": "multisig_accepts_admin_handoff",
+      "operations": [
+        {
+          "destination": "Governance",
+          "entrypoint": "acceptGovernance",
+          "value": "Unit"
+        },
+        {
+          "destination": "TezFinOracle",
+          "entrypoint": "accept_admin",
+          "value": "Unit"
+        }
+      ]
+    },
+    {
+      "name": "multisig_configures_closed_markets",
+      "operations": [
+        {
+          "destination": "Governance",
+          "entrypoint": "setPriceOracleAndTimeDiff",
+          "value": {
+            "comptroller": "Comptroller",
+            "priceOracle": "TezFinOracle",
+            "timeDiff": "maxPriceTimeDifferenceSeconds"
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "supportMarket",
+          "value": {
+            "comptroller": "Comptroller",
+            "market": { "cToken": "XTZ", "name": "XTZ", "priceExp": 1000000000000 }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "supportMarket",
+          "value": {
+            "comptroller": "Comptroller",
+            "market": { "cToken": "USDT", "name": "USDT", "priceExp": 1000000000000 }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "supportMarket",
+          "value": {
+            "comptroller": "Comptroller",
+            "market": { "cToken": "TZBTC", "name": "TZBTC", "priceExp": 10000000000 }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setPriceBounds",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "bounds": {
+              "cToken": "$market",
+              "minPrice": "priceBounds.$market.minPrice",
+              "maxPrice": "priceBounds.$market.maxPrice",
+              "maxChangeBps": "priceBounds.$market.maxChangeBps"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setMarketCaps",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "caps": {
+              "cToken": "$market",
+              "supplyCap": "marketCaps.$market.supplyCap",
+              "borrowCap": "marketCaps.$market.borrowCap"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setCollateralFactor",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "collateralFactor": {
+              "cToken": "$market",
+              "newCollateralFactor": "collateralFactorMantissa.$market"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "multisig_verifies_closed_market_configuration",
+      "requiredStorageChecks": [
+        "TezFinOracle.maxPriceAge[Comptroller] equals maxPriceTimeDifferenceSeconds",
+        "TezFinOracle.priceBounds[(Comptroller, $market)] equals priceBounds.$market for every market",
+        "Comptroller.markets[$market].supplyCap and borrowCap equal marketCaps.$market for every market",
+        "Comptroller.markets[$market].collateralFactor equals collateralFactorMantissa.$market for every market",
+        "Mint, borrow, redeem, and liquidation remain paused for every market",
+        "Transfers remain paused"
+      ],
+      "blockingConditions": [
+        "No TODO_VALUE values remain",
+        "Every risk parameter has formal approval",
+        "Every required storage check has passed against the target deployment"
+      ]
+    },
+    {
+      "name": "multisig_opens_approved_markets",
+      "preconditions": [
+        "Admin handoff storage has been verified on-chain",
+        "The production oracle guard passes for XTZUSDT, USDTUSDT, and TZBTCUSDT",
+        "Exact-transfer review is complete for the canonical USDt and tzBTC contracts",
+        "Every collateral factor and pause state has formal risk approval"
+      ],
+      "operations": [
+        {
+          "destination": "Governance",
+          "entrypoint": "setMintPaused",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!activateAfterVerification.$market.mint"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setBorrowPaused",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!activateAfterVerification.$market.borrow"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setRedeemPaused",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!activateAfterVerification.$market.redeem"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setLiquidatePaused",
+          "repeatFor": ["XTZ", "USDT", "TZBTC"],
+          "value": {
+            "comptroller": "Comptroller",
+            "tokenState": {
+              "cToken": "$market",
+              "state": "!activateAfterVerification.$market.liquidate"
+            }
+          }
+        },
+        {
+          "destination": "Governance",
+          "entrypoint": "setTransferPaused",
+          "value": {
+            "comptroller": "Comptroller",
+            "state": "!activateAfterVerification.transfers"
+          }
+        }
+      ]
+    }
+  ]
+}

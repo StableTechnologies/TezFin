@@ -220,6 +220,18 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
             sp.TRecord(priceOracle=sp.TAddress, timeDiff=sp.TInt), params.comptroller, "setPriceOracleAndTimeDiff").open_some()
         sp.transfer(sp.record(priceOracle=params.priceOracle,timeDiff=params.timeDiff), sp.mutez(0), contract)
 
+    @sp.entry_point
+    def setPriceBounds(self, params):
+        self.verifyAdministrator()
+        sp.set_type(params, sp.TRecord(comptroller=sp.TAddress,
+                    bounds=sp.TRecord(cToken=sp.TAddress, minPrice=sp.TNat,
+                                      maxPrice=sp.TNat, maxChangeBps=sp.TNat)))
+        contract = sp.contract(sp.TRecord(cToken=sp.TAddress,
+                               minPrice=sp.TNat, maxPrice=sp.TNat,
+                               maxChangeBps=sp.TNat), params.comptroller,
+                               "setPriceBounds").open_some()
+        sp.transfer(params.bounds, sp.mutez(0), contract)
+
     """    
         Sets the closeFactor used when liquidating borrows
 
@@ -370,6 +382,26 @@ class Governance(GOVI.GovernanceInterface, SweepTokens.SweepTokens):
             cToken=sp.TAddress, state=sp.TBool), params.comptroller,
             "setRedeemPaused").open_some()
         sp.transfer(params.tokenState, sp.mutez(0), contract)
+
+    @sp.entry_point
+    def setLiquidatePaused(self, params):
+        self.verifyAdministrator()
+        sp.set_type(params, sp.TRecord(comptroller=sp.TAddress,
+                    tokenState=sp.TRecord(cToken=sp.TAddress, state=sp.TBool)))
+        contract = sp.contract(sp.TRecord(cToken=sp.TAddress, state=sp.TBool),
+                               params.comptroller, "setLiquidatePaused").open_some()
+        sp.transfer(params.tokenState, sp.mutez(0), contract)
+
+    @sp.entry_point
+    def setMarketCaps(self, params):
+        self.verifyAdministrator()
+        sp.set_type(params, sp.TRecord(comptroller=sp.TAddress,
+                    caps=sp.TRecord(cToken=sp.TAddress, supplyCap=sp.TNat,
+                                    borrowCap=sp.TNat)))
+        contract = sp.contract(sp.TRecord(cToken=sp.TAddress,
+                               supplyCap=sp.TNat, borrowCap=sp.TNat),
+                               params.comptroller, "setMarketCaps").open_some()
+        sp.transfer(params.caps, sp.mutez(0), contract)
 
     """    
         Pause or activate the transfer of CTokens

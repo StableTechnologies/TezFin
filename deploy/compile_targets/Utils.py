@@ -1,4 +1,5 @@
 import smartpy as sp
+import os
 
 CFG = sp.io.import_script_from_url("file:deploy/compile_targets/Config.py")
 
@@ -9,4 +10,11 @@ def checkDependencies(obj):
             notSpecifiedAttributes.append(attribute)
 
     if len(notSpecifiedAttributes) > 0:
-        raise Exception(f'Please specify {notSpecifiedAttributes} in {CFG.PATH_DEPLOY_RESULT}')
+        manifest = os.getenv('DEPLOY_MANIFEST', os.getenv('E2E', CFG._defaultDeployResultPath))
+        message = f'Please specify {notSpecifiedAttributes} in the deploy manifest ({manifest}).'
+        if 'PriceOracle' in notSpecifiedAttributes:
+            message += (
+                ' For Previewnet, deploy the mock PriceOracle via CompileTestData.py first. '
+                'For mainnet, put the vetted production oracle address under PriceOracle before compiling.'
+            )
+        raise Exception(message)

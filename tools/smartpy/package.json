@@ -1,0 +1,12 @@
+{
+  "name": "tezfin-smartpy-runtime",
+  "version": "0.16.0",
+  "private": true,
+  "dependencies": {
+    "@smartpy/timelock": "0.0.9",
+    "bs58check": "4.0.0",
+    "js-sha3": "0.9.3",
+    "libsodium-wrappers-sumo": "0.8.4",
+    "tezos-bls12-381": "1.1.1"
+  }
+}

@@ -210,7 +210,7 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     scenario.verify(cmpt.data.administrator == governor.address)
 
     scenario.h3("Set price oracle")
-    arg = sp.record(comptroller = cmpt.address, priceOracle = oracle.address, timeDiff=84600)
+    arg = sp.record(comptroller = cmpt.address, priceOracle = oracle.address, timeDiff=300)
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, governor.setPriceOracleAndTimeDiff, arg)
     scenario.verify(cmpt.data.oracleAddress == arg.priceOracle)
 
@@ -229,6 +229,15 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "support market", bLevel, admin, alice, governor.supportMarket, arg)
     scenario.verify(cmpt.data.markets.contains(arg.market.cToken) & cmpt.data.markets[arg.market.cToken].isListed)
 
+    scenario.h3("Set price bounds")
+    boundsArg = sp.record(comptroller=cmpt.address, bounds=sp.record(
+        cToken=ctoken.address, minPrice=sp.nat(100000),
+        maxPrice=sp.nat(10000000), maxChangeBps=sp.nat(2000)))
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price bounds", bLevel, admin, alice, governor.setPriceBounds, boundsArg)
+    boundsKey = sp.pair(cmpt.address, ctoken.address)
+    scenario.verify(oracle.data.priceBounds[boundsKey].minPrice == boundsArg.bounds.minPrice)
+    scenario.verify(oracle.data.priceBounds[boundsKey].maxPrice == boundsArg.bounds.maxPrice)
+
     scenario.h3("Set collateral factor")
     arg = sp.record(comptroller = cmpt.address, collateralFactor = sp.record(cToken = ctoken.address, newCollateralFactor = sp.nat(2)))
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set collateral factor", bLevel, admin, alice, governor.setCollateralFactor, arg)
@@ -246,6 +255,17 @@ def testComptroller(scenario, ctoken, bLevel, alice, admin, governor, cmpt, orac
     scenario.h3("Set redeem paused")
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set redeem paused", bLevel, admin, alice, governor.setRedeemPaused, arg)
     scenario.verify(cmpt.data.markets[arg.tokenState.cToken].redeemPaused == arg.tokenState.state)
+
+    scenario.h3("Set liquidation paused")
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set liquidation paused", bLevel, admin, alice, governor.setLiquidatePaused, arg)
+    scenario.verify(cmpt.data.markets[arg.tokenState.cToken].liquidatePaused == arg.tokenState.state)
+
+    scenario.h3("Set market caps")
+    capsArg = sp.record(comptroller=cmpt.address, caps=sp.record(
+        cToken=ctoken.address, supplyCap=sp.nat(1000), borrowCap=sp.nat(500)))
+    TestAdminFunctionality.checkAdminRequirementH4(scenario, "set market caps", bLevel, admin, alice, governor.setMarketCaps, capsArg)
+    scenario.verify(cmpt.data.markets[ctoken.address].supplyCap == capsArg.caps.supplyCap)
+    scenario.verify(cmpt.data.markets[ctoken.address].borrowCap == capsArg.caps.borrowCap)
 
     scenario.h3("Set transfer paused")
     arg = sp.record(comptroller = cmpt.address, state = sp.bool(False))

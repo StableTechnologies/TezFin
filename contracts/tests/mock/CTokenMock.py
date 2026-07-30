@@ -6,7 +6,8 @@ CMPTInterface = sp.io.import_script_from_url("file:contracts/interfaces/Comptrol
 class CTokenMock(sp.Contract):
     def __init__(self, test_account_snapshot_):
         self.init(test_account_snapshot = test_account_snapshot_,
-                  snapshot_available=sp.bool(True), comptroller=sp.address("KT10"))
+                  snapshot_available=sp.bool(True), comptroller=sp.address("KT10"),
+                  totalSupplyUnderlying=sp.nat(0), totalBorrows=sp.nat(0))
 
     @sp.entry_point
     def setAccountSnapshot(self, params):
@@ -17,6 +18,12 @@ class CTokenMock(sp.Contract):
     def setSnapshotAvailable(self, params):
         sp.set_type(params, sp.TBool)
         self.data.snapshot_available = params
+
+    @sp.entry_point
+    def setMarketTotals(self, params):
+        sp.set_type(params, sp.TRecord(supply=sp.TNat, borrows=sp.TNat))
+        self.data.totalSupplyUnderlying = params.supply
+        self.data.totalBorrows = params.borrows
 
     @sp.utils.view(CTI.TAccountSnapshot)
     def getAccountSnapshot(self, account):
@@ -34,6 +41,12 @@ class CTokenMock(sp.Contract):
     @sp.entry_point
     def accrueInterest(self, params):
         sp.set_type(params, sp.TUnit)
+
+    @sp.onchain_view()
+    def marketTotals(self, params):
+        sp.set_type(params, sp.TUnit)
+        sp.result(sp.pair(self.data.totalSupplyUnderlying,
+                          self.data.totalBorrows))
 
     @sp.entry_point
     def setComptroller(self, params):

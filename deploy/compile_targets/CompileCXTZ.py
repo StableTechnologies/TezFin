@@ -15,16 +15,16 @@ sp.add_compilation_target("CXTZ", CXTZ.CXTZ(
     metadata_ = sp.big_map({
         "": sp.utils.bytes_of_string("tezos-storage:data"),
         "data": sp.utils.bytes_of_string(json.dumps({
-            "name": "TezFin Interest-Bearing XTZ",
+            "name": "TezFin V3.1 Interest-Bearing XTZ",
             "description": "Interest-bearing token for Tez (XTZ) supplied to the TezFin lending protocol.",
-            "version": "3.0",
+            "version": "3.1",
             "authors": ["Tezos Finance Protocol"],
             "homepage": "https://tezos.finance",
             "interfaces": ["TZIP-007", "TZIP-016"],
         }))
     }),
     token_metadata_ = {
-        "name": sp.utils.bytes_of_string("TezFin Interest-Bearing XTZ"),
+        "name": sp.utils.bytes_of_string("TezFin V3.1 Interest-Bearing XTZ"),
         "symbol": sp.utils.bytes_of_string("\ua730XTZ"),
         "decimals": sp.utils.bytes_of_string("6"),
     }

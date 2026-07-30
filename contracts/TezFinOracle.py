@@ -1,5 +1,4 @@
 import smartpy as sp
-import time
 
 OracleInterface = sp.io.import_script_from_url(
     "file:contracts/interfaces/OracleInterface.py")
@@ -12,10 +11,13 @@ class TezFinOracle(OracleInterface.OracleInterface):
 
     def __init__(self, admin, oracle):
         self.init(
-            overrides=sp.big_map(l={"USD-USD": (sp.timestamp(int(time.time())), sp.as_nat(
-                1000000)),"USDT-USD": (sp.timestamp(int(time.time())), sp.as_nat(
-                1000000))}, tkey=sp.TString, tvalue=sp.TPair(sp.TTimestamp, sp.TNat)),
-            alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD", "TZBTC-USD":"BTC-USD", "STXTZ-USD": "XTZ-USD"},
+            overrides=sp.big_map(l={}, tkey=sp.TString,
+                                 tvalue=sp.TPair(sp.TTimestamp, sp.TNat)),
+            priceBounds=sp.big_map(
+                l={}, tkey=sp.TPair(sp.TAddress, sp.TAddress),
+                tvalue=OracleInterface.TPriceBounds),
+            maxPriceAge=sp.big_map(l={}, tkey=sp.TAddress, tvalue=sp.TInt),
+            alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD", "STXTZ-USD": "XTZ-USD"},
                              tkey=sp.TString, tvalue=sp.TString),
             oracle=oracle,
             admin=admin,
@@ -85,6 +87,22 @@ class TezFinOracle(OracleInterface.OracleInterface):
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
         del self.data.alias[asset]
 
+    @sp.entry_point
+    def configurePriceBounds(self, params):
+        sp.set_type(params, OracleInterface.TPriceBounds)
+        sp.verify((params.minPrice > 0) &
+                  (params.minPrice <= params.maxPrice) &
+                  (params.maxChangeBps <= 10000),
+                  "INVALID_PRICE_BOUNDS")
+        self.data.priceBounds[sp.pair(sp.sender, params.cToken)] = params
+
+    @sp.entry_point
+    def configureMaxPriceAge(self, maxPriceAge):
+        sp.set_type(maxPriceAge, sp.TInt)
+        sp.verify((maxPriceAge > 0) & (maxPriceAge <= 3600),
+                  "INVALID_MAX_PRICE_TIME_DIFFERENCE")
+        self.data.maxPriceAge[sp.sender] = maxPriceAge
+
     @sp.onchain_view()
     def get_price_with_timestamp(self, requestedAsset):
         """
@@ -92,7 +110,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
         """
         sp.set_type(requestedAsset, sp.TString)
         sp.if self.data.overrides.contains(requestedAsset):
-            sp.result((sp.snd(self.data.overrides[requestedAsset]), sp.now))
+            sp.result((sp.snd(self.data.overrides[requestedAsset]),
+                       sp.fst(self.data.overrides[requestedAsset])))
         sp.else:
             asset = sp.local("asset", requestedAsset)
             sp.if self.data.alias.contains(requestedAsset):
@@ -109,7 +128,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
         """
         sp.set_type(requestedAsset, sp.TString)
         sp.if self.data.overrides.contains(requestedAsset):
-            sp.result((sp.now, sp.snd(self.data.overrides[requestedAsset])))
+            sp.result(self.data.overrides[requestedAsset])
         sp.else:
             asset = sp.local("asset", requestedAsset)
             sp.if self.data.alias.contains(requestedAsset):
@@ -118,3 +137,40 @@ class TezFinOracle(OracleInterface.OracleInterface):
             oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"USDT", t=sp.TPair(
                 sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
             sp.result((sp.snd(oracle_data), sp.fst(oracle_data)))
+
+    @sp.onchain_view()
+    def getValidatedPrice(self, params):
+        sp.set_type(params, OracleInterface.TValidatedPriceRequest)
+        configKey = sp.pair(params.comptroller, params.cToken)
+        sp.verify(self.data.priceBounds.contains(configKey),
+                  "PRICE_BOUNDS_NOT_CONFIGURED")
+        sp.verify(self.data.maxPriceAge.contains(params.comptroller),
+                  "MAX_PRICE_AGE_NOT_CONFIGURED")
+        pricePair = sp.view("getPrice", sp.self_address, params.requestedAsset,
+                            t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some(
+                                "invalid oracle price view")
+        priceTimestamp = sp.fst(pricePair)
+        rawPrice = sp.snd(pricePair)
+        bounds = self.data.priceBounds[configKey]
+        sp.verify(priceTimestamp > sp.timestamp(0),
+                  "INVALID_ASSET_PRICE_TIMESTAMP")
+        sp.verify(priceTimestamp <= sp.now, "FUTURE_ASSET_PRICE")
+        sp.verify(sp.now - priceTimestamp <=
+                  self.data.maxPriceAge[params.comptroller],
+                  "STALE_ASSET_PRICE")
+        sp.verify((params.previousTimestamp == sp.timestamp(0)) |
+                  (priceTimestamp >= params.previousTimestamp),
+                  "ASSET_PRICE_TIMESTAMP_ROLLBACK")
+        sp.verify((rawPrice >= bounds.minPrice) &
+                  (rawPrice <= bounds.maxPrice),
+                  "ASSET_PRICE_OUT_OF_BOUNDS")
+        sp.if params.previousTimestamp != sp.timestamp(0):
+            priceChange = sp.local("priceChange", sp.nat(0))
+            sp.if rawPrice >= params.previousPrice:
+                priceChange.value = sp.as_nat(rawPrice - params.previousPrice)
+            sp.else:
+                priceChange.value = sp.as_nat(params.previousPrice - rawPrice)
+            sp.verify(priceChange.value * 10000 <=
+                      params.previousPrice * bounds.maxChangeBps,
+                      "ASSET_PRICE_CHANGE_TOO_LARGE")
+        sp.result(pricePair)
