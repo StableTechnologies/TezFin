@@ -22,7 +22,7 @@ import { PriceFeed } from './PriceFeed';
 import bigInt from 'big-integer';
 import { tokenNames } from './const';
 import log from 'loglevel';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 export namespace TezosLendingPlatform {
 

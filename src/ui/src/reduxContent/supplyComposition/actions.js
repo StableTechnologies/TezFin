@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-unused-expressions */
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 import { decimalify } from '../../util';
 

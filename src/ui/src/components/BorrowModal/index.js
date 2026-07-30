@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useDispatch, useSelector } from 'react-redux';

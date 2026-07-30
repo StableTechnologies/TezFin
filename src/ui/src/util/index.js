@@ -1,7 +1,7 @@
 import { TezosToolkit, OpKind } from '@taquito/taquito';
 import { BeaconWallet } from '@taquito/beacon-wallet';
 import { NetworkType } from '@taquito/beacon-wallet/types';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import bigInt from 'big-integer';
 
 // eslint-disable-next-line import/no-dynamic-require

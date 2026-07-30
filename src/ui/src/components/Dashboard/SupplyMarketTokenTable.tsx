@@ -113,7 +113,7 @@ const SupplyMarketTokenTable = (props) => {
                                         <span>
                                             {data.supplyRate > 0
                                                 ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                                  new BigNumber(data.supplyRate).gt(new BigNumber(10000000000000000))
+                                                                                                    new BigNumber((data.supplyRate ?? 0).toString()).gt(new BigNumber(10000000000000000))
                                                     ? roundValue(decimalify(data.supplyRate, 18))
                                                     : '<0.01'
                                                 : '0'}

@@ -7,6 +7,18 @@ import { useSelector } from 'react-redux';
 
 import { decimalify } from './index';
 
+const toBigNumberInput = (value) => {
+    if (value === '' || value === null || value === undefined) {
+        return '0';
+    }
+    if (typeof value === 'object' && typeof value.toString === 'function') {
+        return value.toString();
+    }
+    return value;
+};
+
+const bn = (value) => new BigNumber(toBigNumberInput(value));
+
 /**
  * This function is used to ensure a user enters a valid amount to supply.
  *
@@ -19,7 +31,7 @@ export const useSupplyErrorText = (tokenValue, limit) => {
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
-        if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
+        if (bn(tokenValue).gt(bn(limit))) {
             setText('Insufficient Funds');
             setErrorText('');
             setDisabled(true);
@@ -45,8 +57,8 @@ export const useBorrowErrorText = (tokenValue, borrowLimit, tokenDetails) => {
     const [errorText, setErrorText] = useState('');
     const [disabled, setDisabled] = useState(false);
 
-    const limit = Number(new BigNumber(borrowLimit)
-        .dividedBy(new BigNumber(tokenDetails.usdPrice))
+    const limit = Number(bn(borrowLimit)
+        .dividedBy(bn(tokenDetails.usdPrice))
         .toFixed(decimals[tokenDetails.title]));
 
     const { allMarkets } = useSelector((state) => state.market);
@@ -60,13 +72,13 @@ export const useBorrowErrorText = (tokenValue, borrowLimit, tokenDetails) => {
             totalBorrowed = decimalify(x.totalBorrowed.toString(), decimals[x.title], decimals[x.title]);
         }
     });
-    const availableBorrowAmount = new BigNumber(marketSize).minus(new BigNumber(totalBorrowed)).toNumber();
+    const availableBorrowAmount = bn(marketSize).minus(bn(totalBorrowed)).toNumber();
 
     useEffect(() => {
         if ((Number(tokenValue) > 0) && (Number(tokenValue) > availableBorrowAmount)) {
             setErrorText('You cannot borrow more than the amount available on the market.');
             setDisabled(true);
-        } else if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
+        } else if (bn(tokenValue).gt(bn(limit))) {
             setText('Insufficient Collateral');
             setErrorText('You must supply assets as collateral to increase your borrow limit.');
             setDisabled(true);
@@ -101,28 +113,28 @@ export const useWithdrawErrorText = (tokenValue, limit, tokenDetails) => {
     const { borrowing } = useSelector((state) => state.borrowComposition.borrowComposition);
 
     const tokenValueUsd = tokenValue
-        ? new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber()
+        ? bn(tokenValue).multipliedBy(bn(tokenDetails.usdPrice)).toNumber()
         : 0;
-    let pendingSupplyingUsd = new BigNumber(supplying).minus(new BigNumber(tokenValueUsd)).toNumber();
+    let pendingSupplyingUsd = bn(supplying).minus(bn(tokenValueUsd)).toNumber();
     pendingSupplyingUsd = pendingSupplyingUsd > 0 ? pendingSupplyingUsd : 0;
 
     let pendingCollateralizedUsd = collateralized;
     if (tokenDetails.collateral) {
-        pendingCollateralizedUsd = new BigNumber(collateralized).minus(new BigNumber(tokenValueUsd)).toNumber();
+        pendingCollateralizedUsd = bn(collateralized).minus(bn(tokenValueUsd)).toNumber();
     }
 
-    const pendingSupplyingUsdLimit = new BigNumber(pendingSupplyingUsd).multipliedBy(
-        new BigNumber(tokenDetails.collateralFactor)
+    const pendingSupplyingUsdLimit = bn(pendingSupplyingUsd).multipliedBy(
+        bn(tokenDetails.collateralFactor)
     ).toNumber();
-    const pendingCollateralizedUsdLimit = new BigNumber(pendingCollateralizedUsd).multipliedBy(
-        new BigNumber(tokenDetails.collateralFactor)
+    const pendingCollateralizedUsdLimit = bn(pendingCollateralizedUsd).multipliedBy(
+        bn(tokenDetails.collateralFactor)
     ).toNumber();
 
     useEffect(() => {
         if (tokenDetails.redeemPaused) {
             setDisabled(true);
             setErrorText('Withdrawals are temporarily paused for this market.');
-        } else if (new BigNumber(tokenValue).gt(new BigNumber(limit))) {
+        } else if (bn(tokenValue).gt(bn(limit))) {
             setDisabled(true);
             setErrorText('You cannot withdraw an amount greater than the amount you supply.');
         } else if ((borrowing > pendingSupplyingUsdLimit) || (tokenDetails.collateral && borrowing > pendingCollateralizedUsdLimit)) {
@@ -153,7 +165,7 @@ export const useRepayErrorText = (tokenValue, limit, tokenDetails) => {
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
-        if (new BigNumber(tokenValue).multipliedBy(new BigNumber(10).pow(new BigNumber(decimals[tokenDetails.title].toString()))).gt(new BigNumber(tokenDetails.walletBalance))) {
+        if (bn(tokenValue).multipliedBy(bn(10).pow(bn(decimals[tokenDetails.title].toString()))).gt(bn(tokenDetails.walletBalance))) {
             setErrorText('Insufficient funds for repayment.');
             setDisabled(true);
         } else {
@@ -181,13 +193,13 @@ export const useDisableTokenErrorText = (tokenDetails) => {
     const { borrowedMarkets } = useSelector((state) => state.market);
 
     const tokenValueUsd = (tokenDetails.balanceUnderlying > 0)
-        && new BigNumber(
+        && bn(
             decimalify(tokenDetails.balanceUnderlying, decimals[tokenDetails.title], decimals[tokenDetails.title])
-        ).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+        ).multipliedBy(bn(tokenDetails.usdPrice)).toNumber();
 
-    const pendingCollateralizedUsd = new BigNumber(collateralized).minus(new BigNumber(tokenValueUsd)).toNumber();
-    const pendingCollateralizedUsdLimit = new BigNumber(pendingCollateralizedUsd).multipliedBy(
-        new BigNumber(tokenDetails.collateralFactor)
+    const pendingCollateralizedUsd = bn(collateralized).minus(bn(tokenValueUsd)).toNumber();
+    const pendingCollateralizedUsdLimit = bn(pendingCollateralizedUsd).multipliedBy(
+        bn(tokenDetails.collateralFactor)
     ).toNumber();
 
     let isBorrowed;

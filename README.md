@@ -2,6 +2,8 @@
 
 This project is the implementation of Compound Protocol on Tezos chain using SmartPy language.
 
+Node.js 22 is required for the JavaScript and TypeScript packages. Run `nvm use` from the repository root before installing dependencies.
+
 The diagram demonstrates relations between contracts
 ![](https://github.com/RSerhii/TezFin/blob/master/docs/ContractsRelations.png)
 
@@ -376,9 +378,10 @@ npm install
 ```sh
 cd src/ui
 npm install
+npm run build
 ```
 
-2. Run
+3. Run
 
 ```sh
 cd src/ui

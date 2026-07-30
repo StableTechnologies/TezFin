@@ -139,7 +139,7 @@ const SuppliedTokenTable = (props) => {
                                     <span>
                                         {data.rate > 0
                                             ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                            new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
+                                            new BigNumber((data.rate ?? 0).toString()).gt(new BigNumber(10000000000000000))
                                                 ? roundValue(decimalify(data.rate, 18))
                                                 : '<0.01'
                                             : '0'}

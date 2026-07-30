@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { GET_ALL_MARKET_DATA, GET_BORROWED_MARKET_DATA, GET_MARKET_DATA, GET_SUPPLIED_MARKET_DATA } from './types';
 import { formatTokenData } from '../../util';

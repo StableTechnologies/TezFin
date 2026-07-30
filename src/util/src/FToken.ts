@@ -3,7 +3,7 @@ import { packDataBytes, unpackDataBytes } from '@taquito/michel-codec';
 import { encodeExpr } from '@taquito/utils';
 import { getContract, getToolkit } from './toolkit';
 import { AssetType, TokenStandard } from './enum';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { InterestRateModel } from './contracts/InterestRateModel';
 import { Network, ProtocolAddresses, UnderlyingAsset } from './types';
 import bigInt from 'big-integer';
