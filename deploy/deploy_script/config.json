@@ -1,0 +1,32 @@
+{
+  "tezosNode": "https://ghostnet.ecadinfra.com",
+  "conseilServer": {
+    "url": "https://conseil-ithaca.cryptonomic-infra.tech:443",
+    "apiKey": "328ac16b-5497-4e73-a97d-45af0e83425c",
+    "network": "ghostnet"
+  },
+  "originator": {
+    "pkh": "tz1VLnrVYrMtLHRUfLV594uvzSthZ5w7wXqE",
+    "mnemonic": [
+      "egg",
+      "zoo",
+      "cigar",
+      "oppose",
+      "shrimp",
+      "chair",
+      "wood",
+      "practice",
+      "trash",
+      "rice",
+      "spell",
+      "unhappy",
+      "disorder",
+      "zebra",
+      "kite"
+    ],
+    "email": "zdnmiequ.ulruuquy@teztnets.xyz",
+    "password": "dlfsJnRlHy",
+    "amount": "22841330521",
+    "activation_code": "77c3e768abfdb7e389f7ccd890c091ba42b84a88"
+  }
+}

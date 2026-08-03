@@ -1,0 +1,84 @@
+{
+    "CXTZ_IRM": {
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 32610000000,
+        "baseRatePerBlock": 0,
+        "jumpMultiplierPerBlock": 875200000000,
+        "kink": 700000000000000000
+    },
+    "CUSDt_IRM" :{
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 12970000000,
+        "baseRatePerBlock": 0,
+        "jumpMultiplierPerBlock": 697500000000,
+        "kink": 880000000000000000
+    },
+    "CUSDtz_IRM" :{
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 12970000000,
+        "baseRatePerBlock": 0,
+        "jumpMultiplierPerBlock": 697500000000,
+        "kink": 880000000000000000
+    },
+    "CtzBTC_IRM": {
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 30450000000,
+        "baseRatePerBlock": 0,
+        "jumpMultiplierPerBlock": 1050000000000,
+        "kink": 750000000000000000
+    },
+    "CstXTZ_IRM": {
+        "scale": 1000000000000000000,
+        "multiplierPerBlock": 43900000000,
+        "baseRatePerBlock": 0,
+        "jumpMultiplierPerBlock": 1005000000000,
+        "kink": 650000000000000000
+    },
+    "Governance": {
+        "dependencies": [
+            "OriginatorAddress"
+        ]
+    },
+    "Comptroller": {
+        "closeFactorMantissa": 500000000000000000,
+        "liquidationIncentiveMantissa": 1050000000000000000,
+        "dependencies": [
+            "Governance",
+            "PriceOracle"
+        ]
+    },
+    "CFA2": {
+        "initialExchangeRateMantissa": 1000000000000000000,
+        "tokenId": 0,
+        "dependencies": [
+            "Governance",
+            "USDt",
+            "CFA2_IRM"
+        ]
+    },
+    "CFA12": {
+        "initialExchangeRateMantissa": 1000000000000000000,
+        "dependencies": [
+            "Governance",
+            "USDtz",
+            "CFA12_IRM"
+        ]
+    },
+    "CXTZ": {
+        "dependencies": [
+            "Comptroller",
+            "Governance",
+            "CXTZ_IRM"
+        ]
+    },
+    "FA12": {
+        "dependencies": [
+            "OriginatorAddress"
+        ]
+    },
+    "FA2": {
+        "dependencies": [
+            "OriginatorAddress"
+        ]
+    }
+}
