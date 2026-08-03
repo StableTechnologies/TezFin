@@ -43,10 +43,19 @@ const compactCurrency = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
+const decimalInputPattern = /^(?:\d+(?:\.\d*)?|\.\d+)$/;
+
 function formatAmount(value: number): string {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: value < 1 ? 6 : value < 100 ? 4 : 2,
   }).format(value);
+}
+
+function parseFixtureAmount(value: string): number | null {
+  if (!decimalInputPattern.test(value)) return null;
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function riskBand(percent: number): "normal" | "attention" | "high" | "critical" {
@@ -516,7 +525,9 @@ function TransactionDialog({
   if (!market) return null;
 
   const totals = calculateTotals(markets);
-  const parsedAmount = Number.parseFloat(amount) || 0;
+  const parsedAmountResult = parseFixtureAmount(amount);
+  const parsedAmount = parsedAmountResult ?? 0;
+  const invalidAmountSyntax = amount !== "" && parsedAmountResult === null;
   const valueUsd = parsedAmount * market.price;
   const side = actionSide(activeAction);
   const requiresAmount = side !== "collateral";
@@ -540,7 +551,7 @@ function TransactionDialog({
   const nextUsed = nextLimit > 0 ? (nextBorrowed / nextLimit) * 100 : 0;
   const steps = operationSteps(activeAction, market);
   const invalidPackedPermission = market.standard === "FA1.2 packed" && (activeAction === "Supply" || activeAction === "Repay");
-  const invalidAmount = requiresAmount && (parsedAmount <= 0 || parsedAmount > maxAmount || nextUsed > 100);
+  const invalidAmount = requiresAmount && (invalidAmountSyntax || parsedAmount <= 0 || parsedAmount > maxAmount || nextUsed > 100);
   const canReview = !invalidAmount && !invalidPackedPermission;
 
   const context = activeAction === "Supply"
@@ -606,7 +617,10 @@ function TransactionDialog({
                     value={amount}
                     placeholder="0.00"
                     autoFocus
-                    onChange={(event) => setAmount(event.target.value.replace(/[^0-9.]/g, ""))}
+                    aria-label={`Amount in ${market.name}`}
+                    aria-invalid={invalidAmountSyntax}
+                    aria-describedby={invalidAmountSyntax ? "amount-format-error" : undefined}
+                    onChange={(event) => setAmount(event.target.value)}
                   />
                   <b>{market.name}</b>
                   <button
@@ -651,13 +665,16 @@ function TransactionDialog({
             {invalidPackedPermission && (
               <p className="dialog-error" role="alert"><WarningCircle size={17} /> Packed FA1.2 permission handling is intentionally blocked until its contract path is verified.</p>
             )}
-            {!invalidPackedPermission && requiresAmount && parsedAmount > maxAmount && (
+            {requiresAmount && invalidAmountSyntax && (
+              <p id="amount-format-error" className="dialog-error" role="alert"><WarningCircle size={17} /> Enter a valid decimal amount.</p>
+            )}
+            {!invalidPackedPermission && !invalidAmountSyntax && requiresAmount && parsedAmount > maxAmount && (
               <p className="dialog-error" role="alert"><WarningCircle size={17} /> Amount exceeds the fixture maximum of {formatAmount(maxAmount)} {market.name}.</p>
             )}
 
             {!reviewing && side !== "collateral" ? (
               <button className="dialog-primary" type="button" disabled={!canReview} onClick={() => setReviewing(true)}>
-                {parsedAmount > 0 ? `Review ${activeAction.toLowerCase()}` : "Enter an amount"}
+                {invalidAmountSyntax ? "Check amount" : parsedAmount > 0 ? `Review ${activeAction.toLowerCase()}` : "Enter an amount"}
               </button>
             ) : (
               <button

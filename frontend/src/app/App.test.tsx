@@ -84,6 +84,41 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
+  it("rejects a malformed decimal amount instead of accepting its valid prefix", () => {
+    render(<App />);
+
+    const supplyBoard = screen.getByRole("region", {
+      name: "Assets to Supply",
+    });
+    fireEvent.click(
+      within(supplyBoard).getAllByRole("button", { name: "Supply" })[0],
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "Supply XTZ" });
+    const input = within(dialog).getByRole("textbox", {
+      name: "Amount in XTZ",
+    });
+
+    fireEvent.change(input, { target: { value: "1.2.3" } });
+
+    expect(input).toHaveValue("1.2.3");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Enter a valid decimal amount",
+    );
+    expect(
+      within(dialog).getByRole("button", { name: "Check amount" }),
+    ).toBeDisabled();
+
+    fireEvent.change(input, { target: { value: "1.23" } });
+
+    expect(input).toHaveAttribute("aria-invalid", "false");
+    expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("button", { name: "Review supply" }),
+    ).toBeEnabled();
+  });
+
   it("keeps wallet connection local to the offline fixture", () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
