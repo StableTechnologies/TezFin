@@ -5,18 +5,18 @@ export const useStyles = makeStyles({
     root: {
         '& .MuiTypography-root': {
             '@media(min-width: 968px)': {
-                fontSize: '0.875rem',
+                fontSize: '0.875rem'
             },
             '@media(max-width: 768px)': {
-                fontSize: '0.75rem',
-            },
+                fontSize: '0.75rem'
+            }
         },
         '& .MuiIconButton-root': {
             padding: '0',
             '&:hover': {
-                background: 'transparent',
-            },
-        },
+                background: 'transparent'
+            }
+        }
     },
     footerCon: {
         height: '3.1875rem',
@@ -30,8 +30,8 @@ export const useStyles = makeStyles({
         borderTop: '1px solid rgba(0, 0, 0, 0.45)',
         '@media(max-width: 501px)': {
             paddingLeft: '0.5rem',
-            paddingRight: '0.5rem',
-        },
+            paddingRight: '0.5rem'
+        }
     },
     betaLink: {
         whiteSpace: 'nowrap',
@@ -45,14 +45,14 @@ export const useStyles = makeStyles({
         marginRight: '0.3rem',
         display: 'block',
         '@media(min-width: 968px)': {
-            fontSize: '0.875rem',
+            fontSize: '0.875rem'
         },
         '@media(max-width: 768px)': {
-            fontSize: '0.75rem',
+            fontSize: '0.75rem'
         },
         '@media(max-width: 501px)': {
-            marginLeft: '1rem',
-        },
+            marginLeft: '1rem'
+        }
     },
     grid: {
         display: 'flex',
@@ -62,8 +62,8 @@ export const useStyles = makeStyles({
             justifyContent: 'space-between',
             textAlign: 'start',
             paddingLeft: '0px',
-            marginLeft: '0px',
-        },
+            marginLeft: '0px'
+        }
     },
     footerLink: {
         color: '#000',
@@ -75,17 +75,17 @@ export const useStyles = makeStyles({
         textDecoration: 'none',
         marginLeft: '1.0625rem',
         '@media(min-width: 968px)': {
-            fontSize: '0.875rem',
+            fontSize: '0.875rem'
         },
         '@media(max-width: 768px)': {
-            fontSize: '0.75rem',
+            fontSize: '0.75rem'
         },
         '@media(max-width: 501px)': {
-            marginLeft: '0.3rem',
-        },
+            marginLeft: '0.3rem'
+        }
     },
     activeLink: {
-        borderBottom: '1px solid #000',
+        borderBottom: '1px solid #000'
     },
     icon: {
         width: '1.25rem',
@@ -93,12 +93,12 @@ export const useStyles = makeStyles({
         marginLeft: '1.6875rem',
         '@media(max-width: 501px)': {
             marginLeft: '0.3rem',
-            marginRight: '0.3rem',
-        },
+            marginRight: '0.3rem'
+        }
     },
     copyrightIcon: {
         width: '1.3125rem',
         height: '1.3125rem',
-        marginTop: '-4px',
-    },
+        marginTop: '-4px'
+    }
 });

@@ -5,16 +5,17 @@ const initState = {
     account: {}
 };
 
-const addWalletReducer = (state = initState, action) => {
+const addWalletReducer = (state, action) => {
+    const currentState = state || initState;
     switch (action.type) {
     case GET_ACCOUNT:
         return {
-            ...state,
+            ...currentState,
             isFetching: false,
             account: action.payload
         };
     default:
-        return state;
+        return currentState;
     }
 };
 

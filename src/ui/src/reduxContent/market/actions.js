@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
-import { GET_ALL_MARKET_DATA, GET_BORROWED_MARKET_DATA, GET_MARKET_DATA, GET_SUPPLIED_MARKET_DATA } from './types';
+import {
+    GET_ALL_MARKET_DATA, GET_BORROWED_MARKET_DATA, GET_MARKET_DATA, GET_SUPPLIED_MARKET_DATA
+} from './types';
 import { formatTokenData } from '../../util';
 import { tokens } from '../../components/Constants';
 
@@ -31,34 +33,40 @@ export const allMarketAction = (account, markets) => (dispatch) => {
     const suppliedMarket = TezosLendingPlatform.getSuppliedMarkets(account, markets);
     const borrowedMarket = TezosLendingPlatform.getBorrowedMarkets(account, markets);
 
-    marketTokens.map((token) => {
-        if (Object.keys(markets).length > 0 && markets.hasOwnProperty(token.assetType)) {
-            token.supply = { ...suppliedMarket[token.assetType] };
-            token.borrow = { ...borrowedMarket[token.assetType] };
-            token.usdPrice = new BigNumber(markets[token.assetType].currentPrice.toString())
-                .div(new BigNumber(10).pow(new BigNumber(6)))
-                .toFixed(4);
-            token.marketSize = markets[token.assetType].supply.totalAmount.toString();
-            token.totalBorrowed = markets[token.assetType].borrow.totalAmount.toString();
-	    token.available = markets[token.assetType].available;
-            token.supplyRate = markets[token.assetType].supply.rate.toString();
-            token.borrowRate = markets[token.assetType].borrow.rate.toString();
-            token.borrowRateFn = markets[token.assetType].borrow.rateFn;
-            token.walletBalance = '';
-            token.collateralFactor = new BigNumber(markets[token.assetType].collateralFactor.toString())
-                .div(new BigNumber(10).pow(new BigNumber(18)))
-                .toFixed();
-            token.isListed = markets[token.assetType].isListed;
-            token.mintPaused = markets[token.assetType].mintPaused;
-            token.borrowPaused = markets[token.assetType].borrowPaused;
-            token.redeemPaused = markets[token.assetType].redeemPaused;
-            if (Object.keys(walletBalance).length > 0 && walletBalance.hasOwnProperty(token.assetType)) {
-                token.walletBalance = walletBalance[token.assetType].toString();
-            }
+    const formattedTokens = marketTokens.map((token) => {
+        if (Object.keys(markets).length > 0 && Object.prototype.hasOwnProperty.call(markets, token.assetType)) {
+            const market = markets[token.assetType];
+            const tokenWalletBalance = Object.keys(walletBalance).length > 0
+                && Object.prototype.hasOwnProperty.call(walletBalance, token.assetType)
+                ? walletBalance[token.assetType].toString()
+                : '';
+
+            return {
+                ...token,
+                supply: { ...suppliedMarket[token.assetType] },
+                borrow: { ...borrowedMarket[token.assetType] },
+                usdPrice: new BigNumber(market.currentPrice.toString())
+                    .div(new BigNumber(10).pow(new BigNumber(6)))
+                    .toFixed(4),
+                marketSize: market.supply.totalAmount.toString(),
+                totalBorrowed: market.borrow.totalAmount.toString(),
+                available: market.available,
+                supplyRate: market.supply.rate.toString(),
+                borrowRate: market.borrow.rate.toString(),
+                borrowRateFn: market.borrow.rateFn,
+                walletBalance: tokenWalletBalance,
+                collateralFactor: new BigNumber(market.collateralFactor.toString())
+                    .div(new BigNumber(10).pow(new BigNumber(18)))
+                    .toFixed(),
+                isListed: market.isListed,
+                mintPaused: market.mintPaused,
+                borrowPaused: market.borrowPaused,
+                redeemPaused: market.redeemPaused
+            };
         }
-        return marketTokens;
+        return { ...token };
     });
-    dispatch({ type: GET_ALL_MARKET_DATA, payload: marketTokens });
+    dispatch({ type: GET_ALL_MARKET_DATA, payload: formattedTokens });
 };
 
 /**
@@ -77,14 +85,14 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
             logo,
             fLogo,
             usdPrice,
-	    address,
+            address,
             walletBalance,
             collateralFactor,
             isListed,
             mintPaused,
             borrowPaused,
             redeemPaused,
-            supply,
+            supply
         }) => ({
             assetType,
             banner,
@@ -93,20 +101,20 @@ export const suppliedMarketAction = (markets) => (dispatch) => {
             logo,
             fLogo,
             usdPrice,
-	    address,
+            address,
             walletBalance,
             collateralFactor,
             isListed,
             mintPaused,
             borrowPaused,
             redeemPaused,
-            ...supply,
-        }),
+            ...supply
+        })
     );
 
     dispatch({
         type: GET_SUPPLIED_MARKET_DATA,
-        payload: formatTokenData(suppliedTokens),
+        payload: formatTokenData(suppliedTokens)
     });
 };
 
@@ -133,7 +141,7 @@ export const borrowedMarketAction = (markets) => (dispatch) => {
             mintPaused,
             borrowPaused,
             redeemPaused,
-            borrow,
+            borrow
         }) => ({
             assetType,
             banner,
@@ -141,19 +149,19 @@ export const borrowedMarketAction = (markets) => (dispatch) => {
             name,
             logo,
             usdPrice,
-	    address,
+            address,
             walletBalance,
             collateralFactor,
             isListed,
             mintPaused,
             borrowPaused,
             redeemPaused,
-            ...borrow,
-        }),
+            ...borrow
+        })
     );
 
     dispatch({
         type: GET_BORROWED_MARKET_DATA,
-        payload: formatTokenData(borrowedTokens),
+        payload: formatTokenData(borrowedTokens)
     });
 };

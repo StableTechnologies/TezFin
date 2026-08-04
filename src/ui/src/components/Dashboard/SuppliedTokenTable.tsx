@@ -73,6 +73,15 @@ const SuppliedTokenTable = (props) => {
         setWithdrawTab(true);
     };
 
+    const formatRate = (rate) => {
+        if (rate <= 0) {
+            return '0';
+        }
+        return new BigNumber(rate).gt(new BigNumber(10000000000000000))
+            ? roundValue(decimalify(rate, 18))
+            : '<0.01';
+    };
+
     const suppliedData = formatTokenData(tableData);
 
     useEffect(() => {
@@ -122,8 +131,8 @@ const SuppliedTokenTable = (props) => {
                             )}
                         </>
                     )}
-                    {suppliedData &&
-                        suppliedData.map((data) => (
+                    {suppliedData
+                        && suppliedData.map((data) => (
                             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                                 <TableCell className={classes.firstCell}>
                                     <div>
@@ -139,12 +148,7 @@ const SuppliedTokenTable = (props) => {
                                 </TableCell>
                                 <TableCell align="center" className={classes.clearFont}>
                                     <span>
-                                        {data.rate > 0
-                                            ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                            new BigNumber((data.rate ?? 0).toString()).gt(new BigNumber(10000000000000000))
-                                                ? roundValue(decimalify(data.rate, 18))
-                                                : '<0.01'
-                                            : '0'}
+                                        {formatRate(data.rate)}
                                         %
                                     </span>
                                 </TableCell>
@@ -168,33 +172,35 @@ const SuppliedTokenTable = (props) => {
                                                     {recoveryMode
                                                         ? 'Unavailable'
                                                         : <>{'$'}{data.balanceUnderlying > 0
-                                                        ? nFormatter(
-                                                            decimalify(
-                                                                (data.balanceUnderlying * data.usdPrice).toString(),
-                                                                decimals[data.title],
-                                                                decimals[data.title]
+                                                            ? nFormatter(
+                                                                decimalify(
+                                                                    (data.balanceUnderlying * data.usdPrice).toString(),
+                                                                    decimals[data.title],
+                                                                    decimals[data.title]
+                                                                )
                                                             )
-                                                        )
-                                                        : '0.00'}</>}
+                                                            : '0.00'}</>}
                                                 </Typography>
                                             </>}
                                         placement="top"
                                     >
                                         <span className={classes.clearFont}>
-                                            {data.balanceUnderlying >= 1 &&
-                                            decimalify(
-                                                data.balanceUnderlying,
-                                                decimals[data.title],
-                                                decimals[data.title],
-                                            ) < 0.01
+                                            {(
+                                                data.balanceUnderlying >= 1
+                                                && decimalify(
+                                                    data.balanceUnderlying,
+                                                    decimals[data.title],
+                                                    decimals[data.title]
+                                                ) < 0.01
+                                            )
                                                 ? '>0.00'
                                                 : truncateNum(
-                                                      decimalify(
-                                                          data.balanceUnderlying,
-                                                          decimals[data.title],
-                                                          decimals[data.title],
-                                                      ),
-                                                  )}{' '}
+                                                    decimalify(
+                                                        data.balanceUnderlying,
+                                                        decimals[data.title],
+                                                        decimals[data.title]
+                                                    )
+                                                )}{' '}
                                             {data.title}
                                         </span>
                                     </LightTooltip>
@@ -203,14 +209,14 @@ const SuppliedTokenTable = (props) => {
                                         {recoveryMode
                                             ? 'Unavailable'
                                             : <>{'$'}{data.balanceUnderlying > 0
-                                            ? nFormatter(
-                                                  decimalify(
-                                                      (data.balanceUnderlying * data.usdPrice).toString(),
-                                                      decimals[data.title],
-                                                      decimals[data.title],
-                                                  ),
-                                              )
-                                                                                        : '0.00'}</>}
+                                                ? nFormatter(
+                                                    decimalify(
+                                                        (data.balanceUnderlying * data.usdPrice).toString(),
+                                                        decimals[data.title],
+                                                        decimals[data.title]
+                                                    )
+                                                )
+                                                : '0.00'}</>}
                                     </span>
                                 </TableCell>
                                 <TableCell align="center" className={classes.switchPadding}>

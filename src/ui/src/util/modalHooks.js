@@ -104,7 +104,11 @@ export const useBorrowErrorText = (tokenValue, borrowLimit, tokenDetails) => {
             setErrorText('');
             setDisabled(false);
         };
-    }, [tokenValue, limit, availableBorrowAmount, tokenDetails.isListed, tokenDetails.borrowPaused]);
+    }, [tokenValue,
+        limit,
+        availableBorrowAmount,
+        tokenDetails.isListed,
+        tokenDetails.borrowPaused]);
 
     return { text, errorText, disabled };
 };

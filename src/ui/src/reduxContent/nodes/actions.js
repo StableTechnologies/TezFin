@@ -1,11 +1,12 @@
 import {
-	Comptroller
-} from "tezoslendingplatformjs";
+    Comptroller
+} from 'tezoslendingplatformjs';
 import { GET_COMPTROLLER, GET_PROTOCOL_ADDRESSES, GET_TEZOS_NODE } from './types';
 import { getAddresses } from '../../components/Constants';
 
+// eslint-disable-next-line import/no-dynamic-require
 const config = require(`../../library/${
-	process.env.REACT_APP_ENV || "mainnet"
+    process.env.REACT_APP_ENV || 'mainnet'
 }-network-config.json`);
 
 const addresses = getAddresses();

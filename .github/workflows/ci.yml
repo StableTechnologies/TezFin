@@ -95,7 +95,7 @@ jobs:
         run: |
           npm ci
           npm test -- --watchAll=false
-          DISABLE_ESLINT_PLUGIN=true npm run build
+          npm run build
       - name: "Build post-deployment package"
         working-directory: postdeploy
         run: |

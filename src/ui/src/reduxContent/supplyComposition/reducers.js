@@ -5,16 +5,17 @@ const initState = {
     supplyComposition: {}
 };
 
-const supplyCompositionReducer = (state = initState, action) => {
+const supplyCompositionReducer = (state, action) => {
+    const currentState = state || initState;
     switch (action.type) {
     case GET_SUPPLY_COMPOSITION_DATA:
         return {
-            ...state,
+            ...currentState,
             isFetching: false,
             supplyComposition: action.payload
         };
     default:
-        return state;
+        return currentState;
     }
 };
 

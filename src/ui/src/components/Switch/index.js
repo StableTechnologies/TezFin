@@ -10,10 +10,10 @@ const CustomSwitch = styled(
         <MuiSwitch
             focusVisibleClassName=".Mui-focusVisible"
             disableRipple
-            ref={ref} 
+            ref={ref}
             {...props}
         />
-    )),
+    ))
 )(({ theme }) => ({
     width: 42,
     height: 26,
@@ -32,21 +32,20 @@ const CustomSwitch = styled(
             transform: 'translateX(18px) scale(1)',
             color: '#EADDFF',
             '& + .MuiSwitch-track': {
-                border: '0px solid red',
                 backgroundColor: '#9F329F',
                 opacity: 1,
-                border: 0,
+                border: 0
             },
             '&.Mui-disabled': {
                 border: '6px solid #fff',
-                opacity: 0.5,
-            },
+                opacity: 0.5
+            }
         },
         '&.Mui-focusVisible .MuiSwitch-thumb': {},
-        '&.Mui-disabled + .MuiSwitch-thumb': {},
+        '&.Mui-disabled + .MuiSwitch-thumb': {}
     },
     '& .MuiSwitch-thumb': {
-        boxSizing: 'border-box',
+        boxSizing: 'border-box'
     },
     '& .MuiSwitch-track': {
         border: '2px solid #79747E',
@@ -54,9 +53,9 @@ const CustomSwitch = styled(
         backgroundColor: '#E6E0E9',
         opacity: 1,
         transition: theme.transitions.create(['background-color'], {
-            duration: 500,
-        }),
-    },
+            duration: 500
+        })
+    }
 }));
 
 const BasicSwitch = forwardRef((props, ref) => {
@@ -64,7 +63,7 @@ const BasicSwitch = forwardRef((props, ref) => {
 
     return (
         <CustomSwitch
-            ref={ref} 
+            ref={ref}
             checked={checked}
             disabled={disabled}
             {...getInputProps()}
