@@ -106,11 +106,11 @@ export const useStyles = makeStyles({
             paddingLeft: '0rem'
         },
         '@media(min-width: 1024px)': {
-            paddingLeft: '0.9375rem',
+            paddingLeft: '0.9375rem'
         },
         '@media(min-width: 1200px)': {
-            paddingLeft: '0.875rem',
-        },
+            paddingLeft: '0.875rem'
+        }
     },
     compositionTitle: {
         color: '#000',
@@ -222,26 +222,26 @@ export const useStyles = makeStyles({
     progressBarOne: {
         paddingTop: '7px',
         '@media(min-width: 600px)': {
-            paddingRight: '1rem',
+            paddingRight: '1rem'
         },
         '@media(min-width: 900px)': {
-            paddingRight: '2rem',
+            paddingRight: '2rem'
         },
         '@media(min-width: 1024px)': {
-            paddingRight: '2rem',
+            paddingRight: '2rem'
         },
         '@media(min-width: 1200px)': {
-            paddingRight: '3rem',
-        },
+            paddingRight: '3rem'
+        }
     },
     progressBarTwo: {
         paddingTop: '7px',
         '@media(min-width: 600px)': {
-            paddingRight: '1rem',
+            paddingRight: '1rem'
         },
         '@media(min-width: 900px)': {
-            paddingRight: '2rem',
-        },
+            paddingRight: '2rem'
+        }
     },
     addWalletCon: {
         paddingTop: '2.1875rem',

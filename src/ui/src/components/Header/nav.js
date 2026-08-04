@@ -9,6 +9,8 @@ import Grid from '@mui/material/Grid';
 import Popover from '@mui/material/Popover';
 import Button from '@mui/material/Button';
 
+import AppBar from '@mui/material/AppBar';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 import tezHeader from '../../assets/tezHeader.svg';
 import CopyIcon from '../../assets/copyIcon.svg';
 import DisconnectIcon from '../../assets/disconnectIcon.svg';
@@ -18,10 +20,7 @@ import { shorten, getWallet, deactivateAccount } from '../../util';
 import { addWalletAction, disconnectWalletAction } from '../../reduxContent/addWallet/actions';
 
 import { useStyles } from './style';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 
-import useScrollTrigger from '@mui/material/useScrollTrigger';
 const Nav = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -76,7 +75,7 @@ const Nav = () => {
                         onClose={() => setPopover(null)}
                         anchorOrigin={{
                             vertical: 'bottom',
-                            horizontal: 'left',
+                            horizontal: 'left'
                         }}
                         className={classes.root}
                     >

@@ -16,14 +16,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Button, Typography } from '@mui/material';
 
-import { decimalify, getExplorerLink, nFormatter, roundValue } from '../../util';
+import {
+    decimalify, getExplorerLink, nFormatter, roundValue
+} from '../../util';
 
 import AllMarketModal from '../AllMarketModal';
 import TableSkeleton from '../Skeleton';
 
 import { useStyles } from './style';
-import { getAddresses } from '../Constants';
-import { isRecoveryMode } from '../Constants';
+import { getAddresses, isRecoveryMode } from '../Constants';
 
 const BorrowMarketTokenTable = (props) => {
     const classes = useStyles();
@@ -47,6 +48,15 @@ const BorrowMarketTokenTable = (props) => {
     const handleClickMktModal = (item) => {
         setTokenDetails(item);
         setMktModal(true);
+    };
+
+    const formatBorrowRate = (borrowRate) => {
+        if (borrowRate <= 0) {
+            return '0';
+        }
+        return new BigNumber(borrowRate).gt(new BigNumber(10000000000000000))
+            ? roundValue(decimalify(borrowRate, 18))
+            : '<0.01';
     };
 
     return (
@@ -94,18 +104,18 @@ const BorrowMarketTokenTable = (props) => {
                                         ) : <><span className={classes.clearFont}>
                                             {data.marketSize > 0
                                                 ? decimalify(
-                                                      data.available.toString(),
-                                                      decimals[data.title],
-                                                      decimals[data.title],
-                                                  ) < 0.01
+                                                    data.available.toString(),
+                                                    decimals[data.title],
+                                                    decimals[data.title]
+                                                ) < 0.01
                                                     ? '>0.00'
                                                     : nFormatter(
-                                                          decimalify(
-                                                              data.available.toString(),
-                                                              decimals[data.title],
-                                                              decimals[data.title],
-                                                          ),
-                                                      )
+                                                        decimalify(
+                                                            data.available.toString(),
+                                                            decimals[data.title],
+                                                            decimals[data.title]
+                                                        )
+                                                    )
                                                 : '0'}{' '}
                                             {data.title}
                                         </span>{' '}
@@ -114,26 +124,21 @@ const BorrowMarketTokenTable = (props) => {
                                             $
                                             {data.marketSize > 0
                                                 ? nFormatter(
-                                                      decimalify(
-                                                          (
-                                                              (data.marketSize - data.totalBorrowed) *
-                                                              data.usdPrice
-                                                          ).toString(),
-                                                          decimals[data.title],
-                                                          decimals[data.title],
-                                                      ),
-                                                  )
+                                                    decimalify(
+                                                        (
+                                                            (data.marketSize - data.totalBorrowed)
+                                                              * data.usdPrice
+                                                        ).toString(),
+                                                        decimals[data.title],
+                                                        decimals[data.title]
+                                                    )
+                                                )
                                                 : '0.00'}
-                                            </span></>}
+                                        </span></>}
                                     </TableCell>
                                     <TableCell align="center" className={classes.clearFont}>
                                         <span>
-                                            {data.borrowRate > 0
-                                                ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                                  new BigNumber(data.borrowRate).gt(new BigNumber(10000000000000000))
-                                                    ? roundValue(decimalify(data.borrowRate, 18))
-                                                    : '<0.01'
-                                                : '0'}
+                                            {formatBorrowRate(data.borrowRate)}
                                             %
                                         </span>
                                     </TableCell>
@@ -158,11 +163,11 @@ const BorrowMarketTokenTable = (props) => {
                                         <Button
                                             variant="contained"
                                             size="medium"
-						                    className={classes.detailsButton}
+                                            className={classes.detailsButton}
                                             onClick={() => handleClickDetails(data.assetType)}
                                             sx={{ textTransform: 'capitalize' }}
                                         >
-                                                Details
+                                            Details
                                         </Button>
                                     </TableCell>
                                 </TableRow>

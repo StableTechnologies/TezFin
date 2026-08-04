@@ -3,10 +3,8 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { Typography, tooltipClasses } from '@mui/material';
-import LightTooltip from '../Tooltip/LightTooltip';
-
+import LightTooltip from '../Tooltip/LightTooltip.tsx';
 
 import { progressBarStyles, tooltipStyles } from './style';
 import { truncateNum } from '../../util';

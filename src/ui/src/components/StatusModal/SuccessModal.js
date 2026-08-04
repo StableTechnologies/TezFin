@@ -12,7 +12,7 @@ import useStyles from './style';
 const SuccessModal = (props) => {
     const classes = useStyles();
     const {
-        open, close, token, tokenText, amount
+        open, close, token, tokenText
     } = props;
 
     return (

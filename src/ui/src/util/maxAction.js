@@ -17,20 +17,20 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
         if (tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()) {
             decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title]) > 0.1
                 ? setMaxAmount(
-                      decimalify(
-                          tokenDetails.walletBalance.toString(),
-                          decimals[tokenDetails.title],
-                          decimals[tokenDetails.title],
-                      ) - 0.1,
-                  )
+                    decimalify(
+                        tokenDetails.walletBalance.toString(),
+                        decimals[tokenDetails.title],
+                        decimals[tokenDetails.title]
+                    ) - 0.1
+                )
                 : setMaxAmount(0);
         } else {
             setMaxAmount(
                 decimalify(
                     tokenDetails.walletBalance.toString(),
                     decimals[tokenDetails.title],
-                    decimals[tokenDetails.title],
-                ),
+                    decimals[tokenDetails.title]
+                )
             );
         }
     }
@@ -39,8 +39,8 @@ export const supplyingMaxAction = (tabValue, tokenDetails, setMaxAmount) => {
             decimalify(
                 tokenDetails.balanceUnderlying.toString(),
                 decimals[tokenDetails.title],
-                decimals[tokenDetails.title],
-            ),
+                decimals[tokenDetails.title]
+            )
         );
     }
 };
@@ -59,7 +59,7 @@ export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAm
             new BigNumber(borrowLimit)
                 .dividedBy(new BigNumber(tokenDetails.usdPrice))
                 .dividedBy(new BigNumber(2))
-                .toFixed(decimals[tokenDetails.title]),
+                .toFixed(decimals[tokenDetails.title])
         );
         limit >= 0 ? setMaxAmount(limit) : setMaxAmount(0);
     }
@@ -69,8 +69,8 @@ export const borrowingMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAm
             decimalify(
                 tokenDetails.outstandingLoan.toString(),
                 decimals[tokenDetails.title],
-                decimals[tokenDetails.title],
-            ),
+                decimals[tokenDetails.title]
+            )
         );
     }
 };
@@ -88,20 +88,20 @@ export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmou
         if (tokenDetails.title.toLowerCase() === 'xtz'.toLowerCase()) {
             decimalify(tokenDetails.walletBalance, decimals[tokenDetails.title]) > 0.1
                 ? setMaxAmount(
-                      decimalify(
-                          tokenDetails.walletBalance.toString(),
-                          decimals[tokenDetails.title],
-                          decimals[tokenDetails.title],
-                      ) - 0.1,
-                  )
+                    decimalify(
+                        tokenDetails.walletBalance.toString(),
+                        decimals[tokenDetails.title],
+                        decimals[tokenDetails.title]
+                    ) - 0.1
+                )
                 : setMaxAmount(0);
         } else {
             setMaxAmount(
                 decimalify(
                     tokenDetails.walletBalance.toString(),
                     decimals[tokenDetails.title],
-                    decimals[tokenDetails.title],
-                ),
+                    decimals[tokenDetails.title]
+                )
             );
         }
     }
@@ -110,7 +110,7 @@ export const marketsMaxAction = (tabValue, tokenDetails, borrowLimit, setMaxAmou
             new BigNumber(borrowLimit)
                 .dividedBy(new BigNumber(tokenDetails.usdPrice))
                 .dividedBy(new BigNumber(2))
-                .toFixed(decimals[tokenDetails.title]),
+                .toFixed(decimals[tokenDetails.title])
         );
         limit >= 0 ? setMaxAmount(limit) : setMaxAmount(0);
     }

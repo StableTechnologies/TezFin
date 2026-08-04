@@ -1,22 +1,20 @@
 // eslint-disable-next-line no-use-before-define
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Grid from "@mui/material/Grid";
-import { Typography } from "@mui/material";
+import Grid from '@mui/material/Grid';
+import { Typography } from '@mui/material';
 
-import Composition from "./composition";
+import Composition from './composition';
 
-import { HeaderCon, classes1, useStyles } from "./style";
-import supplyingIcon from "../../assets/supplyingIcon.svg";
-import collateralizedIcon from "../../assets/collateralizedIcon.svg";
-import borrowingIcon from "../../assets/borrowing.svg";
-import borrowLimitIcon from "../../assets/borrowLimitIcon.svg";
-import questionCircle from "../../assets/questionCircle.svg";
+import { HeaderCon, classes1, useStyles } from './style';
+import supplyingIcon from '../../assets/supplyingIcon.svg';
+import collateralizedIcon from '../../assets/collateralizedIcon.svg';
+import borrowingIcon from '../../assets/borrowing.svg';
+import borrowLimitIcon from '../../assets/borrowLimitIcon.svg';
 
-import { supplyCompositionAction } from "../../reduxContent/supplyComposition/actions";
-import { borrowCompositionAction } from "../../reduxContent/borrowComposition/actions";
-import { LightTooltip } from "../StackedBars/style.tsx";
+import { supplyCompositionAction } from '../../reduxContent/supplyComposition/actions';
+import { borrowCompositionAction } from '../../reduxContent/borrowComposition/actions';
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../../library/${process.env.REACT_APP_ENV || 'mainnet'}-network-config.json`);
@@ -40,8 +38,8 @@ const Header = () => {
     return (
         <HeaderCon className={classes1.root}>
             <Typography className={classes.networkType}>
-                {network !== "mainnet" &&
-                    `Note: Tezfin is currently operating on the Tezos test network ${networkType}.`}
+                {network !== 'mainnet'
+                    && `Note: Tezfin is currently operating on the Tezos test network ${networkType}.`}
             </Typography>
             <Grid container className={classes.compositionGrid}>
                 <Composition
