@@ -15,13 +15,13 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
         boxShadow: `0px 4px 4px -1px rgba(12, 12, 13, 0.05),
             0px 4px 4px -1px rgba(12, 12, 13, 0.1)`,
         border: '3px solid #2157E4',
-        borderRadius: 8,
+        borderRadius: 8
     },
     [`& .${tooltipClasses.arrow}`]: {
         color: 'rgba(255, 255, 255, 1)',
         filter: 'drop-shadow(0px 2px 4px 0px rgba(0, 0, 0, 0.5))',
         '&:before': {
-            border: '3px solid #2157E4',
+            border: '3px solid #2157E4'
         }
     }
 }));

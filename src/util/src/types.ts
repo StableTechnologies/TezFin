@@ -102,6 +102,7 @@ export interface ProtocolAddresses {
     fTokensReverse: { [address: string]: AssetType };
     underlying: { [assetType: string]: UnderlyingAsset };
     comptroller: string;
+    comptrollerDataSource?: string;
     interestRateModel: { [underlying: string]: string };
     governance: string;
     oracle: string;
@@ -182,6 +183,9 @@ export interface Market {
     currentPrice: bigInt.BigInteger;
     reserveFactor: number;
     collateralFactor: number;
+    isListed: boolean;
+    mintPaused: boolean;
+    borrowPaused: boolean;
     redeemPaused: boolean;
     exchangeRate: BigNumber;
     storage: FToken.Storage;

@@ -5,16 +5,17 @@ const initState = {
     borrowComposition: {}
 };
 
-const borrowCompositionReducer = (state = initState, action) => {
+const borrowCompositionReducer = (state, action) => {
+    const currentState = state || initState;
     switch (action.type) {
     case GET_BORROW_COMPOSITION_DATA:
         return {
-            ...state,
+            ...currentState,
             isFetching: false,
             borrowComposition: action.payload
         };
     default:
-        return state;
+        return currentState;
     }
 };
 

@@ -29,10 +29,12 @@ import { decimalify, formatTokenData, nFormatter, roundValue, truncateNum } from
 
 import { useStyles } from './style';
 import LightTooltip from '../Tooltip/LightTooltip';
+import { isRecoveryMode } from '../Constants';
 
 const SuppliedTokenTable = (props) => {
     const classes = useStyles();
     const { tableData } = props;
+    const recoveryMode = isRecoveryMode();
 
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
@@ -69,6 +71,15 @@ const SuppliedTokenTable = (props) => {
         setTokenDetails(item);
         setSupplyModal(true);
         setWithdrawTab(true);
+    };
+
+    const formatRate = (rate) => {
+        if (rate <= 0) {
+            return '0';
+        }
+        return new BigNumber(rate).gt(new BigNumber(10000000000000000))
+            ? roundValue(decimalify(rate, 18))
+            : '<0.01';
     };
 
     const suppliedData = formatTokenData(tableData);
@@ -120,8 +131,8 @@ const SuppliedTokenTable = (props) => {
                             )}
                         </>
                     )}
-                    {suppliedData &&
-                        suppliedData.map((data) => (
+                    {suppliedData
+                        && suppliedData.map((data) => (
                             <TableRow key={data.title} onClick={(event) => handleClickMktModal(data, event)}>
                                 <TableCell className={classes.firstCell}>
                                     <div>
@@ -137,12 +148,7 @@ const SuppliedTokenTable = (props) => {
                                 </TableCell>
                                 <TableCell align="center" className={classes.clearFont}>
                                     <span>
-                                        {data.rate > 0
-                                            ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                            new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
-                                                ? roundValue(decimalify(data.rate, 18))
-                                                : '<0.01'
-                                            : '0'}
+                                        {formatRate(data.rate)}
                                         %
                                     </span>
                                 </TableCell>
@@ -163,50 +169,54 @@ const SuppliedTokenTable = (props) => {
                                                     ).replace(/\.?0+$/, '')} ${data.title}`}
                                                 </Typography>
                                                 <Typography className={classes.tooltipSecondaryText}>
-                                            $
-                                                    {data.balanceUnderlying > 0
-                                                        ? nFormatter(
-                                                            decimalify(
-                                                                (data.balanceUnderlying * data.usdPrice).toString(),
-                                                                decimals[data.title],
-                                                                decimals[data.title]
+                                                    {recoveryMode
+                                                        ? 'Unavailable'
+                                                        : <>{'$'}{data.balanceUnderlying > 0
+                                                            ? nFormatter(
+                                                                decimalify(
+                                                                    (data.balanceUnderlying * data.usdPrice).toString(),
+                                                                    decimals[data.title],
+                                                                    decimals[data.title]
+                                                                )
                                                             )
-                                                        )
-                                                        : '0.00'}
+                                                            : '0.00'}</>}
                                                 </Typography>
                                             </>}
                                         placement="top"
                                     >
                                         <span className={classes.clearFont}>
-                                            {data.balanceUnderlying >= 1 &&
-                                            decimalify(
-                                                data.balanceUnderlying,
-                                                decimals[data.title],
-                                                decimals[data.title],
-                                            ) < 0.01
+                                            {(
+                                                data.balanceUnderlying >= 1
+                                                && decimalify(
+                                                    data.balanceUnderlying,
+                                                    decimals[data.title],
+                                                    decimals[data.title]
+                                                ) < 0.01
+                                            )
                                                 ? '>0.00'
                                                 : truncateNum(
-                                                      decimalify(
-                                                          data.balanceUnderlying,
-                                                          decimals[data.title],
-                                                          decimals[data.title],
-                                                      ),
-                                                  )}{' '}
+                                                    decimalify(
+                                                        data.balanceUnderlying,
+                                                        decimals[data.title],
+                                                        decimals[data.title]
+                                                    )
+                                                )}{' '}
                                             {data.title}
                                         </span>
                                     </LightTooltip>
                                     <br />
                                     <span className={classes.faintFont}>
-                                        $
-                                        {data.balanceUnderlying > 0
-                                            ? nFormatter(
-                                                  decimalify(
-                                                      (data.balanceUnderlying * data.usdPrice).toString(),
-                                                      decimals[data.title],
-                                                      decimals[data.title],
-                                                  ),
-                                              )
-                                            : '0.00'}
+                                        {recoveryMode
+                                            ? 'Unavailable'
+                                            : <>{'$'}{data.balanceUnderlying > 0
+                                                ? nFormatter(
+                                                    decimalify(
+                                                        (data.balanceUnderlying * data.usdPrice).toString(),
+                                                        decimals[data.title],
+                                                        decimals[data.title]
+                                                    )
+                                                )
+                                                : '0.00'}</>}
                                     </span>
                                 </TableCell>
                                 <TableCell align="center" className={classes.switchPadding}>
@@ -217,8 +227,12 @@ const SuppliedTokenTable = (props) => {
                                         variant='contained'
                                         className={classes.detailsButton}
                                         onClick={() => handleClickWithdraw(data)}
-                                        disabled={data.redeemPaused}
-                                        title={data.redeemPaused ? 'Withdrawals are temporarily paused for this market.' : undefined}
+                                        disabled={!data.isListed || data.redeemPaused}
+                                        title={
+                                            !data.isListed || data.redeemPaused
+                                                ? 'Withdrawals are temporarily disabled for this market.'
+                                                : undefined
+                                        }
                                         sx={{ textTransform: 'capitalize' }}
                                     >
                                         Withdraw

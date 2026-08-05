@@ -25,6 +25,7 @@ import CustomizedProgressBars from '../ProgressBar';
 
 import { useStyles } from './style';
 import LightTooltip from '../Tooltip/LightTooltip';
+import { isRecoveryMode } from '../Constants';
 
 const sanitizeInput = (input) => {
     let val = input.replace(/[^0-9.]/g, '');
@@ -73,7 +74,7 @@ const DashboardModal = (props) => {
         errorText,
         pendingLimit,
         pendingLimitUsed,
-	tab,
+        tab
     } = props;
 
     const [tabValue, setTabValue] = useState(tab);
@@ -84,6 +85,7 @@ const DashboardModal = (props) => {
     const { address, underlyingBalances } = useSelector((state) => state.addWallet.account);
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const { borrowing, borrowLimit } = useSelector((state) => state.borrowComposition.borrowComposition);
+    const recoveryMode = isRecoveryMode();
 
     const tezBalance = decimalify(underlyingBalances?.XTZ, decimals.XTZ);
     const isDisabled = !(tokenValue > 0 && address) || disabled;
@@ -130,10 +132,10 @@ const DashboardModal = (props) => {
                                 title={
                                     tokenDetails.walletBalance
                                         ? `${decimalify(
-                                              tokenDetails.walletBalance,
-                                              decimals[tokenDetails.title],
-                                              decimals[tokenDetails.title],
-                                          )} ${tokenDetails.banner}`
+                                            tokenDetails.walletBalance,
+                                            decimals[tokenDetails.title],
+                                            decimals[tokenDetails.title]
+                                        )} ${tokenDetails.banner}`
                                         : ''
                                 }
                                 placement="bottom"
@@ -141,12 +143,12 @@ const DashboardModal = (props) => {
                                 <Typography className={`${classes.modalText} ${classes.imgTitle}`}>
                                     {tokenDetails.walletBalance
                                         ? nFormatter(
-                                              decimalify(
-                                                  tokenDetails.walletBalance,
-                                                  decimals[tokenDetails.title],
-                                                  decimals[tokenDetails.title],
-                                              ),
-                                          )
+                                            decimalify(
+                                                tokenDetails.walletBalance,
+                                                decimals[tokenDetails.title],
+                                                decimals[tokenDetails.title]
+                                            )
+                                        )
                                         : '0'}{' '}
                                     {tokenDetails.banner}
                                 </Typography>
@@ -179,7 +181,7 @@ const DashboardModal = (props) => {
                                 inputProps={{
                                     className: classes.inputText,
                                     pattern: '[0-9]+',
-                                    inputMode: 'decimal',
+                                    inputMode: 'decimal'
                                 }}
                                 className={classes.textField}
                             />
@@ -241,41 +243,41 @@ const DashboardModal = (props) => {
                                         tabValue === 'one'
                                             ? tokenDetails.supply.balanceUnderlying > 0
                                                 ? `${decimalify(
-                                                      tokenDetails.supply.balanceUnderlying,
-                                                      decimals[tokenDetails.title],
-                                                      decimals[tokenDetails.title],
-                                                  )} ${tokenDetails.banner}`
+                                                    tokenDetails.supply.balanceUnderlying,
+                                                    decimals[tokenDetails.title],
+                                                    decimals[tokenDetails.title]
+                                                )} ${tokenDetails.banner}`
                                                 : ''
                                             : tokenDetails.borrow.balanceUnderlying > 0
-                                            ? `${decimalify(
-                                                  tokenDetails.borrow.balanceUnderlying,
-                                                  decimals[tokenDetails.title],
-                                                  decimals[tokenDetails.title],
-                                              )} ${tokenDetails.banner}`
-                                            : ''
+                                                ? `${decimalify(
+                                                    tokenDetails.borrow.balanceUnderlying,
+                                                    decimals[tokenDetails.title],
+                                                    decimals[tokenDetails.title]
+                                                )} ${tokenDetails.banner}`
+                                                : ''
                                     }`}
                                     placement="bottom"
                                 >
                                     <Grid item sm={5} className={`${classes.modalText} ${classes.modalTextRight}`}>
-                                        {tabValue === 'one' &&
-                                            (tokenDetails.supply.balanceUnderlying > 0
+                                        {tabValue === 'one'
+                                            && (tokenDetails.supply.balanceUnderlying > 0
                                                 ? truncateNum(
-                                                      decimalify(
-                                                          tokenDetails.supply.balanceUnderlying,
-                                                          decimals[tokenDetails.title],
-                                                          decimals[tokenDetails.title],
-                                                      ),
-                                                  )
+                                                    decimalify(
+                                                        tokenDetails.supply.balanceUnderlying,
+                                                        decimals[tokenDetails.title],
+                                                        decimals[tokenDetails.title]
+                                                    )
+                                                )
                                                 : '0')}
-                                        {tabValue === 'two' &&
-                                            (tokenDetails.borrow.balanceUnderlying > 0
+                                        {tabValue === 'two'
+                                            && (tokenDetails.borrow.balanceUnderlying > 0
                                                 ? truncateNum(
-                                                      decimalify(
-                                                          tokenDetails.borrow.balanceUnderlying,
-                                                          decimals[tokenDetails.title],
-                                                          decimals[tokenDetails.title],
-                                                      ),
-                                                  )
+                                                    decimalify(
+                                                        tokenDetails.borrow.balanceUnderlying,
+                                                        decimals[tokenDetails.title],
+                                                        decimals[tokenDetails.title]
+                                                    )
+                                                )
                                                 : '0')}{' '}
                                         {tokenDetails.title}
                                     </Grid>
@@ -290,7 +292,7 @@ const DashboardModal = (props) => {
                                     title={`${decimalify(
                                         tokenDetails.balanceUnderlying,
                                         decimals[tokenDetails.title],
-                                        decimals[tokenDetails.title],
+                                        decimals[tokenDetails.title]
                                     )} ${tokenDetails.banner}`}
                                     placement="bottom"
                                 >
@@ -299,8 +301,8 @@ const DashboardModal = (props) => {
                                             decimalify(
                                                 tokenDetails.balanceUnderlying,
                                                 decimals[tokenDetails.title],
-                                                decimals[tokenDetails.title],
-                                            ),
+                                                decimals[tokenDetails.title]
+                                            )
                                         )}{' '}
                                         {tokenDetails.title}
                                     </Grid>
@@ -333,20 +335,20 @@ const DashboardModal = (props) => {
                                         sm={3}
                                         className={`${classes.modalText} ${classes.modalTextRight} ${classes.imgTitle}`}
                                     >
-                                        {tabValue === 'one' &&
-                                            (tokenDetails.supplyRate > 0
+                                        {tabValue === 'one'
+                                            && (tokenDetails.supplyRate > 0
                                                 ? roundValue(decimalify(tokenDetails.supplyRate, 18))
                                                 : '0')}
-                                        {tabValue === 'two' &&
-                                            (tokenDetails.borrowRate > 0 || tokenValue !== ''
+                                        {tabValue === 'two'
+                                            && (tokenDetails.borrowRate > 0 || tokenValue !== ''
                                                 ? roundValue(
-                                                      decimalify(
-                                                          tokenDetails.borrowRateFn(
-                                                              undecimalify(tokenValue, decimals[tokenDetails.title]),
-                                                          ),
-                                                          18,
-                                                      ),
-                                                  )
+                                                    decimalify(
+                                                        tokenDetails.borrowRateFn(
+                                                            undecimalify(tokenValue, decimals[tokenDetails.title])
+                                                        ),
+                                                        18
+                                                    )
+                                                )
                                                 : '0')}
                                         {'%'}
                                     </Grid>
@@ -383,14 +385,13 @@ const DashboardModal = (props) => {
                                 visibility ? '' : classes.visibility
                             }`}
                         >
-                            $
-                            {pendingLimit
+                            {recoveryMode ? 'Unavailable' : <>{'$'}{pendingLimit
                                 ? pendingLimit > 0
                                     ? nFormatter(pendingLimit, 2)
                                     : '0.00'
                                 : limit > 0
-                                ? nFormatter(limit, 2)
-                                : '0.00'}
+                                    ? nFormatter(limit, 2)
+                                    : '0.00'}</>}
                         </Grid>
                     </Grid>
                 </Box>
@@ -413,29 +414,30 @@ const DashboardModal = (props) => {
                                 visibility ? '' : classes.visibility
                             }`}
                         >
-                            {address && pendingLimitUsed
+                            {recoveryMode ? 'Unavailable' : <>{address && pendingLimitUsed
                                 ? pendingLimitUsed > 0
                                     ? pendingLimitUsed > 100
                                         ? 100
                                         : roundValue(pendingLimitUsed)
                                     : '0'
                                 : limitUsed > 0
-                                ? limitUsed > 100
-                                    ? 100
-                                    : roundValue(limitUsed)
-                                : '0'}
-                            %
+                                    ? limitUsed > 100
+                                        ? 100
+                                        : roundValue(limitUsed)
+                                    : '0'}%</>}
                         </Grid>
                     </Grid>
                 </Box>
                 <Box className={`${classes.contentBoxTwo} ${classes.progressBarCon}`}>
                     <Grid container>
                         <Grid item xs={12}>
-                            <Box className={`${classes.progressBar} ${visibility ? '' : classes.visibility}`}>
-                                <CustomizedProgressBars
-                                    value={address && pendingLimitUsed ? Number(pendingLimitUsed) : Number(limitUsed)}
-                                    height="8px"
-                                />
+                            <Box className={`${classes.progressBar} ${visibility || recoveryMode ? '' : classes.visibility}`}>
+                                {recoveryMode
+                                    ? <Typography>Unavailable</Typography>
+                                    : <CustomizedProgressBars
+                                        value={address && pendingLimitUsed ? Number(pendingLimitUsed) : Number(limitUsed)}
+                                        height="8px"
+                                    />}
                             </Box>
                         </Grid>
                     </Grid>

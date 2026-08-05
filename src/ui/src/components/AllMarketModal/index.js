@@ -23,7 +23,9 @@ const AllMarketModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { open, close, tokenDetails, tab} = props;
+    const {
+        open, close, tokenDetails, tab
+    } = props;
 
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
@@ -52,7 +54,7 @@ const AllMarketModal = (props) => {
     const [pendingLimit, setPendingLimit] = useState('');
     const [pendingLimitUsed, setPendingLimitUsed] = useState('');
 
-    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount);
+    const buttonOne = useSupplyErrorText(tokenValue, useMaxAmount, tokenDetails);
     const buttonTwo = useBorrowErrorText(tokenValue, borrowLimit, tokenDetails);
 
     const handleOpenInitialize = () => setInitializeModal(true);
@@ -62,6 +64,9 @@ const AllMarketModal = (props) => {
     const handleCloseError = () => setErrorModal(false);
 
     const supplyToken = async () => {
+        if (!tokenDetails.isListed || tokenDetails.mintPaused) {
+            return;
+        }
         // eslint-disable-next-line no-shadow
         const { opGroup, error } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
         setOpGroup(opGroup);
@@ -69,6 +74,9 @@ const AllMarketModal = (props) => {
     };
 
     const borrowToken = async () => {
+        if (!tokenDetails.isListed || tokenDetails.borrowPaused) {
+            return;
+        }
         // eslint-disable-next-line no-shadow
         const { opGroup, error } = await borrowTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
         setOpGroup(opGroup);
@@ -171,7 +179,7 @@ const AllMarketModal = (props) => {
                 APYTextTwo="Borrow APY"
                 CurrentStateText= "Currently Supplying"
                 CurrentStateTextTwo= "Currently Borrowing"
-		tab={tab ? tab : "one"}
+                tab={tab || 'one'}
                 open={open}
                 close={close}
                 tokenDetails={tokenDetails}

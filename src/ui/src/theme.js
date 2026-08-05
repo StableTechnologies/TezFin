@@ -17,31 +17,31 @@ const theme = createTheme(adaptV4Theme({
         MuiCssBaseline: {
             styleOverrides: {
                 html: {
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'Inter, sans-serif'
                 },
                 body: {
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'Inter, sans-serif'
                 }
             }
         },
         MuiButton: {
             styleOverrides: {
                 root: {
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'Inter, sans-serif'
                 }
             }
         },
         MuiTableCell: {
             styleOverrides: {
                 root: {
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'Inter, sans-serif'
                 }
             }
         },
         MuiTypography: {
             styleOverrides: {
                 root: {
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'Inter, sans-serif'
                 }
             }
         }

@@ -72,6 +72,9 @@ export namespace TezosLendingPlatform {
             reserves: fToken.totalReserves,
             reserveFactor: fToken.reserveFactorMantissa.toJSNumber(),
             collateralFactor: comptroller.markets[underlying.assetType].collateralFactor,
+            isListed: comptroller.markets[underlying.assetType].isListed,
+            mintPaused: comptroller.markets[underlying.assetType].mintPaused,
+            borrowPaused: comptroller.markets[underlying.assetType].borrowPaused,
             redeemPaused: comptroller.markets[underlying.assetType].redeemPaused,
             exchangeRate: FToken.getExchangeRate(fToken),
             storage: fToken,
@@ -105,7 +108,7 @@ export namespace TezosLendingPlatform {
                     );
                     const rateModel = await InterestRateModel.GetStorage(
                         server,
-                        protocolAddresses.interestRateModel[asset],
+                        fTokenStorage.interestRateModel,
                     );
                     const oraclePrice = await PriceFeed.GetPrice(
                         protocolAddresses.fTokensReverse[fTokenAddress],
@@ -488,8 +491,15 @@ export namespace TezosLendingPlatform {
         pkh: string,
     ): TransferParams[] {
         let ops: TransferParams[] = [];
-        // Data relevance (updateAccountLiquidityWithView)
-        ops = ops.concat(Comptroller.DataRelevanceOpGroup([], protocolAddresses, pkh));
+        if (protocolAddresses.comptrollerDataSource) {
+            ops = ops.concat(FToken.AccrueInterestOpGroup(
+                [redeem.underlying],
+                protocolAddresses,
+                pkh,
+            ));
+        } else {
+            ops = ops.concat(Comptroller.DataRelevanceOpGroup([], protocolAddresses, pkh));
+        }
         // Redeem
         ops.push(FToken.RedeemOperation(redeem, protocolAddresses.fTokens[redeem.underlying], pkh));
         return ops;
@@ -517,7 +527,9 @@ export namespace TezosLendingPlatform {
         let ops: TransferParams[] = [];
         // Accrue interest
         ops = ops.concat(FToken.AccrueInterestOpGroup(
-            Object.keys(protocolAddresses.fTokens) as AssetType[],
+            protocolAddresses.comptrollerDataSource
+                ? [repayBorrow.underlying]
+                : Object.keys(protocolAddresses.fTokens) as AssetType[],
             protocolAddresses,
             pkh,
         ));
