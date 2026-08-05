@@ -21,17 +21,19 @@ const Composition = (props) => {
 
     const { totalCollateral } = useSelector((state) => state.supplyComposition.supplyComposition);
     const recoveryMode = isRecoveryMode();
+    let compositionContent = <Typography>Unavailable</Typography>;
+    if (!recoveryMode && supplyBar) {
+        compositionContent = <StackedBars composition={data} />;
+    }
+    if (!recoveryMode && !supplyBar) {
+        compositionContent = <ToolTipProgressBars value={data.borrowUtilization && data.borrowUtilization.toNumber()} backgroundColor={progressBarColor} height='40px' />;
+    }
 
     return (
         <Grid item xs={12} md={6} className={gridClass}>
             <Typography className={classes.compositionTitle}> {title} </Typography>
             <Box className={progressBarClass}>
-                {recoveryMode
-                    ? <Typography>Unavailable</Typography>
-                    : supplyBar
-                    ? <StackedBars composition={data} />
-                    : <ToolTipProgressBars value={data.borrowUtilization && data.borrowUtilization.toNumber()} backgroundColor={progressBarColor} height='40px'/>
-                }
+                {compositionContent}
             </Box>
             <Box className={classes.box}>
                 <Grid container flexWrap='nowrap'>
@@ -58,13 +60,13 @@ const Composition = (props) => {
                         <Grid item>
                             <Typography className={classes.statsTitle}> {dataLimitTitle} </Typography>
                             <Typography className={classes.statsValue}>
-                                                            {recoveryMode ? 'Unavailable' : <>{'$'}{(
+                                {recoveryMode ? 'Unavailable' : <>{'$'}{(
                                     ((data.collateralized > 0) && nFormatter(data.collateralized))
                                     // displaying borrow limit as the total collateral value without deducting value borrowed
                                     || ((totalCollateral > 0) && nFormatter(totalCollateral))
                                 )
                                 || '0.00'
-                                                                }</>}
+                                }</>}
                             </Typography>
                         </Grid>
                     </Grid>

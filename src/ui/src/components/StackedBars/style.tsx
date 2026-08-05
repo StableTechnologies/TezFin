@@ -1,7 +1,6 @@
 import { makeStyles } from '@mui/styles';
-import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
-import { styled } from '@mui/material/styles';
 
+// eslint-disable-next-line import/prefer-default-export
 export const useStyles = makeStyles({
     progressBar: {
         display: 'flex',

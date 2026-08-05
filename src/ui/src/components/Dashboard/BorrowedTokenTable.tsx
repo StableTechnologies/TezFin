@@ -17,7 +17,7 @@ import TableRow from '@mui/material/TableRow';
 import { Button, tooltipClasses, Typography } from '@mui/material';
 
 // eslint-disable-next-line object-curly-newline
-import { decimalify, formatTokenData, nFormatter, roundValue, truncateNum } from '../../util';
+import { decimalify, formatTokenData, nFormatter, roundValue } from '../../util';
 
 import TableSkeleton from '../Skeleton';
 import BorrowModal from '../BorrowModal';
@@ -32,13 +32,11 @@ const BorrowedTokenTable = (props) => {
     const recoveryMode = isRecoveryMode();
     const { address } = useSelector((state: any) => state.addWallet.account);
     const { allMarkets } = useSelector((state: any) => state.market);
-    const { totalCollateral } = useSelector((state: any) => state.supplyComposition.supplyComposition);
 
     const [tokenDetails, setTokenDetails] = useState();
     const [openMktModal, setMktModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [openRepayTab, setRepayTab] = useState(false);
-
 
     const closeModal = () => {
         setMktModal(false);
@@ -57,6 +55,15 @@ const BorrowedTokenTable = (props) => {
     };
 
     const borrowedData = formatTokenData(tableData);
+
+    const formatRate = (rate) => {
+        if (rate <= 0) {
+            return '0';
+        }
+        return new BigNumber(rate).gt(new BigNumber(10000000000000000))
+            ? roundValue(decimalify(rate, 18))
+            : '<0.01';
+    };
 
     useEffect(() => {
         allMarkets.map((x) => {
@@ -95,8 +102,8 @@ const BorrowedTokenTable = (props) => {
                             )}
                         </>
                     )}
-                    {borrowedData &&
-                        borrowedData.map((data) => (
+                    {borrowedData
+                        && borrowedData.map((data) => (
                             <TableRow key={data.title} onClick={() => handleClickMktModal(data)}>
                                 <TableCell className={classes.firstCell}>
                                     <div>
@@ -112,12 +119,7 @@ const BorrowedTokenTable = (props) => {
                                 </TableCell>
                                 <TableCell align="center" className={classes.clearFont}>
                                     <span className={classes.clearFont}>
-                                        {data.rate > 0
-                                            ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                              new BigNumber(data.rate).gt(new BigNumber(10000000000000000))
-                                                ? roundValue(decimalify(data.rate, 18))
-                                                : '<0.01'
-                                            : '0'}
+                                        {formatRate(data.rate)}
                                         %
                                     </span>
                                 </TableCell>
@@ -140,33 +142,35 @@ const BorrowedTokenTable = (props) => {
                                                 {recoveryMode
                                                     ? 'Unavailable'
                                                     : <>{'$'}{data.balanceUnderlying > 0
-                                                    ? nFormatter(
-                                                        decimalify(
-                                                            (data.outstandingLoan * data.usdPrice).toString(),
-                                                            decimals[data.title],
-                                                            decimals[data.title]
+                                                        ? nFormatter(
+                                                            decimalify(
+                                                                (data.outstandingLoan * data.usdPrice).toString(),
+                                                                decimals[data.title],
+                                                                decimals[data.title]
+                                                            )
                                                         )
-                                                    )
-                                                    : '0.00'}</>}
+                                                        : '0.00'}</>}
                                             </Typography>
                                         </>}
                                         placement="top"
                                     >
                                         <span className={classes.clearFont}>
-                                            {data.outstandingLoan > 0 &&
-                                            decimalify(
-                                                data.outstandingLoan.toString(),
-                                                decimals[data.title],
-                                                decimals[data.title],
-                                            ) < 0.01
+                                            {(
+                                                data.outstandingLoan > 0
+                                                && decimalify(
+                                                    data.outstandingLoan.toString(),
+                                                    decimals[data.title],
+                                                    decimals[data.title]
+                                                ) < 0.01
+                                            )
                                                 ? '>0.00'
                                                 : nFormatter(
-                                                      decimalify(
-                                                          data.outstandingLoan.toString(),
-                                                          decimals[data.title],
-                                                          decimals[data.title],
-                                                      ),
-                                                  )}{' '}
+                                                    decimalify(
+                                                        data.outstandingLoan.toString(),
+                                                        decimals[data.title],
+                                                        decimals[data.title]
+                                                    )
+                                                )}{' '}
                                             {data.title}
                                         </span>
                                     </LightTooltip>
@@ -176,8 +180,8 @@ const BorrowedTokenTable = (props) => {
                                             decimalify(
                                                 (data.outstandingLoan * data.usdPrice).toString(),
                                                 decimals[data.title],
-                                                decimals[data.title],
-                                            ),
+                                                decimals[data.title]
+                                            )
                                         )}</>}
                                     </span>
                                 </TableCell>

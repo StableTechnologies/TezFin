@@ -22,7 +22,9 @@ import { useStyles } from './style';
 const BorrowModal = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { open, close, tokenDetails, tab } = props;
+    const {
+        open, close, tokenDetails, tab
+    } = props;
 
     const { account } = useSelector((state) => state.addWallet);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
@@ -72,7 +74,7 @@ const BorrowModal = (props) => {
             setTokenText,
             handleOpenInitialize,
             protocolAddresses,
-            publicKeyHash,
+            publicKeyHash
         );
         setOpGroup(opGroup);
         setEvaluationError(error);
@@ -87,7 +89,7 @@ const BorrowModal = (props) => {
             setTokenText,
             handleOpenInitialize,
             protocolAddresses,
-            publicKeyHash,
+            publicKeyHash
         );
         setOpGroup(opGroup);
         setEvaluationError(error);
@@ -177,7 +179,7 @@ const BorrowModal = (props) => {
             const pendingBorrowLimit = totalCollateral - pendingBorrowing;
             setPendingLimit(pendingBorrowLimit);
             setPendingLimitUsed(
-                new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100),
+                new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100)
             );
         }
 

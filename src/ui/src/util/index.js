@@ -1,6 +1,5 @@
 import { TezosToolkit, OpKind } from '@taquito/taquito';
 import { BeaconWallet } from '@taquito/beacon-wallet';
-import { NetworkType } from '@taquito/beacon-wallet/types';
 import { BigNumber } from 'bignumber.js';
 import bigInt from 'big-integer';
 
@@ -12,7 +11,7 @@ const Tezos = new TezosToolkit(config.infra.tezosNode);
 // For mainnet/shadownet omit rpcUrl: some mobile wallets (e.g. Kukai iOS) treat a custom
 // rpcUrl as a different network and reject the permission request.
 const beaconNetwork = config.infra.network === 'tezosx-previewnet'
-    ? { type: NetworkType.CUSTOM, rpcUrl: config.infra.tezosNode, name: 'TezosX Previewnet' }
+    ? { type: 'custom', rpcUrl: config.infra.tezosNode, name: 'TezosX Previewnet' }
     : { type: config.infra.network };
 const wallet = new BeaconWallet({ name: config.dappName, network: beaconNetwork });
 Tezos.setWalletProvider(wallet);
@@ -69,12 +68,12 @@ export const evaluateTransaction = async (operations) => {
         // On previewnet estimation is unreliable — let the wallet estimate
         if (config.infra.network === 'tezosx-previewnet') {
             const batch = Tezos.wallet.batch(
-                operations.map(op => ({ ...op, kind: OpKind.TRANSACTION }))
+                operations.map((op) => ({ ...op, kind: OpKind.TRANSACTION }))
             );
             return { opGroup: batch };
         }
         // estimate each operation to get gas/storage/fee limits
-        const paramsWithKind = operations.map(op => ({ ...op, kind: OpKind.TRANSACTION }));
+        const paramsWithKind = operations.map((op) => ({ ...op, kind: OpKind.TRANSACTION }));
         const estimates = await Tezos.estimate.batch(paramsWithKind);
         // apply estimates to operations
         const estimatedOps = operations.map((op, i) => ({
@@ -82,12 +81,11 @@ export const evaluateTransaction = async (operations) => {
             kind: OpKind.TRANSACTION,
             gasLimit: estimates[i].gasLimit,
             storageLimit: estimates[i].storageLimit,
-            fee: estimates[i].suggestedFeeMutez,
+            fee: estimates[i].suggestedFeeMutez
         }));
         const batch = Tezos.wallet.batch(estimatedOps);
         return { opGroup: batch };
     } catch (error) {
-        console.log('evaluateTX', error);
         return { error };
     }
 };
@@ -104,7 +102,6 @@ export const confirmTransaction = async (batch) => {
         const op = await batch.send();
         return { response: op };
     } catch (error) {
-        console.log(error);
         return { error };
     }
 };
@@ -121,7 +118,6 @@ export const verifyTransaction = async (op) => {
         const confirm = await op.confirmation(1);
         return { confirm };
     } catch (error) {
-        console.log(error);
         return { error };
     }
 };
@@ -190,10 +186,7 @@ export const roundValue = (num, decimals = 2) => BigNumber(num).toFixed(decimals
 // eslint-disable-next-line default-param-last
 export const nFormatter = (num, formatDecimals = 4) => {
     const suffix = [
-        { value: 1, symbol: '' },
-        { value: 1e3, symbol: 'k' },
-        { value: 1e6, symbol: 'M' },
-        { value: 1e9, symbol: 'B' },
+        { value: 1, symbol: '' }, { value: 1e3, symbol: 'k' }, { value: 1e6, symbol: 'M' }, { value: 1e9, symbol: 'B' }
     ];
     let i;
     // eslint-disable-next-line no-plusplus

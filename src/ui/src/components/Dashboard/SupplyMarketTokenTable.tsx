@@ -42,6 +42,15 @@ const SupplyMarketTokenTable = (props) => {
         setMktModal(true);
     };
 
+    const formatSupplyRate = (supplyRate) => {
+        if (supplyRate <= 0) {
+            return '0';
+        }
+        return new BigNumber(supplyRate).gt(new BigNumber(10000000000000000))
+            ? roundValue(decimalify(supplyRate, 18))
+            : '<0.01';
+    };
+
     return (
         <TableContainer className={`${classes.root} ${classes.tableCon}`}>
             {tokenDetails && <AllMarketModal open={openMktModal} close={closeModal} tokenDetails={tokenDetails} />}
@@ -82,18 +91,18 @@ const SupplyMarketTokenTable = (props) => {
                                         <span className={classes.clearFont}>
                                             {data.walletBalance > 0
                                                 ? decimalify(
-                                                      data.walletBalance.toString(),
-                                                      decimals[data.title],
-                                                      decimals[data.title],
-                                                  ) < 0.01
+                                                    data.walletBalance.toString(),
+                                                    decimals[data.title],
+                                                    decimals[data.title]
+                                                ) < 0.01
                                                     ? '>0.00'
                                                     : nFormatter(
-                                                          decimalify(
-                                                              data.walletBalance.toString(),
-                                                              decimals[data.title],
-                                                              decimals[data.title],
-                                                          ),
-                                                      )
+                                                        decimalify(
+                                                            data.walletBalance.toString(),
+                                                            decimals[data.title],
+                                                            decimals[data.title]
+                                                        )
+                                                    )
                                                 : '0'}{' '}
                                             {data.title}
                                         </span>{' '}
@@ -102,24 +111,19 @@ const SupplyMarketTokenTable = (props) => {
                                             {recoveryMode
                                                 ? 'Unavailable'
                                                 : <>{'$'}{data.walletBalance > 0
-                                                ? nFormatter(
-                                                      decimalify(
-                                                          (data.walletBalance * data.usdPrice).toString(),
-                                                          decimals[data.title],
-                                                          decimals[data.title],
-                                                      ),
-                                                  )
-                                                                                                : '0.00'}</>}
+                                                    ? nFormatter(
+                                                        decimalify(
+                                                            (data.walletBalance * data.usdPrice).toString(),
+                                                            decimals[data.title],
+                                                            decimals[data.title]
+                                                        )
+                                                    )
+                                                    : '0.00'}</>}
                                         </span>
                                     </TableCell>
                                     <TableCell align="center" className={classes.clearFont}>
                                         <span>
-                                            {data.supplyRate > 0
-                                                ? // checks if rate is lower than 0.1% (all rates lower than 0.01% is shown as <0.01%)
-                                                  new BigNumber(data.supplyRate).gt(new BigNumber(10000000000000000))
-                                                    ? roundValue(decimalify(data.supplyRate, 18))
-                                                    : '<0.01'
-                                                : '0'}
+                                            {formatSupplyRate(data.supplyRate)}
                                             %
                                         </span>
                                     </TableCell>
@@ -132,7 +136,7 @@ const SupplyMarketTokenTable = (props) => {
                                                 onClick={() => handleClickMktModal(data)}
                                                 disabled={!data.isListed || data.mintPaused}
                                                 title={
-                                                    !data.isListed || data.mintPaused
+                                                    (!data.isListed || data.mintPaused)
                                                         ? 'Supplying is temporarily disabled for this market.'
                                                         : undefined
                                                 }

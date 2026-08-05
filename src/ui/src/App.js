@@ -42,7 +42,6 @@ const App = () => {
 
     useEffect(() => {
         const doMarketAction = () => {
-            console.log('doMarketAction');
             dispatch(marketAction(comptroller, protocolAddresses, server));
         };
         doMarketAction();

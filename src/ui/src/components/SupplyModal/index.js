@@ -59,10 +59,9 @@ const SupplyModal = (props) => {
         if (!tokenDetails.isListed || tokenDetails.mintPaused) {
             return;
         }
-        // eslint-disable-next-line no-shadow
-        const { opGroup, error } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
-        setOpGroup(opGroup);
-        setEvaluationError(error);
+        const { opGroup: nextOpGroup, error: nextError } = await supplyTokenAction(tokenDetails, amount, close, setTokenText, handleOpenInitialize, protocolAddresses, publicKeyHash);
+        setOpGroup(nextOpGroup);
+        setEvaluationError(nextError);
     };
 
     const withdrawToken = async () => {
@@ -70,8 +69,7 @@ const SupplyModal = (props) => {
             return;
         }
         if (amount === undecimalify(useMaxAmount, decimals[tokenDetails.title])) {
-            // eslint-disable-next-line no-shadow
-            const { opGroup, error } = await withdrawTokenAction(
+            const { opGroup: nextOpGroup, error: nextError } = await withdrawTokenAction(
                 tokenDetails,
                 tokenDetails.balance.toString(),
                 false,
@@ -79,12 +77,12 @@ const SupplyModal = (props) => {
                 setTokenText,
                 handleOpenInitialize,
                 protocolAddresses,
-                publicKeyHash,
+                publicKeyHash
             );
-            setOpGroup(opGroup);
-            setEvaluationError(error);
+            setOpGroup(nextOpGroup);
+            setEvaluationError(nextError);
         } else {
-            const { opGroup, error } = await withdrawTokenAction(
+            const { opGroup: nextOpGroup, error: nextError } = await withdrawTokenAction(
                 tokenDetails,
                 amount,
                 true,
@@ -92,10 +90,10 @@ const SupplyModal = (props) => {
                 setTokenText,
                 handleOpenInitialize,
                 protocolAddresses,
-                publicKeyHash,
+                publicKeyHash
             );
-            setOpGroup(opGroup);
-            setEvaluationError(error);
+            setOpGroup(nextOpGroup);
+            setEvaluationError(nextError);
         }
     };
 

@@ -6,25 +6,26 @@ const initState = {
     comptroller: undefined
 };
 
-const nodesReducer = (state = initState, action) => {
+const nodesReducer = (state, action) => {
+    const currentState = state || initState;
     switch (action.type) {
     case GET_TEZOS_NODE:
         return {
-            ...state,
+            ...currentState,
             tezosNode: action.payload
         };
     case GET_PROTOCOL_ADDRESSES:
         return {
-            ...state,
+            ...currentState,
             protocolAddresses: action.payload
         };
     case GET_COMPTROLLER:
         return {
-            ...state,
+            ...currentState,
             comptroller: action.payload
         };
     default:
-        return state;
+        return currentState;
     }
 };
 

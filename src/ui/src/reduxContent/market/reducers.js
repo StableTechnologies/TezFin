@@ -13,34 +13,35 @@ const initState = {
     borrowedMarkets: []
 };
 
-const marketReducer = (state = initState, action) => {
+const marketReducer = (state, action) => {
+    const currentState = state || initState;
     switch (action.type) {
     case GET_MARKET_DATA:
         return {
-            ...state,
+            ...currentState,
             isFetching: false,
             markets: action.payload
         };
     case GET_ALL_MARKET_DATA:
         return {
-            ...state,
+            ...currentState,
             isFetching: false,
             allMarkets: action.payload
         };
     case GET_SUPPLIED_MARKET_DATA:
         return {
-            ...state,
+            ...currentState,
             isFetching: false,
             suppliedMarkets: action.payload
         };
     case GET_BORROWED_MARKET_DATA:
         return {
-            ...state,
+            ...currentState,
             isFetching: false,
             borrowedMarkets: action.payload
         };
     default:
-        return state;
+        return currentState;
     }
 };
 
