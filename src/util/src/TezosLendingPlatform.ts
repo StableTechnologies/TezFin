@@ -108,14 +108,20 @@ export namespace TezosLendingPlatform {
                     );
                     const rateModel = await InterestRateModel.GetStorage(
                         server,
-                        fTokenStorage.interestRateModel,
+                        protocolAddresses.interestRateModel[asset],
                     );
-                    const oraclePrice = await PriceFeed.GetPrice(
-                        protocolAddresses.fTokensReverse[fTokenAddress],
-                        protocolAddresses.oracle,
-                        head.level,
-                        server,
-                    );
+                    let oraclePrice: bigInt.BigInteger;
+                    try {
+                        oraclePrice = await PriceFeed.GetPrice(
+                            protocolAddresses.fTokensReverse[fTokenAddress],
+                            protocolAddresses.oracle,
+                            head.level,
+                            server,
+                        );
+                    } catch (priceError) {
+                        log.warn(`Price unavailable for ${asset}, using 0: ${priceError}`);
+                        oraclePrice = bigInt(0);
+                    }
                     const borrowRate = FToken.getBorrowRate(fTokenStorage, rateModel);
                     const fTokenStorageAfterAccrual = FToken.SimulateAccrueInterest(
                         borrowRate,
@@ -490,14 +496,13 @@ export namespace TezosLendingPlatform {
         protocolAddresses: ProtocolAddresses,
         pkh: string,
     ): TransferParams[] {
+        const recoveryMode = Boolean(protocolAddresses.comptrollerDataSource);
         let ops: TransferParams[] = [];
-        if (protocolAddresses.comptrollerDataSource) {
-            ops = ops.concat(FToken.AccrueInterestOpGroup(
-                [redeem.underlying],
-                protocolAddresses,
-                pkh,
-            ));
+        if (recoveryMode) {
+            // In recovery mode accrue only the redeemed market — Guard handles liquidity checks
+            ops = ops.concat(FToken.AccrueInterestOpGroup([redeem.underlying as AssetType], protocolAddresses, pkh));
         } else {
+            // Data relevance (updateAccountLiquidityWithView)
             ops = ops.concat(Comptroller.DataRelevanceOpGroup([], protocolAddresses, pkh));
         }
         // Redeem
@@ -524,15 +529,13 @@ export namespace TezosLendingPlatform {
         protocolAddresses: ProtocolAddresses,
         pkh: string,
     ): TransferParams[] {
+        const recoveryMode = Boolean(protocolAddresses.comptrollerDataSource);
         let ops: TransferParams[] = [];
-        // Accrue interest
-        ops = ops.concat(FToken.AccrueInterestOpGroup(
-            protocolAddresses.comptrollerDataSource
-                ? [repayBorrow.underlying]
-                : Object.keys(protocolAddresses.fTokens) as AssetType[],
-            protocolAddresses,
-            pkh,
-        ));
+        // In recovery mode accrue only the repaid market; otherwise accrue all markets
+        const marketsToAccrue = recoveryMode
+            ? [repayBorrow.underlying as AssetType]
+            : Object.keys(protocolAddresses.fTokens) as AssetType[];
+        ops = ops.concat(FToken.AccrueInterestOpGroup(marketsToAccrue, protocolAddresses, pkh));
         // Permission
         const permOp = permissionOperation(repayBorrow.underlying, repayBorrow.amount, false, protocolAddresses, pkh);
         if (permOp) ops.push(...permOp);
