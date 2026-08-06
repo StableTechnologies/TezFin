@@ -67,6 +67,10 @@ export const allMarketAction = (account, markets) => (dispatch) => {
         return { ...token };
     });
     dispatch({ type: GET_ALL_MARKET_DATA, payload: formattedTokens });
+    // eslint-disable-next-line no-use-before-define
+    dispatch(suppliedMarketAction(formattedTokens));
+    // eslint-disable-next-line no-use-before-define
+    dispatch(borrowedMarketAction(formattedTokens));
 };
 
 /**
