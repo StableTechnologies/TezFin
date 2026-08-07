@@ -1,7 +1,11 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { afterEach, beforeEach, describe, it } from 'mocha';
+import bigInt from 'big-integer';
 import { Comptroller } from '../src/Comptroller';
 import { AssetType, TokenStandard } from '../src/enum';
+import { FToken } from '../src/FToken';
+import { InterestRateModel } from '../src/contracts/InterestRateModel';
+import { PriceFeed } from '../src/PriceFeed';
 import { TezosLendingPlatform } from '../src/TezosLendingPlatform';
 import { Network, ProtocolAddresses } from '../src/types';
 
@@ -83,6 +87,126 @@ describe('recovery operation groups', () => {
 
         expect(entrypoints(operations)).to.deep.equal(['accrueInterest', 'accrueInterest', 'repayBorrow']);
         expect(operations.map((operation) => operation.to)).to.deep.equal([fXTZ, fUSDT, fXTZ]);
+    });
+});
+
+describe('oracle failures', () => {
+    const toolkitModule = require('../src/toolkit');
+    const originalGetToolkit = toolkitModule.getToolkit;
+    const originalGetPrice = PriceFeed.GetPrice;
+    const originalGetFTokenStorage = FToken.GetStorage;
+    const originalGetInterestRateStorage = InterestRateModel.GetStorage;
+    const oracleError = new Error('oracle unavailable');
+    const scale = bigInt('1000000000000000000');
+
+    function fTokenStorage(): FToken.Storage {
+        return {
+            accrualBlockNumber: 1,
+            administrator: 'tz1-admin',
+            supply: {
+                totalSupply: bigInt(100),
+                supplyRatePerBlock: bigInt(0),
+            },
+            borrow: {
+                totalBorrows: bigInt(0),
+                borrowIndex: scale,
+                borrowRateMaxMantissa: scale,
+                borrowRatePerBlock: bigInt(0),
+            },
+            comptrollerAddress: 'KT1-guard',
+            expScale: scale,
+            halfExpScale: scale.divide(2),
+            initialExchangeRateMantissa: scale,
+            protocolSeizeShareMantissa: bigInt(0),
+            interestRateModel: 'KT1-rate-model',
+            pendingAdministrator: undefined,
+            reserveFactorMantissa: bigInt(0),
+            reserveFactorMaxMantissa: scale,
+            totalReserves: bigInt(0),
+            currentCash: bigInt(100),
+        };
+    }
+
+    const rateModel: InterestRateModel.Storage = {
+        blockRate: bigInt(0),
+        blockMultiplier: bigInt(0),
+        jumpMultiplier: bigInt(0),
+        kink: scale,
+        scale,
+    };
+    const comptrollerStorage = {
+        markets: {
+            [AssetType.XTZ]: {
+                assetType: AssetType.XTZ,
+                borrowPaused: true,
+                collateralFactor: 0,
+                isListed: true,
+                mintPaused: true,
+                redeemPaused: false,
+                price: bigInt(0),
+                updateLevel: 1,
+            },
+        },
+    } as Comptroller.Storage;
+
+    beforeEach(() => {
+        toolkitModule.getToolkit = () => ({
+            rpc: {
+                getBlockHeader: async () => ({ level: 10 }),
+            },
+        });
+        (PriceFeed as any).GetPrice = async () => {
+            throw oracleError;
+        };
+        (FToken as any).GetStorage = async () => fTokenStorage();
+        (InterestRateModel as any).GetStorage = async () => rateModel;
+    });
+
+    afterEach(() => {
+        toolkitModule.getToolkit = originalGetToolkit;
+        (PriceFeed as any).GetPrice = originalGetPrice;
+        (FToken as any).GetStorage = originalGetFTokenStorage;
+        (InterestRateModel as any).GetStorage = originalGetInterestRateStorage;
+    });
+
+    it('keeps repayment and withdrawal available in recovery mode when getPrice fails', async () => {
+        const addresses = protocolAddresses(true);
+        addresses.fTokens = { [AssetType.XTZ]: fXTZ };
+        addresses.fTokensReverse = { [fXTZ]: AssetType.XTZ };
+        addresses.interestRateModel = { [AssetType.XTZ]: 'KT1-rate-model' };
+
+        const markets = await TezosLendingPlatform.GetMarkets(comptrollerStorage, addresses, 'https://rpc.example');
+        const redeemOperations = TezosLendingPlatform.RedeemOpGroup(
+            { underlying: AssetType.XTZ, amount: 10, amountInUnderlying: false },
+            AssetType.XTZ,
+            addresses,
+            'tz1-user',
+        );
+        const repayOperations = TezosLendingPlatform.RepayBorrowOpGroup(
+            { underlying: AssetType.XTZ, amount: 10 },
+            addresses,
+            'tz1-user',
+        );
+
+        expect(markets[AssetType.XTZ].currentPrice.toString()).to.equal('0');
+        expect(entrypoints(redeemOperations)).to.deep.equal(['accrueInterest', 'redeem']);
+        expect(entrypoints(repayOperations)).to.deep.equal(['accrueInterest', 'repayBorrow']);
+    });
+
+    it('does not suppress getPrice failures outside recovery mode', async () => {
+        const addresses = protocolAddresses(false);
+        addresses.fTokens = { [AssetType.XTZ]: fXTZ };
+        addresses.fTokensReverse = { [fXTZ]: AssetType.XTZ };
+        addresses.interestRateModel = { [AssetType.XTZ]: 'KT1-rate-model' };
+        let thrown: unknown;
+
+        try {
+            await TezosLendingPlatform.GetMarkets(comptrollerStorage, addresses, 'https://rpc.example');
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.equal(oracleError);
     });
 });
 

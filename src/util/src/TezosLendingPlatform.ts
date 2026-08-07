@@ -94,11 +94,34 @@ export namespace TezosLendingPlatform {
         const markets: MarketMap = {};
         const toolkit = getToolkit(server);
         const head = await toolkit.rpc.getBlockHeader();
+        const recoveryMode = Boolean(protocolAddresses.comptrollerDataSource);
 
         await Promise.all(
             Object.keys(protocolAddresses.fTokens).map(async (asset) => {
                 const fTokenAddress = protocolAddresses.fTokens[asset];
                 const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
+                let oraclePrice: bigInt.BigInteger;
+                if (recoveryMode) {
+                    try {
+                        oraclePrice = await PriceFeed.GetPrice(
+                            protocolAddresses.fTokensReverse[fTokenAddress],
+                            protocolAddresses.oracle,
+                            head.level,
+                            server,
+                        );
+                    } catch (priceError) {
+                        log.warn(`Price unavailable for ${asset} in recovery mode, using 0: ${priceError}`);
+                        oraclePrice = bigInt(0);
+                    }
+                } else {
+                    // Normal operation must fail closed when the oracle is unavailable.
+                    oraclePrice = await PriceFeed.GetPrice(
+                        protocolAddresses.fTokensReverse[fTokenAddress],
+                        protocolAddresses.oracle,
+                        head.level,
+                        server,
+                    );
+                }
                 try {
                     const fTokenStorage = await FToken.GetStorage(
                         fTokenAddress,
@@ -110,18 +133,6 @@ export namespace TezosLendingPlatform {
                         server,
                         protocolAddresses.interestRateModel[asset],
                     );
-                    let oraclePrice: bigInt.BigInteger;
-                    try {
-                        oraclePrice = await PriceFeed.GetPrice(
-                            protocolAddresses.fTokensReverse[fTokenAddress],
-                            protocolAddresses.oracle,
-                            head.level,
-                            server,
-                        );
-                    } catch (priceError) {
-                        log.warn(`Price unavailable for ${asset}, using 0: ${priceError}`);
-                        oraclePrice = bigInt(0);
-                    }
                     const borrowRate = FToken.getBorrowRate(fTokenStorage, rateModel);
                     const fTokenStorageAfterAccrual = FToken.SimulateAccrueInterest(
                         borrowRate,
