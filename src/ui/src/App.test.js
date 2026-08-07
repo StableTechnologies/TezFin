@@ -26,7 +26,7 @@ test('disables collateral controls in Guard recovery mode', () => {
 });
 
 test('enables collateral controls outside Guard recovery mode', () => {
-    process.env.REACT_APP_ENV = 'tezosx-previewnet';
+    process.env.REACT_APP_ENV = 'shadownet';
 
     renderSwitch();
 

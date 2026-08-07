@@ -12,7 +12,7 @@ import SuppliedTokenTable from './SuppliedTokenTable';
 import BorrowMarketTokenTable from './BorrowMarketTokenTable';
 import SupplyMarketTokenTable from './SupplyMarketTokenTable';
 
-import { borrowedMarketAction, allMarketAction, suppliedMarketAction } from '../../reduxContent/market/actions';
+import { allMarketAction } from '../../reduxContent/market/actions';
 
 import { useStyles } from './style';
 
@@ -29,9 +29,6 @@ const Dashboard = () => {
             return;
         }
         dispatch(allMarketAction(account, markets));
-
-        dispatch(suppliedMarketAction(allMarkets));
-        dispatch(borrowedMarketAction(allMarkets));
     }, [dispatch, account, markets]);
 
     return (

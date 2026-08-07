@@ -101,3 +101,8 @@ jobs:
         run: |
           npm ci
           npm run build
+      - name: "Build React production application"
+        working-directory: src/ui
+        run: |
+          npm ci
+          npm run build

@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { marketAction } from '../../reduxContent/market/actions';
@@ -156,11 +156,12 @@ const AllMarketModal = (props) => {
 
     useEffect(() => {
         if ((currentTab === 'two') && (tokenValue > 0)) {
-            const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+            const safeTokenValue = (tokenValue === '' || tokenValue == null) ? '0' : tokenValue.toString();
+            const tokenValueUsd = new BigNumber(safeTokenValue).multipliedBy(new BigNumber((tokenDetails.usdPrice ?? 0).toString())).toNumber();
             const pendingBorrowing = borrowing + tokenValueUsd;
             const pendingBorrowLimit = totalCollateral - pendingBorrowing;
             setPendingLimit(pendingBorrowLimit);
-            setPendingLimitUsed(new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100));
+            setPendingLimitUsed(new BigNumber(pendingBorrowing.toString()).dividedBy(new BigNumber((totalCollateral || 0).toString())).multipliedBy(100));
         }
         return () => {
             setPendingLimit('');
@@ -197,7 +198,7 @@ const AllMarketModal = (props) => {
                 visibility={true}
                 mainModal={true}
                 inputBtnTextOne = "Use Max"
-                inputBtnTextTwo = {`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
+                inputBtnTextTwo = {`${new BigNumber((tokenDetails.collateralFactor ?? 0).toString()).multipliedBy(100)}% Limit`}
                 useMaxAmount= {useMaxAmount}
                 errorText={publicKeyHash && ((currentTab === 'one') ? buttonOne.errorText : buttonTwo.errorText)}
                 disabled={(currentTab === 'one') ? buttonOne.disabled : buttonTwo.disabled}

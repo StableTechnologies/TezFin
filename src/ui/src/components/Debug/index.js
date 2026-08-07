@@ -19,7 +19,7 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import * as SW from '@mui/material/Switch';
 
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { decimals, TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 import {

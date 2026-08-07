@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import Box from '@mui/material/Box';

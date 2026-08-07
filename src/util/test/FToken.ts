@@ -1,4 +1,4 @@
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import bigInt from "big-integer";
 import { FToken } from "../src/FToken";
 import { InterestRateModel } from "../src/contracts/InterestRateModel";

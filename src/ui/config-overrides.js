@@ -3,6 +3,16 @@
 const webpack = require('webpack');
 
 module.exports = function override(config) {
+    const oneOfRule = config.module && config.module.rules
+        ? config.module.rules.find((rule) => Array.isArray(rule.oneOf))
+        : undefined;
+    if (oneOfRule) {
+        oneOfRule.oneOf.unshift({
+            test: /\.cjs$/,
+            type: 'javascript/auto'
+        });
+    }
+
     const fallback = config.resolve.fallback || {};
     Object.assign(fallback, {
         crypto: require.resolve('crypto-browserify'),

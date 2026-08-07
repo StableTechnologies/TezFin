@@ -22,7 +22,7 @@ import { PriceFeed } from './PriceFeed';
 import bigInt from 'big-integer';
 import { tokenNames } from './const';
 import log from 'loglevel';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 export namespace TezosLendingPlatform {
 
@@ -94,11 +94,34 @@ export namespace TezosLendingPlatform {
         const markets: MarketMap = {};
         const toolkit = getToolkit(server);
         const head = await toolkit.rpc.getBlockHeader();
+        const recoveryMode = Boolean(protocolAddresses.comptrollerDataSource);
 
         await Promise.all(
             Object.keys(protocolAddresses.fTokens).map(async (asset) => {
                 const fTokenAddress = protocolAddresses.fTokens[asset];
                 const fTokenType = protocolAddresses.underlying[protocolAddresses.fTokensReverse[fTokenAddress]].tokenStandard;
+                let oraclePrice: bigInt.BigInteger;
+                if (recoveryMode) {
+                    try {
+                        oraclePrice = await PriceFeed.GetPrice(
+                            protocolAddresses.fTokensReverse[fTokenAddress],
+                            protocolAddresses.oracle,
+                            head.level,
+                            server,
+                        );
+                    } catch (priceError) {
+                        log.warn(`Price unavailable for ${asset} in recovery mode, using 0: ${priceError}`);
+                        oraclePrice = bigInt(0);
+                    }
+                } else {
+                    // Normal operation must fail closed when the oracle is unavailable.
+                    oraclePrice = await PriceFeed.GetPrice(
+                        protocolAddresses.fTokensReverse[fTokenAddress],
+                        protocolAddresses.oracle,
+                        head.level,
+                        server,
+                    );
+                }
                 try {
                     const fTokenStorage = await FToken.GetStorage(
                         fTokenAddress,
@@ -108,13 +131,7 @@ export namespace TezosLendingPlatform {
                     );
                     const rateModel = await InterestRateModel.GetStorage(
                         server,
-                        fTokenStorage.interestRateModel,
-                    );
-                    const oraclePrice = await PriceFeed.GetPrice(
-                        protocolAddresses.fTokensReverse[fTokenAddress],
-                        protocolAddresses.oracle,
-                        head.level,
-                        server,
+                        protocolAddresses.interestRateModel[asset],
                     );
                     const borrowRate = FToken.getBorrowRate(fTokenStorage, rateModel);
                     const fTokenStorageAfterAccrual = FToken.SimulateAccrueInterest(
@@ -490,14 +507,13 @@ export namespace TezosLendingPlatform {
         protocolAddresses: ProtocolAddresses,
         pkh: string,
     ): TransferParams[] {
+        const recoveryMode = Boolean(protocolAddresses.comptrollerDataSource);
         let ops: TransferParams[] = [];
-        if (protocolAddresses.comptrollerDataSource) {
-            ops = ops.concat(FToken.AccrueInterestOpGroup(
-                [redeem.underlying],
-                protocolAddresses,
-                pkh,
-            ));
+        if (recoveryMode) {
+            // In recovery mode accrue only the redeemed market — Guard handles liquidity checks
+            ops = ops.concat(FToken.AccrueInterestOpGroup([redeem.underlying as AssetType], protocolAddresses, pkh));
         } else {
+            // Data relevance (updateAccountLiquidityWithView)
             ops = ops.concat(Comptroller.DataRelevanceOpGroup([], protocolAddresses, pkh));
         }
         // Redeem
@@ -524,15 +540,13 @@ export namespace TezosLendingPlatform {
         protocolAddresses: ProtocolAddresses,
         pkh: string,
     ): TransferParams[] {
+        const recoveryMode = Boolean(protocolAddresses.comptrollerDataSource);
         let ops: TransferParams[] = [];
-        // Accrue interest
-        ops = ops.concat(FToken.AccrueInterestOpGroup(
-            protocolAddresses.comptrollerDataSource
-                ? [repayBorrow.underlying]
-                : Object.keys(protocolAddresses.fTokens) as AssetType[],
-            protocolAddresses,
-            pkh,
-        ));
+        // In recovery mode accrue only the repaid market; otherwise accrue all markets
+        const marketsToAccrue = recoveryMode
+            ? [repayBorrow.underlying as AssetType]
+            : Object.keys(protocolAddresses.fTokens) as AssetType[];
+        ops = ops.concat(FToken.AccrueInterestOpGroup(marketsToAccrue, protocolAddresses, pkh));
         // Permission
         const permOp = permissionOperation(repayBorrow.underlying, repayBorrow.amount, false, protocolAddresses, pkh);
         if (permOp) ops.push(...permOp);

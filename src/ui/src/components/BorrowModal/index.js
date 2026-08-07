@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { decimals } from 'tezoslendingplatformjs';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -167,7 +167,8 @@ const BorrowModal = (props) => {
     }, [currentTab, tokenDetails, tokenValue, useMaxAmount]);
 
     useEffect(() => {
-        const tokenValueUsd = new BigNumber(tokenValue).multipliedBy(new BigNumber(tokenDetails.usdPrice)).toNumber();
+        const safeTokenValue = (tokenValue === '' || tokenValue == null) ? '0' : tokenValue.toString();
+        const tokenValueUsd = new BigNumber(safeTokenValue).multipliedBy(new BigNumber((tokenDetails.usdPrice ?? 0).toString())).toNumber();
         let pendingBorrowing = 0;
         if (tokenValue > 0) {
             if (currentTab === 'one') {
@@ -179,7 +180,7 @@ const BorrowModal = (props) => {
             const pendingBorrowLimit = totalCollateral - pendingBorrowing;
             setPendingLimit(pendingBorrowLimit);
             setPendingLimitUsed(
-                new BigNumber(pendingBorrowing).dividedBy(new BigNumber(totalCollateral)).multipliedBy(100)
+                new BigNumber(pendingBorrowing.toString()).dividedBy(new BigNumber((totalCollateral || 0).toString())).multipliedBy(100)
             );
         }
 
@@ -232,7 +233,7 @@ const BorrowModal = (props) => {
                 setAmount={(e) => {
                     setAmount(e);
                 }}
-                inputBtnTextOne={`${new BigNumber(tokenDetails.collateralFactor).multipliedBy(100)}% Limit`}
+                inputBtnTextOne={`${new BigNumber((tokenDetails.collateralFactor ?? 0).toString()).multipliedBy(100)}% Limit`}
                 inputBtnTextTwo="Use Max"
                 useMaxAmount={useMaxAmount}
                 errorText={currentTab === 'one' ? buttonOne.errorText : buttonTwo.errorText}

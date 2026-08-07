@@ -77,7 +77,7 @@ const SuppliedTokenTable = (props) => {
         if (rate <= 0) {
             return '0';
         }
-        return new BigNumber(rate).gt(new BigNumber(10000000000000000))
+        return new BigNumber((rate ?? 0).toString()).gt(new BigNumber(10000000000000000))
             ? roundValue(decimalify(rate, 18))
             : '<0.01';
     };
