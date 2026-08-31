@@ -19,6 +19,17 @@ class TezFinOracle(OracleInterface.OracleInterface):
             maxPriceAge=sp.big_map(l={}, tkey=sp.TAddress, tvalue=sp.TInt),
             alias=sp.big_map(l={"OXTZ-USD": "XTZ-USD", "WTZ-USD": "XTZ-USD", "STXTZ-USD": "XTZ-USD"},
                              tkey=sp.TString, tvalue=sp.TString),
+            upstreamAssets=sp.big_map(
+                l={
+                    "XTZ-USD": "XTZ_USD",
+                    "BTC-USD": "BTC_USD",
+                    "USDT-USD": "USDT_USD",
+                    "USD-USD": "USDTZ_USD",
+                    "TZBTC-USD": "TZBTC_USD",
+                },
+                tkey=sp.TString,
+                tvalue=sp.TString),
+            aliasVersion=sp.nat(0),
             oracle=oracle,
             admin=admin,
             pendingAdmin=sp.none,
@@ -77,7 +88,12 @@ class TezFinOracle(OracleInterface.OracleInterface):
         sp.set_type(params, sp.TList(
             sp.TRecord(alias=sp.TString, asset=sp.TString)))
         sp.for item in params:
+            sp.verify(~self.data.upstreamAssets.contains(item.alias),
+                      "CANONICAL_ALIAS")
+            sp.verify(self.data.upstreamAssets.contains(item.asset),
+                      "ASSET_ID")
             self.data.alias[item.alias] = item.asset
+        self.data.aliasVersion += 1
 
     @sp.entry_point
     def removeAlias(self, asset):
@@ -85,7 +101,10 @@ class TezFinOracle(OracleInterface.OracleInterface):
             Removes alias
         """
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
+        sp.verify(~self.data.upstreamAssets.contains(asset),
+                  "CANONICAL_ALIAS")
         del self.data.alias[asset]
+        self.data.aliasVersion += 1
 
     @sp.entry_point
     def configurePriceBounds(self, params):
@@ -103,6 +122,13 @@ class TezFinOracle(OracleInterface.OracleInterface):
                   "INVALID_MAX_PRICE_TIME_DIFFERENCE")
         self.data.maxPriceAge[sp.sender] = maxPriceAge
 
+    def resolveUpstreamAsset(self, requestedAsset):
+        asset = sp.local("asset", requestedAsset)
+        sp.if self.data.alias.contains(requestedAsset):
+            asset.value = self.data.alias[requestedAsset]
+        sp.verify(self.data.upstreamAssets.contains(asset.value), "ASSET_ID")
+        return self.data.upstreamAssets[asset.value]
+
     @sp.onchain_view()
     def get_price_with_timestamp(self, requestedAsset):
         """
@@ -113,11 +139,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
             sp.result((sp.snd(self.data.overrides[requestedAsset]),
                        sp.fst(self.data.overrides[requestedAsset])))
         sp.else:
-            asset = sp.local("asset", requestedAsset)
-            sp.if self.data.alias.contains(requestedAsset):
-                asset.value = self.data.alias[requestedAsset]
-            sliced_asset = sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some("failed to convert asset name")
-            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"USDT", t=sp.TPair(
+            upstreamAsset = self.resolveUpstreamAsset(requestedAsset)
+            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, upstreamAsset, t=sp.TPair(
                 sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
             sp.result(oracle_data)
 
@@ -130,11 +153,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
         sp.if self.data.overrides.contains(requestedAsset):
             sp.result(self.data.overrides[requestedAsset])
         sp.else:
-            asset = sp.local("asset", requestedAsset)
-            sp.if self.data.alias.contains(requestedAsset):
-                asset.value = self.data.alias[requestedAsset]
-            sliced_asset = sp.slice(asset.value, 0, sp.as_nat(sp.len(asset.value) - 4)).open_some("failed to convert asset name")
-            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, sliced_asset+"USDT", t=sp.TPair(
+            upstreamAsset = self.resolveUpstreamAsset(requestedAsset)
+            oracle_data = sp.view("get_price_with_timestamp", self.data.oracle, upstreamAsset, t=sp.TPair(
                 sp.TNat, sp.TTimestamp)).open_some("invalid oracle view call")
             sp.result((sp.snd(oracle_data), sp.fst(oracle_data)))
 

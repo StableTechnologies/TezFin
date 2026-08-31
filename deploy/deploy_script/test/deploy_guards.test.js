@@ -361,10 +361,10 @@ test('raw deployment path: oracle verification failure blocks deployment', async
             'NetXdQprcVkpaWU',
             async () => {},
             async () => {
-                throw new Error('XTZUSDT price is stale');
+                throw new Error('XTZ_USD price is stale');
             },
         ),
-        /XTZUSDT price is stale/,
+        /XTZ_USD price is stale/,
     );
 });
 
@@ -416,26 +416,26 @@ test('mainnetPreflight: verifyAgainstAllowlist rejects an address that does not 
 
 test('mainnet oracle guard: accepts a current nonzero price', () => {
     const response = { data: { args: [{ int: '226300' }, { int: '1784510000' }] } };
-    assert.deepEqual(parsePriceResult('XTZUSDT', response, 1784510030, 300), {
-        asset: 'XTZUSDT', price: 226300, timestamp: 1784510000, rawTimestamp: 1784510000, ageSeconds: 30,
+    assert.deepEqual(parsePriceResult('XTZ_USD', response, 1784510030, 300), {
+        asset: 'XTZ_USD', price: 226300, timestamp: 1784510000, rawTimestamp: 1784510000, ageSeconds: 30,
     });
 });
 
 test('mainnet oracle guard: rejects milliseconds, future timestamps, stale prices, and zero prices', () => {
     assert.throws(
-        () => parsePriceResult('XTZUSDT', { data: { args: [{ int: '226300' }, { int: '1784510000000' }] } }, 1784510030, 300),
+        () => parsePriceResult('XTZ_USD', { data: { args: [{ int: '226300' }, { int: '1784510000000' }] } }, 1784510030, 300),
         /Unix seconds, not milliseconds/,
     );
     assert.throws(
-        () => parsePriceResult('XTZUSDT', { data: { args: [{ int: '226300' }, { int: '1784510031' }] } }, 1784510030, 300),
+        () => parsePriceResult('XTZ_USD', { data: { args: [{ int: '226300' }, { int: '1784510031' }] } }, 1784510030, 300),
         /ahead of the mainnet head/,
     );
     assert.throws(
-        () => parsePriceResult('TZBTCUSDT', { data: { args: [{ int: '0' }, { int: '1784510000' }] } }, 1784510030, 300),
+        () => parsePriceResult('TZBTC_USD', { data: { args: [{ int: '0' }, { int: '1784510000' }] } }, 1784510030, 300),
         /invalid or zero price/,
     );
     assert.throws(
-        () => parsePriceResult('TZBTCUSDT', { data: { args: [{ int: '1' }, { int: '1784400000' }] } }, 1784510030, 300),
+        () => parsePriceResult('TZBTC_USD', { data: { args: [{ int: '1' }, { int: '1784400000' }] } }, 1784510030, 300),
         /price is stale/,
     );
 });

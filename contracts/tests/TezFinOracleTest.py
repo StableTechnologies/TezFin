@@ -71,28 +71,29 @@ def test():
     scenario.h2("Tezfin Oracle")
     tezfinOracle = TezFinOracle(admin.address, harbinger.address)
     scenario += tezfinOracle
-    harbinger.setPrice([sp.record(asset="ETHUSDT", price=13425)]
+    harbinger.setPrice([sp.record(asset="XTZ_USD", price=203434)]
                        ).run(sender=alice, valid=False, now=sp.timestamp(16534534))
-    harbinger.setPrice([sp.record(asset="ETHUSDT", price=13425), sp.record(
-        asset="BTCUSDT", price=2342354345)]).run(sender=admin, now=sp.timestamp(16534534))
-    harbinger.setPrice([sp.record(asset="XTZUSDT", price=203434)]
-                       ).run(sender=admin, now=sp.timestamp(16534534))
+    harbinger.setPrice([sp.record(asset="BTC_USD", price=2342354345), sp.record(
+        asset="XTZ_USD", price=203434)]).run(sender=admin, now=sp.timestamp(16534534))
     tezfinOracle.setPrice([sp.record(asset="FINUSDT", price=1000000)]
                           ).run(sender=admin, now=sp.timestamp(16534534))
     tezfinOracle.removeAsset("FIN-USD").run(sender=admin)
     tezfinOracle.addAlias([sp.record(
         asset="XTZ-USD", alias="WTZ-USD"), sp.record(
         asset="XTZ-USD", alias="RRXTZ-USD"), sp.record(asset="XTZ-USD", alias="oXTZ-USD")]).run(sender=admin, now=sp.timestamp(16534534))
+    scenario.verify(tezfinOracle.data.aliasVersion == 1)
+    tezfinOracle.addAlias([sp.record(
+        asset="BTC-USD", alias="TZBTC-USD")]).run(
+            sender=admin, valid=False, exception="CANONICAL_ALIAS")
     scenario.h2("Consumer Contract")
     consumer = View_consumer(tezfinOracle.address)
     scenario += consumer
     market = sp.address("KT10")
     tezfinOracle.configureMaxPriceAge(sp.int(300)).run(sender=consumer.address)
     tezfinOracle.configurePriceBounds(sp.record(
-        cToken=market, minPrice=sp.nat(10000), maxPrice=sp.nat(20000),
+        cToken=market, minPrice=sp.nat(10000), maxPrice=sp.nat(300000),
         maxChangeBps=sp.nat(2000))).run(sender=consumer.address)
     scenario.h3("Verify Price")
-    consumer.getPrice(asset="ETH", resp=13425)
     consumer.getPrice(asset="BTC", resp=2342354345)
     consumer.getPrice(asset="XTZ", resp=203434)
     consumer.getPrice(asset="WTZ", resp=203434)
@@ -102,24 +103,24 @@ def test():
                          timestamp=sp.timestamp(16534534)).run(
                              now=sp.timestamp(16599999))
     consumer.verifyValidatedPrice(
-        cToken=market, asset="ETH-USD", previousPrice=sp.nat(0),
-        previousTimestamp=sp.timestamp(0), expectedPrice=sp.nat(13425)).run(
+        cToken=market, asset="XTZ-USD", previousPrice=sp.nat(0),
+        previousTimestamp=sp.timestamp(0), expectedPrice=sp.nat(203434)).run(
             now=sp.timestamp(16534534))
     consumer.verifyValidatedPrice(
-        cToken=market, asset="ETH-USD", previousPrice=sp.nat(10000),
+        cToken=market, asset="XTZ-USD", previousPrice=sp.nat(10000),
         previousTimestamp=sp.timestamp(16534534),
-        expectedPrice=sp.nat(13425)).run(
+        expectedPrice=sp.nat(203434)).run(
             now=sp.timestamp(16534534), valid=False,
             exception="ASSET_PRICE_CHANGE_TOO_LARGE")
     consumer.verifyValidatedPrice(
-        cToken=sp.address("KT11"), asset="ETH-USD",
+        cToken=sp.address("KT11"), asset="XTZ-USD",
         previousPrice=sp.nat(0), previousTimestamp=sp.timestamp(0),
-        expectedPrice=sp.nat(13425)).run(
+        expectedPrice=sp.nat(203434)).run(
             now=sp.timestamp(16534534), valid=False,
             exception="PRICE_BOUNDS_NOT_CONFIGURED")
+    consumer.getPrice(asset="ETH", resp=1).run(valid=False, exception="ASSET_ID")
     consumer.getPrice(asset="USD", resp=1000000).run(valid=False)
     consumer.getPrice(asset="XTZ", resp=43000000).run(valid=False)
-    consumer.getPrice(asset="ETH", resp=13425)
     consumer.getPrice(asset="BTC", resp=2342354345)
     consumer.getPrice(asset="XTZ", resp=203434)
     consumer.getPrice(asset="USD", resp=1000000).run(valid=False)

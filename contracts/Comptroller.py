@@ -80,12 +80,16 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         sp.verify(sp.amount == sp.mutez(0), "TEZ_TRANSFERED")
         sp.set_type(cTokens, sp.TList(sp.TAddress))
         currentAssetCount = sp.local("currentAssetCount", self.getUserUniqueAssetsCount(sp.sender))
+        assets = sp.local("assets", sp.set(t=sp.TAddress))
         sp.for token in cTokens:
             sp.if self.isNewAssetForUser(sp.sender, token):
                 sp.verify(currentAssetCount.value < self.data.maxAssetsPerUser, EC.CMPT_TOO_MANY_ASSETS)
                 currentAssetCount.value += 1
             self.addToCollaterals(token, sp.sender)
+            assets.value.add(token)
         self.invalidateLiquidity(sp.sender)
+        sp.transfer(assets.value, sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
 
     def addToCollaterals(self, cToken, lender):
         self.verifyMarketListed(cToken)
@@ -112,6 +116,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         sp.set_type(cToken, sp.TAddress)
         self.activateOp(OP.ComptrollerOperations.EXIT_MARKET)
 
+        sp.transfer(sp.set([cToken]), sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
         destination = sp.contract(sp.TPair(sp.TAddress, sp.TContract(
             CTI.TAccountSnapshot)), cToken, "getAccountSnapshot").open_some()
         sp.transfer(sp.pair(sp.sender, sp.self_entry_point(
@@ -162,6 +168,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
                   self.data.markets[params.cToken].supplyCap,
                   EC.CMPT_SUPPLY_CAP_EXCEEDED)
         self.invalidateLiquidity(params.minter)
+        sp.transfer(sp.set([params.cToken]), sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
 
     """
         Checks if the account should be allowed to redeem tokens in the given market
@@ -195,6 +203,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         self.checkRedeemAllowedInternal(
             params.cToken, params.redeemer, params.exchangeRateMantissa,
             balanceAfter + params.redeemTokens, balanceAfter)
+        sp.transfer(sp.set([params.cToken]), sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
 
     def checkRedeemAllowedInternal(self, cToken, redeemer, exchangeRateMantissa, balanceBefore, balanceAfter):
         self.verifyMarketListed(cToken)
@@ -363,6 +373,8 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         # An allowed transfer makes any stored account-liquidity result stale,
         # including for debt-free accounts that bypass the solvency check.
         self.invalidateLiquidity(params.src)
+        sp.transfer(sp.set([params.cToken]), sp.mutez(0), sp.self_entry_point(
+            "updateAssetPricesWithView"))
 
     """
         Updates all asset prices using harbinger view
@@ -386,23 +398,22 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         sp.set_type(assets, sp.TSet(sp.TAddress))
         sp.for asset in assets.elements():
             self.verifyMarketListed(asset)
-            sp.if self.data.markets[asset].updateLevel < sp.level:
-                previousRawPrice = self.data.markets[asset].price.mantissa // self.data.markets[asset].priceExp
-                pricePair = sp.local("pricePair",
-                    sp.view("getValidatedPrice", self.data.oracleAddress,
-                        sp.record(comptroller=sp.self_address,
-                                  cToken=asset,
-                                  requestedAsset=self.data.markets[asset].name + "-USD",
-                                  previousPrice=previousRawPrice,
-                                  previousTimestamp=self.data.markets[asset].priceTimestamp),
-                        t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
-                )
-                priceTimestamp = sp.fst(pricePair.value)
-                rawPrice = sp.snd(pricePair.value)
-                self.data.markets[asset].price = self.makeExp(
-                    rawPrice*self.data.markets[asset].priceExp)
-                self.data.markets[asset].priceTimestamp = priceTimestamp
-                self.data.markets[asset].updateLevel = sp.level
+            previousRawPrice = self.data.markets[asset].price.mantissa // self.data.markets[asset].priceExp
+            pricePair = sp.local("pricePair",
+                sp.view("getValidatedPrice", self.data.oracleAddress,
+                    sp.record(comptroller=sp.self_address,
+                              cToken=asset,
+                              requestedAsset=self.data.markets[asset].name + "-USD",
+                              previousPrice=previousRawPrice,
+                              previousTimestamp=self.data.markets[asset].priceTimestamp),
+                    t=sp.TPair(sp.TTimestamp, sp.TNat)).open_some("invalid oracle view call")
+            )
+            priceTimestamp = sp.fst(pricePair.value)
+            rawPrice = sp.snd(pricePair.value)
+            self.data.markets[asset].price = self.makeExp(
+                rawPrice*self.data.markets[asset].priceExp)
+            self.data.markets[asset].priceTimestamp = priceTimestamp
+            self.data.markets[asset].updateLevel = sp.level
 
     def getAssetPrice(self, asset):
         sp.verify(sp.level == self.data.markets[asset].updateLevel, EC.CMPT_UPDATE_PRICE)
@@ -556,6 +567,10 @@ class Comptroller(CMPTInterface.ComptrollerInterface, Exponential.Exponential, O
         
         self.invalidateLiquidity(params.borrower)
         self.invalidateLiquidity(params.liquidator)
+        sp.transfer(
+            sp.set([params.cTokenBorrowed, params.cTokenCollateral]),
+            sp.mutez(0),
+            sp.self_entry_point("updateAssetPricesWithView"))
     
     """
         Determines whether a seize is allwed
