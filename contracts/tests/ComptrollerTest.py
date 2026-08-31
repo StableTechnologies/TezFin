@@ -149,10 +149,12 @@ def test():
     marketsList = [listedMarket, notListedMarket, listedMarketWithoutAccountMembership, cTokenMock.address]
 
     scenario.h4("Add Alice and admin to markets")
-    cmpt.enterMarkets(sp.list([cTokenMock.address, listedMarket])).run(sender = alice, level = bLevel.next())
-    cmpt.enterMarkets(sp.list([cTokenMock.address, listedMarket])).run(sender = admin, level = bLevel.next())
-    scenario.h4("Set initial price")
     oracle.setPrice(1)
+    cmpt.enterMarkets(sp.list([cTokenMock.address, listedMarket])).run(
+        sender=alice, level=bLevel.next(), now=sp.timestamp(100))
+    cmpt.enterMarkets(sp.list([cTokenMock.address, listedMarket])).run(
+        sender=admin, level=bLevel.next(), now=sp.timestamp(100))
+    scenario.h4("Set initial price")
 
     scenario.h2("Test paused functionality")
 
@@ -417,10 +419,10 @@ def test():
     scenario += cmpt.updateAllAssetPricesWithView().run(sender = bob, level = bLevel.next(), now=sp.timestamp(100))
     scenario.verify_equal(cmpt.data.markets[listedMarket].price.mantissa, sp.nat(int(2e18)))
     scenario.verify_equal(cmpt.data.markets[listedMarket].updateLevel, bLevel.current())
-    scenario.h3("Try to update price at the same level")
+    scenario.h3("Revalidate price at the same level")
     oracle.setPrice(1)
     scenario += cmpt.updateAllAssetPricesWithView().run(sender = bob, level = bLevel.current(), now=sp.timestamp(100))
-    scenario.verify_equal(cmpt.data.markets[listedMarket].price.mantissa, sp.nat(int(2e18)))
+    scenario.verify_equal(cmpt.data.markets[listedMarket].price.mantissa, sp.nat(int(1e18)))
     scenario.h3("Reject a price timestamp from the future")
     oracle.setTimestamp(sp.timestamp(101))
     scenario += cmpt.updateAllAssetPricesWithView().run(
@@ -518,6 +520,9 @@ def test():
     TestAdminFunctionality.checkAdminRequirementH4(scenario, "set price oracle", bLevel, admin, alice, cmpt.setPriceOracleAndTimeDiff,
         sp.record(priceOracle=priceOracle, timeDiff=300))
     scenario.verify(cmpt.data.oracleAddress == priceOracle)
+    scenario += cmpt.setPriceOracleAndTimeDiff(sp.record(
+        priceOracle=oracle.address, timeDiff=sp.int(300))).run(
+            sender=admin, level=bLevel.next())
 
     scenario.h3("Set close factor")
     closeFactor = sp.nat(1)
@@ -637,6 +642,11 @@ def test():
     
     for market in extraMarkets:
         scenario += cmpt.addMarket(market).run(level = bLevel.next())
+    for extraToken in [cTokenExtra1, cTokenExtra2]:
+        scenario += cmpt.setPriceBounds(sp.record(
+            cToken=extraToken.address, minPrice=sp.nat(1),
+            maxPrice=sp.nat(10**50), maxChangeBps=sp.nat(10000))).run(
+                sender=admin, level=bLevel.next())
 
     scenario.h3("Test max assets per user limit")
     
@@ -659,7 +669,7 @@ def test():
     
     scenario.h4("Alice can enter 1 more market (within limit)")
     scenario += cmpt.enterMarkets([cTokenExtra1.address]).run(
-        sender=alice, level=bLevel.next())
+        sender=alice, level=bLevel.next(), now=sp.timestamp(100))
     
     scenario.verify(cmpt.data.collaterals[alice.address].contains(cTokenExtra1.address))
     
@@ -732,7 +742,16 @@ def collateral_boundary_matrix():
         updateLevel=sp.nat(0),
         priceTimestamp=sp.timestamp(0)))).run(level=bLevel.next())
     scenario += cmpt.setTransferPaused(sp.bool(False)).run(sender=admin, level=bLevel.next())
-    scenario += cmpt.enterMarkets([cToken.address]).run(sender=account, level=bLevel.next())
+    scenario += cmpt.setPriceOracleAndTimeDiff(sp.record(
+        priceOracle=oracle.address, timeDiff=sp.int(300))).run(
+            sender=admin, level=bLevel.next())
+    scenario += cmpt.setPriceBounds(sp.record(
+        cToken=cToken.address, minPrice=sp.nat(1),
+        maxPrice=sp.nat(10**30), maxChangeBps=sp.nat(10000))).run(
+            sender=admin, level=bLevel.next())
+    scenario += oracle.setPrice(sp.nat(1))
+    scenario += cmpt.enterMarkets([cToken.address]).run(
+        sender=account, level=bLevel.next(), now=sp.timestamp(100))
     scenario += cmpt.addToLoansExternal(sp.pair(account.address, sp.set([cToken.address]))).run(level=bLevel.next())
 
     factors = [0, int(5e17), int(9e17)]

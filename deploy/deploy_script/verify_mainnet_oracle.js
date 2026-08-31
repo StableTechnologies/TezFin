@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const { config, resolveDeployResultPath } = require('./util.js');
 
-const ASSETS = ['XTZUSDT', 'USDTUSDT', 'TZBTCUSDT'];
+const ASSETS = ['XTZ_USD', 'USDT_USD', 'USDTZ_USD', 'TZBTC_USD'];
 const DEFAULT_MAX_AGE_SECONDS = 300;
 
 async function rpcJson(rpc, pathname, options = {}) {

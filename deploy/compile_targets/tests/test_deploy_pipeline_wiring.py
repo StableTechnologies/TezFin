@@ -67,6 +67,22 @@ def check_shell_script_compile_targets():
     return failures
 
 
+def check_deploys_use_fresh_build_directory():
+    """Production-like deploy scripts must never consume checked-in historical output."""
+    failures = []
+    expected = "./TezFinBuild/compiled_contracts"
+    for scriptName in SHELL_SCRIPTS_TO_CHECK:
+        scriptPath = os.path.join(SHELL_SCRIPTS_DIR, scriptName)
+        with open(scriptPath) as source:
+            script = source.read()
+        if expected not in script:
+            failures.append(
+                f"{scriptName}: must compile into {expected}; checked-in "
+                "compiled_contracts/ is historical and must not be deployed."
+            )
+    return failures
+
+
 def check_ctzbtc_irm_config_source():
     """CompileCtzBTC_IRM.py must read its parameters from CFG.CtzBTC_IRM, not another
     market's IRM config block (e.g. CFG.CFA12_IRM) by mistake."""
@@ -209,6 +225,7 @@ def check_manifest_path_resolution_parity():
 def main():
     failures = []
     failures += check_shell_script_compile_targets()
+    failures += check_deploys_use_fresh_build_directory()
     failures += check_ctzbtc_irm_config_source()
     failures += check_manifest_path_resolution_parity()
 
@@ -220,6 +237,7 @@ def main():
 
     print('Deploy pipeline wiring check passed:')
     print('  - All Compile*.py targets referenced from deploy_previewnet.sh/deploy_mainnet.sh exist.')
+    print('  - Deployment compiles fresh artifacts into TezFinBuild/compiled_contracts.')
     print('  - CompileCtzBTC_IRM.py reads parameters only from CFG.CtzBTC_IRM.')
     print('  - Config.py and util.js agree on the default manifest path for previewnet/mainnet/unset profiles.')
 

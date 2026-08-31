@@ -19,6 +19,21 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: StableTechnologies/tezoracle
+          ref: bc5ccb8162960a98b0676a7b5588465f219f2fdb
+          path: _tezoracle
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: "Compile pinned TezOracle artifact"
+        working-directory: _tezoracle
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --require-hashes -r requirements-dev.txt
+          .venv/bin/python scripts/compile_oracle.py
+          git diff --exit-code -- michelson/tezoracle.tz
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -29,6 +44,11 @@ jobs:
       - name: "Version Check"
         run: |
           test "$(~/smartpy-cli/SmartPy.sh --version)" = "SmartPy Version: 0.16.0"
+      - name: "Check exact TezOracle interface compatibility"
+        env:
+          TEZORACLE_REPO: ${{ github.workspace }}/_tezoracle
+        run: |
+          python3 deploy/compile_targets/tests/test_tezoracle_interface.py ~/smartpy-cli/SmartPy.sh
       - name: "Run tests"
         run: |
           bash contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh

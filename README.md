@@ -313,10 +313,22 @@ present) and fails closed if it does not.
 `TezFinOracle` ([`contracts/TezFinOracle.py`](contracts/TezFinOracle.py)) is a thin proxy: it forwards
 price lookups to the address stored as `oracle` (the `PriceOracle` from the manifest) and expects that
 address to expose the on-chain view `get_price_with_timestamp(string) -> pair(nat, timestamp)` for
-symbols such as `XTZUSDT` and `BTCUSDT`. It also has a small admin-controlled override map for assets
-the upstream feed does not support (e.g. USD and USDT). `TezFinOracle`'s own `admin` (settable via
-`set_pending_admin` / `accept_admin`) controls those overrides and can repoint `oracle` to a different
-feed with `set_oracle`.
+canonical TezOracle IDs. Comptroller requests `name + "-USD"`; the wrapper maps those strings
+explicitly and fails closed (`ASSET_ID`) on unknown names:
+
+| TezFin market | Wrapper key | Upstream ID |
+| --- | --- | --- |
+| `XTZ` (`WTZ` / `OXTZ` / `STXTZ` via alias) | `XTZ-USD` | `XTZ_USD` |
+| `USDT` | `USDT-USD` | `USDT_USD` |
+| `USD` (USDtz) | `USD-USD` | `USDTZ_USD` |
+| `TZBTC` | `TZBTC-USD` | `TZBTC_USD` |
+| `BTC` | `BTC-USD` | `BTC_USD` |
+
+`TZBTC_USD` and `BTC_USD` are distinct; so are `USDT_USD` and `USDTZ_USD`. Origination starts with an
+empty override map: USDt and USDtz are not admin `setPrice` stubs. `setPrice` / `removeAsset` remain
+admin-only for exceptional assets that are not in the upstream map. `TezFinOracle`'s `admin`
+(`set_pending_admin` / `accept_admin`) can still repoint `oracle` with `set_oracle`. Canonical map
+keys cannot be rewritten through `addAlias`.
 
 - **Previewnet**: `CompileTestData.py` compiles and deploys a mock `PriceOracle`
   ([`deploy/test_data/PriceOracle.py`](deploy/test_data/PriceOracle.py)) as part of
@@ -325,11 +337,12 @@ feed with `set_oracle`.
   `setPrice` entry point can be called by any address to set any price for any asset. Do not treat a
   Previewnet deployment using this mock as representative of mainnet price-feed security.
 - **Mainnet**: `deploy_mainnet.sh` never compiles or originates the mock oracle (it does not run
-  `CompileTestData.py` at all). Put the exact address of the vetted production Harbinger (or
-  Harbinger-compatible) oracle directly under the `PriceOracle` key in the mainnet manifest
-  (`DEPLOY_MANIFEST`) before running `deploy_mainnet.sh`; `mainnet_preflight.js` verifies it exists
-  on-chain before anything is compiled. The mandatory programmatic deployment preflight executes the
-  exact XTZ, USDT, and tzBTC views before origination and rejects zero, stale, or
+  `CompileTestData.py` at all). Put the exact address of the vetted production TezOracle (or other
+  contract that serves the same canonical `*_USD` views) under the `PriceOracle` key in the mainnet
+  manifest (`DEPLOY_MANIFEST`) before running `deploy_mainnet.sh`; `mainnet_preflight.js` verifies it
+  exists on-chain before anything is compiled. The mandatory programmatic deployment preflight
+  executes the exact `XTZ_USD`, `USDT_USD`, `USDTZ_USD`, and `TZBTC_USD` views before origination and
+  rejects zero, stale, or
   future/millisecond timestamps. Document,
   alongside the mainnet manifest, which oracle instance/administrator is being used and who controls
   it — this project does not deploy or administer that upstream feed itself.

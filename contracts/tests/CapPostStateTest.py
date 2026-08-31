@@ -6,14 +6,16 @@ CMPT = sp.io.import_script_from_url("file:contracts/Comptroller.py")
 CToken = sp.io.import_script_from_url("file:contracts/CToken.py")
 IRM = sp.io.import_script_from_url(
     "file:contracts/tests/mock/InterestRateModelMock.py")
+OracleMock = sp.io.import_script_from_url(
+    "file:contracts/tests/mock/OracleMock.py")
 
 
 class CapTestComptroller(CMPT.Comptroller):
-    def __init__(self, administrator_):
+    def __init__(self, administrator_, oracleAddress_):
         CMPT.Comptroller.__init__(
             self,
             administrator_=administrator_,
-            oracleAddress_=sp.address("KT10"),
+            oracleAddress_=oracleAddress_,
             closeFactorMantissa_=sp.nat(0),
             liquidationIncentiveMantissa_=sp.nat(0))
 
@@ -74,7 +76,10 @@ def test():
     irm = IRM.InterestRateModelMock(
         borrowRate_=sp.nat(0), supplyRate_=sp.nat(0))
     scenario += irm
-    comptroller = CapTestComptroller(administrator_=admin.address)
+    oracle = OracleMock.OracleMock()
+    scenario += oracle
+    comptroller = CapTestComptroller(
+        administrator_=admin.address, oracleAddress_=oracle.address)
     scenario += comptroller
     cToken = CapTestCToken(
         comptroller_=comptroller.address,
@@ -93,31 +98,44 @@ def test():
     scenario += comptroller.setMarketCaps(sp.record(
         cToken=cToken.address, supplyCap=sp.nat(200),
         borrowCap=sp.nat(100))).run(sender=admin, level=1)
+    scenario += comptroller.setPriceOracleAndTimeDiff(sp.record(
+        priceOracle=oracle.address, timeDiff=sp.int(300))).run(
+            sender=admin, level=1)
+    scenario += comptroller.setPriceBounds(sp.record(
+        cToken=cToken.address, minPrice=sp.nat(1),
+        maxPrice=sp.nat(10**30), maxChangeBps=sp.nat(10000))).run(
+            sender=admin, level=1)
+    scenario += oracle.setPrice(sp.nat(1))
+    scenario += oracle.setTimestamp(sp.timestamp(1))
     scenario += cToken.accrueInterest().run(sender=supplier, level=1)
 
     scenario.h2("Supply cap uses the post-mint total exactly once")
-    scenario += cToken.mint(sp.nat(80)).run(sender=supplier, level=1)
-    scenario += cToken.mint(sp.nat(120)).run(sender=supplier, level=1)
+    scenario += cToken.mint(sp.nat(80)).run(
+        sender=supplier, level=1, now=sp.timestamp(1))
+    scenario += cToken.mint(sp.nat(120)).run(
+        sender=supplier, level=1, now=sp.timestamp(1))
     scenario.verify(cToken.data.totalSupply == sp.nat(200))
     scenario += cToken.mint(sp.nat(1)).run(
         sender=supplier, level=1, valid=False,
-        exception=CMPT.EC.CMPT_SUPPLY_CAP_EXCEEDED)
+        exception=CMPT.EC.CMPT_SUPPLY_CAP_EXCEEDED, now=sp.timestamp(1))
     scenario.verify(cToken.data.totalSupply == sp.nat(200))
 
     scenario.h2("Borrow cap uses the post-borrow total exactly once")
     scenario += comptroller.setMarketPriceForTest(cToken.address).run(level=1)
     scenario += comptroller.setLiquidityForTest(sp.record(
         account=borrower.address, liquidity=sp.int(10**30))).run(level=1)
-    scenario += cToken.borrow(sp.nat(40)).run(sender=borrower, level=1)
+    scenario += cToken.borrow(sp.nat(40)).run(
+        sender=borrower, level=1, now=sp.timestamp(1))
     scenario += comptroller.setLiquidityForTest(sp.record(
         account=borrower.address, liquidity=sp.int(10**30))).run(level=1)
-    scenario += cToken.borrow(sp.nat(60)).run(sender=borrower, level=1)
+    scenario += cToken.borrow(sp.nat(60)).run(
+        sender=borrower, level=1, now=sp.timestamp(1))
     scenario.verify(cToken.data.totalBorrows == sp.nat(100))
     scenario += comptroller.setLiquidityForTest(sp.record(
         account=borrower.address, liquidity=sp.int(10**30))).run(level=1)
     scenario += cToken.borrow(sp.nat(1)).run(
         sender=borrower, level=1, valid=False,
-        exception=CMPT.EC.CMPT_BORROW_CAP_EXCEEDED)
+        exception=CMPT.EC.CMPT_BORROW_CAP_EXCEEDED, now=sp.timestamp(1))
     scenario.verify(cToken.data.totalBorrows == sp.nat(100))
 
 
@@ -131,7 +149,10 @@ def exchange_rate_rounding_test():
     irm = IRM.InterestRateModelMock(
         borrowRate_=sp.nat(0), supplyRate_=sp.nat(0))
     scenario += irm
-    comptroller = CapTestComptroller(administrator_=admin.address)
+    oracle = OracleMock.OracleMock()
+    scenario += oracle
+    comptroller = CapTestComptroller(
+        administrator_=admin.address, oracleAddress_=oracle.address)
     scenario += comptroller
     cToken = CapTestCToken(
         comptroller_=comptroller.address,
@@ -148,11 +169,21 @@ def exchange_rate_rounding_test():
     scenario += comptroller.setMarketCaps(sp.record(
         cToken=cToken.address, supplyCap=sp.nat(2),
         borrowCap=sp.nat(0))).run(sender=admin, level=1)
+    scenario += comptroller.setPriceOracleAndTimeDiff(sp.record(
+        priceOracle=oracle.address, timeDiff=sp.int(300))).run(
+            sender=admin, level=1)
+    scenario += comptroller.setPriceBounds(sp.record(
+        cToken=cToken.address, minPrice=sp.nat(1),
+        maxPrice=sp.nat(10**30), maxChangeBps=sp.nat(10000))).run(
+            sender=admin, level=1)
+    scenario += oracle.setPrice(sp.nat(1))
+    scenario += oracle.setTimestamp(sp.timestamp(1))
     scenario += cToken.accrueInterest().run(sender=supplier, level=1)
 
-    scenario += cToken.mint(sp.nat(2)).run(sender=supplier, level=1)
+    scenario += cToken.mint(sp.nat(2)).run(
+        sender=supplier, level=1, now=sp.timestamp(1))
     scenario.verify(cToken.data.totalSupply == sp.nat(1))
     scenario.verify(cToken.data.cash == sp.nat(2))
     scenario += cToken.mint(sp.nat(2)).run(
         sender=supplier, level=1, valid=False,
-        exception=CMPT.EC.CMPT_SUPPLY_CAP_EXCEEDED)
+        exception=CMPT.EC.CMPT_SUPPLY_CAP_EXCEEDED, now=sp.timestamp(1))
