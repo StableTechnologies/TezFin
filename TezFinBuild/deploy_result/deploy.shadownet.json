@@ -1,0 +1,20 @@
+{
+  "OriginatorAddress": "tz1XTWbfhyWK9xmPAa6TyQUSv437JFgZDzgA",
+  "chainId": "NetXtLrzvQDobza",
+  "evmChainId": 127823,
+  "network": "https://michelson.etherlink.shadownet.octez.io",
+  "networkProfile": "shadownet",
+  "PythCore": "0x2880aB155794e7179c9eE2e38200202908C17B43",
+  "PythMaxAgeSeconds": 60,
+  "TezFinMaxPriceAgeSeconds": 60,
+  "PythFeedIds": {
+    "BTC_USD": "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+    "XTZ_USD": "0x0affd4b8ad136a21d79bc82450a325ee12ff55a235abc242666e423b8bcffd03",
+    "USDT_USD": "0x2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b"
+  },
+  "PriceOracle": "KT1FVzw3ogGSq4Djde17MJqVKd6DZReo8MNb",
+  "USDt": "KT1JhouNkvVaHhY9hc9yCN8zcqa6uEfoCY9y",
+  "USDtz": "KT1KgUM85JcH3eAFqWNjhsgfRmKcAeds9X4r",
+  "tzBTC": "KT1VyfHmnP3awrxUdKFYXUtWhr8SAVqiHJRK",
+  "TezFinOracle": "KT1F3Ub8HULFFuamoQ4uRnXREhkVt4dTHoYn"
+}

@@ -6,6 +6,7 @@ PATH_COMPILE_CONFIG = "deploy/compile_targets/Config.json"
 PATH_DEPLOY_SCRIPT_CONFIG = "deploy/deploy_script/config.json"
 PATH_DEPLOY_RESULT = "TezFinBuild/deploy_result/deploy.json"
 PATH_DEPLOY_RESULT_MAINNET = "TezFinBuild/deploy_result/deploy.mainnet.json"
+PATH_DEPLOY_RESULT_SHADOWNET = "TezFinBuild/deploy_result/deploy.shadownet.json"
 
 class JsonDeserializer:
     # order to formulate correct path, execution must be started from root directory "TezFin"
@@ -30,6 +31,8 @@ deployScriptConfig = JsonDeserializer.Deserialize(PATH_DEPLOY_SCRIPT_CONFIG)
 _defaultDeployResultPath = (
     PATH_DEPLOY_RESULT_MAINNET
     if getattr(deployScriptConfig, 'networkProfile', None) == 'mainnet'
+    else PATH_DEPLOY_RESULT_SHADOWNET
+    if getattr(deployScriptConfig, 'networkProfile', None) == 'shadownet'
     else PATH_DEPLOY_RESULT
 )
 deployResult = JsonDeserializer.Deserialize(
