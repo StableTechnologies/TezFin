@@ -22,6 +22,8 @@
     "measure:origination-size": "node measure_origination_size.js",
     "prepare:deploy": "node prepare.js",
     "verify:mainnet-oracle": "node verify_mainnet_oracle.js",
+    "configure:pyth-oracle": "node configure_pyth_oracle.js",
+    "verify:shadownet-pyth-oracle": "node verify_shadownet_pyth_oracle.js",
     "test": "node --test test/*.test.js"
   }
 }

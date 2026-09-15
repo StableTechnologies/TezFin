@@ -223,6 +223,58 @@ def test():
     consumer.getPrice(asset="USDT", resp=0).run(
         valid=False, exception="UNSUPPORTED_PYTH_ASSET")
 
+    scenario.h2("L2 proxy mapping resolves to the same feed as its native asset")
+    # tzBTC -> BTC and USDtz/USDt -> USDT are resolved (in _resolvePythPrice) *before* the
+    # feedIds lookup, so removing the underlying native feed must also break the proxy asset,
+    # and re-adding it must unblock both again -- proving they share the exact same feed
+    # config rather than merely reaching the same generic staticcall failure.
+    tezfinOracle.setFeedIds([
+        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+    ]).run(sender=admin)
+    # Note: plain "BTC-USD" already has an admin override set earlier in this scenario, so
+    # it short-circuits before the feedIds lookup and can't be used to probe the feed itself;
+    # "tzBTC-USD" has no override, so it is the one that actually reaches the Pyth/feedIds path.
+    scenario.h3("Before removing BTC: tzBTC reaches the staticcall (shared BTC feed)")
+    consumer.getPrice(asset="tzBTC", resp=0).run(valid=False)
+    tezfinOracle.removeFeedId("BTC").run(sender=admin)
+    scenario.h3("After removing BTC: tzBTC now also fails as UNSUPPORTED_PYTH_ASSET")
+    consumer.getPrice(asset="tzBTC", resp=0).run(
+        valid=False, exception="UNSUPPORTED_PYTH_ASSET")
+    tezfinOracle.setFeedIds([
+        sp.record(asset="BTC", feedId=BTC_FEED_ID, targetDecimals=sp.nat(8)),
+    ]).run(sender=admin)
+    scenario.h3("After re-adding BTC: tzBTC reaches the staticcall again")
+    consumer.getPrice(asset="tzBTC", resp=0).run(valid=False)
+
+    scenario.h3("USDtz and USDt both proxy to USDT: removing USDT breaks both proxies")
+    tezfinOracle.removeFeedId("USDT").run(sender=admin)
+    consumer.getPrice(asset="USDtz", resp=0).run(
+        valid=False, exception="UNSUPPORTED_PYTH_ASSET")
+    consumer.getPrice(asset="USDt", resp=0).run(
+        valid=False, exception="UNSUPPORTED_PYTH_ASSET")
+    consumer.getPrice(asset="USDT", resp=0).run(
+        valid=False, exception="UNSUPPORTED_PYTH_ASSET")
+    tezfinOracle.setFeedIds([
+        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+    ]).run(sender=admin)
+    consumer.getPrice(asset="USDtz", resp=0).run(valid=False)
+    consumer.getPrice(asset="USDt", resp=0).run(valid=False)
+    consumer.getPrice(asset="USDT", resp=0).run(valid=False)
+
+    scenario.h3("A feed id pinned only under a wrong/unrelated asset key does not resolve")
+    # setFeedIds keys by symbol, not by feedId, so pinning USDT_FEED_ID under a typo'd key
+    # must not make it resolvable under the real "USDT" symbol used by getPrice.
+    tezfinOracle.setFeedIds([
+        sp.record(asset="USDT_TYPO", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+    ]).run(sender=admin)
+    tezfinOracle.removeFeedId("USDT").run(sender=admin)
+    consumer.getPrice(asset="USDT", resp=0).run(
+        valid=False, exception="UNSUPPORTED_PYTH_ASSET")
+    tezfinOracle.removeFeedId("USDT_TYPO").run(sender=admin)
+    tezfinOracle.setFeedIds([
+        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+    ]).run(sender=admin)
+
     scenario.h2("Staged activation order")
     # originate -> setPythCore -> setPythMaxAge -> setFeedIds already ran above (global oracle
     # config); a fresh comptroller identity still needs its own configurePriceBounds and
