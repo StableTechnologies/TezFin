@@ -334,6 +334,37 @@ feed with `set_oracle`.
   alongside the mainnet manifest, which oracle instance/administrator is being used and who controls
   it — this project does not deploy or administer that upstream feed itself.
 
+### Pyth / NAC Staged Activation Order (Etherlink L2)
+
+`TezFinOracle`'s Etherlink/Pyth upstream lookup
+is fail-closed by design: `pythCore`, `pythMaxAgeWord`, and `feedIds` are **not** populated in the
+constructor (only a placeholder 60-second `pythMaxAgeWord` is), so `getPrice`/`getValidatedPrice`
+reject every non-override asset until an admin finishes configuring them. The following order is
+mandatory and must be reproduced by the deployment runner and any governance payload:
+
+```text
+originate TezFinOracle
+  -> setPythCore(pythCoreEvmAddress)
+  -> setPythMaxAge(maxAgeWord)
+  -> setFeedIds([{asset, feedId, targetDecimals}, ...])
+  -> configurePriceBounds(...)   (per Comptroller/cToken)
+  -> configureMaxPriceAge(...)   (per Comptroller)
+  -> enable market (supportMarket / unpause)
+```
+
+If a step is skipped, `getPrice`/`getValidatedPrice` fails closed with a specific error instead of
+silently returning stale or zero data:
+
+| Skipped step | `getPrice` / `getValidatedPrice` error |
+|---|---|
+| `setFeedIds` for the asset | `UNSUPPORTED_PYTH_ASSET` |
+| `setPythCore` | `PYTH_CORE_NOT_CONFIGURED` |
+| `configurePriceBounds` | `PRICE_BOUNDS_NOT_CONFIGURED` |
+| `configureMaxPriceAge` | `MAX_PRICE_AGE_NOT_CONFIGURED` |
+
+This order and every error in the table above are covered by
+[`contracts/tests/TezFinOracleTest.py`](contracts/tests/TezFinOracleTest.py).
+
 ## Post-Deployment Admin Handoff (Mainnet)
 
 After origination, every contract (`Governance`, `TezFinOracle`) is initially administered by the
