@@ -84,7 +84,7 @@ async function main() {
     const testComptroller = publicKeyHash;
     const testMarket = process.env.TEST_MARKET || publicKeyHash;
     const minPrice = Number(process.env.PRICE_MIN || 1);
-    const maxPrice = Number(process.env.PRICE_MAX || 2 ** 50);
+    const maxPrice = Number(process.env.PRICE_MAX || 8000000000000000);
     const maxChangeBps = Number(process.env.PRICE_MAX_CHANGE_BPS || 10000);
     const maxPriceAge = Number(process.env.MAX_PRICE_AGE_SECONDS || manifest.TezFinMaxPriceAgeSeconds || 60);
 
