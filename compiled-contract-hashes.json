@@ -1,0 +1,46 @@
+{
+  "contracts": {
+    "CFA12_IRM": {
+      "contractSha256": "6ac58d269797ee5c2f5c04919e9c4fd89ddeb1af75903c8e6620aba3d2477c13",
+      "storageSha256": "4f47d8642be1ec3f7e8832757c06b9277e2926607077c7c6aa1c4e4050cd313f"
+    },
+    "CFA2_IRM": {
+      "contractSha256": "6ac58d269797ee5c2f5c04919e9c4fd89ddeb1af75903c8e6620aba3d2477c13",
+      "storageSha256": "4f47d8642be1ec3f7e8832757c06b9277e2926607077c7c6aa1c4e4050cd313f"
+    },
+    "CUSDt": {
+      "contractSha256": "278e21d79c7369589f98058881d25efd651f5bd3a05b852c0600e85cb6549944",
+      "storageSha256": "0da38b303b4965ab2be404fc96d8f79afef26b9fb78d35a9574c0d2aad079637"
+    },
+    "CXTZ": {
+      "contractSha256": "1011764e4d959754e5d3a7b496954b6734e04f70962d3b8f1845506997676188",
+      "storageSha256": "bd12edc724651647ebb7bd2d750cb58ae6a44ea17f5ec76897046b0c2705516c"
+    },
+    "CXTZ_IRM": {
+      "contractSha256": "6ac58d269797ee5c2f5c04919e9c4fd89ddeb1af75903c8e6620aba3d2477c13",
+      "storageSha256": "ce495cc8c035066279eec6e8907172d3cade64e5c24c8e9730983144e2bc2973"
+    },
+    "Comptroller": {
+      "contractSha256": "e612191c212fb81be53d4eb5f63fba2b6ce1275bb841822f1ac9b23fc697ea35",
+      "storageSha256": "74d0a4f27c2296a77f12501903529ab9b89af79fe359ad4a45ffe00ea3fc2eb8"
+    },
+    "CtzBTC": {
+      "contractSha256": "d8c178ce918785472d972ec50e4cfc6d14f4556624db9b3b848a6d6cb6035828",
+      "storageSha256": "72472795d0847c067a56f2db1efb21dee1c478ad0ad8b14a8fdc7e87d6cc373e"
+    },
+    "CtzBTC_IRM": {
+      "contractSha256": "6ac58d269797ee5c2f5c04919e9c4fd89ddeb1af75903c8e6620aba3d2477c13",
+      "storageSha256": "65a18026e1b9156ef9695caecb6d57ab945286737ab7dfa0b66cc1233e72096b"
+    },
+    "Governance": {
+      "contractSha256": "deb90c1859deb61bc6c4d9679ec2b452264b459886e4b3cbe4b1968ecbbe795e",
+      "storageSha256": "8375a124534108c02419eed14ebc338c6d746b91031dc0ed7ad965d5b3157cab"
+    },
+    "TezFinOracle": {
+      "contractSha256": "f169c61da5b727e9aa72b68873b9ee88d46d694059070028a9ba15f9f7680477",
+      "storageSha256": "20f99119866cdbe8d27be9ddeda51d45caa215e20ca5da3661157cf607443074"
+    }
+  },
+  "protocol": "kathmandu",
+  "smartpyVersion": "0.16.0"
+}
