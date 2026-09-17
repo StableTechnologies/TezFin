@@ -120,27 +120,77 @@ class TezFinOracle(OracleInterface.OracleInterface):
         """
             Decodes a 32-byte big-endian ABI word into a nat, one byte at a time
         """
-        acc = sp.local("acc", sp.nat(0))
-        i = sp.local("i", sp.nat(0))
-        sp.while i.value < 32:
-            currentByte = sp.slice(word, i.value, 1).open_some(
+        unsignedAcc = sp.local("unsignedAcc", sp.nat(0))
+        unsignedIndex = sp.local("unsignedIndex", sp.nat(0))
+        sp.while unsignedIndex.value < 32:
+            currentByte = sp.slice(word, unsignedIndex.value, 1).open_some(
                 "MALFORMED_PYTH_RESPONSE")
-            acc.value = acc.value * 256 + BYTE_TO_NAT[currentByte]
-            i.value += 1
-        return acc.value
+            unsignedAcc.value = unsignedAcc.value * 256 + BYTE_TO_NAT[currentByte]
+            unsignedIndex.value += 1
+        return unsignedAcc.value
+
+    def _decodeUint64Word(self, word):
+        """Decodes the right-aligned uint64 payload used by Pyth confidence."""
+        confidenceAcc = sp.local("confidenceAcc", sp.nat(0))
+        confidenceIndex = sp.local("confidenceIndex", sp.nat(0))
+        sp.while confidenceIndex.value < 8:
+            currentByte = sp.slice(word, 24 + confidenceIndex.value, 1).open_some(
+                "MALFORMED_PYTH_RESPONSE")
+            confidenceAcc.value = confidenceAcc.value * 256 + BYTE_TO_NAT[currentByte]
+            confidenceIndex.value += 1
+        return confidenceAcc.value
+
+    def _decodePriceWord(self, word):
+        """Decodes Pyth's positive int64 price from the first ABI word."""
+        priceAcc = sp.local("priceAcc", sp.nat(0))
+        priceIndex = sp.local("priceIndex", sp.nat(0))
+        sp.while priceIndex.value < 8:
+            currentByte = sp.slice(word, 24 + priceIndex.value, 1).open_some(
+                "MALFORMED_PYTH_RESPONSE")
+            priceAcc.value = priceAcc.value * 256 + BYTE_TO_NAT[currentByte]
+            priceIndex.value += 1
+        return priceAcc.value
+
+    def _decodeExponentWord(self, word):
+        """Decodes Pyth's sign-extended int32 exponent."""
+        exponentAcc = sp.local("exponentAcc", sp.nat(0))
+        exponentIndex = sp.local("exponentIndex", sp.nat(0))
+        sp.while exponentIndex.value < 4:
+            currentByte = sp.slice(word, 28 + exponentIndex.value, 1).open_some(
+                "MALFORMED_PYTH_RESPONSE")
+            exponentAcc.value = exponentAcc.value * 256 + BYTE_TO_NAT[currentByte]
+            exponentIndex.value += 1
+        exponentResult = sp.local("exponentResult", sp.int(0))
+        exponentSignByte = sp.slice(word, 28, 1).open_some("MALFORMED_PYTH_RESPONSE")
+        sp.if BYTE_TO_NAT[exponentSignByte] >= 128:
+            exponentResult.value = sp.to_int(exponentAcc.value) - sp.to_int(2 ** 32)
+        sp.else:
+            exponentResult.value = sp.to_int(exponentAcc.value)
+        return exponentResult.value
+
+    def _decodePublishTimeWord(self, word):
+        """Decodes Pyth's uint256 publish time with field-specific locals."""
+        publishAcc = sp.local("publishAcc", sp.nat(0))
+        publishIndex = sp.local("publishIndex", sp.nat(0))
+        sp.while publishIndex.value < 32:
+            currentByte = sp.slice(word, publishIndex.value, 1).open_some(
+                "MALFORMED_PYTH_RESPONSE")
+            publishAcc.value = publishAcc.value * 256 + BYTE_TO_NAT[currentByte]
+            publishIndex.value += 1
+        return publishAcc.value
 
     def _decodeSignedWord(self, word):
         """
             Decodes a 32-byte big-endian, sign-extended two's complement ABI word into an int
         """
-        unsignedValue = self._decodeUnsignedWord(word)
-        signByte = sp.slice(word, 0, 1).open_some("MALFORMED_PYTH_RESPONSE")
-        result = sp.local("result", sp.int(0))
-        sp.if BYTE_TO_NAT[signByte] >= 128:
-            result.value = sp.to_int(unsignedValue) - sp.to_int(TWO_POW_256)
+        signedUnsignedValue = self._decodeUnsignedWord(word)
+        signedSignByte = sp.slice(word, 0, 1).open_some("MALFORMED_PYTH_RESPONSE")
+        signedResult = sp.local("signedResult", sp.int(0))
+        sp.if BYTE_TO_NAT[signedSignByte] >= 128:
+            signedResult.value = sp.to_int(signedUnsignedValue) - sp.to_int(TWO_POW_256)
         sp.else:
-            result.value = sp.to_int(unsignedValue)
-        return result.value
+            signedResult.value = sp.to_int(signedUnsignedValue)
+        return signedResult.value
 
     @sp.entry_point
     def configurePriceBounds(self, params):
@@ -256,12 +306,17 @@ class TezFinOracle(OracleInterface.OracleInterface):
             expoWord = sp.slice(response, 64, 32).open_some("MALFORMED_PYTH_RESPONSE")
             publishTimeWord = sp.slice(response, 96, 32).open_some("MALFORMED_PYTH_RESPONSE")
 
-            rawPrice = self._decodeSignedWord(priceWord)
-            rawConf = self._decodeUnsignedWord(confWord)
-            rawExpo = self._decodeSignedWord(expoWord)
+            # Pyth prices must be strictly positive. Decode this ABI word as unsigned after
+            # rejecting a set sign bit; this avoids relying on the larger contract's repeated
+            # signed-word lambda expansion while preserving fail-closed handling of negatives.
+            priceSignByte = sp.slice(priceWord, 0, 1).open_some("MALFORMED_PYTH_RESPONSE")
+            sp.verify(BYTE_TO_NAT[priceSignByte] < 128, "NON_POSITIVE_PYTH_PRICE")
+            rawPrice = sp.to_int(self._decodePriceWord(priceWord))
+            rawConf = self._decodeUint64Word(confWord)
+            rawExpo = self._decodeExponentWord(expoWord)
             # publishTime is `uint` (uint256) per pyth-sdk-solidity's PythStructs.Price, not signed;
             # the <= sp.now check below still fails closed on any absurdly large decoded value.
-            rawPublishTime = self._decodeUnsignedWord(publishTimeWord)
+            rawPublishTime = self._decodePublishTimeWord(publishTimeWord)
 
             sp.verify(rawPrice > 0, "NON_POSITIVE_PYTH_PRICE")
             sp.verify((rawExpo >= -30) & (rawExpo <= 0), "INVALID_PYTH_EXPONENT")
@@ -272,7 +327,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
 
             priceNat = sp.as_nat(rawPrice, message="NON_POSITIVE_PYTH_PRICE")
             # Fail closed if the reported confidence interval exceeds 25% of the price.
-            sp.verify(rawConf * 4 <= priceNat, "EXCESSIVE_PYTH_CONFIDENCE")
+            # Compare against floor(price / 4) to avoid multiplying an ABI-decoded nat.
+            sp.verify(rawConf <= priceNat // 4, "EXCESSIVE_PYTH_CONFIDENCE")
 
             # normalizedPrice = price * 10^(expo + targetDecimals), using integer arithmetic only.
             decimalShift = rawExpo + sp.to_int(feedConfig.targetDecimals)
