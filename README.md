@@ -334,6 +334,55 @@ feed with `set_oracle`.
   alongside the mainnet manifest, which oracle instance/administrator is being used and who controls
   it — this project does not deploy or administer that upstream feed itself.
 
+### Pyth / NAC Staged Activation Order (Etherlink L2)
+
+`TezFinOracle`'s Etherlink/Pyth upstream lookup
+is fail-closed by design: `pythCore`, `pythMaxAgeWord`, and `feedIds` are **not** populated in the
+constructor (only a placeholder 60-second `pythMaxAgeWord` is), so `getPrice`/`getValidatedPrice`
+reject every non-override asset until an admin finishes configuring them. The following order is
+mandatory and must be reproduced by the deployment runner and any governance payload:
+
+```text
+originate TezFinOracle
+  -> setPythCore(pythCoreEvmAddress)
+  -> setPythMaxAge(maxAgeWord)
+  -> setFeedIds([{asset, feedId, targetDecimals}, ...])
+  -> configurePriceBounds(...)   (per Comptroller/cToken)
+  -> configureMaxPriceAge(...)   (per Comptroller)
+  -> enable market (supportMarket / unpause)
+```
+
+If a step is skipped, `getPrice`/`getValidatedPrice` fails closed with a specific error instead of
+silently returning stale or zero data:
+
+| Skipped step | `getPrice` / `getValidatedPrice` error |
+|---|---|
+| `setFeedIds` for the asset | `UNSUPPORTED_PYTH_ASSET` |
+| `setPythCore` | `PYTH_CORE_NOT_CONFIGURED` |
+| `configurePriceBounds` | `PRICE_BOUNDS_NOT_CONFIGURED` |
+| `configureMaxPriceAge` | `MAX_PRICE_AGE_NOT_CONFIGURED` |
+
+This order and every error in the table above are covered by
+[`contracts/tests/TezFinOracleTest.py`](contracts/tests/TezFinOracleTest.py).
+
+### Pyth confidence and proxy risk policy
+
+The production oracle accepts a Pyth update only when the confidence interval is
+no more than 25% of the raw price:
+
+```text
+conf * 4 <= rawPrice
+```
+
+The L2 asset mappings below are explicit proxies, not independent price feeds:
+
+- `tzBTC-USD` uses the BTC/USD Pyth feed. This does not detect a tzBTC/BTC depeg.
+- `USDtz-USD` and `USDt-USD` use the USDT/USD Pyth feed. This does not prove or
+  detect a USDtz/USDT or USDt/USDT peg failure.
+
+These proxy mappings must be treated as a governance and risk-policy decision;
+they are not evidence that the wrapped asset maintains its intended peg.
+
 ## Post-Deployment Admin Handoff (Mainnet)
 
 After origination, every contract (`Governance`, `TezFinOracle`) is initially administered by the

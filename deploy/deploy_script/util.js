@@ -18,7 +18,11 @@ function resolveDeployResultPath() {
     if (process.env.DEPLOY_MANIFEST) {
         return path.resolve(process.env.DEPLOY_MANIFEST);
     }
-    const fileName = config.networkProfile === 'mainnet' ? 'deploy.mainnet.json' : 'deploy.json';
+    const fileName = config.networkProfile === 'mainnet'
+        ? 'deploy.mainnet.json'
+        : config.networkProfile === 'shadownet'
+            ? 'deploy.shadownet.json'
+            : 'deploy.json';
     return path.join(__dirname, '../../TezFinBuild/deploy_result', fileName);
 }
 

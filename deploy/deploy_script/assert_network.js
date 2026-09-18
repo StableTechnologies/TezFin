@@ -7,8 +7,8 @@ const MAINNET_CHAIN_IDS = new Set(['NetXdQprcVkpaWU']);
 // directly with fabricated chain ids instead of only against a live RPC connection.
 // Returns nothing on success; throws with a descriptive message on rejection.
 function checkNetworkExpectation(expectedProfile, declaredProfile, chainId, tezosNode) {
-    if (expectedProfile !== 'previewnet' && expectedProfile !== 'mainnet') {
-        throw new Error(`Unknown network profile "${expectedProfile}"; expected "previewnet" or "mainnet".`);
+    if (expectedProfile !== 'previewnet' && expectedProfile !== 'mainnet' && expectedProfile !== 'shadownet') {
+        throw new Error(`Unknown network profile "${expectedProfile}"; expected "previewnet", "mainnet", or "shadownet".`);
     }
 
     if (declaredProfile && declaredProfile !== expectedProfile) {
@@ -31,6 +31,11 @@ function checkNetworkExpectation(expectedProfile, declaredProfile, chainId, tezo
         throw new Error(
             `The connected RPC (${tezosNode}) reports chain ${chainId}, which is a known ` +
             `mainnet chain id. Refusing to run the Previewnet deploy script against mainnet.`,
+        );
+    }
+    if (expectedProfile === 'shadownet' && chainId !== 'NetXtLrzvQDobza') {
+        throw new Error(
+            `Expected Etherlink Shadownet chain id NetXtLrzvQDobza, but the connected RPC (${tezosNode}) reports ${chainId}.`,
         );
     }
 }
