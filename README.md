@@ -365,6 +365,24 @@ silently returning stale or zero data:
 This order and every error in the table above are covered by
 [`contracts/tests/TezFinOracleTest.py`](contracts/tests/TezFinOracleTest.py).
 
+### Pyth confidence and proxy risk policy
+
+The production oracle accepts a Pyth update only when the confidence interval is
+no more than 25% of the raw price:
+
+```text
+conf * 4 <= rawPrice
+```
+
+The L2 asset mappings below are explicit proxies, not independent price feeds:
+
+- `tzBTC-USD` uses the BTC/USD Pyth feed. This does not detect a tzBTC/BTC depeg.
+- `USDtz-USD` and `USDt-USD` use the USDT/USD Pyth feed. This does not prove or
+  detect a USDtz/USDT or USDt/USDT peg failure.
+
+These proxy mappings must be treated as a governance and risk-policy decision;
+they are not evidence that the wrapped asset maintains its intended peg.
+
 ## Post-Deployment Admin Handoff (Mainnet)
 
 After origination, every contract (`Governance`, `TezFinOracle`) is initially administered by the
