@@ -146,6 +146,10 @@ remaining issue is specific to the larger TezFinOracle code path. If
 `decodedPrice` is zero or fails, the decoder/runtime behavior is isolated in
 this small probe.
 
+The live runner also calls `getValidatedPrice` directly and asserts these
+contract-level rejections: stale price, timestamp rollback with a non-zero
+previous timestamp, excessive confidence, price bounds, and price deviation.
+
 For the signed decoder used by `TezFinOracle._decodeSignedWord`, use:
 
 ```js

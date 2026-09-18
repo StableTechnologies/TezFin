@@ -88,6 +88,16 @@ case_view() {
     DEPLOY_MANIFEST="$tmp_manifest" node e2e/pyth_mock/verify_shadownet_case.js
 }
 
+validated_case() {
+  local case_name="$1"
+  local previous_price="$2"
+  local previous_timestamp="$3"
+  local expected_error="$4"
+  PYTH_CASE="$case_name" PYTH_PREVIOUS_PRICE="$previous_price" \
+    PYTH_PREVIOUS_TIMESTAMP="$previous_timestamp" PYTH_EXPECTED_ERROR="$expected_error" \
+    DEPLOY_MANIFEST="$tmp_manifest" node e2e/pyth_mock/verify_shadownet_validated_case.js
+}
+
 cast send "$mock_address" 'setIgnoreAgeCheck(bool)' true --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
 
 echo "== Additional live validation cases =="
@@ -111,6 +121,29 @@ case_view "simulated revert" BTC-USD PYTH_STATICCALL_FAILED
 cast send "$mock_address" 'setRevert(bool)' false --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
 
 case_view "unknown feed" ETH-USD UNSUPPORTED_PYTH_ASSET
+
+echo "== Live getValidatedPrice rejection cases =="
+cast send "$mock_address" 'setIgnoreAgeCheck(bool)' true --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
+cast send "$mock_address" 'setPrice(bytes32,int64,uint64,int32,uint256)' "$btc_id" 6000000000 1000000 -2 "$((now - 600))" --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
+validated_case "validated stale price" 0 "1970-01-01T00:00:00Z" STALE_ASSET_PRICE
+
+rollback_now="$(cast block latest --rpc-url "$evm_rpc" --field timestamp)"
+cast send "$mock_address" 'setPrice(bytes32,int64,uint64,int32,uint256)' "$btc_id" 6000000000 1000000 -2 "$((rollback_now - 5))" --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
+rollback_timestamp="$(node -e 'console.log(new Date((Number(process.argv[1]) - 1) * 1000).toISOString())' "$rollback_now")"
+deviation_timestamp="$(node -e 'console.log(new Date((Number(process.argv[1]) - 30) * 1000).toISOString())' "$rollback_now")"
+validated_case "validated timestamp rollback" 6000000000000000 "$rollback_timestamp" ASSET_PRICE_TIMESTAMP_ROLLBACK
+
+cast send "$mock_address" 'setPrice(bytes32,int64,uint64,int32,uint256)' "$btc_id" 100000 30000 -6 "$((now - 5))" --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
+validated_case "validated excessive confidence" 0 "1970-01-01T00:00:00Z" EXCESSIVE_PYTH_CONFIDENCE
+
+bounds_now="$(cast block latest --rpc-url "$evm_rpc" --field timestamp)"
+cast send "$mock_address" 'setPrice(bytes32,int64,uint64,int32,uint256)' "$btc_id" 9000000000 1000000 -2 "$((bounds_now - 5))" --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
+validated_case "validated price bounds" 0 "1970-01-01T00:00:00Z" ASSET_PRICE_OUT_OF_BOUNDS
+
+deviation_now="$(cast block latest --rpc-url "$evm_rpc" --field timestamp)"
+cast send "$mock_address" 'setPrice(bytes32,int64,uint64,int32,uint256)' "$btc_id" 6000000000 1000000 -2 "$((deviation_now - 5))" --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
+deviation_timestamp="$(node -e 'console.log(new Date((Number(process.argv[1]) - 30) * 1000).toISOString())' "$deviation_now")"
+validated_case "validated price deviation" 1000000000000000 "$deviation_timestamp" ASSET_PRICE_CHANGE_TOO_LARGE
 
 cast send "$mock_address" 'setIgnoreAgeCheck(bool)' true --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
 cast send "$mock_address" 'setPrice(bytes32,int64,uint64,int32,uint256)' "$btc_id" 6000000000 1000000 -2 "$((now - 600))" --rpc-url "$evm_rpc" --private-key "$EVM_PRIVATE_KEY" >/dev/null
