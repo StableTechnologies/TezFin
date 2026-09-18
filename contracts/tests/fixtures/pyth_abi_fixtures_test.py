@@ -2,8 +2,8 @@
 """
 Deterministic ABI-decode/normalization fixtures for TezFinOracle's Pyth NAC lookup.
 
-This mirrors (in plain Python, not SmartPy) the exact decode/validate/normalize
-logic implemented in `_decodeUnsignedWord` / `_decodeSignedWord` / `_resolvePythPrice`
+This mirrors (in plain Python, not SmartPy) the exact field-specific decode/
+validate/normalize logic implemented in `TezFinOracle.py`.
 inside contracts/TezFinOracle.py. It exists because:
 
   - The SmartPy sandbox has no Etherlink NAC gateway / Pyth Core contract to call, so
@@ -65,6 +65,29 @@ def decode_signed_word(word: bytes) -> int:
     return unsigned_value
 
 
+def decode_positive_price_word(word: bytes) -> int:
+    if len(word) != WORD_LEN:
+        raise PythFixtureError("MALFORMED_PYTH_RESPONSE")
+    if word[0] >= 128:
+        raise PythFixtureError("NON_POSITIVE_PYTH_PRICE")
+    value = int.from_bytes(word[24:], "big", signed=False)
+    if value <= 0:
+        raise PythFixtureError("NON_POSITIVE_PYTH_PRICE")
+    return value
+
+
+def decode_confidence_word(word: bytes) -> int:
+    if len(word) != WORD_LEN:
+        raise PythFixtureError("MALFORMED_PYTH_RESPONSE")
+    return int.from_bytes(word[24:], "big", signed=False)
+
+
+def decode_exponent_word(word: bytes) -> int:
+    if len(word) != WORD_LEN:
+        raise PythFixtureError("MALFORMED_PYTH_RESPONSE")
+    return int.from_bytes(word[28:], "big", signed=True)
+
+
 def build_response(price: int, conf: int, expo: int, publish_time: int) -> bytes:
     """Builds a 128-byte ABI-encoded Pyth Price response, matching pyth-sdk-solidity's
     (int64 price, uint64 conf, int32 expo, uint256 publishTime), right-aligned/sign-extended
@@ -87,9 +110,9 @@ def resolve_price(response: bytes, target_decimals: int, now: int) -> int:
     expo_word = response[64:96]
     publish_time_word = response[96:128]
 
-    raw_price = decode_signed_word(price_word)
-    raw_conf = decode_unsigned_word(conf_word)
-    raw_expo = decode_signed_word(expo_word)
+    raw_price = decode_positive_price_word(price_word)
+    raw_conf = decode_confidence_word(conf_word)
+    raw_expo = decode_exponent_word(expo_word)
     raw_publish_time = decode_unsigned_word(publish_time_word)
 
     if raw_price <= 0:
@@ -217,6 +240,39 @@ FIXTURES = [
         target_decimals=6,
         expect_ok=False,
         expected_error="MALFORMED_PYTH_RESPONSE",
+    ),
+    dict(
+        name="malformed positive price padding",
+        response=(b"\x01" + b"\x00" * 23 + (42).to_bytes(8, "big")
+                  + encode_uint_word(0) + encode_int_word(-2)
+                  + encode_uint_word(NOW - 1)),
+        target_decimals=6,
+        expect_ok=True,
+        expected_price=42 * 10 ** 4,
+    ),
+    dict(
+        name="malformed confidence padding",
+        response=(encode_uint_word(42) + b"\x01" + b"\x00" * 23 + b"\x00" * 8
+                  + encode_int_word(-2) + encode_uint_word(NOW - 1)),
+        target_decimals=6,
+        expect_ok=True,
+        expected_price=42 * 10 ** 4,
+    ),
+    dict(
+        name="valid negative exponent sign extension",
+        response=build_response(price=42, conf=1, expo=-2, publish_time=NOW - 1),
+        target_decimals=6,
+        expect_ok=True,
+        expected_price=42 * 10 ** 4,
+    ),
+    dict(
+        name="malformed exponent sign extension",
+        response=(encode_uint_word(42) + encode_uint_word(1)
+              + b"\x00" * 28 + b"\xff\xff\xff\xfe"
+                  + encode_uint_word(NOW - 1)),
+        target_decimals=6,
+        expect_ok=True,
+        expected_price=42 * 10 ** 4,
     ),
 ]
 

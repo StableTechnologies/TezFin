@@ -142,6 +142,8 @@ class TezFinOracle(OracleInterface.OracleInterface):
 
     def _decodePriceWord(self, word):
         """Decodes Pyth's positive int64 price from the first ABI word."""
+        priceSignByte = sp.slice(word, 0, 1).open_some("MALFORMED_PYTH_RESPONSE")
+        sp.verify(BYTE_TO_NAT[priceSignByte] < 128, "NON_POSITIVE_PYTH_PRICE")
         priceAcc = sp.local("priceAcc", sp.nat(0))
         priceIndex = sp.local("priceIndex", sp.nat(0))
         sp.while priceIndex.value < 8:
@@ -153,6 +155,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
 
     def _decodeExponentWord(self, word):
         """Decodes Pyth's sign-extended int32 exponent."""
+        exponentSignByte = sp.slice(word, 28, 1).open_some("MALFORMED_PYTH_RESPONSE")
         exponentAcc = sp.local("exponentAcc", sp.nat(0))
         exponentIndex = sp.local("exponentIndex", sp.nat(0))
         sp.while exponentIndex.value < 4:
@@ -161,7 +164,6 @@ class TezFinOracle(OracleInterface.OracleInterface):
             exponentAcc.value = exponentAcc.value * 256 + BYTE_TO_NAT[currentByte]
             exponentIndex.value += 1
         exponentResult = sp.local("exponentResult", sp.int(0))
-        exponentSignByte = sp.slice(word, 28, 1).open_some("MALFORMED_PYTH_RESPONSE")
         sp.if BYTE_TO_NAT[exponentSignByte] >= 128:
             exponentResult.value = sp.to_int(exponentAcc.value) - sp.to_int(2 ** 32)
         sp.else:
@@ -309,8 +311,6 @@ class TezFinOracle(OracleInterface.OracleInterface):
             # Pyth prices must be strictly positive. Decode this ABI word as unsigned after
             # rejecting a set sign bit; this avoids relying on the larger contract's repeated
             # signed-word lambda expansion while preserving fail-closed handling of negatives.
-            priceSignByte = sp.slice(priceWord, 0, 1).open_some("MALFORMED_PYTH_RESPONSE")
-            sp.verify(BYTE_TO_NAT[priceSignByte] < 128, "NON_POSITIVE_PYTH_PRICE")
             rawPrice = sp.to_int(self._decodePriceWord(priceWord))
             rawConf = self._decodeUint64Word(confWord)
             rawExpo = self._decodeExponentWord(expoWord)
