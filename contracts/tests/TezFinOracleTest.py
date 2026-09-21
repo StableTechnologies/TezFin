@@ -14,6 +14,11 @@ XTZ_FEED_ID = sp.bytes(
     "0x0affd4b8ad136a21d79bc82450a325ee12ff55a235abc242666e423b8bcffd03")
 USDT_FEED_ID = sp.bytes(
     "0x2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b")
+# Proposed TezFin per-feed confidence limits (basis points), see README "Pyth confidence
+# and proxy risk policy": these are starting policy values, not Pyth-prescribed limits.
+BTC_MAX_CONFIDENCE_BPS = sp.nat(25)
+XTZ_MAX_CONFIDENCE_BPS = sp.nat(50)
+USDT_MAX_CONFIDENCE_BPS = sp.nat(10)
 
 
 class View_consumer(sp.Contract):
@@ -141,7 +146,8 @@ def test():
         sender=alice, valid=False, exception="NOT_ADMIN")
     tezfinOracle.setPythMaxAge(PYTH_MAX_AGE_WORD).run(
         sender=alice, valid=False, exception="NOT_ADMIN")
-    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(6))]
+    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(6),
+                                       maxConfidenceBps=XTZ_MAX_CONFIDENCE_BPS)]
                            ).run(sender=alice, valid=False, exception="NOT_ADMIN")
     tezfinOracle.removeFeedId("XTZ").run(
         sender=alice, valid=False, exception="NOT_ADMIN")
@@ -153,10 +159,18 @@ def test():
         sender=admin, valid=False, exception="INVALID_PYTH_MAX_AGE_RANGE")
     tezfinOracle.setPythMaxAge(sp.bytes("0x" + (3601).to_bytes(32, "big").hex())).run(
         sender=admin, valid=False, exception="INVALID_PYTH_MAX_AGE_RANGE")
-    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=sp.bytes("0x00"), targetDecimals=sp.nat(6))]
+    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=sp.bytes("0x00"), targetDecimals=sp.nat(6),
+                                       maxConfidenceBps=XTZ_MAX_CONFIDENCE_BPS)]
                            ).run(sender=admin, valid=False, exception="INVALID_PYTH_FEED_ID")
-    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(31))]
+    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(31),
+                                       maxConfidenceBps=XTZ_MAX_CONFIDENCE_BPS)]
                            ).run(sender=admin, valid=False, exception="INVALID_TARGET_DECIMALS")
+    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(6),
+                                       maxConfidenceBps=sp.nat(10001))]
+                           ).run(sender=admin, valid=False, exception="INVALID_PYTH_CONFIDENCE_LIMIT")
+    tezfinOracle.setFeedIds([sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(6),
+                                       maxConfidenceBps=sp.nat(0))]
+                           ).run(sender=admin, valid=False, exception="INVALID_PYTH_CONFIDENCE_LIMIT")
 
     scenario.h3("setPythCore rejects malformed EVM addresses")
     tezfinOracle.setPythCore("not-an-address").run(
@@ -178,9 +192,12 @@ def test():
 
     scenario.h3("Pin Pyth core address and native feed ids")
     tezfinOracle.setFeedIds([
-        sp.record(asset="BTC", feedId=BTC_FEED_ID, targetDecimals=sp.nat(8)),
-        sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(6)),
-        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+        sp.record(asset="BTC", feedId=BTC_FEED_ID, targetDecimals=sp.nat(8),
+                 maxConfidenceBps=BTC_MAX_CONFIDENCE_BPS),
+        sp.record(asset="XTZ", feedId=XTZ_FEED_ID, targetDecimals=sp.nat(6),
+                 maxConfidenceBps=XTZ_MAX_CONFIDENCE_BPS),
+        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6),
+                 maxConfidenceBps=USDT_MAX_CONFIDENCE_BPS),
     ]).run(sender=admin)
 
     scenario.h3("getPrice fails closed before the Pyth core address is configured")
@@ -229,7 +246,8 @@ def test():
     # and re-adding it must unblock both again -- proving they share the exact same feed
     # config rather than merely reaching the same generic staticcall failure.
     tezfinOracle.setFeedIds([
-        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6),
+                 maxConfidenceBps=USDT_MAX_CONFIDENCE_BPS),
     ]).run(sender=admin)
     # Note: plain "BTC-USD" already has an admin override set earlier in this scenario, so
     # it short-circuits before the feedIds lookup and can't be used to probe the feed itself;
@@ -241,7 +259,8 @@ def test():
     consumer.getPrice(asset="tzBTC", resp=0).run(
         valid=False, exception="UNSUPPORTED_PYTH_ASSET")
     tezfinOracle.setFeedIds([
-        sp.record(asset="BTC", feedId=BTC_FEED_ID, targetDecimals=sp.nat(8)),
+        sp.record(asset="BTC", feedId=BTC_FEED_ID, targetDecimals=sp.nat(8),
+                 maxConfidenceBps=BTC_MAX_CONFIDENCE_BPS),
     ]).run(sender=admin)
     scenario.h3("After re-adding BTC: tzBTC reaches the staticcall again")
     consumer.getPrice(asset="tzBTC", resp=0).run(valid=False)
@@ -255,7 +274,8 @@ def test():
     consumer.getPrice(asset="USDT", resp=0).run(
         valid=False, exception="UNSUPPORTED_PYTH_ASSET")
     tezfinOracle.setFeedIds([
-        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6),
+                 maxConfidenceBps=USDT_MAX_CONFIDENCE_BPS),
     ]).run(sender=admin)
     consumer.getPrice(asset="USDtz", resp=0).run(valid=False)
     consumer.getPrice(asset="USDt", resp=0).run(valid=False)
@@ -265,14 +285,16 @@ def test():
     # setFeedIds keys by symbol, not by feedId, so pinning USDT_FEED_ID under a typo'd key
     # must not make it resolvable under the real "USDT" symbol used by getPrice.
     tezfinOracle.setFeedIds([
-        sp.record(asset="USDT_TYPO", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+        sp.record(asset="USDT_TYPO", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6),
+                 maxConfidenceBps=USDT_MAX_CONFIDENCE_BPS),
     ]).run(sender=admin)
     tezfinOracle.removeFeedId("USDT").run(sender=admin)
     consumer.getPrice(asset="USDT", resp=0).run(
         valid=False, exception="UNSUPPORTED_PYTH_ASSET")
     tezfinOracle.removeFeedId("USDT_TYPO").run(sender=admin)
     tezfinOracle.setFeedIds([
-        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6)),
+        sp.record(asset="USDT", feedId=USDT_FEED_ID, targetDecimals=sp.nat(6),
+                 maxConfidenceBps=USDT_MAX_CONFIDENCE_BPS),
     ]).run(sender=admin)
 
     scenario.h2("Staged activation order")

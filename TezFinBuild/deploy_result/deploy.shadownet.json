@@ -12,6 +12,12 @@
     "XTZ_USD": "0x0affd4b8ad136a21d79bc82450a325ee12ff55a235abc242666e423b8bcffd03",
     "USDT_USD": "0x2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b"
   },
+  "PythConfidenceLimitsBps": {
+    "BTC_USD": 25,
+    "XTZ_USD": 50,
+    "USDT_USD": 10
+  },
+  "PythConfidenceLimitsApproved": false,
   "PriceOracle": "KT1FVzw3ogGSq4Djde17MJqVKd6DZReo8MNb",
   "USDt": "KT1JhouNkvVaHhY9hc9yCN8zcqa6uEfoCY9y",
   "USDtz": "KT1KgUM85JcH3eAFqWNjhsgfRmKcAeds9X4r",

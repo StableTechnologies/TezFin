@@ -11,7 +11,10 @@ GET_PRICE_NO_OLDER_THAN_SELECTOR = sp.bytes("0xa4ae35e0")
 DEFAULT_PYTH_MAX_AGE_WORD = sp.bytes(
     "0x" + (60).to_bytes(32, "big").hex())
 
-TPythFeedConfig = sp.TRecord(feedId=sp.TBytes, targetDecimals=sp.TNat)
+# maxConfidenceBps is mandatory (no default/implicit limit): a feed can only be pinned by
+# setFeedIds together with an explicit basis-points confidence limit, so there is no way to
+# configure or activate a feed that resolves prices without one.
+TPythFeedConfig = sp.TRecord(feedId=sp.TBytes, targetDecimals=sp.TNat, maxConfidenceBps=sp.TNat)
 
 # Valid hex digits for EVM address validation (setPythCore).
 HEX_CHARS = sp.set(l=[c for c in "0123456789abcdefABCDEF"])
@@ -20,12 +23,21 @@ HEX_CHARS = sp.set(l=[c for c in "0123456789abcdefABCDEF"])
 # admin-set value from causing an unbounded/gas-heavy normalization loop.
 MAX_TARGET_DECIMALS = 30
 
+# Basis-points denominator; also the maximum admin-settable maxConfidenceBps (100%).
+BPS_DENOMINATOR = 10000
+
 # SmartPy's `sp.to_int`/INT does not accept `bytes` operands in this toolchain, so ABI words are
 # decoded manually via a pinned single-byte lookup table (big-endian, one MUL+ADD per byte).
 BYTE_TO_NAT = sp.map(
     l={sp.bytes("0x%02x" % i): i for i in range(256)},
     tkey=sp.TBytes, tvalue=sp.TNat)
-TWO_POW_256 = sp.nat(2 ** 256)
+# Canonical two's-complement sign-extension bounds for validating ABI padding without a
+# per-byte loop: an N-bit signed value sign-extended into 256 bits is exactly the set of
+# unsigned 256-bit values below 2**N (non-negative) or at/above 2**256-2**N (negative).
+TWO_POW_32 = sp.nat(2 ** 32)
+TWO_POW_64 = sp.nat(2 ** 64)
+NEG_THRESHOLD_32 = sp.nat(2 ** 256 - 2 ** 32)
+NEG_THRESHOLD_64 = sp.nat(2 ** 256 - 2 ** 64)
 
 class TezFinOracle(OracleInterface.OracleInterface):
     """
@@ -117,82 +129,51 @@ class TezFinOracle(OracleInterface.OracleInterface):
         del self.data.alias[asset]
 
     def _decodeUnsignedWord(self, word):
-        """
-            Decodes a 32-byte big-endian ABI word into a nat, one byte at a time
-        """
-        unsignedAcc = sp.local("unsignedAcc", sp.nat(0))
-        unsignedIndex = sp.local("unsignedIndex", sp.nat(0))
-        sp.while unsignedIndex.value < 32:
-            currentByte = sp.slice(word, unsignedIndex.value, 1).open_some(
-                "MALFORMED_PYTH_RESPONSE")
-            unsignedAcc.value = unsignedAcc.value * 256 + BYTE_TO_NAT[currentByte]
-            unsignedIndex.value += 1
-        return unsignedAcc.value
+        """Decodes a 32-byte big-endian ABI word into a nat."""
+        sp.verify(sp.len(word) == 32, "MALFORMED_PYTH_RESPONSE")
+        value = sp.local("value", sp.nat(0))
+        i = sp.local("i", sp.nat(0))
+        sp.while i.value < 32:
+            currentByte = sp.slice(word, i.value, 1).open_some("MALFORMED_PYTH_RESPONSE")
+            value.value = value.value * 256 + BYTE_TO_NAT[currentByte]
+            i.value += 1
+        return value.value
 
     def _decodeUint64Word(self, word):
-        """Decodes the right-aligned uint64 payload used by Pyth confidence."""
-        confidenceAcc = sp.local("confidenceAcc", sp.nat(0))
-        confidenceIndex = sp.local("confidenceIndex", sp.nat(0))
-        sp.while confidenceIndex.value < 8:
-            currentByte = sp.slice(word, 24 + confidenceIndex.value, 1).open_some(
-                "MALFORMED_PYTH_RESPONSE")
-            confidenceAcc.value = confidenceAcc.value * 256 + BYTE_TO_NAT[currentByte]
-            confidenceIndex.value += 1
-        return confidenceAcc.value
+        """
+            Decodes the right-aligned uint64 payload used by Pyth confidence. As an unsigned
+            ABI type its 24 high bytes must always be zero (no sign-extension is valid here);
+            canonicity is equivalent to the full 256-bit value fitting under 2**64.
+        """
+        value = self._decodeUnsignedWord(word)
+        sp.verify(value < TWO_POW_64, "MALFORMED_PYTH_RESPONSE")
+        return value
 
     def _decodePriceWord(self, word):
-        """Decodes Pyth's positive int64 price from the first ABI word."""
-        priceSignByte = sp.slice(word, 0, 1).open_some("MALFORMED_PYTH_RESPONSE")
-        sp.verify(BYTE_TO_NAT[priceSignByte] < 128, "NON_POSITIVE_PYTH_PRICE")
-        priceAcc = sp.local("priceAcc", sp.nat(0))
-        priceIndex = sp.local("priceIndex", sp.nat(0))
-        sp.while priceIndex.value < 8:
-            currentByte = sp.slice(word, 24 + priceIndex.value, 1).open_some(
-                "MALFORMED_PYTH_RESPONSE")
-            priceAcc.value = priceAcc.value * 256 + BYTE_TO_NAT[currentByte]
-            priceIndex.value += 1
-        return priceAcc.value
+        """
+            Decodes a canonical Pyth int64 price. Reinterpreting the whole 256-bit word as
+            two's complement, a canonical 64-bit sign-extension is exactly the set of values
+            that fit under 2**64 (non-negative) or sit at/above 2**256-2**64 (negative); any
+            other value has inconsistent padding bytes and is rejected as malformed.
+        """
+        value = self._decodeUnsignedWord(word)
+        sp.verify((value < TWO_POW_64) | (value >= NEG_THRESHOLD_64), "MALFORMED_PYTH_RESPONSE")
+        sp.verify(value < TWO_POW_64, "NON_POSITIVE_PYTH_PRICE")
+        sp.verify(value > 0, "NON_POSITIVE_PYTH_PRICE")
+        return value
 
     def _decodeExponentWord(self, word):
-        """Decodes Pyth's sign-extended int32 exponent."""
-        exponentSignByte = sp.slice(word, 28, 1).open_some("MALFORMED_PYTH_RESPONSE")
-        exponentAcc = sp.local("exponentAcc", sp.nat(0))
-        exponentIndex = sp.local("exponentIndex", sp.nat(0))
-        sp.while exponentIndex.value < 4:
-            currentByte = sp.slice(word, 28 + exponentIndex.value, 1).open_some(
-                "MALFORMED_PYTH_RESPONSE")
-            exponentAcc.value = exponentAcc.value * 256 + BYTE_TO_NAT[currentByte]
-            exponentIndex.value += 1
-        exponentResult = sp.local("exponentResult", sp.int(0))
-        sp.if BYTE_TO_NAT[exponentSignByte] >= 128:
-            exponentResult.value = sp.to_int(exponentAcc.value) - sp.to_int(2 ** 32)
-        sp.else:
-            exponentResult.value = sp.to_int(exponentAcc.value)
-        return exponentResult.value
+        """Decodes a canonical Pyth int32 exponent with sign-extension validation (see
+        _decodePriceWord for the canonicity argument, applied here with a 32-bit width)."""
+        value = self._decodeUnsignedWord(word)
+        sp.verify((value < TWO_POW_32) | (value >= NEG_THRESHOLD_32), "MALFORMED_PYTH_RESPONSE")
+        sp.if value >= NEG_THRESHOLD_32:
+            return sp.to_int(value) - sp.to_int(TWO_POW_32)
+        return sp.to_int(value)
 
     def _decodePublishTimeWord(self, word):
-        """Decodes Pyth's uint256 publish time with field-specific locals."""
-        publishAcc = sp.local("publishAcc", sp.nat(0))
-        publishIndex = sp.local("publishIndex", sp.nat(0))
-        sp.while publishIndex.value < 32:
-            currentByte = sp.slice(word, publishIndex.value, 1).open_some(
-                "MALFORMED_PYTH_RESPONSE")
-            publishAcc.value = publishAcc.value * 256 + BYTE_TO_NAT[currentByte]
-            publishIndex.value += 1
-        return publishAcc.value
-
-    def _decodeSignedWord(self, word):
-        """
-            Decodes a 32-byte big-endian, sign-extended two's complement ABI word into an int
-        """
-        signedUnsignedValue = self._decodeUnsignedWord(word)
-        signedSignByte = sp.slice(word, 0, 1).open_some("MALFORMED_PYTH_RESPONSE")
-        signedResult = sp.local("signedResult", sp.int(0))
-        sp.if BYTE_TO_NAT[signedSignByte] >= 128:
-            signedResult.value = sp.to_int(signedUnsignedValue) - sp.to_int(TWO_POW_256)
-        sp.else:
-            signedResult.value = sp.to_int(signedUnsignedValue)
-        return signedResult.value
+        """Decodes Pyth's uint256 publish time."""
+        return self._decodeUnsignedWord(word)
 
     @sp.entry_point
     def configurePriceBounds(self, params):
@@ -245,17 +226,25 @@ class TezFinOracle(OracleInterface.OracleInterface):
     @sp.entry_point
     def setFeedIds(self, params):
         """
-            Pins Pyth feed ids and their target nat precision (decimals) per base asset symbol
+            Pins Pyth feed ids, their target nat precision (decimals) and a mandatory
+            per-feed max confidence limit (basis points of raw price) per base asset symbol
         """
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
         sp.set_type(params, sp.TList(sp.TRecord(
-            asset=sp.TString, feedId=sp.TBytes, targetDecimals=sp.TNat)))
+            asset=sp.TString, feedId=sp.TBytes, targetDecimals=sp.TNat,
+            maxConfidenceBps=sp.TNat)))
         sp.for item in params:
             sp.verify(sp.len(item.feedId) == 32, "INVALID_PYTH_FEED_ID")
             sp.verify(item.targetDecimals <= MAX_TARGET_DECIMALS,
                       "INVALID_TARGET_DECIMALS")
+            # A limit of 0 would make the feed permanently unusable (rejecting every quote),
+            # which is indistinguishable from "no approved limit" -- disallow it outright
+            # rather than let it silently masquerade as a configured feed.
+            sp.verify((item.maxConfidenceBps > 0) & (item.maxConfidenceBps <= BPS_DENOMINATOR),
+                      "INVALID_PYTH_CONFIDENCE_LIMIT")
             self.data.feedIds[item.asset] = sp.record(
-                feedId=item.feedId, targetDecimals=item.targetDecimals)
+                feedId=item.feedId, targetDecimals=item.targetDecimals,
+                maxConfidenceBps=item.maxConfidenceBps)
 
     @sp.entry_point
     def removeFeedId(self, asset):
@@ -326,9 +315,10 @@ class TezFinOracle(OracleInterface.OracleInterface):
             sp.verify(publishTimestamp <= sp.now, "FUTURE_PYTH_PUBLISH_TIME")
 
             priceNat = sp.as_nat(rawPrice, message="NON_POSITIVE_PYTH_PRICE")
-            # Fail closed if the reported confidence interval exceeds 25% of the price.
-            # Compare against floor(price / 4) to avoid multiplying an ABI-decoded nat.
-            sp.verify(rawConf <= priceNat // 4, "EXCESSIVE_PYTH_CONFIDENCE")
+            # Fail closed if the reported confidence interval exceeds this feed's own mandatory
+            # limit (no shared/implicit fallback limit across feeds).
+            sp.verify(rawConf * BPS_DENOMINATOR <= priceNat * feedConfig.maxConfidenceBps,
+                      "EXCESSIVE_PYTH_CONFIDENCE")
 
             # normalizedPrice = price * 10^(expo + targetDecimals), using integer arithmetic only.
             decimalShift = rawExpo + sp.to_int(feedConfig.targetDecimals)
