@@ -32,12 +32,19 @@ BYTE_TO_NAT = sp.map(
     l={sp.bytes("0x%02x" % i): i for i in range(256)},
     tkey=sp.TBytes, tvalue=sp.TNat)
 # Canonical two's-complement sign-extension bounds for validating ABI padding without a
-# per-byte loop: an N-bit signed value sign-extended into 256 bits is exactly the set of
-# unsigned 256-bit values below 2**N (non-negative) or at/above 2**256-2**N (negative).
-TWO_POW_32 = sp.nat(2 ** 32)
+# per-byte loop. For an UNSIGNED N-bit field (e.g. Pyth's uint64 confidence) every one of
+# its N bits is magnitude, so canonicity is just the full 256-bit value fitting under 2**N.
+# For a SIGNED N-bit field (e.g. int64 price, int32 exponent) the sign bit lives at bit
+# N-1, not bit N: a canonical sign-extension is the set of unsigned 256-bit values below
+# 2**(N-1) (non-negative, sign bit clear) or at/above 2**256-2**(N-1) (negative, sign bit
+# set and fully extended). Using 2**N there instead would wrongly accept a zero-extended
+# word whose bit N-1 (the actual int sign bit) is set as an oversized positive value.
 TWO_POW_64 = sp.nat(2 ** 64)
-NEG_THRESHOLD_32 = sp.nat(2 ** 256 - 2 ** 32)
 NEG_THRESHOLD_64 = sp.nat(2 ** 256 - 2 ** 64)
+TWO_POW_63 = sp.nat(2 ** 63)
+NEG_THRESHOLD_63 = sp.nat(2 ** 256 - 2 ** 63)
+TWO_POW_31 = sp.nat(2 ** 31)
+NEG_THRESHOLD_31 = sp.nat(2 ** 256 - 2 ** 31)
 
 class TezFinOracle(OracleInterface.OracleInterface):
     """
@@ -152,24 +159,37 @@ class TezFinOracle(OracleInterface.OracleInterface):
     def _decodePriceWord(self, word):
         """
             Decodes a canonical Pyth int64 price. Reinterpreting the whole 256-bit word as
-            two's complement, a canonical 64-bit sign-extension is exactly the set of values
-            that fit under 2**64 (non-negative) or sit at/above 2**256-2**64 (negative); any
-            other value has inconsistent padding bytes and is rejected as malformed.
+            two's complement, a canonical 64-bit-wide signed sign-extension is exactly the
+            set of values that fit under 2**63 (non-negative, sign bit clear) or sit at/above
+            2**256-2**63 (negative, sign bit set and fully extended); any other value --
+            including a zero-extended word whose bit 63 is set, i.e. in [2**63, 2**64) -- has
+            inconsistent padding/sign bytes and is rejected as malformed.
         """
         value = self._decodeUnsignedWord(word)
-        sp.verify((value < TWO_POW_64) | (value >= NEG_THRESHOLD_64), "MALFORMED_PYTH_RESPONSE")
-        sp.verify(value < TWO_POW_64, "NON_POSITIVE_PYTH_PRICE")
+        sp.verify((value < TWO_POW_63) | (value >= NEG_THRESHOLD_63), "MALFORMED_PYTH_RESPONSE")
+        sp.verify(value < TWO_POW_63, "NON_POSITIVE_PYTH_PRICE")
         sp.verify(value > 0, "NON_POSITIVE_PYTH_PRICE")
         return value
 
     def _decodeExponentWord(self, word):
         """Decodes a canonical Pyth int32 exponent with sign-extension validation (see
-        _decodePriceWord for the canonicity argument, applied here with a 32-bit width)."""
+        _decodePriceWord for the canonicity argument, applied here with a 32-bit width, so
+        the sign-bit boundary is 2**31). The negative branch converts the FULL 256-bit
+        decoded word to its signed value by subtracting 2**256 (the word's own width), not
+        2**32 -- subtracting 2**32 would leave the untouched high 224 bits in place and
+        produce an enormous positive number instead of e.g. -8. NOTE: the branch result is
+        assigned to an sp.local and returned once at the end, rather than using a bare
+        `return` inside `sp.if`/`sp.else` -- a `return` there is NOT a conditional return in
+        this SmartPy toolchain: it always takes whichever branch is traced first, regardless
+        of the runtime condition, silently discarding the other branch."""
         value = self._decodeUnsignedWord(word)
-        sp.verify((value < TWO_POW_32) | (value >= NEG_THRESHOLD_32), "MALFORMED_PYTH_RESPONSE")
-        sp.if value >= NEG_THRESHOLD_32:
-            return sp.to_int(value) - sp.to_int(TWO_POW_32)
-        return sp.to_int(value)
+        sp.verify((value < TWO_POW_31) | (value >= NEG_THRESHOLD_31), "MALFORMED_PYTH_RESPONSE")
+        exponentResult = sp.local("exponentResult", sp.int(0))
+        sp.if value >= NEG_THRESHOLD_31:
+            exponentResult.value = sp.to_int(value) - 2 ** 256
+        sp.else:
+            exponentResult.value = sp.to_int(value)
+        return exponentResult.value
 
     def _decodePublishTimeWord(self, word):
         """Decodes Pyth's uint256 publish time."""

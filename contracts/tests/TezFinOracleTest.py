@@ -21,6 +21,27 @@ XTZ_MAX_CONFIDENCE_BPS = sp.nat(50)
 USDT_MAX_CONFIDENCE_BPS = sp.nat(10)
 
 
+class TezFinOracleDecodeTestHarness(TezFinOracle):
+    """
+        Test-only subclass exposing TezFinOracle's private ABI-word decoders as onchain
+        views. It adds no state and no production entrypoints; it exists solely so tests can
+        exercise the actual contract decoder bit-for-bit (same inlined Python method bodies
+        as production TezFinOracle), rather than only the separate pure-Python mirror in
+        contracts/tests/fixtures/pyth_abi_fixtures_test.py. Never compiled/deployed for real
+        (see deploy/compile_targets/CompileTezFinOracle.py, which only targets TezFinOracle).
+    """
+
+    @sp.onchain_view()
+    def decodePriceWordForTest(self, word):
+        sp.set_type(word, sp.TBytes)
+        sp.result(self._decodePriceWord(word))
+
+    @sp.onchain_view()
+    def decodeExponentWordForTest(self, word):
+        sp.set_type(word, sp.TBytes)
+        sp.result(self._decodeExponentWord(word))
+
+
 class View_consumer(sp.Contract):
     def __init__(self, contract):
         self.contract = contract
@@ -64,6 +85,22 @@ class View_consumer(sp.Contract):
                                   "invalid oracle view call")
         sp.verify(sp.fst(oracle_data) == params.timestamp, "TIMESTAMP_MISMATCH")
         sp.verify(sp.snd(oracle_data) == params.price, "PRICE_MISTMATCH")
+
+    @sp.entry_point
+    def verifyDecodedPriceWord(self, params):
+        """Exercises TezFinOracleDecodeTestHarness.decodePriceWordForTest directly."""
+        sp.set_type(params, sp.TRecord(word=sp.TBytes, expectedPrice=sp.TNat))
+        decoded = sp.view("decodePriceWordForTest", self.contract, params.word,
+                          t=sp.TNat).open_some("invalid oracle view call")
+        sp.verify(decoded == params.expectedPrice, "DECODED_PRICE_MISMATCH")
+
+    @sp.entry_point
+    def verifyDecodedExponentWord(self, params):
+        """Exercises TezFinOracleDecodeTestHarness.decodeExponentWordForTest directly."""
+        sp.set_type(params, sp.TRecord(word=sp.TBytes, expectedExponent=sp.TInt))
+        decoded = sp.view("decodeExponentWordForTest", self.contract, params.word,
+                          t=sp.TInt).open_some("invalid oracle view call")
+        sp.verify(decoded == params.expectedExponent, "DECODED_EXPONENT_MISMATCH")
 
     @sp.entry_point
     def verifyValidatedPrice(self, params):
@@ -323,3 +360,49 @@ def test():
         cToken=freshMarket, asset="XTZ-USD", previousPrice=sp.nat(0),
         previousTimestamp=sp.timestamp(0), expectedPrice=sp.nat(0)).run(valid=False)
 
+    scenario.h2("Direct decoder tests (exercise the actual contract decoder, not just the "
+                "pure-Python fixture mirror)")
+    # TezFinOracleDecodeTestHarness exposes _decodePriceWord/_decodeExponentWord as views --
+    # same inlined method bodies as production TezFinOracle -- so these calls run the real
+    # contract bytecode, catching bugs (e.g. wrong sign-extension boundary/subtraction) that
+    # a standalone Python mirror of the intended algorithm would not catch.
+    decodeHarness = TezFinOracleDecodeTestHarness(admin.address, admin.address)
+    scenario += decodeHarness
+    decodeConsumer = View_consumer(decodeHarness.address)
+    scenario += decodeConsumer
+
+    scenario.h3("Valid canonical negative exponent (-8) decodes correctly")
+    decodeConsumer.verifyDecodedExponentWord(
+        word=sp.bytes("0x" + (-8).to_bytes(32, "big", signed=True).hex()),
+        expectedExponent=sp.int(-8))
+
+    scenario.h3("Valid canonical positive exponent still decodes correctly")
+    decodeConsumer.verifyDecodedExponentWord(
+        word=sp.bytes("0x" + (5).to_bytes(32, "big", signed=True).hex()),
+        expectedExponent=sp.int(5))
+
+    scenario.h3("Malformed exponent word: zero-extended but int32 sign bit (bit 31) set")
+    # bytes[0:28] are all 0x00 (zero-extended), but the low 4 bytes encode 2**31, whose top
+    # bit is set -- not a valid sign-extension of any int32 value, must fail closed rather
+    # than be misread as a huge in-range positive exponent.
+    decodeConsumer.verifyDecodedExponentWord(
+        word=sp.bytes("0x" + (2 ** 31).to_bytes(32, "big").hex()),
+        expectedExponent=sp.int(0)).run(valid=False, exception="MALFORMED_PYTH_RESPONSE")
+
+    scenario.h3("Valid canonical positive price still decodes correctly")
+    decodeConsumer.verifyDecodedPriceWord(
+        word=sp.bytes("0x" + (12345).to_bytes(32, "big").hex()),
+        expectedPrice=sp.nat(12345))
+
+    scenario.h3("Valid canonical negative price is rejected as NON_POSITIVE, not malformed")
+    decodeConsumer.verifyDecodedPriceWord(
+        word=sp.bytes("0x" + (-1).to_bytes(32, "big", signed=True).hex()),
+        expectedPrice=sp.nat(0)).run(valid=False, exception="NON_POSITIVE_PYTH_PRICE")
+
+    scenario.h3("Malformed price word: zero-extended but int64 sign bit (bit 63) set")
+    # bytes[0:24] are all 0x00 (zero-extended), but the low 8 bytes encode 2**63, whose top
+    # bit is set -- not a valid sign-extension of any int64 value. Before the fix this was
+    # misread as the huge positive price 2**63 instead of failing closed.
+    decodeConsumer.verifyDecodedPriceWord(
+        word=sp.bytes("0x" + (2 ** 63).to_bytes(32, "big").hex()),
+        expectedPrice=sp.nat(0)).run(valid=False, exception="MALFORMED_PYTH_RESPONSE")

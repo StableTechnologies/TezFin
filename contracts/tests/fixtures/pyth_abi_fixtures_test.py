@@ -288,9 +288,34 @@ FIXTURES = [
         expected_error="MALFORMED_PYTH_RESPONSE",
     ),
     dict(
+        # Regression case for a bug fixed in the SmartPy contract's arithmetic-shortcut
+        # decoder: zero-extended (bytes[0:24]=0x00) with the int64 sign bit (bit 63) set is
+        # not a valid sign-extension of any int64 value -- it must fail closed, not be
+        # misread as the oversized positive price 2**63.
+        name="malformed price: zero-extended word with int64 sign bit set",
+        response=(encode_uint_word(2 ** 63) + encode_uint_word(0)
+                  + encode_int_word(-2) + encode_uint_word(NOW - 1)),
+        target_decimals=6,
+        max_confidence_bps=BPS_DENOMINATOR,
+        expect_ok=False,
+        expected_error="MALFORMED_PYTH_RESPONSE",
+    ),
+    dict(
         name="malformed confidence padding",
         response=(encode_uint_word(42) + b"\x01" + b"\x00" * 23 + b"\x00" * 8
                   + encode_int_word(-2) + encode_uint_word(NOW - 1)),
+        target_decimals=6,
+        max_confidence_bps=BPS_DENOMINATOR,
+        expect_ok=False,
+        expected_error="MALFORMED_PYTH_RESPONSE",
+    ),
+    dict(
+        # Regression case, exponent analogue of the price case above: zero-extended
+        # (bytes[0:28]=0x00) with the int32 sign bit (bit 31) set is not a valid
+        # sign-extension of any int32 value.
+        name="malformed exponent: zero-extended word with int32 sign bit set",
+        response=(encode_uint_word(42) + encode_uint_word(1)
+                  + encode_uint_word(2 ** 31) + encode_uint_word(NOW - 1)),
         target_decimals=6,
         max_confidence_bps=BPS_DENOMINATOR,
         expect_ok=False,
