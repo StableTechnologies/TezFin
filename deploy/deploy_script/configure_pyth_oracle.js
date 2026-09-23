@@ -17,8 +17,10 @@
  * `PythConfidenceLimitsBps` field, NOT hard-coded here, so the manifest is the single
  * reproducible source of the activated configuration. They are only ever sent on-chain
  * when the manifest also sets `PythConfidenceLimitsApproved: true` (i.e. governance/risk
- * sign-off has been recorded for those specific values). On mainnet that flag is mandatory
- * and there is no override. On non-mainnet profiles only, an operator may bypass it for a
+ * sign-off has been recorded for those specific values). The mainnet gate is derived from
+ * the ACTUAL connected chain id (not just config.json's networkProfile label), so a
+ * mislabeled profile cannot bypass it on a real mainnet connection; that flag is mandatory
+ * and there is no override there. Off mainnet only, an operator may bypass it for a
  * one-off smoke test by setting ALLOW_UNAPPROVED_CONFIDENCE_LIMITS=1, which prints a loud
  * warning and must never be used to justify activating a market.
  *
@@ -39,9 +41,17 @@
  *                     - non-mainnet only; bypasses the PythConfidenceLimitsApproved gate.
  */
 const fs = require('fs');
-const { config, createTezosClient, resolveDeployResultPath } = require('./util.js');
+const { config, createTezosClient, resolveDeployResultPath, checkChainIdMatch } = require('./util.js');
+const { MAINNET_CHAIN_IDS } = require('./assert_network.js');
 
 const REQUIRED_CONFIDENCE_FEEDS = ['BTC_USD', 'XTZ_USD', 'USDT_USD'];
+
+// True if EITHER signal says mainnet, so a mislabeled config.json profile cannot bypass
+// the gate on a chain that is actually mainnet (and vice versa a mainnet-labeled profile
+// connected elsewhere still stays gated).
+function isActuallyMainnet(networkProfile, chainId) {
+    return networkProfile === 'mainnet' || MAINNET_CHAIN_IDS.has(chainId);
+}
 
 function encodeUintWord(value) {
     if (!Number.isSafeInteger(value) || value < 0) {
@@ -58,7 +68,7 @@ async function confirm(operation, label) {
 
 // Resolves the per-feed maxConfidenceBps values to activate, refusing to run unless the
 // manifest marks them approved (or, on non-mainnet only, an explicit operator override).
-function resolveApprovedConfidenceLimits(manifest, deployResultPath) {
+function resolveApprovedConfidenceLimits(manifest, deployResultPath, isMainnet) {
     const limits = manifest.PythConfidenceLimitsBps;
     if (!limits) {
         throw new Error(`${deployResultPath} is missing PythConfidenceLimitsBps`);
@@ -68,7 +78,6 @@ function resolveApprovedConfidenceLimits(manifest, deployResultPath) {
         throw new Error(`${deployResultPath} PythConfidenceLimitsBps is missing: ${missing.join(', ')}`);
     }
 
-    const isMainnet = config.networkProfile === 'mainnet';
     const approved = manifest.PythConfidenceLimitsApproved === true;
     if (approved) {
         return limits;
@@ -109,9 +118,14 @@ async function main() {
             `${deployResultPath} is missing TezFinOracle/PythCore/PythMaxAgeSeconds/PythFeedIds`,
         );
     }
-    const confidenceLimits = resolveApprovedConfidenceLimits(manifest, deployResultPath);
 
-    const { tezos, publicKeyHash } = await createTezosClient();
+    // Resolve the actual connected chain BEFORE any gate decision or write, so a manifest
+    // pointed at the wrong network (or a mislabeled config.json profile) is caught first.
+    const { tezos, publicKeyHash, chainId } = await createTezosClient();
+    checkChainIdMatch(manifest.chainId, chainId, deployResultPath);
+    const isMainnet = isActuallyMainnet(config.networkProfile, chainId);
+    const confidenceLimits = resolveApprovedConfidenceLimits(manifest, deployResultPath, isMainnet);
+
     console.log(`[INFO] Configuring TezFinOracle ${oracleAddress} as admin ${publicKeyHash}`);
     const oracle = await tezos.contract.at(oracleAddress);
 
@@ -167,7 +181,11 @@ async function main() {
     );
 }
 
-main().catch((error) => {
-    console.error(`[ERROR] Pyth oracle configuration failed: ${error.message}`);
-    process.exitCode = 1;
-});
+if (require.main === module) {
+    main().catch((error) => {
+        console.error(`[ERROR] Pyth oracle configuration failed: ${error.message}`);
+        process.exitCode = 1;
+    });
+}
+
+module.exports = { isActuallyMainnet, resolveApprovedConfidenceLimits };

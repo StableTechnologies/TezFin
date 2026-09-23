@@ -24,6 +24,7 @@
     "verify:mainnet-oracle": "node verify_mainnet_oracle.js",
     "configure:pyth-oracle": "node configure_pyth_oracle.js",
     "verify:shadownet-pyth-oracle": "node verify_shadownet_pyth_oracle.js",
+    "measure:pyth-confidence": "node measure_pyth_confidence.js",
     "test": "node --test test/*.test.js"
   }
 }

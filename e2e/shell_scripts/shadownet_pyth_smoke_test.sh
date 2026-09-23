@@ -36,12 +36,19 @@ manifest="${DEPLOY_MANIFEST:?Set DEPLOY_MANIFEST to e.g. TezFinBuild/deploy_resu
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
+# Single source of truth for the compile output directory, used by both the compile
+# step and the redeploy step below, so they can never silently diverge onto two
+# different directories (e.g. one hard-coded path for compiling, another for deploying).
+oracle_compile_dir="/tmp/tezfin_oracle_compiled"
+
 echo "== 1/7: SmartPy oracle test suite =="
 "$smartpy" test contracts/tests/TezFinOracleTest.py /tmp/tezfin_oracle_tests --purge
 
 echo "== 2/7: Production compile (shadownet manifest) =="
+rm -rf "$oracle_compile_dir"
 DEPLOY_MANIFEST="$manifest" "$smartpy" compile deploy/compile_targets/CompileTezFinOracle.py \
-  /tmp/tezfin_oracle_compiled --purge --protocol kathmandu
+  "$oracle_compile_dir" --purge --protocol kathmandu
+compiled_contract_hash="$(sha256sum "$oracle_compile_dir/TezFinOracle/step_000_cont_0_contract.json" | awk '{print $1}')"
 
 echo "== 3/7: Origination operation-size guard =="
 python3 deploy/compile_targets/tests/test_operation_size.py "$smartpy"
@@ -57,7 +64,14 @@ fi
 
 if [[ "${REDEPLOY:-0}" == "1" ]]; then
   echo "== 5/7: Redeploying TezFinOracle to Shadownet =="
-  (cd deploy/deploy_script && npm ci && DEPLOY_MANIFEST="$repo_root/$manifest" node deploy.js)
+  # Dry-run guard: prove the artifact this step is about to deploy is byte-identical to
+  # the one compiled in step 2/7, not a stale/unrelated directory left over from a prior run.
+  redeploy_hash="$(sha256sum "$oracle_compile_dir/TezFinOracle/step_000_cont_0_contract.json" | awk '{print $1}')"
+  if [[ "$redeploy_hash" != "$compiled_contract_hash" ]]; then
+    echo "Compiled artifact at $oracle_compile_dir changed since step 2/7 (expected $compiled_contract_hash, got $redeploy_hash); refusing to deploy a stale/unexpected artifact." >&2
+    exit 1
+  fi
+  (cd deploy/deploy_script && npm ci && DEPLOY_MANIFEST="$repo_root/$manifest" node deploy_compiled_target.js "$oracle_compile_dir")
 else
   echo "== 5/7: SKIPPED (set REDEPLOY=1 to originate a fresh TezFinOracle first) =="
 fi

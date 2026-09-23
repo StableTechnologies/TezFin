@@ -567,6 +567,7 @@ module.exports = {
     checkConnection,
     runE2E,
     run,
+    runDeployment,
     syncDeploymentOriginator,
     verifyOracleAddress,
     config,

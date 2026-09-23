@@ -24,6 +24,8 @@ const {
 const { checkNetworkExpectation, MAINNET_CHAIN_IDS } = require('../assert_network.js');
 const { findMissingCanonicalKeys, verifyAgainstAllowlist, REQUIRED_CANONICAL_KEYS, VETTED_MAINNET_ADDRESSES } = require('../mainnet_preflight.js');
 const { parsePriceResult } = require('../verify_mainnet_oracle.js');
+const { isActuallyMainnet, resolveApprovedConfidenceLimits } = require('../configure_pyth_oracle.js');
+const { resolveCompiledContractsPath } = require('../deploy_compiled_target.js');
 
 const CUSDT_COMPILED_ADDRESSES = [
     { string: 'KT1Wq7uJeiXXociunW4LqQZzdNvM7QYbtVEN' },
@@ -117,6 +119,139 @@ test('assertNetwork guard: accepts a correctly-matched mainnet chain id', () => 
     const [mainnetChainId] = MAINNET_CHAIN_IDS;
     assert.doesNotThrow(() => checkNetworkExpectation('mainnet', 'mainnet', mainnetChainId, 'https://node.example'));
 });
+
+test('isActuallyMainnet: true for a mainnet-labeled profile, regardless of chain id', () => {
+    assert.equal(isActuallyMainnet('mainnet', 'NetXY2oPPzkxUW1'), true);
+});
+
+test('isActuallyMainnet: true for a mislabeled profile connected to an actual mainnet chain id', () => {
+    const [mainnetChainId] = MAINNET_CHAIN_IDS;
+    assert.equal(isActuallyMainnet('shadownet', mainnetChainId), true);
+});
+
+test('isActuallyMainnet: false when neither the profile nor the connected chain id is mainnet', () => {
+    assert.equal(isActuallyMainnet('shadownet', 'NetXtLrzvQDobza'), false);
+});
+
+test('resolveApprovedConfidenceLimits: returns limits when approved, regardless of mainnet', () => {
+    const manifest = {
+        PythConfidenceLimitsBps: { BTC_USD: 25, XTZ_USD: 50, USDT_USD: 10 },
+        PythConfidenceLimitsApproved: true,
+    };
+    assert.deepEqual(
+        resolveApprovedConfidenceLimits(manifest, 'test manifest', true),
+        manifest.PythConfidenceLimitsBps,
+    );
+});
+
+test('resolveApprovedConfidenceLimits: rejects unapproved limits on mainnet with no override', () => {
+    const manifest = {
+        PythConfidenceLimitsBps: { BTC_USD: 25, XTZ_USD: 50, USDT_USD: 10 },
+        PythConfidenceLimitsApproved: false,
+    };
+    const previous = process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    delete process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    try {
+        assert.throws(
+            () => resolveApprovedConfidenceLimits(manifest, 'test manifest', true),
+            /there is no override for mainnet/,
+        );
+    } finally {
+        if (previous !== undefined) process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS = previous;
+    }
+});
+
+test('resolveApprovedConfidenceLimits: rejects a mislabeled profile that is actually mainnet, even with the bypass env set', () => {
+    const manifest = {
+        PythConfidenceLimitsBps: { BTC_USD: 25, XTZ_USD: 50, USDT_USD: 10 },
+        PythConfidenceLimitsApproved: false,
+    };
+    const previous = process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS = '1';
+    try {
+        // isMainnet=true here simulates isActuallyMainnet() having detected the real chain id
+        // as mainnet even though config.json's networkProfile was mislabeled as non-mainnet.
+        assert.throws(
+            () => resolveApprovedConfidenceLimits(manifest, 'test manifest', true),
+            /there is no override for mainnet/,
+        );
+    } finally {
+        if (previous !== undefined) process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS = previous;
+        else delete process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    }
+});
+
+test('resolveApprovedConfidenceLimits: allows the explicit non-mainnet bypass', () => {
+    const manifest = {
+        PythConfidenceLimitsBps: { BTC_USD: 25, XTZ_USD: 50, USDT_USD: 10 },
+        PythConfidenceLimitsApproved: false,
+    };
+    const previous = process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS = '1';
+    try {
+        assert.deepEqual(
+            resolveApprovedConfidenceLimits(manifest, 'test manifest', false),
+            manifest.PythConfidenceLimitsBps,
+        );
+    } finally {
+        if (previous !== undefined) process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS = previous;
+        else delete process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    }
+});
+
+test('resolveApprovedConfidenceLimits: rejects off-mainnet without approval or bypass', () => {
+    const manifest = {
+        PythConfidenceLimitsBps: { BTC_USD: 25, XTZ_USD: 50, USDT_USD: 10 },
+        PythConfidenceLimitsApproved: false,
+    };
+    const previous = process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    delete process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS;
+    try {
+        assert.throws(
+            () => resolveApprovedConfidenceLimits(manifest, 'test manifest', false),
+            /Set PythConfidenceLimitsApproved: true/,
+        );
+    } finally {
+        if (previous !== undefined) process.env.ALLOW_UNAPPROVED_CONFIDENCE_LIMITS = previous;
+    }
+});
+
+test('resolveApprovedConfidenceLimits: rejects a manifest missing a required feed', () => {
+    const manifest = {
+        PythConfidenceLimitsBps: { BTC_USD: 25, USDT_USD: 10 },
+        PythConfidenceLimitsApproved: true,
+    };
+    assert.throws(
+        () => resolveApprovedConfidenceLimits(manifest, 'test manifest', false),
+        /is missing: XTZ_USD/,
+    );
+});
+
+test('resolveCompiledContractsPath: rejects a missing argument', () => {
+    assert.throws(
+        () => resolveCompiledContractsPath(['node', 'deploy_compiled_target.js']),
+        /Usage: node deploy_compiled_target.js/,
+    );
+});
+
+test('resolveCompiledContractsPath: rejects a nonexistent directory', () => {
+    assert.throws(
+        () => resolveCompiledContractsPath(['node', 'deploy_compiled_target.js', '/tmp/definitely-not-here-12345']),
+        /does not exist or is not a directory/,
+    );
+});
+
+test('resolveCompiledContractsPath: rejects a path that is a file, not a directory', () => {
+    assert.throws(
+        () => resolveCompiledContractsPath(['node', 'deploy_compiled_target.js', __filename]),
+        /does not exist or is not a directory/,
+    );
+});
+
+test('resolveCompiledContractsPath: accepts an existing directory', () => {
+    assert.equal(resolveCompiledContractsPath(['node', 'deploy_compiled_target.js', __dirname]), __dirname);
+});
+
 
 test('micheline_equal: treats differently-ordered object keys as equal', () => {
     const a = { prim: 'Pair', args: [{ int: '1' }, { string: 'tz1abc' }] };

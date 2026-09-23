@@ -9,32 +9,32 @@
       "storageSha256": "4f47d8642be1ec3f7e8832757c06b9277e2926607077c7c6aa1c4e4050cd313f"
     },
     "CUSDt": {
-      "contractSha256": "278e21d79c7369589f98058881d25efd651f5bd3a05b852c0600e85cb6549944",
-      "storageSha256": "0da38b303b4965ab2be404fc96d8f79afef26b9fb78d35a9574c0d2aad079637"
+      "contractSha256": "5fbd0966b3b3a69b1fca0b807acc99be77698654fcac6ba89eaa6580026fb394",
+      "storageSha256": "4d513458927c04b88285a66315b209379bbdadf422f12e93b69249b306e1d267"
     },
     "CXTZ": {
-      "contractSha256": "1011764e4d959754e5d3a7b496954b6734e04f70962d3b8f1845506997676188",
-      "storageSha256": "bd12edc724651647ebb7bd2d750cb58ae6a44ea17f5ec76897046b0c2705516c"
+      "contractSha256": "4073b500f047891504cd13412a5fa27422393c4071b710b81fd2806887b55a38",
+      "storageSha256": "274c50fb98efdf06c566d020a4f206cfc9bf701e5c7a9f6dc7f49beb60e6ab1a"
     },
     "CXTZ_IRM": {
       "contractSha256": "6ac58d269797ee5c2f5c04919e9c4fd89ddeb1af75903c8e6620aba3d2477c13",
       "storageSha256": "ce495cc8c035066279eec6e8907172d3cade64e5c24c8e9730983144e2bc2973"
     },
     "Comptroller": {
-      "contractSha256": "e612191c212fb81be53d4eb5f63fba2b6ce1275bb841822f1ac9b23fc697ea35",
+      "contractSha256": "53db5ba21a2d2de00863fae9d5ff7166baf803be89b68d2bf42863e40bdd36c0",
       "storageSha256": "74d0a4f27c2296a77f12501903529ab9b89af79fe359ad4a45ffe00ea3fc2eb8"
     },
     "CtzBTC": {
-      "contractSha256": "d8c178ce918785472d972ec50e4cfc6d14f4556624db9b3b848a6d6cb6035828",
-      "storageSha256": "72472795d0847c067a56f2db1efb21dee1c478ad0ad8b14a8fdc7e87d6cc373e"
+      "contractSha256": "193a0b26977dc17da7a69faa891cbe1f71930b035b4a92b6d82b13085b886843",
+      "storageSha256": "492359a20f960231f25e82815125faceee00fac989ec2566b43c88ee000311a5"
     },
     "CtzBTC_IRM": {
       "contractSha256": "6ac58d269797ee5c2f5c04919e9c4fd89ddeb1af75903c8e6620aba3d2477c13",
       "storageSha256": "65a18026e1b9156ef9695caecb6d57ab945286737ab7dfa0b66cc1233e72096b"
     },
     "Governance": {
-      "contractSha256": "deb90c1859deb61bc6c4d9679ec2b452264b459886e4b3cbe4b1968ecbbe795e",
-      "storageSha256": "8375a124534108c02419eed14ebc338c6d746b91031dc0ed7ad965d5b3157cab"
+      "contractSha256": "26f578d73d48556b970687895d8ac9481381a501f87a222f386216bb5e85b601",
+      "storageSha256": "208bbeca50ffb4d741374d0724cb6ce5359ecbcea90a7b6c8dd18ca45f3067ef"
     },
     "TezFinOracle": {
       "contractSha256": "2af5e7c4e9b6b627782a338ec9eddcc52d3ed9a6c39cc33e791952bc014eb8f3",
