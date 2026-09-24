@@ -67,54 +67,91 @@ only:
   going forward if it calls Hermes
   directly -- flagged here for awareness, not addressed by this change.
 
-## Required Output (normal period, 24h, on-chain)
+## Dataset Provenance
 
-Source: `collect-onchain` against Etherlink Mainnet Pyth Core
-(`0x2880aB155794e7179c9eE2e38200202908C17B43`), one sample per feed per
-minute for 24 hours (1,440 samples per feed).
+The raw observations are committed at `TezFinBuild/pyth_onchain_samples/`.
+The initial collector logs were added in tooling commit
+[`01a5e7ad28255b353dcb36dc0218f6c3d379b0e5`](https://github.com/AK-APRIORIT/TezFin/commit/01a5e7ad28255b353dcb36dc0218f6c3d379b0e5); the current 1,440-row CSV files are identified by these checksums:
 
-```text
-feed, period, samples, p50_ratio, p95_ratio, p99_ratio, max_ratio,
-rejections_at_proposed_limit, additional_unavailability
+| File | SHA-256 |
+|---|---|
+| `BTC_USD.csv` | `08b9c74b095e3ef125a672ad345aefd7f1011f0051e28af76d4abc72c6b3b726` |
+| `XTZ_USD.csv` | `06e0eb03873b8527c1fb9d6f760129d80f6f5c36925289f4a052148acfac3efc` |
+| `USDT_USD.csv` | `b5a3e01f755be5df2c0e00ee2def4384097d74bd7b00441a1a18dcac6d562eca` |
+
+- Source: on-chain `getPriceUnsafe(bytes32)` observations, collected by `collect-onchain`.
+- RPC: `https://node.mainnet.etherlink.com`.
+- Pyth Core: `0x2880aB155794e7179c9eE2e38200202908C17B43`.
+- BTC/USD feed ID: `e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43`.
+- XTZ/USD feed ID: `0affd4b8ad136a21d79bc82450a325ee12ff55a235abc242666e423b8bcffd03`.
+- USDT/USD feed ID: `2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b`.
+- Common observation window: `2026-09-21T10:16:59Z` through `2026-09-22T10:16:01Z` (23h 59m 02s).
+- Each CSV contains exactly 1,440 successful observations; the raw files are the authoritative sample set for the report below.
+
+Reproduce the report from the repository root:
+
+```sh
+node deploy/deploy_script/measure_pyth_confidence.js report \
+  --source onchain \
+  --out-dir TezFinBuild/pyth_onchain_samples \
+  --bps 25,50,10 \
+  --thresholds 60,180,300,600 \
+  --period "2026-09-21T10:16:59Z .. 2026-09-22T10:16:01Z"
 ```
 
-| feed | period | samples | p50_ratio | p95_ratio | p99_ratio | max_ratio | rejections @ proposed limit | additional unavailability |
-|---|---|---:|---:|---:|---:|---:|---:|---:|
-| BTC/USD | 24h normal | 1,440 | 1.45 bps | 2.36 bps | 2.81 bps | 4.83 bps | 0 (max is 19.3% of the 25 bps limit) | 0s |
-| XTZ/USD | 24h normal | 1,440 | 2.92 bps | 4.94 bps | 5.72 bps | 9.07 bps | 0 (max is 18.1% of the 50 bps limit) | 0s |
-| USDT/USD | 24h normal | 1,440 | 0.77 bps | 1.44 bps | 1.79 bps | 3.40 bps | 0 (max is 34.0% of the 10 bps limit) | 0s |
+## Confidence Results
 
-"additional unavailability" is the extra stale/unavailable time a confidence
-rejection would add on top of freshness-only downtime, i.e. samples where the
-publish time was fresh enough but the confidence ratio still exceeded the
-candidate limit. Across this run, no sample's confidence ratio exceeded its
-feed's proposed limit, so the proposed limits added zero additional
-unavailability beyond the freshness-only figures below.
+Ratios are reported in basis points (`conf / abs(price) * 10,000`). Percentiles
+use the deterministic order statistic at `floor(q * n)` in the sorted sample
+array. Rejection counts use the strict condition `ratio_bps > limit_bps`.
 
-Each feed had 1,440 raw on-chain samples but fewer unique Pyth quotes (i.e. a
-same `publish_time` was observed by more than one consecutive poll), which
-must not be conflated with 1,440 independent updater updates:
+| Feed | Observations | Successful | Failed | Unique `publish_time` | Repeated successful neighbors | p50 | p95 | p99 | Max | Rejections at proposed limit |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| BTC/USD | 1,440 | 1,440 | 0 | 1,018 | 422 | 1.45 bps | 2.36 bps | 2.81 bps | 4.83 bps | 0 @ 25 bps |
+| XTZ/USD | 1,440 | 1,440 | 0 | 1,020 | 420 | 2.92 bps | 4.94 bps | 5.72 bps | 9.07 bps | 0 @ 50 bps |
+| USDT/USD | 1,440 | 1,440 | 0 | 1,020 | 420 | 0.77 bps | 1.44 bps | 1.80 bps | 3.40 bps | 0 @ 10 bps |
 
-| feed | observations | unique `publish_time` | repeated-neighbor observations |
+No successful observation exceeded its feed's proposed limit. The proposed
+limits therefore add zero confidence-based rejections in this dataset.
+
+## Freshness and Availability
+
+Per-feed observation freshness is evaluated at each successful poll timestamp
+using `0 <= observed_at - publish_time <= threshold`. Failed polls are counted
+separately and do not refresh the last successful quote; quote freshness
+continues to be determined by that quote's `publish_time`. System availability
+is time-integrated over the common first/last observation window: all three
+latest successful quotes must remain within the threshold at the same instant.
+Stale episodes are contiguous system unavailable intervals.
+
+| Feed | Threshold | Fresh successful observations | Stale successful observations |
 |---|---:|---:|---:|
-| BTC/USD | 1,440 | 1,018 | 422 |
-| XTZ/USD | 1,440 | 1,020 | 420 |
-| USDT/USD | 1,440 | 1,020 | 420 |
+| BTC/USD | 60s | 1,011 | 429 |
+| BTC/USD | 180s | 1,377 | 63 |
+| BTC/USD | 300s | 1,426 | 14 |
+| BTC/USD | 600s | 1,439 | 1 |
+| XTZ/USD | 60s | 1,011 | 429 |
+| XTZ/USD | 180s | 1,377 | 63 |
+| XTZ/USD | 300s | 1,426 | 14 |
+| XTZ/USD | 600s | 1,439 | 1 |
+| USDT/USD | 60s | 1,013 | 427 |
+| USDT/USD | 180s | 1,377 | 63 |
+| USDT/USD | 300s | 1,426 | 14 |
+| USDT/USD | 600s | 1,439 | 1 |
 
-About 29% of observations repeated the previous `publish_time`: polling
-occurred roughly once per minute, but the underlying Pyth quote updated less
-often.
+| Threshold | System uptime | Fresh seconds | Stale seconds | Stale episodes | Longest stale episode |
+|---:|---:|---:|---:|---:|---:|
+| 60s | 38.908% | 33,594 | 52,748 | 998 | 653s |
+| 180s | 92.813% | 80,137 | 6,205 | 87 | 533s |
+| 300s | 98.457% | 85,010 | 1,332 | 16 | 413s |
+| 600s | 99.869% | 86,229 | 113 | 1 | 113s |
 
-## Freshness / System Availability (same 24h run)
+At the 300s freshness threshold, the system recorded 16 stale episodes and
+1,332 seconds of total stale downtime (22 minutes 12 seconds). At 60s, the
+corresponding result is 998 episodes and 52,748 seconds of downtime; the 22:12
+figure does not apply to that threshold.
 
-| freshness threshold | fresh samples | stale samples | time-weighted system uptime |
-|---:|---:|---:|---:|
-| 60s | 1,009 | 431 | 38.908% |
-| 180s | 1,377 | 63 | 92.813% |
-| 300s | 1,426 | 14 | 98.457% |
-| 600s | 1,438 | 1 | 99.869% |
-
-Additional observations for this run: 16 stale episodes; the longest stale
-episode lasted 413 seconds; total system stale downtime was 22 minutes 12
-seconds. "System" here means all three required feeds simultaneously fresh;
-see the updater-availability report for the underlying methodology.
+These results replace the previously reported availability figures, which were
+not reproducible from the committed raw sample set. The stressed/high-volatility
+measurement period remains pending; these normal-period observations do not
+approve the proposed limits for production.

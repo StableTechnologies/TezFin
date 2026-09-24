@@ -35,6 +35,10 @@ smartpy="${1:?Usage: $0 /path/to/SmartPy.sh}"
 manifest="${DEPLOY_MANIFEST:?Set DEPLOY_MANIFEST to e.g. TezFinBuild/deploy_result/deploy.shadownet.json}"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
+if [[ "$manifest" != /* ]]; then
+  manifest="$repo_root/$manifest"
+fi
+active_manifest="$manifest"
 
 # Single source of truth for the compile output directory, used by both the compile
 # step and the redeploy step below, so they can never silently diverge onto two
@@ -71,15 +75,18 @@ if [[ "${REDEPLOY:-0}" == "1" ]]; then
     echo "Compiled artifact at $oracle_compile_dir changed since step 2/7 (expected $compiled_contract_hash, got $redeploy_hash); refusing to deploy a stale/unexpected artifact." >&2
     exit 1
   fi
-  (cd deploy/deploy_script && npm ci && DEPLOY_MANIFEST="$repo_root/$manifest" node deploy_compiled_target.js "$oracle_compile_dir")
+  fresh_manifest_dir="$(mktemp -d /tmp/tezfin_oracle_manifest.XXXXXX)"
+  active_manifest="$fresh_manifest_dir/deploy.shadownet.json"
+  (cd deploy/deploy_script && npm ci && DEPLOY_MANIFEST="$manifest" node deploy_compiled_target.js \
+    "$oracle_compile_dir" --fresh-target TezFinOracle --manifest-output "$active_manifest")
 else
   echo "== 5/7: SKIPPED (set REDEPLOY=1 to originate a fresh TezFinOracle first) =="
 fi
 
 echo "== 6/7: Admin Pyth/NAC configuration (setPythCore -> setPythMaxAge -> setFeedIds -> configurePriceBounds -> configureMaxPriceAge) =="
-(cd deploy/deploy_script && DEPLOY_MANIFEST="$repo_root/$manifest" node configure_pyth_oracle.js)
+(cd deploy/deploy_script && DEPLOY_MANIFEST="$active_manifest" node configure_pyth_oracle.js)
 
 echo "== 7/7: Live read-only verification (native feeds, proxies, aliases, getValidatedPrice) =="
-(cd deploy/deploy_script && DEPLOY_MANIFEST="$repo_root/$manifest" node verify_shadownet_pyth_oracle.js)
+(cd deploy/deploy_script && DEPLOY_MANIFEST="$active_manifest" node verify_shadownet_pyth_oracle.js)
 
 echo "Shadownet Pyth/NAC smoke test complete."

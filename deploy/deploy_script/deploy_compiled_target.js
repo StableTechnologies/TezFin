@@ -16,6 +16,7 @@
  *   node deploy_compiled_target.js /tmp/tezfin_oracle_compiled
  */
 const fs = require('fs');
+const path = require('path');
 const { runDeployment, resolveDeployResultPath } = require('./util.js');
 
 function resolveCompiledContractsPath(argv) {
@@ -31,7 +32,55 @@ function resolveCompiledContractsPath(argv) {
 
 async function main() {
     const compiledContractsPath = resolveCompiledContractsPath(process.argv);
-    await runDeployment(compiledContractsPath, resolveDeployResultPath());
+    const args = process.argv.slice(3);
+    let freshTarget;
+    let manifestOutput;
+    for (let index = 0; index < args.length; index += 1) {
+        if (args[index] === '--fresh-target') freshTarget = args[++index];
+        else if (args[index] === '--manifest-output') manifestOutput = args[++index];
+        else throw new Error(`Unknown argument: ${args[index]}`);
+    }
+
+    await deployCompiledTarget(compiledContractsPath, {
+        freshTarget,
+        manifestOutput,
+        sourceManifest: resolveDeployResultPath(),
+    });
+}
+
+async function deployCompiledTarget(compiledContractsPath, {
+    freshTarget,
+    manifestOutput,
+    sourceManifest = resolveDeployResultPath(),
+    runDeploymentFn = runDeployment,
+} = {}) {
+    const deploymentManifest = freshTarget
+        ? createFreshTargetManifestCopy(sourceManifest, manifestOutput, freshTarget)
+        : sourceManifest;
+    if (freshTarget) console.log(`[INFO] Fresh deployment manifest: ${deploymentManifest}`);
+    await runDeploymentFn(compiledContractsPath, deploymentManifest);
+    return deploymentManifest;
+}
+
+function createFreshTargetManifestCopy(sourcePath, outputPath, targetName) {
+    if (!targetName || !outputPath) {
+        throw new Error('--fresh-target requires both a target name and --manifest-output');
+    }
+    const manifest = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+    if (!manifest || Array.isArray(manifest) || typeof manifest !== 'object') {
+        throw new Error(`Invalid deployment manifest object: ${sourcePath}`);
+    }
+    delete manifest[targetName];
+    const absoluteOutputPath = path.resolve(outputPath);
+    fs.mkdirSync(path.dirname(absoluteOutputPath), { recursive: true });
+    const resolvedOutputPath = fs.existsSync(absoluteOutputPath)
+        ? fs.realpathSync(absoluteOutputPath)
+        : path.join(fs.realpathSync(path.dirname(absoluteOutputPath)), path.basename(absoluteOutputPath));
+    if (resolvedOutputPath === fs.realpathSync(sourcePath)) {
+        throw new Error('Fresh manifest output must not overwrite the source manifest');
+    }
+    fs.writeFileSync(absoluteOutputPath, `${JSON.stringify(manifest, null, 2)}\n`);
+    return absoluteOutputPath;
 }
 
 if (require.main === module) {
@@ -41,4 +90,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { resolveCompiledContractsPath };
+module.exports = { createFreshTargetManifestCopy, deployCompiledTarget, resolveCompiledContractsPath };

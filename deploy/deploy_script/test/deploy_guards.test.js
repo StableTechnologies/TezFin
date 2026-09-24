@@ -9,6 +9,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
+const fs = require('node:fs');
+const os = require('node:os');
 
 const {
     checkChainIdMatch,
@@ -20,12 +22,63 @@ const {
     resolveDeployResultPath,
     verifyExistingContract,
     enforceDeploymentPreflight,
+    runDeployment,
 } = require('../util.js');
 const { checkNetworkExpectation, MAINNET_CHAIN_IDS } = require('../assert_network.js');
 const { findMissingCanonicalKeys, verifyAgainstAllowlist, REQUIRED_CANONICAL_KEYS, VETTED_MAINNET_ADDRESSES } = require('../mainnet_preflight.js');
 const { parsePriceResult } = require('../verify_mainnet_oracle.js');
 const { isActuallyMainnet, resolveApprovedConfidenceLimits } = require('../configure_pyth_oracle.js');
-const { resolveCompiledContractsPath } = require('../deploy_compiled_target.js');
+const { createFreshTargetManifestCopy, deployCompiledTarget, resolveCompiledContractsPath } = require('../deploy_compiled_target.js');
+
+test('fresh target deployment removes only the copied TezFinOracle entry and originates it', async () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'tezfin-fresh-oracle-'));
+    const sourceManifestPath = path.join(directory, 'checked-in-manifest.json');
+    const freshManifestPath = path.join(directory, 'fresh', 'manifest.json');
+    const compiledPath = path.join(directory, 'compiled', 'TezFinOracle');
+    const sourceManifest = {
+        TezFinOracle: 'KT1ExistingOracle',
+        Comptroller: 'KT1UnrelatedContract',
+        chainId: 'NetXtLrzvQDobza',
+    };
+    fs.writeFileSync(sourceManifestPath, `${JSON.stringify(sourceManifest, null, 2)}\n`);
+    fs.mkdirSync(compiledPath, { recursive: true });
+    fs.writeFileSync(path.join(compiledPath, 'contract.json'), JSON.stringify([{ prim: 'parameter', args: [{ prim: 'unit' }] }]));
+    fs.writeFileSync(path.join(compiledPath, 'storage.json'), JSON.stringify({ prim: 'Unit' }));
+
+    let originationCount = 0;
+    const freshPath = await deployCompiledTarget(path.dirname(compiledPath), {
+        freshTarget: 'TezFinOracle',
+        manifestOutput: freshManifestPath,
+        sourceManifest: sourceManifestPath,
+        runDeploymentFn: (compiledDirectory, manifestPath) => runDeployment(compiledDirectory, manifestPath, {
+            createTezosClient: async () => ({ tezos: {}, publicKeyHash: 'tz1TestOriginator', chainId: 'NetXtLrzvQDobza' }),
+            enforceDeploymentPreflight: async () => {},
+            verifyExistingContract: async () => assert.fail('fresh target must not enter existing-contract verification'),
+            deployMichelsonContract: async () => {
+                originationCount += 1;
+                return 'KT1FreshOracle';
+            },
+        }),
+    });
+
+    assert.equal(originationCount, 1);
+    assert.deepEqual(JSON.parse(fs.readFileSync(sourceManifestPath, 'utf8')), sourceManifest);
+    assert.equal(JSON.parse(fs.readFileSync(freshPath, 'utf8')).TezFinOracle, 'KT1FreshOracle');
+    assert.equal(JSON.parse(fs.readFileSync(freshPath, 'utf8')).Comptroller, 'KT1UnrelatedContract');
+});
+
+test('fresh target manifest refuses to overwrite its source file', () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'tezfin-manifest-copy-'));
+    const sourcePath = path.join(directory, 'manifest.json');
+    const original = { TezFinOracle: 'KT1ExistingOracle', Comptroller: 'KT1Comptroller' };
+    fs.writeFileSync(sourcePath, `${JSON.stringify(original)}\n`);
+
+    assert.throws(
+        () => createFreshTargetManifestCopy(sourcePath, sourcePath, 'TezFinOracle'),
+        /must not overwrite the source manifest/,
+    );
+    assert.deepEqual(JSON.parse(fs.readFileSync(sourcePath, 'utf8')), original);
+});
 
 const CUSDT_COMPILED_ADDRESSES = [
     { string: 'KT1Wq7uJeiXXociunW4LqQZzdNvM7QYbtVEN' },

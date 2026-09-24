@@ -19,9 +19,8 @@
  *              log (one file per feed under --out-dir). Intended to be run repeatedly
  *              (e.g. via cron/systemd timer) over the required 24-72h normal-period
  *              window, plus separately during any observed stressed/high-volatility period.
- *   report   - reads the accumulated CSV log(s) and prints the required
- *              feed/period/samples/p50/p95/p99/max/rejections/downtime table for one or
- *              more candidate bps policies.
+ *   report   - reads the accumulated CSV log(s) and prints confidence, publish-time,
+ *              per-feed freshness, and time-weighted system availability statistics.
  *   collect-onchain - reads the actual Pyth Core cache through EVM eth_call
  *              getPriceUnsafe(bytes32) and appends one sample per feed. This mode
  *              measures the on-chain state and does not require a Hermes API key.
@@ -42,6 +41,7 @@
  *   --period <label>       - free-text label recorded in the `report` table (default: "all samples").
  */
 const fs = require('fs');
+const crypto = require('crypto');
 const path = require('path');
 const { resolveDeployResultPath } = require('./util.js');
 
@@ -51,7 +51,8 @@ const DEFAULT_OUT_DIR = path.join(__dirname, '../../TezFinBuild/pyth_confidence_
 const DEFAULT_ONCHAIN_OUT_DIR = path.join(__dirname, '../../TezFinBuild/pyth_onchain_samples');
 const DEFAULT_EVM_RPC = 'https://node.mainnet.etherlink.com';
 const GET_PRICE_UNSAFE_SELECTOR = '0x96834ad3';
-const CSV_HEADER = 'iso_timestamp,unix_timestamp,price,conf,expo,publish_time,ratio\n';
+const CSV_HEADER = 'iso_timestamp,unix_timestamp,price,conf,expo,publish_time,ratio,status\n';
+const LEGACY_CSV_HEADER = 'iso_timestamp,unix_timestamp,price,conf,expo,publish_time,ratio';
 
 function parseArgs(argv) {
     const args = { _: [] };
@@ -65,6 +66,8 @@ function parseArgs(argv) {
             args.period = argv[++i];
         } else if (arg === '--source') {
             args.source = argv[++i];
+        } else if (arg === '--thresholds') {
+            args.thresholds = argv[++i];
         } else {
             args._.push(arg);
         }
@@ -170,15 +173,10 @@ async function collectOnchain(args) {
     const outDir = args.outDir || DEFAULT_ONCHAIN_OUT_DIR;
     fs.mkdirSync(outDir, { recursive: true });
     for (const feed of FEEDS) {
+        const observedAt = Math.floor(Date.now() / 1000);
         try {
             const sample = await fetchOnchainPrice(feedIdsManifest[feed]);
-            const filePath = path.join(outDir, `${feed}.csv`);
-            if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, CSV_HEADER);
-            fs.appendFileSync(
-                filePath,
-                `${new Date(sample.observedAt * 1000).toISOString()},${sample.observedAt},` +
-                `${sample.rawPrice},${sample.conf},${sample.expo},${sample.publishTime},${sample.ratio}\n`,
-            );
+            appendObservation(outDir, feed, sample, 'ok');
             console.log(JSON.stringify({
                 asset: feed,
                 price: Number(sample.rawPrice) * 10 ** sample.expo,
@@ -192,6 +190,7 @@ async function collectOnchain(args) {
                 confidenceRatio: sample.ratio,
             }));
         } catch (error) {
+            appendObservation(outDir, feed, { observedAt }, 'error');
             console.error(`[ERROR] ${feed}: ${error.message}`);
         }
     }
@@ -208,6 +207,7 @@ async function collect(args) {
         try {
             sample = await fetchLatestPrice(feedId);
         } catch (error) {
+            appendObservation(outDir, feed, { observedAt: Math.floor(Date.now() / 1000) }, 'error');
             console.error(`[ERROR] ${feed}: ${error.message}`);
             continue;
         }
@@ -215,16 +215,14 @@ async function collect(args) {
         const conf = BigInt(sample.conf);
         const absPrice = price < 0n ? -price : price;
         const ratio = absPrice === 0n ? null : Number(conf) / Number(absPrice);
-        const nowIso = new Date().toISOString();
-        const filePath = path.join(outDir, `${feed}.csv`);
-        if (!fs.existsSync(filePath)) {
-            fs.writeFileSync(filePath, CSV_HEADER);
-        }
-        fs.appendFileSync(
-            filePath,
-            `${nowIso},${Math.floor(Date.now() / 1000)},${sample.price},${sample.conf},${sample.expo},` +
-            `${sample.publish_time},${ratio === null ? '' : ratio}\n`,
-        );
+        appendObservation(outDir, feed, {
+            observedAt: Math.floor(Date.now() / 1000),
+            rawPrice: sample.price,
+            conf: sample.conf,
+            expo: sample.expo,
+            publishTime: Number(sample.publish_time),
+            ratio,
+        }, 'ok');
         console.log(
             `[INFO] ${feed}: price=${sample.price} conf=${sample.conf} expo=${sample.expo} ` +
             `publish_time=${sample.publish_time} ratio=${ratio === null ? 'n/a' : ratio.toFixed(6)}`,
@@ -232,30 +230,83 @@ async function collect(args) {
     }
 }
 
+function appendObservation(outDir, feed, sample, status) {
+    const filePath = path.join(outDir, `${feed}.csv`);
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, CSV_HEADER);
+    } else {
+        const contents = fs.readFileSync(filePath, 'utf8');
+        const [header, ...rows] = contents.trimEnd().split('\n');
+        if (header === LEGACY_CSV_HEADER) {
+            fs.writeFileSync(filePath, `${CSV_HEADER}${rows.map((row) => `${row},ok\n`).join('')}`);
+        } else if (header !== CSV_HEADER.trimEnd()) {
+            throw new Error(`Unexpected CSV header in ${filePath}`);
+        }
+    }
+    const observedAt = sample.observedAt;
+    const values = status === 'ok'
+        ? [sample.rawPrice, sample.conf, sample.expo, sample.publishTime, sample.ratio]
+        : ['', '', '', '', ''];
+    fs.appendFileSync(filePath, [
+        new Date(observedAt * 1000).toISOString(), observedAt, ...values, status,
+    ].join(',') + '\n');
+}
+
 function readSamples(outDir, feed) {
     const filePath = path.join(outDir, `${feed}.csv`);
     if (!fs.existsSync(filePath)) {
         return [];
     }
-    const lines = fs.readFileSync(filePath, 'utf8').trim().split('\n').slice(1);
-    return lines
-        .filter((line) => line.length > 0)
-        .map((line) => {
-            const [isoTimestamp, unixTimestamp, price, conf, expo, publishTime, ratio] = line.split(',');
-            return {
-                isoTimestamp,
-                unixTimestamp: Number(unixTimestamp),
-                price,
-                conf,
-                expo: Number(expo),
-                publishTime: Number(publishTime),
-                ratio: ratio === '' ? null : Number(ratio),
-            };
-        })
-        .filter((sample) => sample.ratio !== null && Number.isFinite(sample.ratio));
+    const lines = fs.readFileSync(filePath, 'utf8').trimEnd().split('\n');
+    const header = lines.shift().split(',');
+    for (const name of ['iso_timestamp', 'unix_timestamp', 'price', 'conf', 'expo', 'publish_time', 'ratio']) {
+        if (!header.includes(name)) throw new Error(`${filePath} is missing CSV column ${name}`);
+    }
+    const indexes = Object.fromEntries(header.map((name, index) => [name, index]));
+    return lines.filter(Boolean).map((line, rowIndex) => {
+        const columns = line.split(',');
+        const rowNumber = rowIndex + 2;
+        if (columns.length !== header.length) {
+            throw new Error(`${filePath}:${rowNumber} has ${columns.length} columns; expected ${header.length}`);
+        }
+        const status = indexes.status === undefined ? 'ok' : columns[indexes.status];
+        const requiredColumns = status === 'error'
+            ? ['iso_timestamp', 'unix_timestamp']
+            : ['iso_timestamp', 'unix_timestamp', 'price', 'conf', 'expo', 'publish_time', 'ratio'];
+        for (const name of requiredColumns) {
+            if (!columns[indexes[name]]?.trim()) {
+                throw new Error(`${filePath}:${rowNumber} is missing required ${name}`);
+            }
+        }
+        const observedAt = Number(columns[indexes.unix_timestamp]);
+        if (!Number.isFinite(observedAt)) throw new Error(`${filePath}:${rowNumber} has invalid unix_timestamp`);
+        if (status === 'error') return { observedAt, status };
+        if (status !== 'ok') throw new Error(`${filePath}:${rowNumber} has invalid status ${status}`);
+        const publishTime = Number(columns[indexes.publish_time]);
+        const ratio = Number(columns[indexes.ratio]);
+        const price = Number(columns[indexes.price]);
+        const conf = Number(columns[indexes.conf]);
+        const expo = Number(columns[indexes.expo]);
+        if (![publishTime, ratio, price, conf, expo].every(Number.isFinite) || ratio < 0) {
+            throw new Error(`${filePath}:${rowNumber} has invalid successful observation`);
+        }
+        return {
+            isoTimestamp: columns[indexes.iso_timestamp],
+            observedAt,
+            price,
+            conf,
+            expo,
+            publishTime,
+            ratio,
+            status,
+        };
+    });
 }
 
 function percentile(sortedValues, fraction) {
+    if (!Number.isFinite(fraction) || fraction < 0 || fraction > 1) {
+        throw new RangeError('percentile fraction must be between 0 and 1');
+    }
     if (sortedValues.length === 0) {
         return null;
     }
@@ -263,34 +314,176 @@ function percentile(sortedValues, fraction) {
     return sortedValues[index];
 }
 
+function summarizeFeed(samples, bpsList, thresholds) {
+    const observations = samples.length;
+    const successful = samples.filter((sample) => sample.status === 'ok');
+    const ratios = successful.map((sample) => sample.ratio).sort((a, b) => a - b);
+    const publishTimes = successful.map((sample) => sample.publishTime);
+    return {
+        observations,
+        samples: successful.length,
+        failures: observations - successful.length,
+        firstObservedAt: observations ? Math.min(...samples.map((sample) => sample.observedAt)) : null,
+        lastObservedAt: observations ? Math.max(...samples.map((sample) => sample.observedAt)) : null,
+        uniquePublishTimes: new Set(publishTimes).size,
+        repeatedNeighborObservations: publishTimes.slice(1).filter((value, index) => value === publishTimes[index]).length,
+        percentiles: Object.fromEntries([0.5, 0.95, 0.99].map((fraction) => [
+            `p${fraction * 100}`,
+            percentile(ratios, fraction),
+        ])),
+        maxRatio: ratios.length ? ratios.at(-1) : null,
+        rejections: Object.fromEntries(bpsList.map((bps) => [
+            bps,
+            ratios.filter((ratio) => ratio * 10000 > bps).length,
+        ])),
+        freshness: Object.fromEntries(thresholds.map((threshold) => {
+            const freshSamples = successful.filter((sample) => {
+                const age = sample.observedAt - sample.publishTime;
+                return age >= 0 && age <= threshold;
+            });
+            return [threshold, {
+                fresh: freshSamples.length,
+                stale: successful.length - freshSamples.length,
+                confidenceRejectedFresh: Object.fromEntries(bpsList.map((bps) => [
+                    bps,
+                    freshSamples.filter((sample) => sample.ratio * 10000 > bps).length,
+                ])),
+            }];
+        })),
+    };
+}
+
+function calculateSystemAvailability(samplesByFeed, threshold) {
+    const observations = FEEDS.flatMap((feed) =>
+        (samplesByFeed[feed] || []).map((sample) => ({ ...sample, feed })),
+    );
+    const perFeed = FEEDS.map((feed) => samplesByFeed[feed] || []);
+    if (perFeed.some((samples) => samples.length === 0)) return null;
+
+    const start = Math.max(...perFeed.map((samples) => Math.min(...samples.map((sample) => sample.observedAt))));
+    const end = Math.min(...perFeed.map((samples) => Math.max(...samples.map((sample) => sample.observedAt))));
+    if (end <= start) return null;
+
+    const points = new Set([start, end]);
+    for (const sample of observations) {
+        if (sample.observedAt > start && sample.observedAt < end) points.add(sample.observedAt);
+        if (sample.status === 'ok') {
+            const expiry = sample.publishTime + threshold;
+            if (expiry > start && expiry < end) points.add(expiry);
+        }
+    }
+    const orderedPoints = [...points].sort((a, b) => a - b);
+    const events = observations.slice().sort((a, b) => a.observedAt - b.observedAt);
+    const latest = Object.fromEntries(FEEDS.map((feed) => [feed, null]));
+    let eventIndex = 0;
+    while (eventIndex < events.length && events[eventIndex].observedAt <= start) {
+        const event = events[eventIndex++];
+        if (event.status === 'ok') latest[event.feed] = event;
+    }
+
+    let freshSeconds = 0;
+    let staleEpisodes = 0;
+    let longestStaleSeconds = 0;
+    let currentStaleSeconds = 0;
+    for (let index = 0; index < orderedPoints.length - 1; index += 1) {
+        const point = orderedPoints[index];
+        while (eventIndex < events.length && events[eventIndex].observedAt <= point) {
+            const event = events[eventIndex++];
+            if (event.status === 'ok') latest[event.feed] = event;
+        }
+        const nextPoint = orderedPoints[index + 1];
+        const interval = nextPoint - point;
+        const fresh = FEEDS.every((feed) => {
+            const sample = latest[feed];
+            const age = sample ? point - sample.publishTime : Infinity;
+            return age >= 0 && age < threshold;
+        });
+        if (fresh) {
+            freshSeconds += interval;
+            longestStaleSeconds = Math.max(longestStaleSeconds, currentStaleSeconds);
+            currentStaleSeconds = 0;
+        } else {
+            if (currentStaleSeconds === 0) staleEpisodes += 1;
+            currentStaleSeconds += interval;
+        }
+    }
+    longestStaleSeconds = Math.max(longestStaleSeconds, currentStaleSeconds);
+    const durationSeconds = end - start;
+    return {
+        start,
+        end,
+        durationSeconds,
+        freshSeconds,
+        staleSeconds: durationSeconds - freshSeconds,
+        uptimePercent: 100 * freshSeconds / durationSeconds,
+        staleEpisodes,
+        longestStaleSeconds,
+    };
+}
+
+function calculateReport(samplesByFeed, bpsList, thresholds) {
+    const feeds = Object.fromEntries(FEEDS.map((feed) => [
+        feed,
+        summarizeFeed(samplesByFeed[feed] || [], bpsList, thresholds),
+    ]));
+    const systemAvailability = Object.fromEntries(thresholds.map((threshold) => [
+        threshold,
+        calculateSystemAvailability(samplesByFeed, threshold),
+    ]));
+    return { feeds, systemAvailability };
+}
+
+function formatRatio(ratio) {
+    return ratio === null ? 'n/a' : (ratio * 10000).toFixed(2);
+}
+
 function report(args) {
     const outDir = args.outDir || DEFAULT_OUT_DIR;
     const bpsList = (args.bps || '25,50,100').split(',').map((value) => Number(value.trim()));
-    const period = args.period || 'all samples';
-
-    console.log('| feed | period | samples | p50_ratio | p95_ratio | p99_ratio | max_ratio | ' +
-        bpsList.map((bps) => `rejections_at_${bps}bps`).join(' | ') + ' |');
-    console.log('|---|---|---:|---:|---:|---:|---:|' + bpsList.map(() => '---:').join('|') + '|');
-
+    const thresholds = (args.thresholds || '60,180,300,600').split(',').map((value) => Number(value.trim()));
+    if ([...bpsList, ...thresholds].some((value) => !Number.isFinite(value) || value <= 0)) {
+        throw new Error('--bps and --thresholds must contain positive finite numbers');
+    }
+    const samplesByFeed = Object.fromEntries(FEEDS.map((feed) => [feed, readSamples(outDir, feed)]));
+    const result = calculateReport(samplesByFeed, bpsList, thresholds);
+    const allStarts = FEEDS.map((feed) => result.feeds[feed].firstObservedAt).filter(Number.isFinite);
+    const allEnds = FEEDS.map((feed) => result.feeds[feed].lastObservedAt).filter(Number.isFinite);
+    console.log(`Period label: ${args.period || 'all samples'}`);
+    console.log(`Observed poll window: ${allStarts.length ? new Date(Math.max(...allStarts) * 1000).toISOString() : 'n/a'} .. ${allEnds.length ? new Date(Math.min(...allEnds) * 1000).toISOString() : 'n/a'}`);
     for (const feed of FEEDS) {
-        const samples = readSamples(outDir, feed);
-        if (samples.length === 0) {
-            console.log(`| ${feed} | ${period} | 0 | n/a | n/a | n/a | n/a | ` +
-                bpsList.map(() => 'n/a').join(' | ') + ' | (no samples collected yet)');
-            continue;
+        const filePath = path.join(outDir, `${feed}.csv`);
+        if (fs.existsSync(filePath)) {
+            const sha256 = crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
+            console.log(`Input ${feed}: ${filePath} sha256=${sha256}`);
+        } else {
+            console.log(`Input ${feed}: MISSING (${filePath})`);
         }
-        const ratios = samples.map((sample) => sample.ratio).sort((a, b) => a - b);
-        const p50 = percentile(ratios, 0.50);
-        const p95 = percentile(ratios, 0.95);
-        const p99 = percentile(ratios, 0.99);
-        const max = ratios[ratios.length - 1];
-        const rejectionCounts = bpsList.map(
-            (bps) => ratios.filter((ratio) => ratio > bps / 10000).length,
-        );
-        console.log(
-            `| ${feed} | ${period} | ${samples.length} | ${p50.toFixed(6)} | ${p95.toFixed(6)} | ` +
-            `${p99.toFixed(6)} | ${max.toFixed(6)} | ${rejectionCounts.join(' | ')} |`,
-        );
+    }
+    console.log('\n| feed | observations | successful | failed | unique publish_time | repeated neighbors | p50 (bps) | p95 (bps) | p99 (bps) | max (bps) | ' +
+        bpsList.map((bps) => `rejections @ ${bps} bps`).join(' | ') + ' |');
+    console.log('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|' + bpsList.map(() => '---:').join('|') + '|');
+    for (const feed of FEEDS) {
+        const stats = result.feeds[feed];
+        console.log(`| ${feed} | ${stats.observations} | ${stats.samples} | ${stats.failures} | ${stats.uniquePublishTimes} | ${stats.repeatedNeighborObservations} | ${formatRatio(stats.percentiles.p50)} | ${formatRatio(stats.percentiles.p95)} | ${formatRatio(stats.percentiles.p99)} | ${formatRatio(stats.maxRatio)} | ${bpsList.map((bps) => stats.rejections[bps]).join(' | ')} |`);
+    }
+    console.log('\n| feed | freshness threshold | fresh successful observations | stale successful observations | ' +
+        bpsList.map((bps) => `fresh observations rejected @ ${bps} bps`).join(' | ') + ' |');
+    console.log('|---|---:|---:|---:|' + bpsList.map(() => '---:').join('|') + '|');
+    for (const feed of FEEDS) {
+        for (const threshold of thresholds) {
+            const counts = result.feeds[feed].freshness[threshold];
+            console.log(`| ${feed} | ${threshold}s | ${counts.fresh} | ${counts.stale} | ${bpsList.map((bps) => counts.confidenceRejectedFresh[bps]).join(' | ')} |`);
+        }
+    }
+    console.log('\n| freshness threshold | system uptime | fresh seconds | stale seconds | stale episodes | longest stale episode |');
+    console.log('|---:|---:|---:|---:|---:|---:|');
+    for (const threshold of thresholds) {
+        const availability = result.systemAvailability[threshold];
+        if (!availability) {
+            console.log(`| ${threshold}s | n/a | n/a | n/a | n/a | n/a | (missing feed observations or no common time window)`);
+        } else {
+            console.log(`| ${threshold}s | ${availability.uptimePercent.toFixed(3)}% | ${availability.freshSeconds} | ${availability.staleSeconds} | ${availability.staleEpisodes} | ${availability.longestStaleSeconds}s |`);
+        }
     }
 }
 
@@ -312,7 +505,20 @@ async function main() {
     }
 }
 
-main().catch((error) => {
-    console.error(`[ERROR] ${error.message}`);
-    process.exitCode = 1;
-});
+if (require.main === module) {
+    main().catch((error) => {
+        console.error(`[ERROR] ${error.message}`);
+        process.exitCode = 1;
+    });
+}
+
+module.exports = {
+    FEEDS,
+    calculateReport,
+    calculateSystemAvailability,
+    parseArgs,
+    percentile,
+    readSamples,
+    report,
+    summarizeFeed,
+};

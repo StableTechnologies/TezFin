@@ -463,9 +463,16 @@ async function verifyExistingContract(tezos, address, expectedCode, expectedStor
     console.log(`[INFO] Verified ${directoryName} at ${address} matches compiled code and critical storage addresses on-chain`);
 }
 
-async function runDeployment(compiledContractsPath, deployResultPath) {
-    const { tezos, publicKeyHash, chainId } = await createTezosClient();
-    await enforceDeploymentPreflight(
+async function runDeployment(compiledContractsPath, deployResultPath, overrides = {}) {
+    const services = {
+        createTezosClient,
+        enforceDeploymentPreflight,
+        verifyExistingContract,
+        deployMichelsonContract,
+        ...overrides,
+    };
+    const { tezos, publicKeyHash, chainId } = await services.createTezosClient();
+    await services.enforceDeploymentPreflight(
         deployResultPath, config.networkProfile, chainId,
     );
     console.log(`[INFO] Deploying from ${publicKeyHash} to ${config.tezosNode} (${chainId})`);
@@ -508,13 +515,13 @@ async function runDeployment(compiledContractsPath, deployResultPath) {
 
         const existingAddress = jsonDeployResult[directoryName];
         if (existingAddress) {
-            await verifyExistingContract(tezos, existingAddress, code, storage, directoryName);
+            await services.verifyExistingContract(tezos, existingAddress, code, storage, directoryName);
             console.log(`[INFO] Skipping ${directoryName}; already deployed and verified at ${existingAddress}`);
             continue;
         }
 
         console.log(`[INFO] Deploying ${directoryName}`);
-        const contractAddress = await deployMichelsonContract(tezos, code, storage, directoryName);
+        const contractAddress = await services.deployMichelsonContract(tezos, code, storage, directoryName);
 
         jsonDeployResult[directoryName] = contractAddress;
         writeDeployResult(deployResultPath, JSON.stringify(jsonDeployResult, null, '  '));
