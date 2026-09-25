@@ -32,6 +32,9 @@ jobs:
       - name: "Run tests"
         run: |
           bash contracts/tests/run_tests.sh ~/smartpy-cli/SmartPy.sh
+      - name: "Run Pyth ABI fixtures"
+        run: |
+          python3 contracts/tests/fixtures/pyth_abi_fixtures_test.py
       - name: "Check per-market IRM wiring"
         run: |
           python3 deploy/compile_targets/tests/test_irm_wiring.py
@@ -53,6 +56,12 @@ jobs:
           COMPILED_HASHES_OUTPUT: compiled-contract-hashes.json
         run: |
           python3 deploy/compile_targets/tests/test_reproducible_build.py ~/smartpy-cli/SmartPy.sh
+      - name: "Check checked-in compiled-contract-hashes.json is current"
+        run: |
+          if ! git diff --exit-code -- compiled-contract-hashes.json; then
+            echo "::error::compiled-contract-hashes.json is stale: a fresh clean build (above) produced different hashes than the committed file. Regenerate it (COMPILED_HASHES_OUTPUT=compiled-contract-hashes.json python3 deploy/compile_targets/tests/test_reproducible_build.py ~/smartpy-cli/SmartPy.sh) and commit the result."
+            exit 1
+          fi
       - name: "Publish compiled contract hashes"
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

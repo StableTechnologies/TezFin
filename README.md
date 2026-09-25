@@ -334,6 +334,112 @@ feed with `set_oracle`.
   alongside the mainnet manifest, which oracle instance/administrator is being used and who controls
   it — this project does not deploy or administer that upstream feed itself.
 
+### Pyth / NAC Staged Activation Order (Etherlink L2)
+
+`TezFinOracle`'s Etherlink/Pyth upstream lookup
+is fail-closed by design: `pythCore`, `pythMaxAgeWord`, and `feedIds` are **not** populated in the
+constructor (only a placeholder 60-second `pythMaxAgeWord` is), so `getPrice`/`getValidatedPrice`
+reject every non-override asset until an admin finishes configuring them. The following order is
+mandatory and must be reproduced by the deployment runner and any governance payload:
+
+```text
+originate TezFinOracle
+  -> setPythCore(pythCoreEvmAddress)
+  -> setPythMaxAge(maxAgeWord)
+  -> setFeedIds([{asset, feedId, targetDecimals, maxConfidenceBps}, ...])
+  -> configurePriceBounds(...)   (per Comptroller/cToken)
+  -> configureMaxPriceAge(...)   (per Comptroller)
+  -> enable market (supportMarket / unpause)
+```
+
+If a step is skipped, `getPrice`/`getValidatedPrice` fails closed with a specific error instead of
+silently returning stale or zero data:
+
+| Skipped step | `getPrice` / `getValidatedPrice` error |
+|---|---|
+| `setFeedIds` for the asset | `UNSUPPORTED_PYTH_ASSET` |
+| `setPythCore` | `PYTH_CORE_NOT_CONFIGURED` |
+| `configurePriceBounds` | `PRICE_BOUNDS_NOT_CONFIGURED` |
+| `configureMaxPriceAge` | `MAX_PRICE_AGE_NOT_CONFIGURED` |
+
+This order and every error in the table above are covered by
+[`contracts/tests/TezFinOracleTest.py`](contracts/tests/TezFinOracleTest.py).
+
+### Pyth confidence and proxy risk policy
+
+Each Pyth feed carries its own mandatory confidence limit (`maxConfidenceBps`), stored as
+part of that feed's `setFeedIds` entry. There is no shared/implicit fallback limit: a feed
+cannot be pinned at all without an explicit basis-points value in `(0, 10000]`
+(`INVALID_PYTH_CONFIDENCE_LIMIT` otherwise -- `0` is rejected too, since it would make the
+feed permanently unusable rather than "unconfigured"), and `getPrice` rejects a quote as
+`EXCESSIVE_PYTH_CONFIDENCE` whenever `conf * 10000 > rawPrice * maxConfidenceBps` for that
+feed.
+
+The limits below are **proposed TezFin starting policy values**, not Pyth-prescribed
+defaults, and are not a substitute for measured confidence/price ratios:
+
+| Feed | Limit | Basis points |
+|---|---:|---:|
+| BTC/USD | 0.25% | 25 |
+| XTZ/USD | 0.50% | 50 |
+| USDT/USD | 0.10% | 10 |
+
+No feed/market may be activated on mainnet using these starting values alone; final
+production approval requires empirical per-feed confidence/price ratio measurements
+and explicit governance sign-off. `tzBTC-USD` inherits BTC/USD's limit and
+`USDtz-USD`/`USDt-USD` inherit USDT/USD's limit, since they resolve to the same underlying
+feed (see proxy policy below).
+
+`deploy/deploy_script/configure_pyth_oracle.js` enforces this at the deployment-tooling
+level: it reads `maxConfidenceBps` from the manifest's `PythConfidenceLimitsBps` (never
+hard-coded in the script) and refuses to run `setFeedIds` unless the manifest also sets
+`PythConfidenceLimitsApproved: true`. On the mainnet network profile there is no override.
+On any other profile, a one-off smoke test may bypass the gate with
+`ALLOW_UNAPPROVED_CONFIDENCE_LIMITS=1`, which prints a loud warning and must never be
+treated as governance approval.
+
+The L2 asset mappings below are explicit proxies, not independent price feeds:
+
+- `tzBTC-USD` uses the BTC/USD Pyth feed. This does not detect a tzBTC/BTC depeg.
+- `USDtz-USD` and `USDt-USD` use the USDT/USD Pyth feed. This does not prove or
+  detect a USDtz/USDT or USDt/USDT peg failure.
+
+These proxy mappings must be treated as a governance and risk-policy decision;
+they are not evidence that the wrapped asset maintains its intended peg.
+
+### Rejected quotes and proxy-market activation policy
+
+`TezFinOracle` fails closed on stale, malformed, future, non-positive, out-of-range,
+or excessive-confidence Pyth quotes. The resulting behavior is operation-specific:
+
+| Operation/path | Behavior when a required quote is rejected |
+|---|---|
+| Mint | Fails during the price/liquidity refresh path; no market action is authorized. |
+| Borrow | Fails during the required price/liquidity refresh path; no borrow is authorized. |
+| Redeem | Fails when the required account snapshot/liquidity path cannot be refreshed. |
+| Repay | Remains available as a recovery operation; it does not require a new collateral price. |
+| Liquidation | Fails when the borrower liquidity snapshot cannot be refreshed or is invalid. |
+| Transfer | Fails when the transfer requires a collateral/liquidity check that cannot be refreshed. |
+
+Repayment remaining available is intentional: it lets users reduce debt during an oracle
+incident. It must not be interpreted as proof that collateral valuation is available. A
+liquidation cannot use a stale or invalid liquidity snapshot, and must wait for a successful
+price/liquidity refresh.
+
+The `tzBTC -> BTC/USD` and `USDtz/USDt -> USDT/USD` mappings do not authorize those proxy
+markets for production. Before activation, each proxy market requires a separate governance
+approval recording:
+
+- the approved underlying feed and confidence limit;
+- price bounds and maximum-change policy;
+- an independent depeg monitor for `tzBTC/BTC`, `USDtz/USDT`, or `USDt/USDT`;
+- alert and emergency actions, including pausing new mint/borrow and any additional
+  price-dependent actions required by governance;
+- the accountable owner and approval record.
+
+Until those conditions are approved and verified, proxy-priced markets remain disabled even
+if the underlying Pyth feed is fresh and within its confidence limit.
+
 ## Post-Deployment Admin Handoff (Mainnet)
 
 After origination, every contract (`Governance`, `TezFinOracle`) is initially administered by the

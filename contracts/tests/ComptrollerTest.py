@@ -440,6 +440,31 @@ def test():
         sender = bob, level = bLevel.next(), now = sp.timestamp(100),
         valid = False, exception = "ASSET_PRICE_TIMESTAMP_ROLLBACK")
     oracle.clearTimestamp()
+
+    scenario.h3("Rejected price blocks liquidity refresh and liquidation, but not repayment")
+    # Repayment intentionally remains available during an oracle incident so a
+    # borrower can reduce exposure while price-dependent liquidity checks fail closed.
+    oracle.setTimestamp(sp.timestamp(100))
+    updateAssetsPrices(scenario, cmpt, bLevel, marketsList)
+    scenario += cmpt.updateAccountLiquidityWithView(alice.address).run(
+        sender=alice, level=bLevel.next(), now=sp.timestamp(100))
+    scenario += cmpt.setPriceOracleAndTimeDiff(sp.record(
+        priceOracle=oracle.address, timeDiff=sp.int(60))).run(
+            sender=admin, level=bLevel.next())
+    oracle.setTimestamp(sp.timestamp(1))
+    scenario += cmpt.repayBorrowAllowed(repayBorrowArgLambda(listedMarket)).run(
+        sender=alice, level=bLevel.next(), now=sp.timestamp(100))
+    scenario += cmpt.updateAssetPricesWithView(sp.set([listedMarket])).run(
+        sender=alice, level=bLevel.next(), now=sp.timestamp(100), valid=False,
+        exception="STALE_ASSET_PRICE")
+    scenario += cmpt.liquidateBorrowAllowed(liquidateArg).run(
+        sender=listedMarket, level=bLevel.next(), valid=False,
+        exception=CMPT.EC.CMPT_UPDATE_PRICE)
+    scenario += cmpt.setPriceOracleAndTimeDiff(sp.record(
+        priceOracle=oracle.address, timeDiff=sp.int(300))).run(
+            sender=admin, level=bLevel.next())
+    oracle.setTimestamp(sp.timestamp(100))
+
     scenario.h3("Reject extreme prices outside configured bounds")
     scenario += cmpt.setPriceBounds(sp.record(cToken=listedMarket,
         minPrice=sp.nat(100000), maxPrice=sp.nat(10000000),
