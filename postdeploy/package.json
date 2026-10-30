@@ -4,7 +4,7 @@
   "description": "Utility for testing the tezfin wrapper code and contracts",
   "private": true,
   "engines": {
-    "node": "22.x"
+    "node": ">=22.23.4 <23"
   },
   "scripts": {
     "postinstall": "npm run build",

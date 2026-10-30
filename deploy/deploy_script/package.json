@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "deploy.js",
   "engines": {
-    "node": "22.16.0"
+    "node": "22.23.4"
   },
   "dependencies": {
     "@taquito/local-forging": "^25.0.0",
