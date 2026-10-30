@@ -2,7 +2,7 @@
 
 This project is the implementation of Compound Protocol on Tezos chain using SmartPy language.
 
-Node.js 22 is required for the JavaScript and TypeScript packages. Run `nvm use` from the repository root before installing dependencies.
+Node.js 22.23.4 is required for the JavaScript and TypeScript packages. Run `nvm use` from the repository root before installing dependencies.
 
 The diagram demonstrates relations between contracts
 ![](https://github.com/RSerhii/TezFin/blob/master/docs/ContractsRelations.png)
@@ -35,13 +35,20 @@ SHA-256 pin, installs npm dependencies with `npm ci` from
 `SmartPy Version: 0.16.0`. Do not use the upstream `curl | bash` installer for
 release builds.
 
-CI additionally pins Ubuntu 22.04, Node.js 22.16.0, Python 3.11.11, and GitHub
+CI additionally pins Ubuntu 22.04, Node.js 22.23.4, Python 3.11.11, and GitHub
 Actions to immutable commit SHAs.
 
-Node.js 22.16.0 is also the required local and production deployment runtime.
+Node.js 22.23.4 is also the required local and production deployment runtime.
 Use `nvm use` (or a version manager that reads `.node-version`) before running
-`npm ci`; the deployment package rejects other Node.js versions because Taquito
-25 requires Node.js 22 or newer.
+`npm ci`. The deployment package enforces this exact patch for reproducibility;
+Taquito 25 itself requires Node.js 22 or newer. This patch includes the October 21,
+2026 security fixes and the eMudhra certificate update.
+
+A repository update does not patch an existing Render deployment. After deployment
+approval, rebuild each affected service on its tracked branch and verify the build
+log reports Node.js 22.23.4. Check for a Render `NODE_VERSION` override first: it
+takes precedence over these files. Static sites need a fresh build too, even though
+they do not run a Node.js server after publication.
 
 Code is organized in the following structure
 
