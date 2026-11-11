@@ -2,6 +2,7 @@ import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 import { TezosNodeReader } from 'conseiljs';
 
 import { GET_ACCOUNT } from './types';
+import { captureWalletSession, assertWalletSession } from '../../util';
 
 /**
  * This function is used to get the account details of a user.
@@ -11,10 +12,14 @@ import { GET_ACCOUNT } from './types';
  * @param  comptroller
  * @param  markets
  */
-export const addWalletAction = (address, server, protocolAddresses, comptroller, markets) => async (dispatch) => {
+export const addWalletAction = (address, server, protocolAddresses, comptroller, markets, isCurrent = () => true) => async (dispatch) => {
+    const session = await captureWalletSession(address);
     const account = await TezosLendingPlatform.GetAccount(address, markets, comptroller, protocolAddresses, server);
     account.isKeyRevealed = await TezosNodeReader.isManagerKeyRevealedForAccount(server, address);
-    dispatch({ type: GET_ACCOUNT, payload: account });
+    await assertWalletSession(session);
+    if (isCurrent()) {
+        dispatch({ type: GET_ACCOUNT, payload: account });
+    }
 };
 
 /**
