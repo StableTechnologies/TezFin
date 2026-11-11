@@ -1,14 +1,22 @@
 import { KeyStoreCurve, KeyStoreType, TezosNodeReader, TezosNodeWriter } from 'conseiljs';
 
 import { BigNumber } from 'bignumber.js';
-import { DAppClient } from '@airgap/beacon-sdk';
+import { DAppClient } from '@ecadlabs/beacon-dapp';
 import bigInt from 'big-integer';
+import createWalletSession from './walletSession';
 import { TezosLendingPlatform } from 'tezoslendingplatformjs';
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../library/${process.env.REACT_APP_ENV || 'prod'}-network-config.json`);
 
-const client = new DAppClient({ name: config.dappName, preferredNetwork: config.infra.conseilServer.network });
+const beaconNetwork = { type: config.infra.conseilServer.network };
+const client = new DAppClient({ name: config.dappName, network: beaconNetwork });
+const walletSession = createWalletSession(client, beaconNetwork);
+const preparedSessions = new WeakMap();
+export const subscribeToWalletChanges = walletSession.subscribe;
+export const captureWalletSession = walletSession.capture;
+export const assertWalletSession = walletSession.assertCurrent;
+
 
 /**
  * This function is used to truncate a blockchain address for presentation by replacing the middle digits with an ellipsis.
@@ -26,11 +34,8 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
  * @returns clients
  */
 export const getWallet = async () => {
-    const { network } = config.infra.conseilServer;
-    const response = await client.requestPermissions({
-        network: { type: network },
-    });
-    const { address } = response;
+    await client.requestPermissions();
+    const { address } = await walletSession.capture();
     return { address };
 };
 
@@ -38,9 +43,9 @@ export const getWallet = async () => {
  * This function let's a user disconnects from an account.
  */
 export const deactivateAccount = async () => {
-    await client.clearActiveAccount();
-    // eslint-disable-next-line no-undef
-    localStorage.clear();
+    walletSession.invalidate();
+    await client.disconnect();
+    await client.removeAllAccounts();
 };
 
 /**
@@ -48,10 +53,7 @@ export const deactivateAccount = async () => {
  *
  * @returns address
  */
-export const getActiveAccount = async () => {
-    const activeAccount = await client.getActiveAccount();
-    return activeAccount ? activeAccount.address : undefined;
-};
+export const getActiveAccount = () => walletSession.getAddress();
 
 /**
  * Sends a transaction to the blockchain
@@ -63,6 +65,7 @@ export const getActiveAccount = async () => {
 export const evaluateTransaction = async (operations) => {
     try {
         const address = operations[0].source;
+        const session = await walletSession.capture(address);
         let curve = KeyStoreCurve.ED25519;
         if (address.startsWith('tz2')) {
             curve = KeyStoreCurve.SECP256K1;
@@ -90,6 +93,8 @@ export const evaluateTransaction = async (operations) => {
             true,
         );
         
+        await walletSession.assertCurrent(session);
+        preparedSessions.set(opGroup, session);
         return { opGroup };
     } catch (error) {
         console.log('evaluateTX', error);
@@ -105,7 +110,11 @@ export const evaluateTransaction = async (operations) => {
  */
 export const confirmTransaction = async (opGroup) => {
     try {
+        const session = preparedSessions.get(opGroup);
+        preparedSessions.delete(opGroup);
+        await walletSession.assertCurrent(session);
         const head = await TezosNodeReader.getBlockHead(config.infra.tezosNode);
+        await walletSession.assertCurrent(session);
         const response = await client.requestOperation({
             operationDetails: opGroup,
         });

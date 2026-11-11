@@ -20,13 +20,12 @@ import ComingSoon from './components/ComingSoon/index.tsx';
 
 import Footer from './components/Footer';
 
-import { addWalletAction } from './reduxContent/addWallet/actions';
-import { getActiveAccount } from './util';
+import { addWalletAction, disconnectWalletAction } from './reduxContent/addWallet/actions';
+import { getActiveAccount, subscribeToWalletChanges } from './util';
 
 const App = () => {
     const dispatch = useDispatch();
     const { account } = useSelector((state) => state.addWallet);
-    const { address } = useSelector((state) => state.addWallet.account);
     const { server, conseilServerInfo } = useSelector((state) => state.nodes.tezosNode);
     const { protocolAddresses, comptroller } = useSelector((state) => state.nodes);
     const { markets } = useSelector((state) => state.market);
@@ -51,16 +50,42 @@ const App = () => {
     }, [dispatch, comptroller, protocolAddresses, server]);
 
     useEffect(() => {
-        const isWallet = async () => {
-            // eslint-disable-next-line no-shadow
-            const address = await getActiveAccount();
-            if (address) {
-                dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
-                dispatch(allMarketAction(account, markets));
+        let cancelled = false;
+        let request = 0;
+        const refreshAccount = async () => {
+            request += 1;
+            const current = request;
+            const isCurrent = () => !cancelled && current === request;
+            try {
+                const address = await getActiveAccount();
+                if (!isCurrent()) {
+                    return;
+                }
+                if (!address) {
+                    dispatch(disconnectWalletAction());
+                } else if (server && protocolAddresses && comptroller) {
+                    await dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets, isCurrent));
+                }
+            } catch (error) {
+                if (isCurrent()) {
+                    dispatch(disconnectWalletAction());
+                }
             }
         };
-        isWallet();
-    }, [dispatch, address, server, protocolAddresses, comptroller, markets]);
+        const unsubscribe = subscribeToWalletChanges(() => {
+            dispatch(disconnectWalletAction());
+            refreshAccount();
+        });
+        refreshAccount();
+        return () => {
+            cancelled = true;
+            unsubscribe();
+        };
+    }, [dispatch, server, protocolAddresses, comptroller, markets]);
+
+    useEffect(() => {
+        dispatch(allMarketAction(account, markets));
+    }, [dispatch, account, markets]);
 
     return (
         <Router>
