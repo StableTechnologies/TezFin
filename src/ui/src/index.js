@@ -1,29 +1,22 @@
-/* eslint-disable no-undef */
-// eslint-disable-next-line no-use-before-define
+/* eslint-disable no-use-before-define */
+/* eslint-env browser */
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { prepareWalletStorage } from './util/walletStorage';
 import './index.css';
-import { Provider } from 'react-redux';
-import { ThemeProvider } from '@mui/material/styles';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-import store from './store';
+const root = document.getElementById('root');
+ReactDOM.render(<main style={{ margin: '15vh auto', maxWidth: 480, padding: 24 }}>
+    <h1>TezFin</h1><p role="status">Preparing your wallet connection…</p>
+</main>, root);
 
-import theme from './theme';
-
-ReactDOM.render(
-    <React.StrictMode>
-        <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <App />
-            </ThemeProvider>
-        </Provider>
-    </React.StrictMode>,
-    document.getElementById('root')
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+prepareWalletStorage().then(() => import('./AppBootstrap')).catch(() => {
+    ReactDOM.render(<main style={{ margin: '15vh auto', maxWidth: 480, padding: 24 }}>
+        <h1>TezFin</h1>
+        <div role="alert">
+            <p>Your wallet connection needs a refresh.</p>
+            <p>Close other TezFin tabs, then reload this page in an updated browser with site storage enabled. You may need to connect your wallet again.</p>
+            <button type="button" onClick={() => window.location.reload()}>Reload TezFin</button>
+        </div>
+    </main>, root);
+});
