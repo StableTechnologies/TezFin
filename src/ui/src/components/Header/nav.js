@@ -17,7 +17,7 @@ import DisconnectIcon from '../../assets/disconnectIcon.svg';
 import ExchangeIcon from '../../assets/exchangeIcon.svg';
 
 import { shorten, getWallet, deactivateAccount } from '../../util';
-import { addWalletAction, disconnectWalletAction } from '../../reduxContent/addWallet/actions';
+import { disconnectWalletAction } from '../../reduxContent/addWallet/actions';
 
 import { useStyles } from './style';
 
@@ -29,13 +29,13 @@ const Nav = () => {
     const [openPopover, setPopover] = useState(null);
 
     const { address } = useSelector((state) => state.addWallet.account);
-    const { server } = useSelector((state) => state.nodes.tezosNode);
-    const { comptroller, protocolAddresses } = useSelector((state) => state.nodes);
-    const { markets } = useSelector((state) => state.market);
 
     const addWallet = async () => {
-        const { address } = await getWallet();
-        dispatch(addWalletAction(address, server, protocolAddresses, comptroller, markets));
+        try {
+            await getWallet();
+        } catch (error) {
+            // Beacon displays rejection/cancellation errors; allow a fresh attempt.
+        }
     };
 
     const disconnectWallet = async () => {

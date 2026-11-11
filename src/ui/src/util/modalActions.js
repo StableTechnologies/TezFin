@@ -23,7 +23,7 @@ export const supplyTokenAction = async (tokenDetails, amount, close, setTokenTex
         protocolAddresses,
         publicKeyHash
     );
-    return evaluateTransaction(mint);
+    return evaluateTransaction(mint, publicKeyHash);
 };
 
 /**
@@ -49,7 +49,7 @@ export const withdrawTokenAction = async (tokenDetails, amount, amountInUnderlyi
         protocolAddresses,
         publicKeyHash
     );
-    return evaluateTransaction(withdraw);
+    return evaluateTransaction(withdraw, publicKeyHash);
 };
 
 /**
@@ -75,7 +75,7 @@ export const borrowTokenAction = async (tokenDetails, amount, close, setTokenTex
         protocolAddresses,
         publicKeyHash
     );
-    return evaluateTransaction(borrow);
+    return evaluateTransaction(borrow, publicKeyHash);
 };
 
 /**
@@ -99,7 +99,7 @@ export const repayBorrowTokenAction = async (tokenDetails, amount, close, setTok
         protocolAddresses,
         publicKeyHash
     );
-    return evaluateTransaction(repayBorrow);
+    return evaluateTransaction(repayBorrow, publicKeyHash);
 };
 
 /**
@@ -118,7 +118,7 @@ export const collateralizeTokenAction = (asset, protocolAddresses, publicKeyHash
         protocolAddresses,
         publicKeyHash
     );
-    return evaluateTransaction(collateralizeToken);
+    return evaluateTransaction(collateralizeToken, publicKeyHash);
 };
 
 /**
@@ -138,5 +138,5 @@ export const disableCollateralizeTokenAction = (asset, protocolAddresses, public
         publicKeyHash
     );
 
-    return evaluateTransaction(disableCollateralizeToken);
+    return evaluateTransaction(disableCollateralizeToken, publicKeyHash);
 };

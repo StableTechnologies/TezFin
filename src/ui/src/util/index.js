@@ -2,6 +2,7 @@ import { TezosToolkit, OpKind } from '@taquito/taquito';
 import { BeaconWallet } from '@taquito/beacon-wallet';
 import BigNumber from 'bignumber.js';
 import bigInt from 'big-integer';
+import createWalletSession from './walletSession';
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../library/${process.env.REACT_APP_ENV || 'mainnet'}-network-config.json`);
@@ -15,6 +16,24 @@ const beaconNetwork = config.infra.network === 'tezosx-previewnet'
     : { type: config.infra.network };
 const wallet = new BeaconWallet({ name: config.dappName, network: beaconNetwork });
 Tezos.setWalletProvider(wallet);
+const walletSession = createWalletSession(wallet.client, beaconNetwork);
+const preparedSessions = new WeakMap();
+export const subscribeToWalletChanges = walletSession.subscribe;
+export const captureWalletSession = walletSession.capture;
+export const assertWalletSession = walletSession.assertCurrent;
+
+// Taquito awaits parameter mapping and a head RPC read inside batch.send().
+// Bind each batch to its own provider so the session is checked after those reads.
+const createBatch = (operations, session) => {
+    const provider = Object.create(wallet);
+    provider.sendOperations = async (params) => {
+        await walletSession.assertCurrent(session);
+        return wallet.sendOperations(params);
+    };
+    const toolkit = new TezosToolkit(config.infra.tezosNode);
+    toolkit.setWalletProvider(provider);
+    return toolkit.wallet.batch(operations.map((operation) => ({ ...operation, source: session.address })));
+};
 
 /**
  * This function is used to truncate a blockchain address for presentation by replacing the middle digits with an ellipsis.
@@ -33,7 +52,7 @@ export const shorten = (first, last, str) => `${str.substring(0, first)}...${str
  */
 export const getWallet = async () => {
     await wallet.requestPermissions();
-    const address = await wallet.getPKH();
+    const { address } = await walletSession.capture();
     return { address };
 };
 
@@ -41,9 +60,9 @@ export const getWallet = async () => {
  * This function let's a user disconnects from an account.
  */
 export const deactivateAccount = async () => {
-    await wallet.clearActiveAccount();
-    // eslint-disable-next-line no-undef
-    localStorage.clear();
+    walletSession.invalidate();
+    await wallet.disconnect();
+    await wallet.client.removeAllAccounts();
 };
 
 /**
@@ -51,10 +70,7 @@ export const deactivateAccount = async () => {
  *
  * @returns address
  */
-export const getActiveAccount = async () => {
-    const activeAccount = await wallet.client.getActiveAccount();
-    return activeAccount ? activeAccount.address : undefined;
-};
+export const getActiveAccount = () => walletSession.getAddress();
 
 /**
  * Estimates a batch of operations and returns the batch ready to send.
@@ -63,13 +79,13 @@ export const getActiveAccount = async () => {
  *
  * @return batch operation ready to send.
  */
-export const evaluateTransaction = async (operations) => {
+export const evaluateTransaction = async (operations, expectedAddress) => {
     try {
+        const session = await walletSession.capture(expectedAddress);
         // On previewnet estimation is unreliable — let the wallet estimate
         if (config.infra.network === 'tezosx-previewnet') {
-            const batch = Tezos.wallet.batch(
-                operations.map((op) => ({ ...op, kind: OpKind.TRANSACTION }))
-            );
+            const batch = createBatch(operations.map((op) => ({ ...op, kind: OpKind.TRANSACTION })), session);
+            preparedSessions.set(batch, session);
             return { opGroup: batch };
         }
         // estimate each operation to get gas/storage/fee limits
@@ -83,7 +99,9 @@ export const evaluateTransaction = async (operations) => {
             storageLimit: estimates[i].storageLimit,
             fee: estimates[i].suggestedFeeMutez
         }));
-        const batch = Tezos.wallet.batch(estimatedOps);
+        const batch = createBatch(estimatedOps, session);
+        await walletSession.assertCurrent(session);
+        preparedSessions.set(batch, session);
         return { opGroup: batch };
     } catch (error) {
         return { error };
@@ -99,6 +117,9 @@ export const evaluateTransaction = async (operations) => {
  */
 export const confirmTransaction = async (batch) => {
     try {
+        const session = preparedSessions.get(batch);
+        preparedSessions.delete(batch);
+        await walletSession.assertCurrent(session);
         const op = await batch.send();
         return { response: op };
     } catch (error) {
