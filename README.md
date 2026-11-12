@@ -17,7 +17,21 @@ For the detailed description please refer to the [wiki pages](https://github.com
 
 ## Project Structure
 
-SmartPy CLI is required to interact with contracts. For installation please refer to https://smartpy.io/cli/
+These contracts use the legacy SmartPy CLI and syntax. Install the pinned,
+checksum-verified SmartPy 0.16.0 runtime from the project root:
+
+```sh
+tools/install-smartpy.sh
+```
+
+CI uses Node 22.16.0 and Python 3.11.11. The installer uses the checked-in
+`tools/smartpy/package-lock.json` for its JavaScript runtime dependencies and
+checks the compiler version. SmartPy 0.16.0 defaults to the Kathmandu protocol,
+also selected explicitly by `deploy/shell_scripts/deploy_all_contracts.sh`.
+This is an archived toolchain; the current `smartpy-tezos` Python package is
+not a drop-in replacement for the legacy CLI and contract syntax. The archive
+checksum pins its contents, but continued availability depends on the legacy
+SmartPy host.
 
 Code is organized in the following structure
 
@@ -72,7 +86,7 @@ cd TezFin
 
 ## Run Contract E2E Tests
 
-To run e2e tests use the following command, you will need latest smartpy cli installed.
+To run e2e tests use the following command with the pinned legacy SmartPy CLI.
 
 ```sh
 cd TezFin
