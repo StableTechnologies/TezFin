@@ -275,6 +275,11 @@ class TezFinOracle(OracleInterface.OracleInterface):
         sp.verify(self.is_admin(sp.sender), message="NOT_ADMIN")
         del self.data.feedIds[asset]
 
+    def _readPythResponse(self, calldata):
+        return sp.view("staticcall_evm", NAC_GATEWAY,
+                       sp.pair(self.data.pythCore, calldata),
+                       t=sp.TBytes).open_some("PYTH_STATICCALL_FAILED")
+
     def _resolvePythPrice(self, requestedAsset):
         """
             getPrice's upstream lookup: resolve override/alias, then read the pinned Pyth Core
@@ -305,9 +310,7 @@ class TezFinOracle(OracleInterface.OracleInterface):
 
             calldata = sp.concat([GET_PRICE_NO_OLDER_THAN_SELECTOR,
                                   feedConfig.feedId, self.data.pythMaxAgeWord])
-            response = sp.view("staticcall_evm", NAC_GATEWAY,
-                               sp.pair(self.data.pythCore, calldata),
-                               t=sp.TBytes).open_some("PYTH_STATICCALL_FAILED")
+            response = self._readPythResponse(calldata)
             sp.verify(sp.len(response) == 128, "MALFORMED_PYTH_RESPONSE")
 
             # Pyth's Price struct (int64 price, uint64 conf, int32 expo, uint256 publishTime) is
@@ -320,12 +323,13 @@ class TezFinOracle(OracleInterface.OracleInterface):
             # Pyth prices must be strictly positive. Decode this ABI word as unsigned after
             # rejecting a set sign bit; this avoids relying on the larger contract's repeated
             # signed-word lambda expansion while preserving fail-closed handling of negatives.
-            rawPrice = sp.to_int(self._decodePriceWord(priceWord))
-            rawConf = self._decodeUint64Word(confWord)
-            rawExpo = self._decodeExponentWord(expoWord)
+            # Snapshot at distinct call sites: decoder calls reuse mutable SmartPy locals.
+            rawPrice = sp.compute(sp.to_int(self._decodePriceWord(priceWord)))
+            rawConf = sp.compute(self._decodeUint64Word(confWord))
+            rawExpo = sp.compute(self._decodeExponentWord(expoWord))
             # publishTime is `uint` (uint256) per pyth-sdk-solidity's PythStructs.Price, not signed;
             # the <= sp.now check below still fails closed on any absurdly large decoded value.
-            rawPublishTime = self._decodePublishTimeWord(publishTimeWord)
+            rawPublishTime = sp.compute(self._decodePublishTimeWord(publishTimeWord))
 
             sp.verify(rawPrice > 0, "NON_POSITIVE_PYTH_PRICE")
             sp.verify((rawExpo >= -30) & (rawExpo <= 0), "INVALID_PYTH_EXPONENT")

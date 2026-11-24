@@ -33,14 +33,16 @@ const PROXY_GROUPS = [
 ];
 
 async function rpcJson(rpc, pathname, options = {}) {
-    const response = await fetch(`${rpc.replace(/\/$/, '')}${pathname}`, options);
+    const response = await fetch(`${rpc.replace(/\/$/, '')}${pathname}`, {
+        signal: AbortSignal.timeout(20000), ...options,
+    });
     if (!response.ok) {
         throw new Error(`RPC ${pathname} returned ${response.status}: ${await response.text()}`);
     }
     return response.json();
 }
 
-async function runView(rpc, { contract, view, input, chainId, source }) {
+async function runView(rpc, { contract, view, input, chainId, source, block = 'head' }) {
     const body = {
         contract,
         view,
@@ -51,7 +53,7 @@ async function runView(rpc, { contract, view, input, chainId, source }) {
         gas: '1040000',
         unparsing_mode: 'Readable',
     };
-    const result = await rpcJson(rpc, '/chains/main/blocks/head/helpers/scripts/run_script_view', {
+    const result = await rpcJson(rpc, `/chains/main/blocks/${block}/helpers/scripts/run_script_view`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(body),
@@ -85,12 +87,12 @@ function parseNatTimestampPair(node, label) {
     return { timestamp, price };
 }
 
-async function fetchAssetPrice(rpc, oracleAddress, chainId, source, headTimestamp, maxAgeSeconds, asset) {
+async function fetchAssetPrice(rpc, oracleAddress, chainId, source, headTimestamp, maxAgeSeconds, asset, block = 'head') {
     const getPriceNode = await runView(rpc, {
-        contract: oracleAddress, view: 'getPrice', input: { string: asset }, chainId, source,
+        contract: oracleAddress, view: 'getPrice', input: { string: asset }, chainId, source, block,
     });
     const legacyNode = await runView(rpc, {
-        contract: oracleAddress, view: 'get_price_with_timestamp', input: { string: asset }, chainId, source,
+        contract: oracleAddress, view: 'get_price_with_timestamp', input: { string: asset }, chainId, source, block,
     });
 
     const viaGetPrice = parseTimestampNatPair(getPriceNode, `getPrice(${asset})`);
@@ -129,7 +131,7 @@ async function fetchAssetPrice(rpc, oracleAddress, chainId, source, headTimestam
     return viaGetPrice;
 }
 
-async function verifyGetValidatedPrice(rpc, oracleAddress, chainId, source, comptroller, cToken, asset) {
+async function verifyGetValidatedPrice(rpc, oracleAddress, chainId, source, comptroller, cToken, asset, block = 'head') {
     // TValidatedPriceRequest = {comptroller, cToken, requestedAsset, previousPrice,
     // previousTimestamp}, but SmartPy lays out compiled record fields by ASCII field-name
     // order, not declaration order: pair(pair(cToken, comptroller),
@@ -145,7 +147,7 @@ async function verifyGetValidatedPrice(rpc, oracleAddress, chainId, source, comp
             ] },
         ],
     };
-    const node = await runView(rpc, { contract: oracleAddress, view: 'getValidatedPrice', input, chainId, source });
+    const node = await runView(rpc, { contract: oracleAddress, view: 'getValidatedPrice', input, chainId, source, block });
     const parsed = parseTimestampNatPair(node, `getValidatedPrice(${asset})`);
     console.log(`[OK]   getValidatedPrice(${asset}) -> price=${parsed.price} timestamp=${parsed.timestamp}`);
     return parsed;
@@ -207,7 +209,11 @@ async function main() {
     console.log('\nAll Shadownet Pyth/NAC smoke-test checks passed.');
 }
 
-main().catch((error) => {
-    console.error(`[ERROR] Shadownet Pyth oracle verification failed: ${error.message}`);
-    process.exitCode = 1;
-});
+if (require.main === module) {
+    main().catch((error) => {
+        console.error(`[ERROR] Shadownet Pyth oracle verification failed: ${error.message}`);
+        process.exitCode = 1;
+    });
+}
+
+module.exports = { fetchAssetPrice, verifyGetValidatedPrice };

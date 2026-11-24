@@ -150,7 +150,7 @@ async function main() {
     // configurePriceBounds/configureMaxPriceAge are keyed by sp.sender, so they can only be
     // configured for the *signing* account itself (no separate "source" override at the
     // Michelson level) -- this smoke test therefore uses the admin/signer's own address as
-    // the stand-in "comptroller" identity, matching docs' "тестовых market/comptroller".
+    // the stand-in "comptroller" identity
     const testComptroller = publicKeyHash;
     const testMarket = process.env.TEST_MARKET || publicKeyHash;
     const minPrice = Number(process.env.PRICE_MIN || 1);
