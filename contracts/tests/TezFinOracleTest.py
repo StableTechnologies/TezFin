@@ -41,6 +41,21 @@ class TezFinOracleDecodeTestHarness(TezFinOracle):
         sp.set_type(word, sp.TBytes)
         sp.result(self._decodeExponentWord(word))
 
+class TezFinOracleResponseTestHarness(TezFinOracle):
+    """Only replaces the external NAC read; all production decoding and validation runs."""
+
+    def __init__(self, admin, response):
+        TezFinOracle.__init__(self, admin, admin)
+        self.update_initial_storage(pythResponse=response)
+
+    def _readPythResponse(self, calldata):
+        return self.data.pythResponse
+
+    @sp.entry_point
+    def setResponse(self, response):
+        sp.set_type(response, sp.TBytes)
+        self.data.pythResponse = response
+
 
 class View_consumer(sp.Contract):
     def __init__(self, contract):
@@ -406,3 +421,65 @@ def test():
     decodeConsumer.verifyDecodedPriceWord(
         word=sp.bytes("0x" + (2 ** 63).to_bytes(32, "big").hex()),
         expectedPrice=sp.nat(0)).run(valid=False, exception="MALFORMED_PYTH_RESPONSE")
+
+
+@sp.add_test(name="pyth_response_pipeline")
+def test_pyth_response_pipeline():
+    scenario = sp.test_scenario()
+    admin = sp.test_account("Pyth response administrator")
+    publish_time = 1795510958
+
+    def response(price, confidence, exponent=-8, timestamp=publish_time):
+        words = [
+            price.to_bytes(32, "big", signed=True),
+            confidence.to_bytes(32, "big"),
+            exponent.to_bytes(32, "big", signed=True),
+            timestamp.to_bytes(32, "big"),
+        ]
+        return sp.bytes("0x" + b"".join(words).hex())
+
+    oracle = TezFinOracleResponseTestHarness(
+        admin.address, response(5990690246467, 3699753533))
+    scenario += oracle
+    consumer = View_consumer(oracle.address)
+    scenario += consumer
+    market = admin.address
+    oracle.setPythCore(PYTH_CORE).run(sender=admin)
+    oracle.configurePriceBounds(sp.record(
+        cToken=market, minPrice=sp.nat(1), maxPrice=sp.nat(2 ** 60),
+        maxChangeBps=sp.nat(10000))).run(sender=consumer.address)
+    oracle.configureMaxPriceAge(sp.int(60)).run(sender=consumer.address)
+
+    # Exact quotes from the first real Shadownet signed update on 2026-11-24.
+    for asset, price, confidence, decimals, limit in [
+        ("BTC", 5990690246467, 3699753533, 8, 25),
+        ("USDT", 99886078, 8922, 6, 10),
+        ("ETH", 168390267497, 159058065, 8, 50),
+    ]:
+        expected = price if decimals == 8 else price // 100
+        oracle.setFeedIds([sp.record(
+            asset=asset, feedId=BTC_FEED_ID, targetDecimals=sp.nat(decimals),
+            maxConfidenceBps=sp.nat(limit))]).run(sender=admin)
+        oracle.setResponse(response(price, confidence)).run(sender=admin)
+        consumer.verifyPrice(
+            asset=asset + "-USD", price=sp.nat(expected),
+            timestamp=sp.timestamp(publish_time)).run(now=sp.timestamp(publish_time + 5))
+        consumer.comparePriceViews(asset + "-USD").run(now=sp.timestamp(publish_time + 5))
+        consumer.verifyValidatedPrice(
+            cToken=market, asset=asset + "-USD", previousPrice=sp.nat(0),
+            previousTimestamp=sp.timestamp(0), expectedPrice=sp.nat(expected)
+        ).run(now=sp.timestamp(publish_time + 5))
+        oracle.setResponse(response(price, price // 4)).run(sender=admin)
+        consumer.verifyPrice(
+            asset=asset + "-USD", price=sp.nat(expected),
+            timestamp=sp.timestamp(publish_time)).run(
+                now=sp.timestamp(publish_time + 5), valid=False,
+                exception="EXCESSIVE_PYTH_CONFIDENCE")
+
+    for confidence, accepted in [(4999, True), (5000, True), (5001, False)]:
+        oracle.setResponse(response(1000000, confidence)).run(sender=admin)
+        consumer.verifyPrice(
+            asset="ETH-USD", price=sp.nat(1000000),
+            timestamp=sp.timestamp(publish_time)).run(
+                now=sp.timestamp(publish_time + 5), valid=accepted,
+                exception=None if accepted else "EXCESSIVE_PYTH_CONFIDENCE")
