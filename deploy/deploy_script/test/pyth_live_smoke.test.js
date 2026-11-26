@@ -3,7 +3,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { Interface } = require('ethers');
+const { spawnSync } = require('node:child_process');
+const { Interface, Transaction } = require('ethers');
 const settings = require('../../../e2e/pyth_live/shadownet.json');
 const {
     ABI, validateConfig, prepareManifest, parseHermes, normalize, comparePrice,
@@ -129,7 +130,8 @@ test('retry attempts preserve failed evidence and reconcile late receipts; unres
     t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
     t.mock.method(console, 'log', () => {});
     const summary = '{"status":"FAIL","transactions":12}\n';
-    const updates = '{"status":"injected","hash":"0x1234"}\n';
+    const hash = `0x${'a'.repeat(64)}`;
+    const updates = `${JSON.stringify({ status: 'injected', hash })}\n`;
     fs.writeFileSync(path.join(directory, 'summary.json'), summary);
     fs.writeFileSync(path.join(directory, 'updates.jsonl'), updates);
     await assert.rejects(reconcileReceipts(directory, {
@@ -137,8 +139,8 @@ test('retry attempts preserve failed evidence and reconcile late receipts; unres
     }), /pending\/unknown/);
     await reconcileReceipts(directory, {
         getTransactionReceipt: async () => ({
-            hash: '0x1234', status: 1,
-            toJSON: () => ({ hash: '0x1234', status: 1 }),
+            hash, status: 1,
+            toJSON: () => ({ hash, status: 1 }),
         }),
     });
     const reconciled = JSON.parse(fs.readFileSync(path.join(directory, 'receipt-reconciliation.jsonl'), 'utf8'));
@@ -181,15 +183,40 @@ async function exerciseWindow(t, failure) {
     let verifications = 0;
     const sent = new Map();
     const hashesWaited = [];
-    const send = async () => {
-        const hash = `0x${(++sends).toString(16).padStart(64, '0')}`;
-        sent.set(hash, Math.floor(time / 1000) - 1);
-        return { hash };
-    };
+    const send = async () => assert.fail('Contract send would broadcast before saving the intent');
     send.estimateGas = async () => 100n;
+    send.populateTransaction = async (data, options) => ({
+        to: settings.pythCore, data: pyth.encodeFunctionData('updatePriceFeeds', [data]), ...options,
+    });
     const core = { getUpdateFee: async () => 0n, updatePriceFeeds: send };
+    let syncs = 0;
+    const fsync = fs.fsyncSync;
+    t.mock.method(fs, 'fsyncSync', (descriptor) => {
+        syncs += 1;
+        if (failure === 'intent-write') throw new Error('intent fsync failed');
+        fsync(descriptor);
+    });
     const provider = {
+        getNetwork: async () => ({ chainId: BigInt(settings.evmChainId) }),
+        getTransactionCount: async () => sends,
         getFeeData: async () => ({ maxFeePerGas: 1n, maxPriorityFeePerGas: 0n }),
+        broadcastTransaction: async (signed) => {
+            const transaction = Transaction.from(signed);
+            assert.equal(transaction.chainId, BigInt(settings.evmChainId));
+            const rows = fs.readFileSync(path.join(directory, 'updates.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
+            const intent = rows.at(-1);
+            assert.equal(intent.status, 'broadcast-intent');
+            assert.equal(intent.hash, transaction.hash);
+            assert.equal(intent.sender, transaction.from);
+            assert.equal(intent.nonce, transaction.nonce);
+            assert.equal(intent.chainId, settings.evmChainId.toString());
+            assert.ok(syncs > sends, 'the intent must be fsynced before broadcast');
+            assert.ok(!JSON.stringify(rows).includes(signed), 'signed bytes must not be persisted');
+            sends += 1;
+            sent.set(transaction.hash, Math.floor(time / 1000) - 1);
+            if (failure === 'broadcast') throw new Error('RPC response lost after accepting the transaction');
+            return { hash: transaction.hash };
+        },
         send: async (method) => {
             if (method === 'eth_blockNumber') return '0x7b';
             assert.equal(method, 'eth_getBlockByNumber');
@@ -234,21 +261,29 @@ async function exerciseWindow(t, failure) {
     }, directory, provider, {
         'duration-seconds': '90', 'interval-seconds': '30', 'max-total-cost-wei': '100000',
     }, overrides);
-    if (failure) await assert.rejects(operation, /Smoke window failed: 1 failed rounds/);
+    if (failure === 'broadcast') await assert.rejects(operation, /Broadcast outcome unknown for 0x/);
+    else if (failure === 'intent-write') await assert.rejects(operation, /intent fsync failed/);
+    else if (failure) await assert.rejects(operation, /Smoke window failed: 1 failed rounds/);
     else await operation;
     const summary = JSON.parse(fs.readFileSync(path.join(directory, 'summary.json'), 'utf8'));
     const rows = fs.readFileSync(path.join(directory, 'updates.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
-    assert.equal(time - initialTime, 90000);
+    assert.equal(time - initialTime, failure === 'broadcast' || failure === 'intent-write' ? 0 : 90000);
     assert.equal(summary.status, failure ? 'FAIL' : 'PASS');
     assert.equal(summary.failedRounds, failure ? 1 : 0);
-    assert.equal(summary.transactions, sends);
-    assert.equal(BigInt(summary.spentWei), BigInt(sends) * 100n);
+    const confirmed = failure === 'broadcast' ? 0 : sends;
+    assert.equal(summary.transactions, confirmed);
+    assert.equal(BigInt(summary.spentWei), BigInt(confirmed) * 100n);
     assert.equal(rows.filter((row) => row.status === 'failed').length, failure ? 1 : 0);
-    assert.equal(summary.pendingTransaction, null);
+    if (failure === 'broadcast' || failure === 'intent-write') {
+        assert.match(summary.pendingTransaction, /^0x[0-9a-f]{64}$/);
+        assert.equal(rows.some((row) => row.status === 'injected'), false);
+    } else {
+        assert.equal(summary.pendingTransaction, null);
+    }
     if (failure === 'stale') {
         assert.match(rows.find((row) => row.status === 'failed').error, /age=62s \(limit=60s\)/);
     }
-    return { sends, waits, hashesWaited, verifications };
+    return { sends, waits, hashesWaited, verifications, directory, summary };
 }
 
 test('a later successful NAC cycle does not erase an earlier failure; the full window is collected', async (t) => {
@@ -274,6 +309,56 @@ test('a late successful update is recorded as stale; later rounds still run with
     const result = await exerciseWindow(t, 'stale');
     assert.equal(result.sends, 2);
     assert.equal(result.verifications, 1);
+});
+
+test('a possibly accepted broadcast survives a process restart before the injected log exists', async (t) => {
+    const result = await exerciseWindow(t, 'broadcast');
+    assert.equal(result.sends, 1);
+    const script = `
+        const { reconcileReceipts } = require('./deploy/deploy_script/pyth_live_smoke');
+        reconcileReceipts(process.argv[1], { getTransactionReceipt: async () => null })
+            .then(() => { console.error('Unexpectedly allowed a new attempt'); process.exitCode = 1; })
+            .catch(error => {
+                if (!error.message.includes(process.argv[2]) || !error.message.includes('pending/unknown')) {
+                    console.error(error.message); process.exitCode = 1;
+                }
+            });
+    `;
+    const restarted = spawnSync(process.execPath, ['-e', script, result.directory, result.summary.pendingTransaction], {
+        cwd: path.resolve(__dirname, '../../..'), encoding: 'utf8',
+        env: { ...process.env, PYTH_EVM_PRIVATE_KEY: '', PYTH_API_KEY: '', TEZOS_PRIVATE_KEY: '', TEZOS_MNEMONIC: '' },
+    });
+    assert.equal(restarted.status, 0, restarted.stderr);
+    const original = fs.readFileSync(path.join(result.directory, 'updates.jsonl'), 'utf8');
+    await reconcileReceipts(result.directory, {
+        getTransactionReceipt: async (hash) => ({
+            hash, status: 1, toJSON: () => ({ hash, status: 1 }),
+        }),
+    });
+    assert.equal(fs.readFileSync(path.join(result.directory, 'updates.jsonl'), 'utf8'), original);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(result.directory, 'summary.json'), 'utf8')).status, 'FAIL');
+});
+
+test('an intent persistence failure prevents any broadcast', async (t) => {
+    const result = await exerciseWindow(t, 'intent-write');
+    assert.equal(result.sends, 0);
+});
+
+test('a pre-broadcast crash marker blocks retries, and legacy hashless broadcast failures fail closed', async (t) => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'tezfin-live-intents-'));
+    t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+    const attempt = evidenceDirectory(directory, 'crashed-attempt', true);
+    const hash = `0x${'b'.repeat(64)}`;
+    const file = path.join(attempt, 'updates.jsonl');
+    // No injected row or summary exists if the process exits directly after saving the intent.
+    fs.writeFileSync(file, `${JSON.stringify({ status: 'broadcast-intent', hash })}\n`);
+    await assert.rejects(reconcileReceipts(directory, {
+        getTransactionReceipt: async () => null,
+    }), /pending\/unknown/);
+    fs.writeFileSync(file, `${JSON.stringify({ status: 'failed', phase: 'broadcast', error: 'network timeout' })}\n`);
+    await assert.rejects(reconcileReceipts(directory, {
+        getTransactionReceipt: async () => assert.fail('no hash is available to reconcile'),
+    }), /unknown outcome and no hash/);
 });
 
 test('deployment refuses additional market targets and on-chain overrides cannot masquerade as real Pyth reads', async (t) => {

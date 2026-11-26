@@ -3,7 +3,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
 const { setTimeout: sleep } = require('node:timers/promises');
-const { Contract, FetchRequest, Interface, JsonRpcProvider, Wallet, isAddress } = require('ethers');
+const { Contract, FetchRequest, Interface, JsonRpcProvider, Wallet, isAddress, keccak256 } = require('ethers');
 const { validateAddress, ValidationResult } = require('@taquito/utils');
 const { TezosToolkit } = require('@taquito/taquito');
 const { config, createTezosClient, runDeployment, verifyExistingContract } = require('./util.js');
@@ -336,6 +336,16 @@ function jsonLine(value) {
     return JSON.stringify(value, (_, item) => typeof item === 'bigint' ? item.toString() : item);
 }
 
+function recordBroadcastIntent(file, intent) {
+    const descriptor = fs.openSync(file, 'a', 0o600);
+    try {
+        fs.writeFileSync(descriptor, `${jsonLine(intent)}\n`);
+        fs.fsyncSync(descriptor);
+    } finally {
+        fs.closeSync(descriptor);
+    }
+}
+
 function runOptions(options) {
     const duration = integer(options['duration-seconds'] ?? 3600, 'duration-seconds', 1, 3600);
     const interval = integer(options['interval-seconds'] ?? 30, 'interval-seconds', 5, 30);
@@ -414,8 +424,16 @@ async function reconcileReceipts(runDir, provider) {
             if (!fs.existsSync(file)) continue;
             const rows = fs.readFileSync(file, 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line));
             for (const row of rows) {
-                if (row.status === 'injected') pending.set(row.hash, directory);
-                if (row.receipt?.hash) settled.add(row.receipt.hash);
+                if (row.status === 'broadcast-intent' || row.status === 'injected') {
+                    if (!/^0x[0-9a-f]{64}$/i.test(row.hash || '')) {
+                        throw new Error(`Missing/invalid transaction hash in ${file}; refusing new updates`);
+                    }
+                    pending.set(row.hash.toLowerCase(), directory);
+                }
+                if (row.status === 'failed' && row.phase === 'broadcast' && !row.hash) {
+                    throw new Error(`Previous broadcast in ${file} has an unknown outcome and no hash; manual reconciliation is required before new updates`);
+                }
+                if (row.receipt?.hash) settled.add(row.receipt.hash.toLowerCase());
             }
         }
     }
@@ -499,14 +517,29 @@ async function runUpdates(manifest, runDir, provider, options, overrides = {}) {
                     const fees = feeData.maxFeePerGas === null
                         ? { gasPrice }
                         : { maxFeePerGas: feeData.maxFeePerGas, maxPriorityFeePerGas: feeData.maxPriorityFeePerGas };
-                    phase = 'broadcast';
-                    const transaction = await core.updatePriceFeeds(update.data, { value: updateFee, gasLimit, ...fees });
-                    pending = { hash: transaction.hash, before, update, updateFee, submittedAt: new Date(services.now()).toISOString() };
-                    transactionHash = transaction.hash;
-                    summary.pendingTransaction = transaction.hash;
-                    fs.appendFileSync(file, `${jsonLine({ round, status: 'injected', hash: transaction.hash, submittedAt: pending.submittedAt, baselineBlock, before, hermes: update.quotes, updateFeeWei: updateFee, payloadSha256: crypto.createHash('sha256').update(jsonLine(update.data)).digest('hex') })}\n`);
+                    phase = 'sign';
+                    const request = await core.updatePriceFeeds.populateTransaction(update.data, { value: updateFee, gasLimit, ...fees });
+                    const populated = await wallet.populateTransaction(request);
+                    const signed = await wallet.signTransaction(populated);
+                    transactionHash = keccak256(signed);
+                    pending = { hash: transactionHash, before, update, updateFee, submittedAt: new Date(services.now()).toISOString() };
+                    summary.pendingTransaction = transactionHash;
+                    phase = 'broadcast-intent';
+                    recordBroadcastIntent(file, {
+                        round, status: 'broadcast-intent', hash: transactionHash, sender: wallet.address,
+                        nonce: populated.nonce, chainId: populated.chainId,
+                        submittedAt: pending.submittedAt, baselineBlock, before, hermes: update.quotes,
+                        updateFeeWei: updateFee,
+                        payloadSha256: crypto.createHash('sha256').update(jsonLine(update.data)).digest('hex'),
+                    });
                     writeJson(path.join(runDir, 'summary.json'), summary);
-                    console.log(`[INFO] Pyth update ${round + 1}: ${transaction.hash}`);
+                    phase = 'broadcast';
+                    const transaction = await provider.broadcastTransaction(signed);
+                    if (transaction.hash.toLowerCase() !== transactionHash) {
+                        throw new Error(`RPC returned an unexpected hash for ${transactionHash}`);
+                    }
+                    fs.appendFileSync(file, `${jsonLine({ round, status: 'injected', hash: transactionHash })}\n`);
+                    console.log(`[INFO] Pyth update ${round + 1}: ${transactionHash}`);
                 } else {
                     console.warn(`[WARN] Still confirming ${pending.hash}; no new transaction will be sent`);
                 }
@@ -543,8 +576,10 @@ async function runUpdates(manifest, runDir, provider, options, overrides = {}) {
                     observedAt: new Date(services.now()).toISOString(), error: summary.lastError,
                 })}\n`);
                 console.error(`[ERROR] Round ${round + 1} (${phase}): ${summary.lastError}`);
-                // A failed broadcast may still have reached the node without returning its hash.
-                if (phase === 'broadcast') throw new Error('Broadcast outcome unknown; stopped to avoid duplicate transactions', { cause: error });
+                if (phase === 'broadcast-intent') throw error;
+                if (phase === 'broadcast') {
+                    throw new Error(`Broadcast outcome unknown for ${transactionHash}; saved intent must be reconciled before new updates`, { cause: error });
+                }
             }
             writeJson(path.join(runDir, 'summary.json'), summary);
             const remaining = Math.min(interval * 1000 - (services.now() - started), deadline - services.now());
